@@ -1,231 +1,259 @@
-openapi: 3.0.0
+# openapi: 3.0.0
+# info:
+#   title: My API
+#   version: '1.0'
+# paths:
+#   /users:
+#     get:
+#       summary: Get all users
+#       responses:
+#         '200':
+#           description: A list of users
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   type: object
+#                   properties:
+#                     id:
+#                       type: integer
+#                     name:
+#                       type: string
+#                     email:
+#                       type: string
+#     post:
+#       summary: Create a new user
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               type: object
+#               properties:
+#                 name:
+#                   type: string
+#                 email:
+#                   type: string
+#       responses:
+#         '201':
+#           description: User created successfully
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   id:
+#                     type: integer
+#                   name:
+#                     type: string
+#                   email:
+#                     type: string
+#   /users/{userId}:
+#     get:
+#       summary: Get user by ID
+#       parameters:
+#         - name: userId
+#           in: path
+#           required: true
+#           schema:
+#             type: integer
+#       responses:
+#         '200':
+#           description: User details retrieved successfully
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   id:
+#                     type: integer
+#                   name:
+#                     type: string
+#                   email:
+#                     type: string
+#     put:
+#       summary: Update user by ID
+#       parameters:
+#         - name: userId
+#           in: path
+#           required: true
+#           schema:
+#             type: integer
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               type: object
+#               properties:
+#                 name:
+#                   type: string
+#                 email:
+#                   type: string
+#       responses:
+#         '200':
+#           description: User updated successfully
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   id:
+#                     type: integer
+#                   name:
+#                     type: string
+#                   email:
+#                     type: string
+#     delete:
+#       summary: Delete user by ID
+#       parameters:
+#         - name: userId
+#           in: path
+#           required: true
+#           schema:
+#             type: integer
+#       responses:
+#         '204':
+#           description: User deleted successfully
+#   /products:
+#     get:
+#       summary: Get all products
+#       responses:
+#         '200':
+#           description: A list of products
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   type: object
+#                   properties:
+#                     id:
+#                       type: integer
+#                     name:
+#                       type: string
+#                     price:
+#                       type: number
+#     post:
+#       summary: Create a new product
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               type: object
+#               properties:
+#                 name:
+#                   type: string
+#                 price:
+#                   type: number
+#       responses:
+#         '201':
+#           description: Product created successfully
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   id:
+#                     type: integer
+#                   name:
+#                     type: string
+#                   price:
+#                     type: number
+#   /products/{productId}:
+#     get:
+#       summary: Get product by ID
+#       parameters:
+#         - name: productId
+#           in: path
+#           required: true
+#           schema:
+#             type: integer
+#       responses:
+#         '200':
+#           description: Product details retrieved successfully
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   id:
+#                     type: integer
+#                   name:
+#                     type: string
+#                   price:
+#                     type: number
+#     put:
+#       summary: Update product by ID
+#       parameters:
+#         - name: productId
+#           in: path
+#           required: true
+#           schema:
+#             type: integer
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               type: object
+#               properties:
+#                 name:
+#                   type: string
+#                 price:
+#                   type: number
+#       responses:
+#         '200':
+#           description: Product updated successfully
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   id:
+#                     type: integer
+#                   name:
+#                     type: string
+#                   price:
+#                     type: number
+#     delete:
+#       summary: Delete product by ID
+#       parameters:
+#         - name: productId
+#           in: path
+#           required: true
+#           schema:
+#             type: integer
+#       responses:
+#         '204':
+#           description: Product deleted successfully
 info:
-  title: My API
-  version: '1.0'
-paths:
-  /users:
-    get:
-      summary: Get all users
-      responses:
-        '200':
-          description: A list of users
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: string
-                    email:
-                      type: string
-    post:
-      summary: Create a new user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-      responses:
-        '201':
-          description: User created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  email:
-                    type: string
-  /users/{userId}:
-    get:
-      summary: Get user by ID
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: User details retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  email:
-                    type: string
-    put:
-      summary: Update user by ID
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-      responses:
-        '200':
-          description: User updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  email:
-                    type: string
-    delete:
-      summary: Delete user by ID
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: User deleted successfully
-  /products:
-    get:
-      summary: Get all products
-      responses:
-        '200':
-          description: A list of products
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: string
-                    price:
-                      type: number
-    post:
-      summary: Create a new product
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                price:
-                  type: number
-      responses:
-        '201':
-          description: Product created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  price:
-                    type: number
-  /products/{productId}:
-    get:
-      summary: Get product by ID
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Product details retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  price:
-                    type: number
-    put:
-      summary: Update product by ID
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                price:
-                  type: number
-      responses:
-        '200':
-          description: Product updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  price:
-                    type: number
-    delete:
-      summary: Delete product by ID
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Product deleted successfully
+  _postman_id: e11e6ce0-4ad5-4cde-8bb6-86ef058186b6
+  name: User
+  schema: https://schema.getpostman.com/json/collection/v2.1.0/collection.json
+  _exporter_id: '23392578'
+  _collection_link: >-
+    https://solar-star-469904.postman.co/workspace/2be89b45-d5ac-483e-9999-7000ac61276c/collection/23392578-e11e6ce0-4ad5-4cde-8bb6-86ef058186b6?action=share&source=collection_link&creator=23392578
+item:
+  - name: login
+    request:
+      method: POST
+      header: []
+      body:
+        mode: raw
+        raw: '{"username":"ZiadWareth","email":"ziad@yahoo.com","age":26}'
+        options:
+          raw:
+            language: json
+      url:
+        raw: http://localhost:5000/users/login
+        protocol: http
+        host:
+          - localhost
+        port: '5000'
+        path:
+          - users
+          - login
+    response: []
