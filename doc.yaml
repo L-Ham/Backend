@@ -1,85 +1,19 @@
 openapi: 3.0.0
 info:
-  title: My API
-  version: '1.0'
+  _postman_id: 4a96a5c7-f36e-4d3b-a6e7-176cbbe493ae
+  title: Comment
+  version: 1.0
+  description: |
+    Collection for commenting functionalities.
+  x-logo:
+    url: "https://example.com/logo.png"
+  x-redocly:
+    project:
+      href: "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/23392578-4a96a5c7-f36e-4d3b-a6e7-176cbbe493ae?action=share&source=collection_link&creator=23392578"
 paths:
-  /users:
-    get:
-      summary: Get all users
-      responses:
-        '200':
-          description: A list of users
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: string
-                    email:
-                      type: string
-    post:
-      summary: Create a new user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-      responses:
-        '201':
-          description: User created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  email:
-                    type: string
-  /users/{userId}:
-    get:
-      summary: Get user by ID
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: User details retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  email:
-                    type: string
+  /comment/editComment:
     put:
-      summary: Update user by ID
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
+      summary: Edit Comment
       requestBody:
         required: true
         content:
@@ -87,56 +21,16 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                commentId:
                   type: string
-                email:
-                  type: string
+              required:
+                - commentId
       responses:
         '200':
-          description: User updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  email:
-                    type: string
+          description: Successful operation
+  /comment/delete:
     delete:
-      summary: Delete user by ID
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: User deleted successfully
-  /products:
-    get:
-      summary: Get all products
-      responses:
-        '200':
-          description: A list of products
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: string
-                    price:
-                      type: number
-    post:
-      summary: Create a new product
+      summary: Delete Comment
       requestBody:
         required: true
         content:
@@ -144,55 +38,16 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                commentId:
                   type: string
-                price:
-                  type: number
-      responses:
-        '201':
-          description: Product created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  price:
-                    type: number
-  /products/{productId}:
-    get:
-      summary: Get product by ID
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
+              required:
+                - commentId
       responses:
         '200':
-          description: Product details retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  price:
-                    type: number
+          description: Successful operation
+  /comment/hide:
     put:
-      summary: Update product by ID
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
+      summary: Hide Comment
       requestBody:
         required: true
         content:
@@ -200,32 +55,13 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                commentId:
                   type: string
-                price:
-                  type: number
+                hidden:
+                  type: boolean
+              required:
+                - commentId
+                - hidden
       responses:
         '200':
-          description: Product updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  price:
-                    type: number
-    delete:
-      summary: Delete product by ID
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Product deleted successfully
+          description: Successful operation
