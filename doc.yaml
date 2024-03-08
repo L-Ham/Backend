@@ -231,12 +231,20 @@
 #           description: Product deleted successfully
 openapi: 3.0.0
 info:
-  title: User API
-  version: 1.0.0
+  _postman_id: 4a96a5c7-f36e-4d3b-a6e7-176cbbe493ae
+  title: Comment
+  version: 1.0
+  description: |
+    Collection for commenting functionalities.
+  x-logo:
+    url: "https://example.com/logo.png"
+  x-redocly:
+    project:
+      href: "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/23392578-4a96a5c7-f36e-4d3b-a6e7-176cbbe493ae?action=share&source=collection_link&creator=23392578"
 paths:
-  /users/login:
-    post:
-      summary: Log in a user
+  /comment/editComment:
+    put:
+      summary: Edit Comment
       requestBody:
         required: true
         content:
@@ -244,12 +252,47 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                commentId:
                   type: string
-                email:
-                  type: string
-                age:
-                  type: integer
+              required:
+                - commentId
       responses:
         '200':
-          description: Successful login
+          description: Successful operation
+  /comment/delete:
+    delete:
+      summary: Delete Comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                commentId:
+                  type: string
+              required:
+                - commentId
+      responses:
+        '200':
+          description: Successful operation
+  /comment/hide:
+    put:
+      summary: Hide Comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                commentId:
+                  type: string
+                hidden:
+                  type: boolean
+              required:
+                - commentId
+                - hidden
+      responses:
+        '200':
+          description: Successful operation

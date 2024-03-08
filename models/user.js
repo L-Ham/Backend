@@ -52,10 +52,6 @@ const userSchema = new Schema({
     type: Number,
     required: true,
   },
-  // tickets: {
-  //   type: [Ticket],
-  //   required: false,
-  // },
 });
 
 module.exports = mongoose.model("User", userSchema);
