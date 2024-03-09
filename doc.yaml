@@ -380,7 +380,7 @@ paths:
                 subredditId:
                   type: string
       responses: {}
- /subreddit/sorting:
+  /subreddit/sorting:
     get:
       summary: Sorting
       description: Retrieve sorted posts in a subreddit
