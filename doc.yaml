@@ -1,15 +1,8 @@
 openapi: 3.0.0
 info:
-  _postman_id: 4a96a5c7-f36e-4d3b-a6e7-176cbbe493ae
   title: Comment
   version: 1.0
-  description: |
-    Collection for commenting functionalities.
-  x-logo:
-    url: "https://example.com/logo.png"
-  x-redocly:
-    project:
-      href: "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/23392578-4a96a5c7-f36e-4d3b-a6e7-176cbbe493ae?action=share&source=collection_link&creator=23392578"
+  description: Collection for commenting functionalities.
 paths:
   /comment/editComment:
     put:
