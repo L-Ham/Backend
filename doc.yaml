@@ -70,6 +70,124 @@ paths:
                 subredditId:
                   type: string
       responses: {}
+    /post/sorting:
+    get:
+      summary: Sorting
+      description: Retrieve sorted posts on the homepage
+      parameters:
+        - name: best
+          in: query
+          description: Sort by best
+          required: false
+          schema:
+            type: boolean
+        - name: hot
+          in: query
+          description: Sort by hot
+          required: false
+          schema:
+            type: boolean
+        - name: new
+          in: query
+          description: Sort by new
+          required: false
+          schema:
+            type: boolean
+        - name: top
+          in: query
+          description: Sort by top
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /post/createPost:
+    post:
+      summary: Create Post
+      description: Create a new post on the homepage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                text:
+                  type: string
+                media:
+                  type: string
+                link:
+                  type: string
+                NSFW:
+                  type: boolean
+                replyNotifications:
+                  type: boolean
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /subreddit/topCommunities:
+    get:
+      summary: Top Communities
+      description: Retrieve top communities on the homepage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /subreddit/joinCommunity:
+    post:
+      summary: Join Community
+      description: Join a community on the homepage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subRedditID:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /subreddit/viewCommunity:
+    get:
+      summary: View Community
+      description: View a community on the homepage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
   # /post/sorting:
   #   get:
   #     summary: Sorting
