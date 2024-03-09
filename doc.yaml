@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: Posts and Comments
+  title: All Functionalities
   version: "1.0"
-  description: Collection for managing posts and comments functionalities.
+  description: Collection for managing posts, comments, homepage, notifications, and subreddit functionalities.
 paths:
   /post/getAllPosts:
     get:
@@ -224,6 +224,159 @@ paths:
               required:
                 - commentId
                 - hidden
+      responses:
+        '200':
+          description: Successful operation
+
+  /post/sorting:
+    get:
+      summary: Sorting
+      parameters:
+        - in: query
+          name: Hot
+          schema:
+            type: boolean
+          required: false
+        - in: query
+          name: New
+          schema:
+            type: boolean
+          required: false
+        - in: query
+          name: Top
+          schema:
+            type: boolean
+          required: false
+        - in: query
+          name: Random
+          schema:
+            type: boolean
+          required: false
+      responses:
+        '200':
+          description: Successful operation
+
+  /post/createPost:
+    post:
+      summary: Create Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                text:
+                  type: string
+                media:
+                  type: string
+                link:
+                  type: string
+                NSFW:
+                  type: boolean
+                replyNotifications:
+                  type: boolean
+              required:
+                - title
+                - text
+      responses:
+        '200':
+          description: Successful operation
+
+  /subriddit/topCommunities:
+    get:
+      summary: Top Communities
+      responses:
+        '200':
+          description: Successful operation
+
+  /subriddit/joinCommunity:
+    post:
+      summary: Join Community
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subRedditID:
+                  type: string
+              required:
+                - subRedditID
+      responses:
+        '200':
+          description: Successful operation
+
+  /subriddit/viewCommunity:
+    get:
+      summary: View Community
+      responses:
+        '200':
+          description: Successful operation
+
+  /notification/newRequest:
+    get:
+      summary: New Request
+      responses:
+        '200':
+          description: Successful operation
+
+  /subreddit/sorting:
+    get:
+      summary: Sorting
+      parameters:
+        - in: query
+          name: Hot
+          schema:
+            type: boolean
+          required: false
+        - in: query
+          name: New
+          schema:
+            type: boolean
+          required: false
+        - in: query
+          name: Top
+          schema:
+            type: boolean
+          required: false
+        - in: query
+          name: Random
+          schema:
+            type: boolean
+          required: false
+      responses:
+        '200':
+          description: Successful operation
+
+  /subreddit/createPost:
+    post:
+      summary: Create Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                text:
+                  type: string
+                media:
+                  type: string
+                link:
+                  type: string
+                NSFW:
+                  type: boolean
+                replyNotifications:
+                  type: boolean
+              required:
+                - title
+                - text
       responses:
         '200':
           description: Successful operation
