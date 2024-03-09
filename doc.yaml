@@ -1,9 +1,176 @@
 openapi: 3.0.0
 info:
-  title: Comment
-  version: "1.0" 
-  description: Collection for commenting functionalities.
+  title: Posts and Comments
+  version: "1.0"
+  description: Collection for managing posts and comments functionalities.
 paths:
+  /post/getAllPosts:
+    get:
+      summary: Get All Posts
+      responses:
+        '200':
+          description: Successful operation
+
+  /post/upvote:
+    put:
+      summary: Upvote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required:
+                - postId
+      responses:
+        '200':
+          description: Successful operation
+
+  /post/downvote:
+    put:
+      summary: Downvote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required:
+                - postId
+      responses:
+        '200':
+          description: Successful operation
+
+  /post/save:
+    put:
+      summary: Save Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required:
+                - postId
+      responses:
+        '200':
+          description: Successful operation
+
+  /post/unsave:
+    put:
+      summary: Unsave Post
+      responses:
+        '200':
+          description: Successful operation
+
+  /post/editPost:
+    put:
+      summary: Edit Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required:
+                - postId
+      responses:
+        '200':
+          description: Successful operation
+
+  /posts/lockPost:
+    put:
+      summary: Lock Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                isLocked:
+                  type: boolean
+              required:
+                - postId
+                - isLocked
+      responses:
+        '200':
+          description: Successful operation
+
+  /posts/unlockPost:
+    put:
+      summary: Unlock Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                isLocked:
+                  type: boolean
+              required:
+                - postId
+                - isLocked
+      responses:
+        '200':
+          description: Successful operation
+
+  /posts/delete:
+    delete:
+      summary: Delete Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required:
+                - postId
+      responses:
+        '200':
+          description: Successful operation
+
+  /post/hide:
+    put:
+      summary: Hide Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                hidden:
+                  type: boolean
+              required:
+                - postId
+                - hidden
+      responses:
+        '200':
+          description: Successful operation
+
   /comment/editComment:
     put:
       summary: Edit Comment
@@ -21,6 +188,7 @@ paths:
       responses:
         '200':
           description: Successful operation
+
   /comment/delete:
     delete:
       summary: Delete Comment
@@ -38,6 +206,7 @@ paths:
       responses:
         '200':
           description: Successful operation
+
   /comment/hide:
     put:
       summary: Hide Comment
