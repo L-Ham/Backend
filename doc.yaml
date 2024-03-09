@@ -70,7 +70,7 @@ paths:
                 subredditId:
                   type: string
       responses: {}
-    /post/sorting:
+  /post/sorting:
     get:
       summary: Sorting
       description: Retrieve sorted posts on the homepage
