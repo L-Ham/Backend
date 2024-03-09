@@ -1,19 +1,11 @@
 openapi: 3.0.0
 info:
-  title: All Functionalities
-  version: "1.0"
-  description: Collection for managing posts, comments, homepage, notifications, subreddit, and settings functionalities.
+  title: Combined API
+  version: 1.0.0
 paths:
-  /post/getAllPosts:
-    get:
-      summary: Get All Posts
-      responses:
-        '200':
-          description: Successful operation
-
-  /post/upvote:
+  /comment/reportSpam:
     put:
-      summary: Upvote
+      summary: Report Comment Spam
       requestBody:
         required: true
         content:
@@ -21,156 +13,9 @@ paths:
             schema:
               type: object
               properties:
-                postId:
+                commentId:
                   type: string
-              required:
-                - postId
-      responses:
-        '200':
-          description: Successful operation
-
-  /post/downvote:
-    put:
-      summary: Downvote
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                postId:
-                  type: string
-              required:
-                - postId
-      responses:
-        '200':
-          description: Successful operation
-
-  /post/save:
-    put:
-      summary: Save Post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                postId:
-                  type: string
-              required:
-                - postId
-      responses:
-        '200':
-          description: Successful operation
-
-  /post/unsave:
-    put:
-      summary: Unsave Post
-      responses:
-        '200':
-          description: Successful operation
-
-  /post/editPost:
-    put:
-      summary: Edit Post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                postId:
-                  type: string
-              required:
-                - postId
-      responses:
-        '200':
-          description: Successful operation
-
-  /posts/lockPost:
-    put:
-      summary: Lock Post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                postId:
-                  type: string
-                isLocked:
-                  type: boolean
-              required:
-                - postId
-                - isLocked
-      responses:
-        '200':
-          description: Successful operation
-
-  /posts/unlockPost:
-    put:
-      summary: Unlock Post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                postId:
-                  type: string
-                isLocked:
-                  type: boolean
-              required:
-                - postId
-                - isLocked
-      responses:
-        '200':
-          description: Successful operation
-
-  /posts/delete:
-    delete:
-      summary: Delete Post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                postId:
-                  type: string
-              required:
-                - postId
-      responses:
-        '200':
-          description: Successful operation
-
-  /post/hide:
-    put:
-      summary: Hide Post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                postId:
-                  type: string
-                hidden:
-                  type: boolean
-              required:
-                - postId
-                - hidden
-      responses:
-        '200':
-          description: Successful operation
-
+      responses: {}
   /comment/editComment:
     put:
       summary: Edit Comment
@@ -183,12 +28,7 @@ paths:
               properties:
                 commentId:
                   type: string
-              required:
-                - commentId
-      responses:
-        '200':
-          description: Successful operation
-
+      responses: {}
   /comment/delete:
     delete:
       summary: Delete Comment
@@ -201,12 +41,7 @@ paths:
               properties:
                 commentId:
                   type: string
-              required:
-                - commentId
-      responses:
-        '200':
-          description: Successful operation
-
+      responses: {}
   /comment/hide:
     put:
       summary: Hide Comment
@@ -221,41 +56,45 @@ paths:
                   type: string
                 hidden:
                   type: boolean
-              required:
-                - commentId
-                - hidden
-      responses:
-        '200':
-          description: Successful operation
-
+      responses: {}
+  /comment/getSpamReports:
+    post:
+      summary: Get Spam Report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subredditId:
+                  type: string
+      responses: {}
   /post/sorting:
     get:
       summary: Sorting
       parameters:
-        - in: query
-          name: Hot
+        - name: best
+          in: query
           schema:
             type: boolean
           required: false
-        - in: query
-          name: New
+        - name: hot
+          in: query
           schema:
             type: boolean
           required: false
-        - in: query
-          name: Top
+        - name: new
+          in: query
           schema:
             type: boolean
           required: false
-        - in: query
-          name: Random
+        - name: top
+          in: query
           schema:
             type: boolean
           required: false
-      responses:
-        '200':
-          description: Successful operation
-
+      responses: {}
   /post/createPost:
     post:
       summary: Create Post
@@ -278,21 +117,12 @@ paths:
                   type: boolean
                 replyNotifications:
                   type: boolean
-              required:
-                - title
-                - text
-      responses:
-        '200':
-          description: Successful operation
-
-  /subriddit/topCommunities:
+      responses: {}
+  /subreddit/topCommunities:
     get:
       summary: Top Communities
-      responses:
-        '200':
-          description: Successful operation
-
-  /subriddit/joinCommunity:
+      responses: {}
+  /subreddit/joinCommunity:
     post:
       summary: Join Community
       requestBody:
@@ -304,57 +134,14 @@ paths:
               properties:
                 subRedditID:
                   type: string
-              required:
-                - subRedditID
-      responses:
-        '200':
-          description: Successful operation
-
-  /subriddit/viewCommunity:
+      responses: {}
+  /subreddit/viewCommunity:
     get:
       summary: View Community
-      responses:
-        '200':
-          description: Successful operation
-
-  /notification/newRequest:
-    get:
-      summary: New Request
-      responses:
-        '200':
-          description: Successful operation
-
-  /subreddit/sorting:
-    get:
-      summary: Sorting
-      parameters:
-        - in: query
-          name: Hot
-          schema:
-            type: boolean
-          required: false
-        - in: query
-          name: New
-          schema:
-            type: boolean
-          required: false
-        - in: query
-          name: Top
-          schema:
-            type: boolean
-          required: false
-        - in: query
-          name: Random
-          schema:
-            type: boolean
-          required: false
-      responses:
-        '200':
-          description: Successful operation
-
-  /subreddit/createPost:
+      responses: {}
+  /message/compose:
     post:
-      summary: Create Post
+      summary: Compose Message
       requestBody:
         required: true
         content:
@@ -362,28 +149,64 @@ paths:
             schema:
               type: object
               properties:
-                title:
+                to:
                   type: string
-                text:
+                subject:
                   type: string
-                media:
+                message:
                   type: string
-                link:
-                  type: string
-                NSFW:
-                  type: boolean
-                replyNotifications:
-                  type: boolean
-              required:
-                - title
-                - text
-      responses:
-        '200':
-          description: Successful operation
-
-  /settings/userSettings:
+      responses: {}
+  /message/getAllInbox:
+    get:
+      summary: Get All Inbox
+      responses: {}
+  /message/getUnreadInbox:
+    get:
+      summary: Get Unread Inbox
+      responses: {}
+  /message/getMessage:
+    get:
+      summary: Get Message
+      responses: {}
+  /message/getCommentsReplies:
+    get:
+      summary: Get Comments Replies
+      responses: {}
+  /message/getPostsReplies:
+    get:
+      summary: Get Posts Replies
+      responses: {}
+  /message/getMentions:
+    get:
+      summary: Get Mentions
+      responses: {}
+  /message/getSentMessages:
+    get:
+      summary: Get Sent Messages
+      responses: {}
+  /notification/getNotification:
+    get:
+      summary: Get Notification
+      responses: {}
+      parameters:
+        - name: token
+          in: header
+          required: true
+          schema:
+            type: string
+  /notification/getUnreadNotification:
+    get:
+      summary: Get Unread Notification
+      responses: {}
+      parameters:
+        - name: token
+          in: header
+          required: true
+          schema:
+            type: string
+  /notification/hide:
     put:
-      summary: Account Settings
+      summary: Hide Notification
       requestBody:
         required: true
         content:
@@ -391,23 +214,24 @@ paths:
             schema:
               type: object
               properties:
-                email:
+                notificationId:
                   type: string
-                gender:
-                  type: string
-                deleteAccount:
+                hidden:
                   type: boolean
-              required:
-                - email
-                - gender
-                - deleteAccount
-      responses:
-        '200':
-          description: Successful operation
-
-  /settings/profileSettings:
+      responses: {}
+      parameters:
+        - name: token
+          in: header
+          required: true
+          schema:
+            type: string
+  /post/getAllPosts:
+    get:
+      summary: Get All Posts
+      responses: {}
+  /post/upvote:
     put:
-      summary: Profile Settings
+      summary: Upvote
       requestBody:
         required: true
         content:
@@ -415,47 +239,12 @@ paths:
             schema:
               type: object
               properties:
-                displayName:
+                postId:
                   type: string
-                about:
-                  type: string
-                link:
-                  type: string
-                appName:
-                  type: string
-                avatarImage:
-                  type: string
-                bannerImage:
-                  type: string
-                NSFW:
-                  type: boolean
-                allowFollow:
-                  type: boolean
-                contentVisibility:
-                  type: boolean
-                communitiesVisibility:
-                  type: boolean
-                clearHistory:
-                  type: boolean
-              required:
-                - displayName
-                - about
-                - link
-                - appName
-                - avatarImage
-                - bannerImage
-                - NSFW
-                - allowFollow
-                - contentVisibility
-                - communitiesVisibility
-                - clearHistory
-      responses:
-        '200':
-          description: Successful operation
-
-  /settings/safetyAndPrivacySettings:
+      responses: {}
+  /post/downvote:
     put:
-      summary: Safety and Privacy Settings
+      summary: Downvote
       requestBody:
         required: true
         content:
@@ -463,20 +252,12 @@ paths:
             schema:
               type: object
               properties:
-                blockUser:
+                postId:
                   type: string
-                muteCommunity:
-                  type: string
-              required:
-                - blockUser
-                - muteCommunity
-      responses:
-        '200':
-          description: Successful operation
-
-  /settings/feedSettings:
+      responses: {}
+  /post/save:
     put:
-      summary: Feed Settings
+      summary: Save
       requestBody:
         required: true
         content:
@@ -484,32 +265,12 @@ paths:
             schema:
               type: object
               properties:
-                adultContent:
-                  type: boolean
-                autoPlayMedia:
-                  type: boolean
-                communityThemes:
-                  type: boolean
-                communityContentSort:
+                postId:
                   type: string
-                globalContentView:
-                  type: string
-                postsInNewTab:
-                  type: boolean
-              required:
-                - adultContent
-                - autoPlayMedia
-                - communityThemes
-                - communityContentSort
-                - globalContentView
-                - postsInNewTab
-      responses:
-        '200':
-          description: Successful operation
-
-  /settings/notificationsSettings:
+      responses: {}
+  /post/unsave:
     put:
-      summary: Notifications Settings
+      summary: Unsave
       requestBody:
         required: true
         content:
@@ -517,28 +278,100 @@ paths:
             schema:
               type: object
               properties:
-                mentions:
+                postId:
+                  type: string
+      responses: {}
+  /post/editPost:
+    put:
+      summary: Edit Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+      responses: {}
+  /posts/lockPost:
+    put:
+      summary: Lock Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                isLocked:
                   type: boolean
-                comments:
+      responses: {}
+  /posts/unlockPost:
+    put:
+      summary: unlockPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                isLocked:
                   type: boolean
-                upVotesPosts:
+      responses: {}
+  /posts/delete:
+    delete:
+      summary: Delete Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+      responses: {}
+  /post/hide:
+    put:
+      summary: Hide Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                hidden:
                   type: boolean
-                upVotesComments:
-                  type: boolean
-                repliesComments:
-                  type: boolean
-                newFollowers:
-                  type: boolean
-                postsFollowed:
-                  type: boolean
-              required:
-                - mentions
-                - comments
-                - upVotesPosts
-                - upVotesComments
-                - repliesComments
-                - newFollowers
-                - postsFollowed
-      responses:
-        '200':
-          description: Successful operation
+      responses: {}
+  /post/reportSpam:
+    get:
+      summary: Report Post as Spam
+      parameters:
+        - name: token
+          in: header
+          required: true
+          schema:
+            type: string
+      responses: {}
+  /post/getSpamReports:
+    get:
+      summary: Get Spam Reports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subredditId:
+                  type: string
+      responses: {}
