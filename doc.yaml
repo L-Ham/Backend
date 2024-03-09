@@ -837,6 +837,393 @@ paths:
           description: Bad Request
           content:
             application/json: {}
+  /settings/userSettings:
+    put:
+      summary: Update Account Settings
+      description: Update user account settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                gender:
+                  type: string
+                deleteAccount:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /settings/profileSettings:
+    put:
+      summary: Update Profile Settings
+      description: Update user profile settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                about:
+                  type: string
+                link:
+                  type: string
+                appName:
+                  type: string
+                avatarImage:
+                  type: string
+                bannerImage:
+                  type: string
+                NSFW:
+                  type: boolean
+                allowFollow:
+                  type: boolean
+                contentVisibility:
+                  type: boolean
+                communitiesVisibility:
+                  type: boolean
+                clearHistory:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /settings/safetyAndPrivacySettings:
+    put:
+      summary: Update Safety and Privacy Settings
+      description: Update user safety and privacy settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                blockUser:
+                  type: string
+                muteCommunity:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /settings/feedSettings:
+    put:
+      summary: Update Feed Settings
+      description: Update user feed settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                adultContent:
+                  type: boolean
+                autoPlayMedia:
+                  type: boolean
+                communityThemes:
+                  type: boolean
+                communityContentSort:
+                  type: string
+                globalContentView:
+                  type: string
+                postsInNewTab:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /settings/notificationsSettings:
+    put:
+      summary: Update Notifications Settings
+      description: Update user notifications settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mentions:
+                  type: boolean
+                comments:
+                  type: boolean
+                upVotesPosts:
+                  type: boolean
+                upVotesComments:
+                  type: boolean
+                repliesComments:
+                  type: boolean
+                newFollowers:
+                  type: boolean
+                postsFollowed:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/sorting:
+    get:
+      summary: Sorting
+      description: Get sorted subreddit posts
+      parameters:
+        - name: Hot
+          in: query
+          schema:
+            type: boolean
+        - name: New
+          in: query
+          schema:
+            type: boolean
+        - name: Top
+          in: query
+          schema:
+            type: boolean
+        - name: Random
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/createPost:
+    post:
+      summary: Create Post
+      description: Create a new post in a subreddit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                text:
+                  type: string
+                media:
+                  type: string
+                link:
+                  type: string
+                NSFW:
+                  type: boolean
+                replyNotificaitions:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/banUser:
+    post:
+      summary: Ban User
+      description: Ban a user from a subreddit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/unbanUser:
+    post:
+      summary: Unban User
+      description: Unban a user from a subreddit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/edited:
+    get:
+      summary: Edited
+      description: Get edited posts in a subreddit
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/deleteBanner:
+    delete:
+      summary: Delete Banner
+      description: Delete subreddit banner
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/uploadBanner:
+    put:
+      summary: Upload Banner
+      description: Upload subreddit banner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Banner:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/uploadIcon:
+    put:
+      summary: Upload Icon
+      description: Upload subreddit icon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Icon:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/Delete Icon:
+    delete:
+      summary: Delete Icon
+      description: Delete subreddit icon
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/approveJoin:
+    post:
+      summary: Approve Join Request
+      description: Approve a user's request to join a subreddit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/rejectJoin:
+    put:
+      summary: Reject Join Request
+      description: Reject a user's request to join a subreddit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/addRule:
+    post:
+      summary: Add Subreddit Rule
+      description: Add a rule to a subreddit
+      parameters:
+        - name: Posts
+          in: query
+          schema:
+            type: boolean
+        - name: Comments
+          in: query
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rule:
+                  type: string
+                reason:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/getRules:
+    get:
+      summary: Get Subreddit Rules
+      description: Get rules of a subreddit
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /subreddit/addRemovalReason:
+    post:
+      summary: Add Removal Reason
+      description: Add a removal reason to a subreddit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Title:
+                  type: string
+                Message:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
   # /post/sorting:
   #   get:
   #     summary: Sorting
