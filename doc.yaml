@@ -2,11 +2,6 @@ openapi: 3.0.0
 info:
   title: Combined API
   version: "1.0.0"
-  # _postman_id: "74285141-b2c5-499b-895e-400c8da93cd7"
-  # name: Subreddit
-  # schema: https://schema.getpostman.com/json/collection/v2.1.0/collection.json
-  # _exporter_id: "23392578"
-  # _collection_link: https://solar-star-469904.postman.co/workspace/2be89b45-d5ac-483e-9999-7000ac61276c/collection/33377382-74285141-b2c5-499b-895e-400c8da93cd7?action=share&source=collection_link&creator=23392578
 paths:
   /comment/reportSpam:
     put:
@@ -79,31 +74,31 @@ paths:
     get:
       summary: Sorting
       parameters:
-        - name: best
-          in: query
-          schema:
-            type: boolean
-          required: false
-        - name: hot
-          in: query
-          schema:
-            type: boolean
-          required: false
-        - name: new
-          in: query
-          schema:
-            type: boolean
-          required: false
-        - name: top
-          in: query
-          schema:
-            type: boolean
-          required: false
         - name: token
           in: header
           required: true
           schema:
             type: string
+        - name: Hot
+          in: query
+          schema:
+            type: boolean
+          required: false
+        - name: New
+          in: query
+          schema:
+            type: boolean
+          required: false
+        - name: Top
+          in: query
+          schema:
+            type: boolean
+          required: false
+        - name: Random
+          in: query
+          schema:
+            type: boolean
+          required: false
       responses: {}
   /post/createPost:
     post:
@@ -321,7 +316,7 @@ paths:
       responses: {}
   /posts/unlockPost:
     put:
-      summary: unlockPost
+      summary: Unlock Post
       requestBody:
         required: true
         content:
@@ -383,194 +378,5 @@ paths:
               type: object
               properties:
                 subredditId:
-                  type: string
-      responses: {}
-  /subreddit/sorting:
-    get:
-      summary: Sorting
-      parameters:
-        - name: token
-          in: header
-          required: true
-          schema:
-            type: string
-        - name: Hot
-          in: query
-          schema:
-            type: boolean
-          required: false
-        - name: New
-          in: query
-          schema:
-            type: boolean
-          required: false
-        - name: Top
-          in: query
-          schema:
-            type: boolean
-          required: false
-        - name: Random
-          in: query
-          schema:
-            type: boolean
-          required: false
-  /subreddit/createPost:
-    post:
-      summary: Create Post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                text:
-                  type: string
-                media:
-                  type: string
-                link:
-                  type: string
-                NSFW:
-                  type: boolean
-                replyNotificaitions:
-                  type: boolean
-      responses: {}
-  /subreddit/banUser:
-    post:
-      summary: Ban User
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-      responses: {}
-  /subreddit/unbanUser:
-    post:
-      summary: Unban User
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-      responses: {}
-  /subreddit/edited:
-    get:
-      summary: Edited
-      responses: {}
-  /subreddit/deleteBanner:
-    delete:
-      summary: Delete Banner
-      responses: {}
-  /subreddit/uploadBanner:
-    put:
-      summary: Upload Banner
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                Banner:
-                  type: string
-      responses: {}
-  /subreddit/uploadIcon:
-    put:
-      summary: Upload Icon
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                Icon:
-                  type: string
-      responses: {}
-  /subreddit/Delete Icon:
-    delete:
-      summary: Delete Icon
-      responses: {}
-  /subreddit/approveJoin:
-    post:
-      summary: Approve Join Request
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-      responses: {}
-  /subreddit/rejectJoin:
-    put:
-      summary: Reject Join Request
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-      responses: {}
-  /subreddit/addRule:
-    post:
-      summary: Add Subreddit Rule
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                rule:
-                  type: string
-                reason:
-                  type: string
-                description:
-                  type: string
-      parameters:
-        - name: Posts
-          in: query
-          schema:
-            type: boolean
-          required: false
-        - name: Comments
-          in: query
-          schema:
-            type: boolean
-          required: false
-      responses: {}
-  /subreddit/getRules:
-    get:
-      summary: Get Subreddit Rules
-      responses: {}
-  /subreddit/addRemovalReason:
-    post:
-      summary: Add Removal Reason
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                Title:
-                  type: string
-                Message:
                   type: string
       responses: {}
