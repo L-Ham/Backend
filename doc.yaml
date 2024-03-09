@@ -612,6 +612,231 @@ paths:
           description: Bad Request
           content:
             application/json: {}
+  /searchUsers:
+    get:
+      summary: Search Users
+      description: Search for users
+      parameters:
+        - name: token
+          in: header
+          description: User authentication token
+          required: true
+          schema:
+            type: string
+        - name: Hot
+          in: query
+          description: Sort by hot
+          schema:
+            type: boolean
+        - name: Top
+          in: query
+          description: Sort by top
+          schema:
+            type: boolean
+        - name: New
+          in: query
+          description: Sort by new
+          schema:
+            type: boolean
+        - name: Most Comments
+          in: query
+          description: Sort by most comments
+          schema:
+            type: boolean
+        - name: Relevance
+          in: query
+          description: Sort by relevance
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /searchPosts:
+    get:
+      summary: Search Posts
+      description: Search for posts
+      parameters:
+        - name: token
+          in: header
+          description: User authentication token
+          required: true
+          schema:
+            type: string
+        - name: Hot
+          in: query
+          description: Sort by hot
+          schema:
+            type: boolean
+        - name: Top
+          in: query
+          description: Sort by top
+          schema:
+            type: boolean
+        - name: New
+          in: query
+          description: Sort by new
+          schema:
+            type: boolean
+        - name: Most Comments
+          in: query
+          description: Sort by most comments
+          schema:
+            type: boolean
+        - name: Relevance
+          in: query
+          description: Sort by relevance
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /searchComments:
+    get:
+      summary: Search Comments
+      description: Search for comments
+      parameters:
+        - name: token
+          in: header
+          description: User authentication token
+          required: true
+          schema:
+            type: string
+        - name: Hot
+          in: query
+          description: Sort by hot
+          schema:
+            type: boolean
+        - name: Top
+          in: query
+          description: Sort by top
+          schema:
+            type: boolean
+        - name: New
+          in: query
+          description: Sort by new
+          schema:
+            type: boolean
+        - name: Most Comments
+          in: query
+          description: Sort by most comments
+          schema:
+            type: boolean
+        - name: Relevance
+          in: query
+          description: Sort by relevance
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /searchCommunities:
+    get:
+      summary: Search Communities
+      description: Search for communities
+      parameters:
+        - name: token
+          in: header
+          description: User authentication token
+          required: true
+          schema:
+            type: string
+        - name: Hot
+          in: query
+          description: Sort by hot
+          schema:
+            type: boolean
+        - name: Top
+          in: query
+          description: Sort by top
+          schema:
+            type: boolean
+        - name: New
+          in: query
+          description: Sort by new
+          schema:
+            type: boolean
+        - name: Most Comments
+          in: query
+          description: Sort by most comments
+          schema:
+            type: boolean
+        - name: Relevance
+          in: query
+          description: Sort by relevance
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /searchHashTag:
+    get:
+      summary: Search HashTag
+      description: Search for hashtags
+      parameters:
+        - name: token
+          in: header
+          description: User authentication token
+          required: true
+          schema:
+            type: string
+        - name: Hot
+          in: query
+          description: Sort by hot
+          schema:
+            type: boolean
+        - name: Top
+          in: query
+          description: Sort by top
+          schema:
+            type: boolean
+        - name: New
+          in: query
+          description: Sort by new
+          schema:
+            type: boolean
+        - name: Most Comments
+          in: query
+          description: Sort by most comments
+          schema:
+            type: boolean
+        - name: Relevance
+          in: query
+          description: Sort by relevance
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
   # /post/sorting:
   #   get:
   #     summary: Sorting
