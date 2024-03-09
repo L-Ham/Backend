@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: All Functionalities
   version: "1.0"
-  description: Collection for managing posts, comments, homepage, notifications, and subreddit functionalities.
+  description: Collection for managing posts, comments, homepage, notifications, subreddit, and settings functionalities.
 paths:
   /post/getAllPosts:
     get:
@@ -377,6 +377,168 @@ paths:
               required:
                 - title
                 - text
+      responses:
+        '200':
+          description: Successful operation
+
+  /settings/userSettings:
+    put:
+      summary: Account Settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                gender:
+                  type: string
+                deleteAccount:
+                  type: boolean
+              required:
+                - email
+                - gender
+                - deleteAccount
+      responses:
+        '200':
+          description: Successful operation
+
+  /settings/profileSettings:
+    put:
+      summary: Profile Settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                about:
+                  type: string
+                link:
+                  type: string
+                appName:
+                  type: string
+                avatarImage:
+                  type: string
+                bannerImage:
+                  type: string
+                NSFW:
+                  type: boolean
+                allowFollow:
+                  type: boolean
+                contentVisibility:
+                  type: boolean
+                communitiesVisibility:
+                  type: boolean
+                clearHistory:
+                  type: boolean
+              required:
+                - displayName
+                - about
+                - link
+                - appName
+                - avatarImage
+                - bannerImage
+                - NSFW
+                - allowFollow
+                - contentVisibility
+                - communitiesVisibility
+                - clearHistory
+      responses:
+        '200':
+          description: Successful operation
+
+  /settings/safetyAndPrivacySettings:
+    put:
+      summary: Safety and Privacy Settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                blockUser:
+                  type: string
+                muteCommunity:
+                  type: string
+              required:
+                - blockUser
+                - muteCommunity
+      responses:
+        '200':
+          description: Successful operation
+
+  /settings/feedSettings:
+    put:
+      summary: Feed Settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                adultContent:
+                  type: boolean
+                autoPlayMedia:
+                  type: boolean
+                communityThemes:
+                  type: boolean
+                communityContentSort:
+                  type: string
+                globalContentView:
+                  type: string
+                postsInNewTab:
+                  type: boolean
+              required:
+                - adultContent
+                - autoPlayMedia
+                - communityThemes
+                - communityContentSort
+                - globalContentView
+                - postsInNewTab
+      responses:
+        '200':
+          description: Successful operation
+
+  /settings/notificationsSettings:
+    put:
+      summary: Notifications Settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mentions:
+                  type: boolean
+                comments:
+                  type: boolean
+                upVotesPosts:
+                  type: boolean
+                upVotesComments:
+                  type: boolean
+                repliesComments:
+                  type: boolean
+                newFollowers:
+                  type: boolean
+                postsFollowed:
+                  type: boolean
+              required:
+                - mentions
+                - comments
+                - upVotesPosts
+                - upVotesComments
+                - repliesComments
+                - newFollowers
+                - postsFollowed
       responses:
         '200':
           description: Successful operation
