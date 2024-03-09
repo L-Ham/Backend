@@ -1,0 +1,11 @@
+{
+  "name": "reddit-clone-backend",
+  "version": "1.0.0",
+  "description": "Backend server for creating a Reddit Clone",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ziad Abd EL Wareth, Rana Hatem, Marly Mofeed, Amr Ashraf",
+  "license": "ISC"
+}
