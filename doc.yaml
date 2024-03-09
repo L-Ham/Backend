@@ -188,6 +188,123 @@ paths:
           description: Bad Request
           content:
             application/json: {}
+  /message/compose:
+    post:
+      summary: Compose
+      description: Compose a new message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                to:
+                  type: string
+                subject:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /message/getAllInbox:
+    get:
+      summary: Get All Inbox
+      description: Retrieve all messages in the inbox
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /message/getUnreadInbox:
+    get:
+      summary: Get Unread Inbox
+      description: Retrieve unread messages in the inbox
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /message/getMessage:
+    get:
+      summary: Get Message
+      description: Retrieve a specific message
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /message/getCommentsReplies:
+    get:
+      summary: Get Comments Replies
+      description: Retrieve replies to comments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /message/getPostsReplies:
+    get:
+      summary: Get Posts Replies
+      description: Retrieve replies to posts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /message/getMentions:
+    get:
+      summary: Get Mentions
+      description: Retrieve mentions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /message/getSentMessages:
+    get:
+      summary: Get Sent Messages
+      description: Retrieve sent messages
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
   # /post/sorting:
   #   get:
   #     summary: Sorting
