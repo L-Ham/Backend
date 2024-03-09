@@ -380,3 +380,117 @@ paths:
                 subredditId:
                   type: string
       responses: {}
+ /subreddit/sorting:
+    get:
+      summary: Sorting
+      description: Retrieve sorted posts in a subreddit
+      parameters:
+        - name: Hot
+          in: query
+          description: Sort by hot
+          required: false
+          schema:
+            type: boolean
+        - name: New
+          in: query
+          description: Sort by new
+          required: false
+          schema:
+            type: boolean
+        - name: Top
+          in: query
+          description: Sort by top
+          required: false
+          schema:
+            type: boolean
+        - name: Random
+          in: query
+          description: Sort randomly
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /subreddit/createPost:
+    post:
+      summary: Create Post
+      description: Create a new post in a subreddit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                text:
+                  type: string
+                media:
+                  type: string
+                link:
+                  type: string
+                NSFW:
+                  type: boolean
+                replyNotifications:
+                  type: boolean
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /subreddit/banUser:
+    post:
+      summary: Ban User
+      description: Ban a user from a subreddit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /subreddit/unbanUser:
+    post:
+      summary: Unban User
+      description: Unban a user from a subreddit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
