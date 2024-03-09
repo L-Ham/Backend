@@ -3,10 +3,10 @@ info:
   title: Combined API
   version: "1.0.0"
   # _postman_id: "74285141-b2c5-499b-895e-400c8da93cd7"
-  name: Subreddit
-  schema: https://schema.getpostman.com/json/collection/v2.1.0/collection.json
-  _exporter_id: "23392578"
-  _collection_link: https://solar-star-469904.postman.co/workspace/2be89b45-d5ac-483e-9999-7000ac61276c/collection/33377382-74285141-b2c5-499b-895e-400c8da93cd7?action=share&source=collection_link&creator=23392578
+  # name: Subreddit
+  # schema: https://schema.getpostman.com/json/collection/v2.1.0/collection.json
+  # _exporter_id: "23392578"
+  # _collection_link: https://solar-star-469904.postman.co/workspace/2be89b45-d5ac-483e-9999-7000ac61276c/collection/33377382-74285141-b2c5-499b-895e-400c8da93cd7?action=share&source=collection_link&creator=23392578
 paths:
   /comment/reportSpam:
     put:
