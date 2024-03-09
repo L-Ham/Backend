@@ -305,6 +305,56 @@ paths:
           description: Bad Request
           content:
             application/json: {}
+  /notification/getNotification:
+    get:
+      summary: Get Notification
+      description: Retrieve notifications
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /notification/getUnreadNotification:
+    get:
+      summary: Get Unread Notification
+      description: Retrieve unread notifications
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+  /notification/hide:
+    put:
+      summary: Hide Notification
+      description: Hide a notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notificationId:
+                  type: string
+                hidden:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
   # /post/sorting:
   #   get:
   #     summary: Sorting
