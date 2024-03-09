@@ -1224,6 +1224,125 @@ paths:
           description: OK
         '400':
           description: Bad Request
+  /user/login:
+    post:
+      summary: Login
+      description: Authenticate a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                age:
+                  type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /user/signup:
+    post:
+      summary: Signup
+      description: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /user/usernameAvailability:
+    get:
+      summary: Username Availability
+      description: Check if a username is available
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /user/forgotUsername:
+    post:
+      summary: Forgot Username
+      description: Send email reminder for forgotten username
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /user/forgotPassword:
+    post:
+      summary: Forgot Password
+      description: Reset user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+  /user/createCommunity:
+    post:
+      summary: Create Community
+      description: Create a new community
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                privacy:
+                  type: string
+                ageRestriction:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
   # /post/sorting:
   #   get:
   #     summary: Sorting
