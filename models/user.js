@@ -5,7 +5,7 @@ const userSchema = new Schema({
   userId: {
     type: Number,
     required: true,
-    unique: true,
+    unique: true
   },
   userName: {
     type: String,
@@ -40,9 +40,9 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
-  emailAddress: {
-    type: String,
-    required: true,
+  friends: {
+    type: [Number],
+    required: true
   },
   role: {
     type: String,
