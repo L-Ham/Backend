@@ -2,13 +2,8 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
-<<<<<<< Updated upstream
   user_ID: {
     type: String,
-=======
-  user_Id: {
-    type: Number,
->>>>>>> Stashed changes
     required: true,
     unique: true,
     primary: true,
