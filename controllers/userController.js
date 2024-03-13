@@ -1,7 +1,15 @@
 const User = require("../models/user");
-const signUp = (req, res, next) => {
-  const userName = req.body.userName;
+const getUserSettings = (req, res, next) => {
+  //TODO: const user = TOKENNN
+  User.findById(req.params.id)
+    .then((user) => {
+      console.log("User settings: ", user);
+      res.json({ gender: user.gender, email: user.email });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 module.exports = {
-  signUp,
+  getUserSettings,
 };
