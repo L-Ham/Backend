@@ -4,23 +4,29 @@ const commentSchema=new Schema({
     commentId:{
         type:Number,
         required:true,
-        unique:true,
+        unique:true
     },
     postId:{
         type:Number,
-        required:true,
+        ref:'post',
+        required:true
+    },
+    userId:{
+        type:Number,
+        ref:'user',
+        required:true
     },
     text:{
         type:String,
-        required:false,
+        required:false
     },
     parentCommentId:{
         type:Number,
-        required:true,
+        required:true
     },
     votes:{
         type:Number,
-        required:false,
+        required:false
     },
 });
-module.exports=mongoose.model('Comment',commentSchema);
+module.exports=mongoose.model('comment',commentSchema);
