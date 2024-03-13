@@ -14,6 +14,16 @@ mongoose
       PORT,
       (req, res, next) => {
         console.log(`Server running on port ${PORT}`);
+        const userRoutes = require("./routes/userRoutes");
+        // const authRoutes = require("./routes/authRoutes");
+        // const postRoutes = require("./routes/postRoutes");
+        // const commentRoutes = require("./routes/commentRoutes");
+        // const subredditRoutes = require("./routes/subredditRoutes");
+        app.use("/users", userRoutes);
+        // app.use("/auth", authRoutes);
+        // app.use("/post", postRoutes);
+        // app.use("/comment", commentRoutes);
+        // app.use("/subreddit", subredditRoutes);
         // app.get("/", function (req, res) {
         //   res.send("Hello World!");
       }
