@@ -6,52 +6,52 @@ const userSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    primary: true,
+    primary: true
   },
   userName: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },  
   name: {
     type: String,
-    required: false,
+    required: false
   },
   gender: {
     type: String,
-    required: false,
+    required: false
   },
   allowFollow: {
     type: String,
-    required: true,
+    required: true
   },
   password: {
     type: String,
-    required: true,
+    required: true
   },
   friends: {
     type: [String],
-    required: true,
+    required: true
   },
   email: {
     type: String,
-    required: true,
+    required: true
   },
   avatar: {
     type: Image,
-    required: false,
+    required: false
   },
   isNSFW: {
     type: Boolean,
-    required: false,
+    required: false
   },
   postHistory: {
     type: string,
-    required: true,
+    required: true
   },
   About: {
     type: string,
-    required: false,
+    required: false
   }
 });
 
