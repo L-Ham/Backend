@@ -6,8 +6,7 @@ const messageSchema = new Schema({
     message_ID: {
     type: Number,
     required: true,
-    unique: true,
-    primary: true
+    unique: true
   },
   email: {
     type: String,

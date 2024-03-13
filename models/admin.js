@@ -5,8 +5,7 @@ const adminSchema = new Schema({
     admin_Id: {
         type: Number,
         required: true,
-        unique: true,
-        primary: true
+        unique: true
     },
     name: {
         type: String,

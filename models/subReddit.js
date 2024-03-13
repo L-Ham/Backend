@@ -6,8 +6,7 @@ const subRedditSchema = new Schema({
     subReddit_ID: {
     type: Number,
     required: true,
-    unique: true,
-    primary: true
+    unique: true
   },
   privacy: {
     type: String,

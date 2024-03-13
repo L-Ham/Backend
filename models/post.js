@@ -6,8 +6,7 @@ const postSchema = new Schema({
   post_ID: {
     type: Number,
     required: true,
-    unique: true,
-    primary: true
+    unique: true
   },
   content: {
     type: String,
