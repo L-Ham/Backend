@@ -6,8 +6,7 @@ const socialLinkSchema = new Schema({
   link: {
     type: String,
     required: true,
-    unique: true,
-    primary: true
+    unique: true
   },
   appName: {
     type: String,
