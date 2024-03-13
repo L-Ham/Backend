@@ -4,23 +4,24 @@ const notificationSchema = new Schema({
     notificationId: {
         type: Number,
         required: true,
-        unique: true,
+        unique: true
     },
     userId: {
         type: Number,
-        required: true,
+        ref: 'user',
+        required: true
     },
     content: {
         type: String,
-        required: true,
+        required: true
     },
     typeId: {
         type: Number,
-        required: true,
+        required: true
     },
     type: {
         type: String,
-        required: true,
+        required: true
     },  
 });
-module.exports = mongoose.model('Notification', notificationSchema);
+module.exports = mongoose.model('notification', notificationSchema);
