@@ -3,30 +3,30 @@ const { boolean } = require("webidl-conversions");
 
 const Schema = mongoose.Schema;
 const subRedditSchema = new Schema({
-    subReddit_ID: {
+  subReddit_ID: {
     type: Number,
     required: true,
-    unique: true
+    unique: true,
   },
   privacy: {
     type: String,
     required: true,
-    default: "public"
+    default: "public",
   },
   name: {
     type: String,
-    required: true
+    required: true,
   },
   ageRestriction: {
     type: Boolean,
     required: true,
-    default: false
+    default: false,
   },
   numberOfMembers: {
-    type: number,
+    type: Number,
     required: true,
-    default: 0
-  }
+    default: 0,
+  },
 });
 
 module.exports = mongoose.model("subReddit", subRedditSchema);

@@ -34,7 +34,6 @@ const postSchema = new Schema({
     type: Boolean,
     required: true,
     default: false
-    
   }
 });
 

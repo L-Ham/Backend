@@ -5,48 +5,48 @@ const userSchema = new Schema({
   user_ID: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   userName: {
     type: String,
     required: true,
-    unique: true
-  },  
+    unique: true,
+  },
   name: {
     type: String,
-    required: false
+    required: false,
   },
   gender: {
     type: String,
-    required: false
+    required: false,
   },
   allowFollow: {
     type: String,
-    required: true
+    required: true,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   friends: {
     type: [Number],
-    required: true
+    required: true,
   },
   email: {
     type: String,
-    required: true
+    required: true,
   },
   avatar: {
-    type: Image,
-    required: false
+    type: String,
+    required: false,
   },
   isNSFW: {
     type: Boolean,
-    required: false
+    required: false,
   },
   postHistory: {
-    type: string,
-    required: true
+    type: String,
+    required: true,
   },
   About: {
     type: string,
