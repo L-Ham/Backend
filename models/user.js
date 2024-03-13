@@ -49,7 +49,7 @@ const userSchema = new Schema({
     required: true,
   },
   About: {
-    type: string,
+    type: String,
     required: false
   },
   notificationSettings: {

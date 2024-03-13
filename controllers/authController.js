@@ -34,3 +34,7 @@ const forgetUsername = (req, res, next) => {
       });
 
   };
+
+  module.exports = {
+    forgetUsername
+  };
