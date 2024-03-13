@@ -30,7 +30,7 @@ const userSchema = new Schema({
     required: true
   },
   friends: {
-    type: [String],
+    type: [Number],
     required: true
   },
   email: {
