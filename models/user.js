@@ -101,12 +101,17 @@ const userSchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: "user" }],
     required: false,
   },
-  muteCommunities: [
-    {
-      type: Schema.Types.ObjectId,
+  muteCommunities: {
+    type: Schema.Types.ObjectId,
       ref: "subReddit",
+  },
+
+  communities: 
+    {
+      type: [Schema.Types.ObjectId],
+      ref: "subReddit",
+
     },
-  ],
 });
 
 module.exports = mongoose.model("user", userSchema);

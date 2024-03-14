@@ -27,6 +27,48 @@ const subRedditSchema = new Schema({
     required: true,
     default: 0,
   },
+  description: {
+    type: String,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  sideBar: {
+    type: String,
+    required: true
+  },
+  contentOptions: {
+    type: String,
+    required: true,
+    default: "any"
+  },
+  wiki: {
+    type: String,
+    required: true,
+    default: "disabled"
+  },
+  spamFilter: {
+    type: [String],
+    required: true,
+    default: ["low","low","low"]
+  },
+  discoverabilityOptions: {
+    type: [Boolean],
+    required: true,
+    default: [false,false,false]
+  },
+  otherOptions: {
+    type: [String],
+    required: true,
+    default: ["low","low","low"]
+  },
+  mobileLookAndFeel: {
+    type: String,
+    required: true,
+    default: "red"
+  }
 });
 
 module.exports = mongoose.model("subReddit", subRedditSchema);
