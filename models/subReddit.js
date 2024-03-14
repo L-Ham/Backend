@@ -39,6 +39,10 @@ const subRedditSchema = new Schema({
     type: String,
     required: true
   },
+  submissionText: {
+    type: String,
+    required: true
+  },
   contentOptions: {
     type: String,
     required: true,

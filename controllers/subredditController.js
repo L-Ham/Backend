@@ -1,1 +1,1 @@
-const Subreddit = require("../models/subreddit");
+const Subreddit = require("../models/subReddit");

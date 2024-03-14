@@ -110,11 +110,47 @@ const editNotificationSettings = (req, res, next) => {
     });
 }
 
+const createCommunity = (req, res, next) => {
+  // token or id???
+  const user = User.findById(req.params.id)
+    .then((user) => {
+      const community = {
+        name: req.body.name,
+        title: req.body.title,
+        description: req.body.description,
+        sidebar: req.body.sidebar,
+        submissionText: req.body.submissionText,
+        type: req.body.privacy,
+        contentOptions: req.body.contentOptions,
+        wiki: req.body.wiki,
+        spamFilter: req.body.spamFilter,
+        discoverabilityOptions: req.body.discoverabilityOptions,
+        otherOptions: req.body.otherOptions,
+        mobileLookAndFeel: req.body.mobileLookAndFeel
+      };
+      user.community.push(community);
+      user.save()
+      .then((updatedUser) => {
+        console.log("Community created: ", community);
+        res.json(community);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ msg: "Server error" });
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ msg: "Server error" });
+    });
+};
+
 module.exports = {
   getUserSettings,
   getNotificationSettings,
   editNotificationSettings,
   getProfileSettings,
   editProfileSettings,
-  getSafetyAndPrivacySettings
+  getSafetyAndPrivacySettings,
+  createCommunity
 };

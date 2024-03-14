@@ -27,4 +27,10 @@ router.patch(
     userController.editNotificationSettings
 );
 
+router.post(
+  "/createCommunity",
+  bodyParser.json(),
+  userController.createCommunity
+);
+
 module.exports = router;
