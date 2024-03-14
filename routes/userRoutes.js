@@ -13,6 +13,12 @@ router.get(
     "/notificationsSettings",
     bodyParser.json(),
     userController.getNotificationSettings
-  );
+);
+
+router.patch(
+    "/notificationsSettings",
+    bodyParser.json(),
+    userController.editNotificationSettings
+);
 
 module.exports = router;

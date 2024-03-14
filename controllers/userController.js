@@ -26,8 +26,22 @@ const getNotificationSettings = (req, res, next) => {
     });
 };    
 
+const editNotificationSettings = (req, res, next) => {
+  const id = req.params.id;
+  const notificationSettings = req.body.notificationSettings;
+
+  User.findByIdAndUpdate(id, { notificationSettings }, { new: true })
+    .then((user) => {
+      console.log("Updated notification settings: ", user.notificationSettings);
+      res.json({ notificationSettings: user.notificationSettings });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 
 module.exports = {
   getUserSettings,
-  getNotificationSettings
+  getNotificationSettings,
+  editNotificationSettings
 };
