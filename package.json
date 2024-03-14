@@ -26,5 +26,6 @@
   "bugs": {
     "url": "https://github.com/L-Ham/Backend/issues"
   },
-  "homepage": "https://github.com/L-Ham/Backend#readme"
+  "homepage": "https://github.com/L-Ham/Backend#readme",
+  "devDependencies": {}
 }
