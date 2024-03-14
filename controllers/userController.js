@@ -117,13 +117,13 @@ const createCommunity = (req, res, next) => {
       const community = {
         name: req.body.name,
         type: req.body.privacy,
-        ageRestriction: req.body.ageRestriction,
+        ageRestriction: req.body.ageRestriction
       };
-      user.community.push(community);
+      user.communities.push(community);
       user.save()
       .then((user) => {
-        console.log("Community created: ", community);
-        res.json(community);
+        console.log("Community created: ", user.communities[user.communities.length - 1]);
+        res.json(user.communities[user.communities.length - 1]);
       })
       .catch((err) => {
         console.log(err);
