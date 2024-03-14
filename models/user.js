@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const SocialLinks = require("../models/socialLink");
 
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
@@ -50,7 +51,27 @@ const userSchema = new Schema({
   },
   About: {
     type: String,
-    required: false
+    required: false,
+  },
+  socialLinks: {
+    type: [SocialLinks],
+    required: false,
+  },
+  bannerImage: {
+    type: String,
+    required: false,
+  },
+  contentVisibility: {
+    type: Boolean,
+    required: false,
+  },
+  communitiesVisibility: {
+    type: Boolean,
+    required: false,
+  },
+  clearHistory: {
+    type: Boolean,
+    required: false,
   },
   notificationSettings: {
     type: Map,
@@ -64,11 +85,11 @@ const userSchema = new Schema({
       comments: true,
       upvotesToPosts: true,
       upvotesToComments: true,
-      repliesToComments: true, 
+      repliesToComments: true,
       newFollowers: true,
-      modNotifications: true
-    }
-  }
+      modNotifications: true,
+    },
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);
