@@ -96,6 +96,33 @@ const getSafetyAndPrivacySettings = (req, res, next) => {
       console.log(err);
     });
 }
+const editSafetyAndPrivacySettings = (req, res, next) => {
+  User.findById(req.params.id)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ msg: "User not found" });
+      }
+      user.blockUser = req.body.blockUser;
+      user.muteCommunity = req.body.muteCommunity;
+      user
+        .save()
+        .then((updatedUser) => {
+          console.log("Safety and privacy settings updated: ", updatedUser);
+          res.json({
+            message: "User safety and privacy settings updated successfully",
+            user: updatedUser,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({ msg: "Server error" });
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ msg: "Server error" });
+    });
+}
 const editNotificationSettings = (req, res, next) => {
   const id = req.params.id;
   const notificationSettings = req.body.notificationSettings;
@@ -152,5 +179,6 @@ module.exports = {
   getProfileSettings,
   editProfileSettings,
   getSafetyAndPrivacySettings,
-  createCommunity
+  createCommunity,
+  editSafetyAndPrivacySettings
 };
