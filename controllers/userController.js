@@ -26,8 +26,27 @@ const getNotificationSettings = (req, res, next) => {
     });
 };    
 
+const getProfileSettings = (req, res, next) => {
+  const user = User.findById(req.params.id)
+    .then((user) => {
+      const profileSettings = {
+        displayName: user.name,
+        about: user.About,
+        avatar: user.avatar,
+        nsfw: user.isNSFW,
+        allowFollow: user.allowFollow
+    };
+    console.log("Profile settings: ", profileSettings);
+    res.json({ profileSettings });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
 
 module.exports = {
   getUserSettings,
-  getNotificationSettings
+  getNotificationSettings,
+  getProfileSettings
 };

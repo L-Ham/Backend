@@ -16,3 +16,4 @@ router.post(
     bodyParser.json(),
     authController.forgotUsername
   );
+router.get("/profileSettings", authController.getProfileSettings);
