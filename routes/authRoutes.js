@@ -11,3 +11,8 @@ router.post(
     ],
     authController.login
 );
+router.post(
+    "/forgotUsername",
+    bodyParser.json(),
+    authController.forgotUsername
+  );

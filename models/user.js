@@ -50,8 +50,25 @@ const userSchema = new Schema({
   },
   About: {
     type: String,
-    required: false,
+    required: false
   },
+  notificationSettings: {
+    type: Map,
+    of: Boolean,
+    required: true,
+    default: {
+      inboxMessage: true,
+      chatMessages: true,
+      chatRequest: true,
+      mentions: true,
+      comments: true,
+      upvotesToPosts: true,
+      upvotesToComments: true,
+      repliesToComments: true, 
+      newFollowers: true,
+      modNotifications: true
+    }
+  }
 });
 
 module.exports = mongoose.model("user", userSchema);
