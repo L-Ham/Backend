@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const SocialLinks = require("../models/socialLink");
+const SubReddit = require("../models/subReddit");
 
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
@@ -89,6 +90,14 @@ const userSchema = new Schema({
       newFollowers: true,
       modNotifications: true,
     },
+  },
+  blockUsers: {
+    type: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    required: false,
+  },
+  muteCommunities: {
+    type: [SubReddit],
+    required: true,
   },
 });
 
