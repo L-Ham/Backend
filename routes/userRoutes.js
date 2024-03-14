@@ -9,4 +9,10 @@ router.get(
   userController.getUserSettings
 );
 
+router.get(
+    "/notificationsSettings",
+    bodyParser.json(),
+    userController.getNotificationSettings
+  );
+
 module.exports = router;
