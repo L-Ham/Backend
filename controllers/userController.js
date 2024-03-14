@@ -130,7 +130,7 @@ const createCommunity = (req, res, next) => {
       };
       user.community.push(community);
       user.save()
-      .then((updatedUser) => {
+      .then((user) => {
         console.log("Community created: ", community);
         res.json(community);
       })
