@@ -143,23 +143,14 @@ const createCommunity = (req, res, next) => {
     .then((user) => {
       const community = {
         name: req.body.name,
-        title: req.body.title,
-        description: req.body.description,
-        sidebar: req.body.sidebar,
-        submissionText: req.body.submissionText,
         type: req.body.privacy,
-        contentOptions: req.body.contentOptions,
-        wiki: req.body.wiki,
-        spamFilter: req.body.spamFilter,
-        discoverabilityOptions: req.body.discoverabilityOptions,
-        otherOptions: req.body.otherOptions,
-        mobileLookAndFeel: req.body.mobileLookAndFeel
+        ageRestriction: req.body.ageRestriction
       };
-      user.community.push(community);
+      user.communities.push(community);
       user.save()
-      .then((updatedUser) => {
-        console.log("Community created: ", community);
-        res.json(community);
+      .then((user) => {
+        console.log("Community created: ", user.communities[user.communities.length - 1]);
+        res.json(user.communities[user.communities.length - 1]);
       })
       .catch((err) => {
         console.log(err);
