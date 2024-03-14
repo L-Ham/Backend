@@ -1,5 +1,9 @@
 const User = require("../models/user"); // Import User model
 const nodemailer = require('nodemailer'); // Email sending
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const { validationResult } = require("express-validator");
+
 
 const forgetUsername = (req, res, next) => {
     const transporter = nodemailer.createTransport({
@@ -35,12 +39,7 @@ const forgetUsername = (req, res, next) => {
 
   };
 
-  module.exports = {
-    forgetUsername
-  };const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const { validationResult } = require("express-validator");
-
+  
 const login = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -82,4 +81,4 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = { login };
+module.exports = { login, forgetUsername};
