@@ -54,10 +54,16 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
-  socialLinks: {
-    type: [SocialLinks],
-    required: false,
-  },
+  // socialLinks: {
+  //   type: [SocialLinks],
+  //   required: false,
+  // },
+  socialLinks: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "socialLink",
+    },
+  ],
   bannerImage: {
     type: String,
     required: false,
@@ -95,10 +101,12 @@ const userSchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: "user" }],
     required: false,
   },
-  muteCommunities: {
-    type: [SubReddit],
-    required: true,
-  },
+  muteCommunities: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "subReddit",
+    },
+  ],
 });
 
 module.exports = mongoose.model("user", userSchema);
