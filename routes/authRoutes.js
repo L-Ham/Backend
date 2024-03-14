@@ -16,6 +16,3 @@ router.post(
     bodyParser.json(),
     authController.forgotUsername
   );
-router.get("/profileSettings", authController.getProfileSettings);
-router.patch("/profileSettings", authController.editProfileSettings);
-router.get("/safetyAndPrivacySettings", authController.getSafetyAndPrivacySettings);

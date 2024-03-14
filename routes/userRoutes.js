@@ -14,5 +14,8 @@ router.get(
     bodyParser.json(),
     userController.getNotificationSettings
   );
-
+  router.get("/profileSettings", authController.getProfileSettings);
+  router.patch("/profileSettings", authController.editProfileSettings);
+  router.get("/safetyAndPrivacySettings", authController.getSafetyAndPrivacySettings);
+  
 module.exports = router;
