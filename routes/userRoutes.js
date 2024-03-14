@@ -10,12 +10,15 @@ router.get(
 );
 
 router.get(
-    "/notificationsSettings",
-    bodyParser.json(),
-    userController.getNotificationSettings
-  );
-  router.get("/profileSettings", authController.getProfileSettings);
-  router.patch("/profileSettings", authController.editProfileSettings);
-  router.get("/safetyAndPrivacySettings", authController.getSafetyAndPrivacySettings);
-  
+  "/notificationsSettings",
+  bodyParser.json(),
+  userController.getNotificationSettings
+);
+router.get("/profileSettings", userController.getProfileSettings);
+router.patch("/profileSettings", userController.editProfileSettings);
+router.get(
+  "/safetyAndPrivacySettings",
+  userController.getSafetyAndPrivacySettings
+);
+
 module.exports = router;
