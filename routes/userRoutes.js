@@ -20,6 +20,10 @@ router.get(
   "/safetyAndPrivacySettings",
   userController.getSafetyAndPrivacySettings
 );
+router.patch(
+  "/safetyAndPrivacySettings",
+  userController.editSafetyAndPrivacySettings
+);
 
 router.patch(
     "/notificationsSettings",
