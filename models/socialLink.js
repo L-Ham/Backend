@@ -6,20 +6,20 @@ const socialLinkSchema = new Schema({
   link: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   appName: {
     type: String,
-    required: true
+    required: true,
   },
   logo: {
-    type: Image,
-    required: true
+    type: String,
+    required: true,
   },
   displayText: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("socialLink", socialLinkSchema);
