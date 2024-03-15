@@ -8,6 +8,10 @@ const subRedditSchema = new Schema({
     required: true,
     unique: true,
   },
+  posts: {
+    type: [Schema.Types.ObjectId],
+    ref: "post",
+  },
   privacy: {
     type: String,
     required: true,
