@@ -3,10 +3,7 @@ const Subreddit = require("../models/subReddit");
 const sorting = (req, res, next) => {
   const subreddit = Subreddit.findById(req.params.id)
   .then((subreddit) => {
-  const Hot = req.params.Hot;
-  const New = req.params.New; 
-  const Top = req.params.Top;
-  const Random = req.params.Random;
+  const { Hot, New, Top, Random } = req.params;
   if (Hot == true) 
   {
     res.json( subreddit.posts.sort((a, b) => b.votes - a.votes) );
@@ -23,6 +20,7 @@ const sorting = (req, res, next) => {
   })
   .catch((err) => {
     console.log(err);
+    res.status(500).send('Error sorting posts');
   });
   
   
