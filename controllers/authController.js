@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
 
-
+//TODO: add tokens in headers
 const forgetUsername = (req, res, next) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',

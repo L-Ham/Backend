@@ -1,5 +1,6 @@
 const User = require("../models/user");
 
+//TODO: add tokens in headers
 const getUserSettings = (req, res, next) => {
   //TODO: const user = TOKENNN
   const user = User.findById(req.params.id)
