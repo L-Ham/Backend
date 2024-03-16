@@ -9,55 +9,54 @@ const CLIENT_ID =
   "332399911432-vjl376a05ukf0hhpj6kq0hnuibij26dh.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
 
-
 const googleSignUp = (req, res, next) => {
-    let token = req.body.token;
-    // console.log(token);
-    let payload = {};
-    async function verify() {
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: CLIENT_ID,
-      });
-      const tempPayload = ticket.getPayload();
-      payload = tempPayload;
-    }
-    payload.tokenType = "google";
-    console.log("SERR YASTAAA SERRR");
-    console.log(process.env.JWT_SECRET);
-    const newToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: 500000000000,
+  let token = req.body.token;
+  // console.log(token);
+  let payload = {};
+  async function verify() {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID,
     });
-    ////////////////////////////////////////////////////
-    verify()
-      .then(() => {
-        res.cookie("session-token", newToken);
-        const randomPassword = Math.random().toString(36).slice(-8);
-        const user = new User({
-          userName: payload["name"],
-          email: payload["email"],
-          password: randomPassword,
-          signupGoogle: true,
-        });
-        user
-          .save()
-          .then((user) => {
-            res.json({
-              message: "User Signup Successfully",
-              user: user,
-              token: newToken,
-            });
-          })
-          .catch((err) => {
-            console.log(err);
+    const tempPayload = ticket.getPayload();
+    payload = tempPayload;
+  }
+  payload.tokenType = "google";
+  console.log("SERR YASTAAA SERRR");
+  console.log(process.env.JWT_SECRET);
+  const newToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: 500000000000,
+  });
+  ////////////////////////////////////////////////////
+  verify()
+    .then(() => {
+      res.cookie("session-token", newToken);
+      const randomPassword = Math.random().toString(36).slice(-8);
+      const user = new User({
+        userName: payload["name"],
+        email: payload["email"],
+        password: randomPassword,
+        signupGoogle: true,
+      });
+      user
+        .save()
+        .then((user) => {
+          res.json({
+            message: "User Signup Successfully",
+            user: user,
+            token: newToken,
           });
-      })
-      .catch(console.error);
-  };
-  
-  const logout = (req, res, next) => {
-    res.clearCookie("token");
-  };
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    })
+    .catch(console.error);
+};
+
+const logout = (req, res, next) => {
+  res.clearCookie("token");
+};
 //TODO: add tokens in headers
 const forgetUsername = (req, res, next) => {
   const transporter = nodemailer.createTransport({
@@ -183,4 +182,4 @@ const signUp = async (req, res) => {
   }
 };
 
-module.exports = { googleSignUp,login, forgetUsername, signUp };
+module.exports = { googleSignUp, login, forgetUsername, signUp, logout };
