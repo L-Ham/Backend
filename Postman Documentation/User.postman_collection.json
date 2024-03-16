@@ -1,0 +1,318 @@
+{
+	"info": {
+		"_postman_id": "e11e6ce0-4ad5-4cde-8bb6-86ef058186b6",
+		"name": "User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32069311",
+		"_collection_link": "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/23392578-e11e6ce0-4ad5-4cde-8bb6-86ef058186b6?action=share&source=collection_link&creator=32069311"
+	},
+	"item": [
+		{
+			"name": "Username Availability",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/usernameAvailability?username=ZiadWareth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"usernameAvailability"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "ZiadWareth"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Community",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"name\":\"formula1\",\r\n     \"privacy\":\"public\",\r\n     \"ageRestriction\":\"True\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/createCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"createCommunity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Account Settings",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"ziad@yahoo.com\",\r\n    \"gender\":\"Male\",\r\n    \"deleteAccount\":\"False\"\r\n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/accountSettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"accountSettings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Profile Settings",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "token",
+						"value": "sdfghjdfghjnbvdsrt",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"displayName\":\"ziad\",\r\n    \"about\":\"i am a software engineer\",\r\n    \"link\":\"http//facebook.com\",\r\n    \"appName\":\"Facebook\",\r\n    \"avatarImage\":\"amr's photo\",\r\n    \"bannerImage\":\"amrrr banner\",\r\n    \"NSFW\":\"False\",\r\n    \"allowFollow\":\"False\",\r\n    \"contentVisibility\":\"True\",\r\n    \"communitiesVisibility\":\"True\",\r\n    \"clearHistory\":\"False\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/profileSettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"profileSettings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Safety And Privacy Settings",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "token",
+						"value": "jdnkjrbjrbrbreovc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"blockUser\":\"ziad\",\r\n    \"muteCommunity\":\"NSFW\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/safetyAndPrivacySettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"safetyAndPrivacySettings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Feed Settings",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "token",
+						"value": "djjdhbcdiuvbriuvb",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"adultContent\":\"True\",\r\n    \"autoPlayMedia\":\"True\",\r\n    \"communityThemes\":\"True\",\r\n    \"communityContentSort\":\"Hot\",\r\n    \"globalContentView\":\"Card\",\r\n    \"postsInNewTab\":\"True\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/feedSettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"feedSettings"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Notifications",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "token",
+						"value": "jfnejfbekjfbrrrefre",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"inboxMessage\": true,\r\n    \"chatMessages\": true,\r\n    \"chatRequest\": true,\r\n    \"mentions\": true,\r\n    \"comments\": true,\r\n    \"upvotesToPosts\": true,\r\n    \"upvotesToComments\": true,\r\n    \"repliesToComments\": true,\r\n    \"newFollowers\": true,\r\n    \"modNotifications\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/notificationsSettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"notificationsSettings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Profile Settings",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "bgrxdcfgvbhngfdxsdrftyhujytedrcfv",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/profileSettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"profileSettings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Safety And Privacy Settings",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "dfcgvhbjnkhgvfcdcfvgbhjnkhgvfcvghbj",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/user/safetyAndPrivacySettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"safetyAndPrivacySettings"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,412 @@
+{
+	"info": {
+		"_postman_id": "74285141-b2c5-499b-895e-400c8da93cd7",
+		"name": "Subreddit",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32069311",
+		"_collection_link": "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/33377382-74285141-b2c5-499b-895e-400c8da93cd7?action=share&source=collection_link&creator=32069311"
+	},
+	"item": [
+		{
+			"name": "Sorting",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "hdhdyhhhty",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/subreddit/sorting?Hot=True&New=False&Top=False&Random=False",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"sorting"
+					],
+					"query": [
+						{
+							"key": "Hot",
+							"value": "True"
+						},
+						{
+							"key": "New",
+							"value": "False"
+						},
+						{
+							"key": "Top",
+							"value": "False"
+						},
+						{
+							"key": "Random",
+							"value": "False"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "dfrfrtgetgtegtgtgtg5",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\":\"formula1\",\r\n    \"text\":\"vgbhnjfvcxwedrtgyhnbgvfr\",\r\n    \"media\":\"images.google.com\",\r\n    \"link\":\"www.google.com\",\r\n    \"NSFW\":\"False\",\r\n    \"replyNotificaitions\":\"False\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/createPost",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"createPost"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ban User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/banUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"banUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unban User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/unbanUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"unbanUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edited",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/subreddit/edited",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"edited"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Banner",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/subreddit/deleteBanner",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"deleteBanner"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Banner",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"Banner\":\"banner.jpeg\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/uploadBanner",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"uploadBanner"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Icon",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Icon\":\"Icon.jpeg\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/uploadIcon",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"uploadIcon"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Icon",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/subreddit/Delete Icon",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"Delete Icon"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Approve Join Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/approveJoin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"approveJoin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reject Join Request",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/rejectJoin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"rejectJoin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Subreddit Rule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"rule\":\"This is a rule\",\r\n    \"reason\":\"This is a reason\",\r\n    \"description\":\"This is a description\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/addRule?Posts=True&Comments=True",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"addRule"
+					],
+					"query": [
+						{
+							"key": "Posts",
+							"value": "True"
+						},
+						{
+							"key": "Comments",
+							"value": "True"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Subreddit Rules",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/subreddit/getRules",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"getRules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Removal Reason",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Title\":\"Title\",\r\n    \"Message\":\"Message\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/addRemovalReason",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"addRemovalReason"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
