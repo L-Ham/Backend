@@ -37,4 +37,18 @@ router.post(
   userController.createCommunity
 );
 
+router.get(
+  "/usernameAvailability/:username",
+  userController.checkUserNameAvailability
+);
+router.patch(
+  "/blockUser",
+  bodyParser.json(),
+  userController.blockUser
+)
+router.patch(
+  "/unblockUser",
+  bodyParser.json(),
+  userController.unblockUser
+)
 module.exports = router;

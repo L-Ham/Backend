@@ -111,6 +111,24 @@ const userSchema = new Schema({
       ref: "subReddit",
 
     },
+  feedSettings:{
+    type: Map,
+    of: string,
+    required: true,
+    default: {
+      showNSFW:"true",
+      blurNSFW:"true",
+      enableHomeFeedRecommendations:"true",
+      autoplayMedia:"true",
+      reduceAnimations:"true",
+      communityThemes:"true",
+      communityContentSort:"Hot",
+      rememberPerCommunity:"true",
+      globalContentView:"Card",
+      openPostsInNewTab:"true",
+      defaultToMarkdown:"true",
+    }
+  }
 });
 
 module.exports = mongoose.model("user", userSchema);

@@ -101,6 +101,41 @@ const forgetUsername = (req, res, next) => {
   );
 };
 
+const forgetPassword = (req, res, next) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "admin@gmail.com",
+      pass:"123456",
+    },
+  });
+  const email = req.body.email;
+  const user = User.find((user) => user.email === email);
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+  transporter.sendMail(
+    {
+      from: "admon@gmail.com",
+      to: email,
+      subject: "So you wanna reset your Reddit password, huh?",
+      text: `Hi there,
+
+        You forgot it didn't you? Hey, it happens. Here you go:
+        
+        Your password is https://localhost:5000/user/resetPassword/${token}`,
+    },
+    (err) => {
+      if (err) {
+        console.error("Error sending email:", err);
+        return res.status(500).send("Failed to send email");
+      }
+      res.send("Email sent");
+    }
+  );
+};
+
+
 const login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -198,4 +233,5 @@ module.exports = {
   forgetUsername,
   signUp,
   logout,
+  forgetPassword,
 };
