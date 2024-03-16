@@ -1,37 +1,58 @@
 const User = require("../models/user");
+const authenticateToken = require("../middleware/authenticateToken");
 
 //TODO: add tokens in headers
 const getUserSettings = (req, res, next) => {
   //TODO: const user = TOKENNN
-  const user = User.findById(req.params.id)
+  const userId = req.userId;
+
+  User.findById(userId)
     .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ msg: "User not found" });
+      }
       console.log("User settings: ", user);
       res.json({ gender: user.gender, email: user.email });
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Error retrieving user settings:", err);
+      res.status(500).json({ msg: "Server error" });
     });
 };
 
 const getNotificationSettings = (req, res, next) => {
-  const user = User.findById(req.params.id)
+  const userId = req.userId;
+
+  User.findById(userId)
     .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ msg: "User not found" });
+      }
       console.log("Notification settings: ", user.notificationSettings);
       res.json({ notificationSettings: user.notificationSettings });
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Error retrieving notification settings:", err);
+      res.status(500).json({ msg: "Server error" });
     });
 };
 
 const getProfileSettings = (req, res, next) => {
-  const user = User.findById(req.params.id)
+  const userId = req.userId;
+
+  User.findById(userId)
     .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ msg: "User not found" });
+      }
       const profileSettings = {
         displayName: user.name,
         about: user.About,
         link: user.socialLinks.link,
-        appName:user.socialLinks.appName,
+        appName: user.socialLinks.appName,
         avatar: user.avatar,
         bannerImage: user.bannerImage,
         NSFW: user.isNSFW,
@@ -44,13 +65,17 @@ const getProfileSettings = (req, res, next) => {
       res.json({ profileSettings });
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Error retrieving profile settings:", err);
+      res.status(500).json({ msg: "Server error" });
     });
 };
 const editProfileSettings = (req, res, next) => {
-  User.findById(req.params.id)
+  const userId = req.userId;
+
+  User.findById(userId)
     .then((user) => {
       if (!user) {
+        console.error("User not found for user ID:", userId);
         return res.status(404).json({ msg: "User not found" });
       }
       user.name = req.body.name;
@@ -74,18 +99,24 @@ const editProfileSettings = (req, res, next) => {
           });
         })
         .catch((err) => {
-          console.log(err);
+          console.error("Error updating profile settings:", err);
           res.status(500).json({ msg: "Server error" });
         });
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Error retrieving user:", err);
       res.status(500).json({ msg: "Server error" });
     });
 };
 const getSafetyAndPrivacySettings = (req, res, next) => {
-  const user = User.findById(req.params.id)
+  const userId = req.userId;
+
+  User.findById(userId)
     .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ msg: "User not found" });
+      }
       const safetyAndPrivacySettings = {
         blockUser: user.blockUser,
         muteCommunity: user.muteCommunity,
@@ -94,13 +125,17 @@ const getSafetyAndPrivacySettings = (req, res, next) => {
       res.json({ safetyAndPrivacySettings });
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Error retrieving safety and privacy settings:", err);
+      res.status(500).json({ msg: "Server error" });
     });
-}
+};
 const editSafetyAndPrivacySettings = (req, res, next) => {
-  User.findById(req.params.id)
+  const userId = req.userId;
+
+  User.findById(userId)
     .then((user) => {
       if (!user) {
+        console.error("User not found for user ID:", userId);
         return res.status(404).json({ msg: "User not found" });
       }
       user.blockUser = req.body.blockUser;
@@ -115,51 +150,62 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
           });
         })
         .catch((err) => {
-          console.log(err);
+          console.error("Error updating safety and privacy settings:", err);
           res.status(500).json({ msg: "Server error" });
         });
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Error retrieving user:", err);
       res.status(500).json({ msg: "Server error" });
     });
-}
+};
 const editNotificationSettings = (req, res, next) => {
-  const id = req.params.id;
+  const userId = req.userId;
   const notificationSettings = req.body.notificationSettings;
 
-  User.findByIdAndUpdate(id, { notificationSettings }, { new: true })
+  User.findByIdAndUpdate(userId, { notificationSettings }, { new: true })
     .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ msg: "User not found" });
+      }
       console.log("Updated notification settings: ", user.notificationSettings);
       res.json({ notificationSettings: user.notificationSettings });
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Error updating notification settings:", err);
+      res.status(500).json({ msg: "Server error" });
     });
-}
+};
 
 const createCommunity = (req, res, next) => {
-  // token or id???
-  const user = User.findById(req.params.id)
+  const userId = req.userId;
+
+  User.findById(userId)
     .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ msg: "User not found" });
+      }
       const community = {
         name: req.body.name,
         type: req.body.privacy,
-        ageRestriction: req.body.ageRestriction
+        ageRestriction: req.body.ageRestriction,
       };
       user.communities.push(community);
-      user.save()
-      .then((user) => {
-        console.log("Community created: ", user.communities[user.communities.length - 1]);
-        res.json(user.communities[user.communities.length - 1]);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({ msg: "Server error" });
-      });
+      user
+        .save()
+        .then((updatedUser) => {
+          console.log("Community created: ", community);
+          res.json(community);
+        })
+        .catch((err) => {
+          console.error("Error saving community:", err);
+          res.status(500).json({ msg: "Server error" });
+        });
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Error retrieving user:", err);
       res.status(500).json({ msg: "Server error" });
     });
 };
@@ -172,5 +218,5 @@ module.exports = {
   editProfileSettings,
   getSafetyAndPrivacySettings,
   createCommunity,
-  editSafetyAndPrivacySettings
+  editSafetyAndPrivacySettings,
 };
