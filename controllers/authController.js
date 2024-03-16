@@ -60,6 +60,10 @@ const googleSignUp = (req, res, next) => {
 const logout = (req, res, next) => {
   res.clearCookie("token");
 };
+
+const googleLogin = (req, res, next) => {
+  const token = req.body.token;
+};
 //TODO: add tokens in headers
 const forgetUsername = (req, res, next) => {
   const transporter = nodemailer.createTransport({
@@ -185,4 +189,11 @@ const signUp = async (req, res) => {
   }
 };
 
-module.exports = { googleSignUp, login, forgetUsername, signUp, logout };
+module.exports = {
+  googleSignUp,
+  googleLogin,
+  login,
+  forgetUsername,
+  signUp,
+  logout,
+};
