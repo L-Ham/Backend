@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
 const authenticateToken = require("../middleware/authenticateToken");
 const { OAuth2Client } = require("google-auth-library");
+require("dotenv").config();
 const CLIENT_ID =
   "332399911432-vjl376a05ukf0hhpj6kq0hnuibij26dh.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
@@ -23,7 +24,9 @@ const googleSignUp = (req, res, next) => {
   }
   payload.tokenType = "google";
   console.log("SERR YASTAAA SERRR");
-  console.log(process.env.JWT_SECRET);
+  const JWT_SECRET =
+    "88244da83b5504d16199f69128fbf1dcce5154d26e74414baa0727ab070283295f8674f2c5825d06627eabed4b372a8fa9be3608741338cf1c0ba4ea1c825ea9";
+  console.log(JWT_SECRET);
   const newToken = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: 500000000000,
   });
