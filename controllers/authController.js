@@ -113,13 +113,13 @@ const login = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ msg: "Invalid email or password" });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ msg: "Invalid email or password" });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
     const payload = {
       user: {
@@ -148,19 +148,20 @@ const signUp = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { username, email, password } = req.body;
+  const { userName, email, password } = req.body;
 
   try {
     let user = await User.findOne({ email });
 
     if (user) {
-      return res.status(400).json({ msg: "User already exists" });
+      return res.status(400).json({ message: "User already exists" });
     }
 
     user = new User({
-      username,
+      userName,
       email,
       password,
+      signupGoogle: false, 
     });
 
     const salt = await bcrypt.genSalt(10);
@@ -188,6 +189,7 @@ const signUp = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
 
 module.exports = {
   googleSignUp,
