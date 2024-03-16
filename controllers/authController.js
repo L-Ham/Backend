@@ -10,20 +10,46 @@ const client = new OAuth2Client(CLIENT_ID);
 
 const googleSignUp = (req, res, next) => {
   let token = req.body.token;
-  console.log(token);
+  // console.log(token);
+  ////////////////////////////////////////////////////
+  let payload = {};
   async function verify() {
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: CLIENT_ID,
     });
-    const payload = ticket.getPayload();
-    // const userid = payload ['sub'];
-    console.log("PAYLOADDDDDD");
-    console.log(payload);
+    const tempPayload = ticket.getPayload();
+    payload = tempPayload;
   }
+  payload.tokenType = "google";
+  console.log("SERR YASTAAA SERRR");
+  console.log(process.env.JWT_SECRET);
+  const newToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: 500000000000,
+  });
+  ////////////////////////////////////////////////////
   verify()
     .then(() => {
-      res.cookie("session-token", token);
+      res.cookie("session-token", newToken);
+      const randomPassword = Math.random().toString(36).slice(-8);
+      const user = new User({
+        userName: payload["name"],
+        email: payload["email"],
+        password: randomPassword,
+        signupGoogle: true,
+      });
+      user
+        .save()
+        .then((user) => {
+          res.json({
+            message: "User Signup Successfully",
+            user: user,
+            token: newToken,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })
     .catch(console.error);
 };
