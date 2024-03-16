@@ -13,7 +13,6 @@ const client = new OAuth2Client(CLIENT_ID);
 const googleSignUp = (req, res, next) => {
     let token = req.body.token;
     // console.log(token);
-    ////////////////////////////////////////////////////
     let payload = {};
     async function verify() {
       const ticket = await client.verifyIdToken({
