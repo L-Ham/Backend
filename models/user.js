@@ -4,11 +4,7 @@ const SubReddit = require("../models/subReddit");
 const Post = require("../models/post");
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
-  // user_ID: {
-  //   type: String,
-  //   required: true,
-  //   unique: true,
-  // },
+  
   userName: {
     type: String,
     required: true,
@@ -36,7 +32,7 @@ const userSchema = new Schema({
   },
   friends: {
     type: [Number],
-    required: true,
+    required: false,
   },
   email: {
     type: String,
