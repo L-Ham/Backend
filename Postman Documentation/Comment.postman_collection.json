@@ -1,0 +1,159 @@
+{
+	"info": {
+		"_postman_id": "4a96a5c7-f36e-4d3b-a6e7-176cbbe493ae",
+		"name": "Comment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32069311",
+		"_collection_link": "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/23392578-4a96a5c7-f36e-4d3b-a6e7-176cbbe493ae?action=share&source=collection_link&creator=32069311"
+	},
+	"item": [
+		{
+			"name": "Report Comment Spam",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "token",
+						"value": "asdfghjkl",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/comment/reportSpam?",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"comment",
+						"reportSpam"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Comment",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"commentId\":\"123445\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/comment/editComment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"comment",
+						"editComment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Comment",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"commentId\":\"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/comment/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"comment",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Hide Comment",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"commentId\":\"123456\",\n    \"hidden\":\"True\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/comment/hide",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"comment",
+						"hide"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Spam Report",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subredditId\":\"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/comment/getSpamReports",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"comment",
+						"getSpamReports"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,175 @@
+{
+	"info": {
+		"_postman_id": "10999862-82a2-4647-a8cb-1ae35993ff5e",
+		"name": "auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32069311",
+		"_collection_link": "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/23392578-10999862-82a2-4647-a8cb-1ae35993ff5e?action=share&source=collection_link&creator=32069311"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "dfghjcfvgbhjnvcfdxzasedrtfyuhnhvxsertyuf",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"ZiadWareth\",\n    \"email\":\"ziad@yahoo.com\",\n    \"age\":26\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Google Signup",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "authUrl",
+							"value": "https://accounts.google.com/o/oauth2/v2/auth",
+							"type": "string"
+						},
+						{
+							"key": "clientSecret",
+							"value": "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",
+							"type": "string"
+						},
+						{
+							"key": "clientId",
+							"value": "332399911432-vjl376a05ukf0hhpj6kq0hnuibij26dh.apps.googleusercontent.com",
+							"type": "string"
+						},
+						{
+							"key": "tokenName",
+							"value": "test0",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "dfghhxsxdcvbhncxdctfvgbhnj",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\":\"ziad@yahoo.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/auth/googleSignUp",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"googleSignUp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Forgot Username",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"ziad@yahoo.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/auth/forgotUsername",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"forgotUsername"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Forgot Password",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "zsdxfcgvbhvfcxrtcybuytctvb",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"ZiadWareth\",\r\n    \"email\":\"ziad@yahoo.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/auth/forgotPassword",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"forgotPassword"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

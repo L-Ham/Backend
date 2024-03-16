@@ -1,18 +1,22 @@
 const mongoose = require("mongoose");
 const SocialLinks = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
-
+const Post = require("../models/post");
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
-  user_ID: {
-    type: String,
-    required: true,
-    unique: true,
-  },
+  // user_ID: {
+  //   type: String,
+  //   required: true,
+  //   unique: true,
+  // },
   userName: {
     type: String,
     required: true,
     unique: true,
+  },
+  signupGoogle: {
+    type: Boolean,
+    required: true,
   },
   name: {
     type: String,
@@ -24,7 +28,7 @@ const userSchema = new Schema({
   },
   allowFollow: {
     type: String,
-    required: true,
+    required: false,
   },
   password: {
     type: String,
@@ -46,18 +50,17 @@ const userSchema = new Schema({
     type: Boolean,
     required: false,
   },
-  postHistory: {
-    type: String,
-    required: true,
-  },
+  postHistory: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: false,
+    },
+  ],
   About: {
     type: String,
     required: false,
   },
-  // socialLinks: {
-  //   type: [SocialLinks],
-  //   required: false,
-  // },
   socialLinks: [
     {
       type: Schema.Types.ObjectId,

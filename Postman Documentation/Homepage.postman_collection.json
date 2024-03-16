@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "dc36e645-c5a1-4c9a-8da5-09f8b100fcc4",
+		"name": "Homepage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32069311",
+		"_collection_link": "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/32069311-dc36e645-c5a1-4c9a-8da5-09f8b100fcc4?action=share&source=collection_link&creator=32069311"
+	},
+	"item": [
+		{
+			"name": "Sorting",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "dxfcgvhnjkbvfdcfvgbhnjkhbgvfcdxsdcfvgbh",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/post/sorting?best=False&hot=False&new=False&top=False",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"post",
+						"sorting"
+					],
+					"query": [
+						{
+							"key": "best",
+							"value": "False"
+						},
+						{
+							"key": "hot",
+							"value": "False"
+						},
+						{
+							"key": "new",
+							"value": "False"
+						},
+						{
+							"key": "top",
+							"value": "False"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "dctfvygbhujmbvcedcfvgbhjxsdcfvghj",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\":\"formula1\",\r\n    \"text\":\"vgbhnjfvcxwedrtgyhnbgvfr\",\r\n    \"media\":\"images.google.com\",\r\n    \"link\":\"www.google.com\",\r\n    \"NSFW\":\"False\",\r\n    \"replyNotificaitions\":\"False\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/post/createPost",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"post",
+						"createPost"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Top Communities",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "rtfygunhgsxwe5tyvfcdxsertyhnbvc",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/subreddit/topCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"topCommunity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Join Community",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "fdcgvrfytbgvfdxrwertuyhbgvfcd",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subRedditID\":\"1223\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/joinCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"joinCommunity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Community",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "dfgvhgfcdtyugfdcxtbgvfcdsargb",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/subreddit/viewCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"viewCommunity"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

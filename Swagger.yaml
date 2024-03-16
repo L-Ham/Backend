@@ -1,0 +1,552 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: User API
+host: localhost:5000
+tags:
+  - name: user
+    description: User operations
+  - name: post
+    description: Post Endpoints
+  - name: auth
+    description: Authorisation Endpoints
+schemes:
+  - http
+paths:
+  /user/usernameAvailability:
+    get:
+      tags:
+        - user
+      summary: Check username availability
+      parameters:
+        - name: username
+          in: query
+          description: Username to check availability
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Username availability status
+  /user/createCommunity:
+    post:
+      tags:
+        - user
+      summary: Create a new community
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Community details
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              privacy:
+                type: string
+              ageRestriction:
+                type: string
+      responses:
+        '200':
+          description: Community created successfully
+  /user/accountSettings:
+    patch:
+      tags:
+        - user
+      summary: Update account settings
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Account settings
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              gender:
+                type: string
+              deleteAccount:
+                type: string
+      responses:
+        '200':
+          description: Account settings updated successfully
+  /user/profileSettings:
+    get:
+      tags:
+        - user
+      summary: Get profile settings
+      parameters:
+        - name: token
+          in: header
+          description: Authorization token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Profile settings retrieved successfully
+    patch:
+      tags:
+        - user
+      summary: Update profile settings
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: token
+          description: Authorization token
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Profile settings
+          required: true
+          schema:
+            type: object
+            properties:
+              displayName:
+                type: string
+              about:
+                type: string
+              link:
+                type: string
+              appName:
+                type: string
+              avatarImage:
+                type: string
+              bannerImage:
+                type: string
+              NSFW:
+                type: string
+              allowFollow:
+                type: string
+              contentVisibility:
+                type: string
+              communitiesVisibility:
+                type: string
+              clearHistory:
+                type: string
+      responses:
+        '200':
+          description: Profile settings updated successfully
+  /user/safetyAndPrivacySettings:
+    get:
+      tags:
+        - user
+      summary: Get safety and privacy settings
+      parameters:
+        - name: token
+          in: header
+          description: Authorization token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Safety and privacy settings retrieved successfully
+    patch:
+      tags:
+        - user
+      summary: Update safety and privacy settings
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: token
+          description: Authorization token
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Safety and privacy settings
+          required: true
+          schema:
+            type: object
+            properties:
+              blockUser:
+                type: string
+              muteCommunity:
+                type: string
+      responses:
+        '200':
+          description: Safety and privacy settings updated successfully
+  /user/feedSettings:
+    patch:
+      tags:
+        - user
+      summary: Update feed settings
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: token
+          description: Authorization token
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Feed settings
+          required: true
+          schema:
+            type: object
+            properties:
+              adultContent:
+                type: string
+              autoPlayMedia:
+                type: string
+              communityThemes:
+                type: string
+              communityContentSort:
+                type: string
+              globalContentView:
+                type: string
+              postsInNewTab:
+                type: string
+      responses:
+        '200':
+          description: Feed settings updated successfully
+  /user/notificationsSettings:
+    patch:
+      tags:
+        - user
+      summary: Update notification settings
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: token
+          description: Authorization token
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Notification settings
+          required: true
+          schema:
+            type: object
+            properties:
+              inboxMessage:
+                type: boolean
+              chatMessages:
+                type: boolean
+              chatRequest:
+                type: boolean
+              mentions:
+                type: boolean
+              comments:
+                type: boolean
+              upvotesToPosts:
+                type: boolean
+              upvotesToComments:
+                type: boolean
+              repliesToComments:
+                type: boolean
+              newFollowers:
+                type: boolean
+              modNotifications:
+                type: boolean
+      responses:
+        '200':
+          description: Notification settings updated successfully
+  /post/getAllPosts:
+    get:
+      tags:
+        - post
+      summary: Retrieve all posts
+      responses:
+        '200':
+          description: Successful operation
+  /post/upvote:
+    put:
+      tags:
+        - post
+      summary: Upvote a post
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              postId:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/downvote:
+    put:
+      tags:
+        - post
+      summary: Downvote a post
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              postId:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/save:
+    put:
+      tags:
+        - post
+      summary: Save a post
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              postId:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/unsave:
+    put:
+      tags:
+        - post
+      summary: Unsave a post
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              postId:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/editPost:
+    put:
+      tags:
+        - post
+      summary: Edit a post
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              postId:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/lockPost:
+    put:
+      tags:
+        - post
+      summary: Lock a post
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              postId:
+                type: string
+              isLocked:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/unlockPost:
+    put:
+      tags:
+        - post
+      summary: Unlock a post
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              postId:
+                type: string
+              isLocked:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/delete:
+    delete:
+      tags:
+        - post
+      summary: Delete a post
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              postId:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/hide:
+    put:
+      tags:
+        - post
+      summary: Hide a post
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              postId:
+                type: string
+              hidden:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/reportSpam:
+    get:
+      tags:
+        - post
+      summary: Report a post as spam
+      parameters:
+        - in: header
+          name: token
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /post/getSpamReports:
+    get:
+      tags:
+        - post
+      summary: Get spam reports
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              subredditId:
+                type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              email:
+                type: string
+              age:
+                type: integer
+      responses:
+        '200':
+          description: OK
+  /auth/googleSignUp:
+    post:
+      tags:
+        - auth
+      summary: Google Signup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      responses:
+        '200':
+          description: OK
+  /auth/forgotUsername:
+    post:
+      tags:
+        - auth
+      summary: Forgot Username
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+      responses:
+        '200':
+          description: OK
+  /auth/forgotPassword:
+    post:
+      tags:
+        - auth
+      summary: Forgot Password
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              email:
+                type: string
+      responses:
+        '200':
+          description: OK
