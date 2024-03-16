@@ -1,8 +1,9 @@
-const User = require("../models/user"); // Import User model
-const nodemailer = require('nodemailer'); // Email sending
+const User = require("../models/user"); 
+const nodemailer = require('nodemailer'); 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
+const authenticateToken = require('../middleware/authenticateToken');
 
 //TODO: add tokens in headers
 const forgetUsername = (req, res, next) => {
