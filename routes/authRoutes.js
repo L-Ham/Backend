@@ -4,6 +4,7 @@ const authController = require("../controllers/authController");
 const bodyParser = require("body-parser");
 const { check } = require("express-validator");
 router.post("/googleSignUp", bodyParser.json(), authController.googleSignUp);
+router.post("/googleLogin", bodyParser.json(), authController.googleSignUp);
 router.post(
   "/login",
   [
