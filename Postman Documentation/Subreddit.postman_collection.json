@@ -13,8 +13,8 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "token",
-						"value": "hdhdyhhhty",
+						"key": "Authorization",
+						"value": "Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170",
 						"type": "text"
 					}
 				],
@@ -57,8 +57,8 @@
 				"method": "POST",
 				"header": [
 					{
-						"key": "token",
-						"value": "dfrfrtgetgtegtgtgtg5",
+						"key": "Authorization",
+						"value": "Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170",
 						"type": "text"
 					}
 				],

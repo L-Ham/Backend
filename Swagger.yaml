@@ -485,3 +485,68 @@ paths:
       responses:
         '200':
           description: OK
+  /auth/googleSignUp:
+    post:
+      tags:
+        - auth
+      summary: Google Signup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      responses:
+        '200':
+          description: OK
+  /auth/forgotUsername:
+    post:
+      tags:
+        - auth
+      summary: Forgot Username
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+      responses:
+        '200':
+          description: OK
+  /auth/forgotPassword:
+    post:
+      tags:
+        - auth
+      summary: Forgot Password
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              email:
+                type: string
+      responses:
+        '200':
+          description: OK
