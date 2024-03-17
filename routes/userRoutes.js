@@ -49,11 +49,4 @@ router.patch(
   userController.editNotificationSettings
 );
 
-router.post(
-  "/createCommunity",
-  bodyParser.json(),
-  authenticateToken,
-  userController.createCommunity
-);
-
 module.exports = router;
