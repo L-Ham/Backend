@@ -4,7 +4,6 @@ const SubReddit = require("../models/subReddit");
 const Post = require("../models/post");
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
-  
   userName: {
     type: String,
     required: true,
@@ -102,8 +101,8 @@ const userSchema = new Schema({
     required: false,
   },
   muteCommunities: {
-    type: Schema.Types.ObjectId,
-    ref: "subReddit",
+    type: [{ type: Schema.Types.ObjectId, ref: "subReddit" }],
+    required: false,
   },
 
   communities: {
