@@ -45,11 +45,11 @@ const createCommunity = (req, res, next) => {
             if (commName) {
                 return res.status(404).json({ msg: "Community name already exists" });
             }
-            const community = {
-                name: req.body.name,
-                type: req.body.privacy,
-                ageRestriction: req.body.ageRestriction,
-            };
+            // const community = {
+            //     name: req.body.name,
+            //     type: req.body.privacy,
+            //     ageRestriction: req.body.ageRestriction,
+            // };
             //   user.communities.push(community);
             //   user
             //     .save()
@@ -61,9 +61,11 @@ const createCommunity = (req, res, next) => {
             //       console.error("Error saving community:", err);
             //       res.status(500).json({ msg: "Server error" });
             //     });
-            subReddit = new Subreddit({
+            subReddit = new subReddit({
                 name: req.body.name,
                 privacy: req.body.privacy,
+                moderators: [user],
+                members: [user],
                 ageRestriction: req.body.ageRestriction,
                 description: req.body.description,
                 title: req.body.title,
@@ -79,12 +81,12 @@ const createCommunity = (req, res, next) => {
                     user.communities.push(subReddit);
                     user
                         .save()
-                        .then((updatedUser) => {
-                            console.log("Community created: ", community);
-                            res.json(community);
+                        .then((user) => {
+                            console.log("Subreddit attached to user: ", user);
+                            // res.json(user);
                         })
                         .catch((err) => {
-                            console.error("Error saving community:", err);
+                            console.error("Error attaching subReddit to user:", err);
                             res.status(500).json({ msg: "Server error" });
                         });
                     console.log("Community created: ", subReddit);
@@ -92,7 +94,7 @@ const createCommunity = (req, res, next) => {
                 })
                 .catch((err) => {
                     console.error("Error saving community:", err);
-                    res.status(500).json({ msg: "Server error" });
+                    res.status(500).json({ msg: "Server error" ,subReddit:subReddit});
                 });
         })
         .catch((err) => {
