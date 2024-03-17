@@ -3,7 +3,6 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
-const authenticateToken = require("../middleware/authenticateToken");
 const { OAuth2Client } = require("google-auth-library");
 require("dotenv").config();
 const CLIENT_ID =
@@ -169,7 +168,7 @@ const signUp = async (req, res) => {
       userName,
       email,
       password,
-      signupGoogle: false, 
+      signupGoogle: false,
     });
 
     const salt = await bcrypt.genSalt(10);
@@ -198,7 +197,6 @@ const signUp = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 
 module.exports = {
   googleSignUp,
