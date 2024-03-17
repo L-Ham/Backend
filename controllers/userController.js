@@ -138,8 +138,8 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ msg: "User not found" });
       }
-      user.blockUser = req.body.blockUser;
-      user.muteCommunity = req.body.muteCommunity;
+      user.blockUsers = req.body.blockUsers; 
+      user.muteCommunities = req.body.muteCommunities; 
       user
         .save()
         .then((updatedUser) => {
