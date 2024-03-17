@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "74285141-b2c5-499b-895e-400c8da93cd7",
+		"_postman_id": "8d5a32ff-3d29-4cea-945c-f3fd83c35d77",
 		"name": "Subreddit",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "32069311",
-		"_collection_link": "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/33377382-74285141-b2c5-499b-895e-400c8da93cd7?action=share&source=collection_link&creator=32069311"
+		"_exporter_id": "23392578",
+		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-8d5a32ff-3d29-4cea-945c-f3fd83c35d77?action=share&source=collection_link&creator=23392578"
 	},
 	"item": [
 		{
@@ -403,6 +403,41 @@
 					"path": [
 						"subreddit",
 						"addRemovalReason"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Community",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiaG05YXRsNW05WFMwN3VaSGVmYkVFZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0wxQlZLNW9SQWVCZ2NSYk82cG00T3NDVkhNT2t2a0UwODY0Z202QURmYT1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImxvY2FsZSI6ImVuLUdCIiwiaWF0IjoxNzEwNjQyNDIyLCJleHAiOjUxNzEwNjQzMTk4LCJ1c2VyIjp7ImlkIjoiNjVmNjU3ZmRhMjRjZTFlZTJjZDEzMDg4IiwidHlwZSI6Imdvb2dsZSJ9fQ.wygJ1ksbZYF-6UQssNCrKv5T7h7U6AmsJ9K1XCG5mA8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"name\":\"formula1\",\r\n     \"privacy\":\"public\",\r\n     \"ageRestriction\":\"True\",\r\n     \"description\":\"THE SUBREEDIT\",\r\n     \"title\":\"Title\",\r\n     \"submissionText\":\"\",\r\n     \"contentOptions\":\"\",\r\n     \"wiki\":\"\",\r\n     \"spamFilter\":\"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/subreddit/createCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"subreddit",
+						"createCommunity"
 					]
 				}
 			},

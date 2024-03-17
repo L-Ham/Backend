@@ -34,7 +34,6 @@ const googleSignUp = async (req, res, next) => {
       res.status(500).json({ message: "Email already Exists" });
     }
     let randomUsername = authService.generateRandomUsername();
-    console.log(randomUsername);
     let user = await checkUsernameExists(randomUsername[0]);
     while (user) {
       randomUsername = authService.generateRandomUsername();
@@ -74,7 +73,7 @@ const logout = (req, res, next) => {
 const googleLogin = (req, res, next) => {
   const token = req.body.token;
 };
-//TODO: add tokens in headers
+
 const forgetUsername = (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -116,7 +115,7 @@ const forgetPassword = (req, res, next) => {
     service: "gmail",
     auth: {
       user: "admin@gmail.com",
-      pass:"123456",
+      pass: "123456",
     },
   });
   const email = req.body.email;
@@ -145,7 +144,6 @@ const forgetPassword = (req, res, next) => {
   );
 };
 
-
 const login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -154,7 +152,7 @@ const login = async (req, res) => {
   const { userName, password } = req.body;
   try {
     const user = await User.findOne({ userName });
-    console.log(user)
+    console.log(user);
     if (!user) {
       return res.status(400).json({ message: "Invalid username or password" });
     }
@@ -231,7 +229,19 @@ const signUp = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
+const generateUserName = (req, res, next) => {
+  try {
+    let userNames = authService.generateRandomUsername();
+    res
+      .status(200)
+      .json({
+        message: "Usernames created Successfully",
+        usernames: userNames,
+      });
+  } catch {
+    res.status(500).json({ message: "Error Creating usernames" });
+  }
+};
 module.exports = {
   googleSignUp,
   googleLogin,
@@ -240,4 +250,5 @@ module.exports = {
   signUp,
   logout,
   forgetPassword,
+  generateUserName,
 };
