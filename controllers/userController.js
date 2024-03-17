@@ -37,6 +37,7 @@ const getNotificationSettings = (req, res, next) => {
     });
 };
 const getProfileSettings = (req, res, next) => {
+  console.log("get profieleeeeee henaaa")
   const userId = req.userId;
 
   User.findById(userId)
@@ -58,6 +59,7 @@ const getProfileSettings = (req, res, next) => {
         communityVisibility: user.profileSettings.communityVisibility,
         clearHistory: user.profileSettings.clearHistory,
       };
+      
       console.log("Profile settings: ", profileSettings);
       res.json({ profileSettings });
     })
