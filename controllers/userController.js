@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const authenticateToken= require("../middleware/authenticateToken")
 
 //TODO: add tokens in headers
 const getUserSettings = (req, res, next) => {
@@ -37,7 +38,6 @@ const getNotificationSettings = (req, res, next) => {
     });
 };
 const getProfileSettings = (req, res, next) => {
-  console.log("get profieleeeeee henaaa")
   const userId = req.userId;
 
   User.findById(userId)
@@ -48,19 +48,18 @@ const getProfileSettings = (req, res, next) => {
         return res.status(404).json({ msg: "User not found" });
       }
       const profileSettings = {
-        displayName: user.profileSettings.displayName,
-        about: user.profileSettings.about,
+        displayName: user.profileSettings.get("displayName"),
+        about: user.profileSettings.get("about"),
         socialLinks: user.socialLinks,
-        avatarImage: user.profileSettings.avatarImage,
-        bannerImage: user.profileSettings.bannerImage,
-        NSFW: user.profileSettings.NSFW,
-        allowFollow: user.profileSettings.allowFollow,
-        contentVisibility: user.profileSettings.contentVisibility,
-        communityVisibility: user.profileSettings.communityVisibility,
-        clearHistory: user.profileSettings.clearHistory,
+        avatarImage: user.profileSettings.get("avatarImage"),
+        bannerImage: user.profileSettings.get("bannerImage"),
+        NSFW: user.profileSettings.get("NSFW"),
+        allowFollow: user.profileSettings.get("allowFollow"),
+        contentVisibility: user.profileSettings.get("contentVisibility"),
+        communitiesVisibility: user.profileSettings.get("communitiesVisibility"),
+        clearHistory: user.profileSettings.get("clearHistory"),
       };
       
-      console.log("Profile settings: ", profileSettings);
       res.json({ profileSettings });
     })
     .catch((err) => {
