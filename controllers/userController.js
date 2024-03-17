@@ -117,8 +117,8 @@ const getSafetyAndPrivacySettings = (req, res, next) => {
         return res.status(404).json({ msg: "User not found" });
       }
       const safetyAndPrivacySettings = {
-        blockUser: user.blockUser,
-        muteCommunity: user.muteCommunity,
+        blockUsers: user.blockUsers,
+        muteCommunities: user.muteCommunities,
       };
       console.log("Safety and privacy settings: ", safetyAndPrivacySettings);
       res.json({ safetyAndPrivacySettings });
