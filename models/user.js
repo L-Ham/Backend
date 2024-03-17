@@ -37,6 +37,7 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   avatar: {
     type: String,
@@ -102,15 +103,13 @@ const userSchema = new Schema({
   },
   muteCommunities: {
     type: Schema.Types.ObjectId,
-      ref: "subReddit",
+    ref: "subReddit",
   },
 
-  communities: 
-    {
-      type: [Schema.Types.ObjectId],
-      ref: "subReddit",
-
-    },
+  communities: {
+    type: [Schema.Types.ObjectId],
+    ref: "subReddit",
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);

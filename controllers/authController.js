@@ -10,10 +10,19 @@ const CLIENT_ID =
   "332399911432-vjl376a05ukf0hhpj6kq0hnuibij26dh.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
 
-const googleSignUp = (req, res, next) => {
+const googleSignUp = async (req, res, next) => {
   let token = req.body.token;
-  // console.log(token);
   let payload = {};
+
+  const generateRandomUsername = () => {
+    return Math.random().toString(36).slice(-8);
+  };
+
+  // Function to check if the generated username exists in the database
+  const checkUsernameExists = async (username) => {
+    return await User.findOne({ userName: username });
+  };
+
   async function verify() {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -22,39 +31,43 @@ const googleSignUp = (req, res, next) => {
     const tempPayload = ticket.getPayload();
     payload = tempPayload;
   }
-  payload.tokenType = "google";
-  console.log("SERR YASTAAA SERRR");
-  const JWT_SECRET =
-    "88244da83b5504d16199f69128fbf1dcce5154d26e74414baa0727ab070283295f8674f2c5825d06627eabed4b372a8fa9be3608741338cf1c0ba4ea1c825ea9";
-  console.log(JWT_SECRET);
-  const newToken = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: 500000000000,
-  });
-  ////////////////////////////////////////////////////
-  verify()
-    .then(() => {
-      res.cookie("session-token", newToken);
-      const randomPassword = Math.random().toString(36).slice(-8);
-      const user = new User({
-        userName: payload["name"],
-        email: payload["email"],
-        password: randomPassword,
-        signupGoogle: true,
-      });
-      user
-        .save()
-        .then((user) => {
-          res.json({
-            message: "User Signup Successfully",
-            user: user,
-            token: newToken,
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    })
-    .catch(console.error);
+  try {
+    await verify();
+    const existingUser = await User.findOne({ email: payload["email"] });
+    if (existingUser) {
+      res.status(500).json({ message: "Email already Exists" });
+    }
+    let randomUsername = generateRandomUsername();
+    let user = await checkUsernameExists(randomUsername);
+    while (user) {
+      randomUsername = generateRandomUsername();
+      user = await checkUsernameExists(randomUsername);
+    }
+
+    const randomPassword = Math.random().toString(36).slice(-8);
+    user = new User({
+      userName: randomUsername,
+      email: payload["email"],
+      password: randomPassword,
+      signupGoogle: true,
+    });
+
+    user = await user.save();
+
+    payload.user = { id: user._id, type: "google" };
+    const expirationTime = Math.floor(Date.now() / 1000) + 50000000000;
+    payload.exp = expirationTime;
+    const newToken = jwt.sign(payload, process.env.JWT_SECRET);
+
+    res.cookie("session-token", newToken);
+    res.status(200).json({
+      message: "User Signup Successfully",
+      user: user,
+      token: newToken,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Google Sign Up Failed", error: err });
+  }
 };
 
 const logout = (req, res, next) => {
@@ -106,27 +119,22 @@ const login = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-
   const { email, password } = req.body;
-
   try {
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
-
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
     const payload = {
       user: {
         id: user._id,
+        type: "normal",
       },
     };
-
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -172,6 +180,7 @@ const signUp = async (req, res) => {
     const payload = {
       user: {
         id: user._id,
+        type: "normal",
       },
     };
 

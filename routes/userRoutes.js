@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 const bodyParser = require("body-parser");
+const authenticateToken = require("../middleware/authenticateToken");
 
 router.get(
   "/accountSettings",
@@ -14,8 +15,18 @@ router.get(
   bodyParser.json(),
   userController.getNotificationSettings
 );
-router.get("/profileSettings", userController.getProfileSettings);
-router.patch("/profileSettings", userController.editProfileSettings);
+router.get(
+  "/profileSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getProfileSettings
+);
+router.patch(
+  "/profileSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editProfileSettings
+);
 router.get(
   "/safetyAndPrivacySettings",
   userController.getSafetyAndPrivacySettings
@@ -26,9 +37,9 @@ router.patch(
 );
 
 router.patch(
-    "/notificationsSettings",
-    bodyParser.json(),
-    userController.editNotificationSettings
+  "/notificationsSettings",
+  bodyParser.json(),
+  userController.editNotificationSettings
 );
 
 router.post(
