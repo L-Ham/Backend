@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const authService = require("../services/authServices");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -12,10 +13,6 @@ const client = new OAuth2Client(CLIENT_ID);
 const googleSignUp = async (req, res, next) => {
   let token = req.body.token;
   let payload = {};
-
-  const generateRandomUsername = () => {
-    return Math.random().toString(36).slice(-8);
-  };
 
   // Function to check if the generated username exists in the database
   const checkUsernameExists = async (username) => {
@@ -36,10 +33,11 @@ const googleSignUp = async (req, res, next) => {
     if (existingUser) {
       res.status(500).json({ message: "Email already Exists" });
     }
-    let randomUsername = generateRandomUsername();
+    let randomUsername = authService.generateRandomUsername();
+    console.log(randomUsername);
     let user = await checkUsernameExists(randomUsername);
     while (user) {
-      randomUsername = generateRandomUsername();
+      randomUsername = authService.generateRandomUsername();
       user = await checkUsernameExists(randomUsername);
     }
 
