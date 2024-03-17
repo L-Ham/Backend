@@ -2,7 +2,6 @@ const User = require("../models/user");
 
 //TODO: add tokens in headers
 const getUserSettings = (req, res, next) => {
-  //TODO: const user = TOKENNN
   const userId = req.userId;
 
   User.findById(userId)
@@ -37,28 +36,27 @@ const getNotificationSettings = (req, res, next) => {
       res.status(500).json({ msg: "Server error" });
     });
 };
-
 const getProfileSettings = (req, res, next) => {
   const userId = req.userId;
 
   User.findById(userId)
+    .populate("socialLinks")
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ msg: "User not found" });
       }
       const profileSettings = {
-        displayName: user.name,
-        about: user.About,
-        link: user.socialLinks.link,
-        appName: user.socialLinks.appName,
-        avatar: user.avatar,
-        bannerImage: user.bannerImage,
-        NSFW: user.isNSFW,
-        allowFollow: user.allowFollow,
-        contentVisibility: user.contentVisibility,
-        communityVisibility: user.communityVisibility,
-        clearHistory: user.clearHistory,
+        displayName: user.profileSettings.displayName,
+        about: user.profileSettings.about,
+        socialLinks: user.socialLinks,
+        avatarImage: user.profileSettings.avatarImage,
+        bannerImage: user.profileSettings.bannerImage,
+        NSFW: user.profileSettings.NSFW,
+        allowFollow: user.profileSettings.allowFollow,
+        contentVisibility: user.profileSettings.contentVisibility,
+        communityVisibility: user.profileSettings.communityVisibility,
+        clearHistory: user.profileSettings.clearHistory,
       };
       console.log("Profile settings: ", profileSettings);
       res.json({ profileSettings });
@@ -68,6 +66,7 @@ const getProfileSettings = (req, res, next) => {
       res.status(500).json({ msg: "Server error" });
     });
 };
+
 const editProfileSettings = (req, res, next) => {
   const userId = req.userId;
 
@@ -77,17 +76,19 @@ const editProfileSettings = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ msg: "User not found" });
       }
-      user.name = req.body.name;
-      user.About = req.body.About;
-      user.socialLinks.link = req.body.link;
-      user.socialLinks.appName = req.body.appName;
-      user.avatar = req.body.avatar;
-      user.bannerImage = req.body.bannerImage;
-      user.isNSFW = req.body.isNSFW;
-      user.allowFollow = req.body.allowFollow;
-      user.contentVisibility = req.body.contentVisibility;
-      user.communityVisibility = req.body.communityVisibility;
-      user.clearHistory = req.body.clearHistory;
+      user.profileSettings.set("displayName", req.body.displayName);
+      user.profileSettings.set("about", req.body.about);
+      user.socialLinks = req.body.socialLinks;
+      user.profileSettings.set("avatarImage", req.body.avatarImage);
+      user.profileSettings.set("bannerImage", req.body.bannerImage);
+      user.profileSettings.set("NSFW", req.body.NSFW);
+      user.profileSettings.set("allowFollow", req.body.allowFollow);
+      user.profileSettings.set("contentVisibility", req.body.contentVisibility);
+      user.profileSettings.set(
+        "communitiesVisibility",
+        req.body.communitiesVisibility
+      );
+      user.profileSettings.set("clearHistory", req.body.clearHistory);
       user
         .save()
         .then((updatedUser) => {
@@ -107,6 +108,7 @@ const editProfileSettings = (req, res, next) => {
       res.status(500).json({ msg: "Server error" });
     });
 };
+
 const getSafetyAndPrivacySettings = (req, res, next) => {
   const userId = req.userId;
 
@@ -177,8 +179,22 @@ const editNotificationSettings = (req, res, next) => {
     });
 };
 
-
-
+const followUser = (req, res, next) => {
+  const userId = req.userId;
+  const userTofollowId = req.body.toFollowId;
+  User.findById(userId)
+    .then((user) => {
+      user.following.push();
+    })
+    .catch(() => {});
+};
+const unfollowUser = (req, res, next) => {
+  const userId = req.userId;
+  const userToUnfollowId = req.body.toUnfollowId;
+  User.findById(userId)
+    .then((user) => {})
+    .catch(() => {});
+};
 module.exports = {
   getUserSettings,
   getNotificationSettings,
@@ -186,5 +202,7 @@ module.exports = {
   getProfileSettings,
   editProfileSettings,
   getSafetyAndPrivacySettings,
-  editSafetyAndPrivacySettings
+  editSafetyAndPrivacySettings,
+  followUser,
+  unfollowUser,
 };
