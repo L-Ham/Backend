@@ -177,6 +177,8 @@ const editNotificationSettings = (req, res, next) => {
     });
 };
 
+
+
 module.exports = {
   getUserSettings,
   getNotificationSettings,
@@ -184,5 +186,5 @@ module.exports = {
   getProfileSettings,
   editProfileSettings,
   getSafetyAndPrivacySettings,
-  editSafetyAndPrivacySettings,
+  editSafetyAndPrivacySettings
 };

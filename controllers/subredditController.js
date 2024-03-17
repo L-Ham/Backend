@@ -1,36 +1,11 @@
-const Subreddit = require("../models/subReddit");
-const User = require("../models/user");
+const subReddit = require("../models/subReddit");
+const User = require("../models/user"); // to use it for create community
+const authenticateToken = require("../middleware/authenticateToken");
 
-const createCommunity = (req, res, next) => {
-  const userId = req.userId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
-      }
-      const community = {
-        name: req.body.name,
-        type: req.body.privacy,
-        ageRestriction: req.body.ageRestriction,
-      };
-      user.communities.push(community);
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Community created: ", community);
-          res.json(community);
-        })
-        .catch((err) => {
-          console.error("Error saving community:", err);
-          res.status(500).json({ msg: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ msg: "Server error" });
-    });
-};
+
+const checkCommunitynameExists = async (Communityname) => {
+    return await subReddit.findOne({ name: Communityname });
+  };
 
 const sorting = (req, res, next) => {
   const subreddit = Subreddit.findById(req.params.id)
@@ -56,7 +31,67 @@ const sorting = (req, res, next) => {
     });
 };
 
+
+const createCommunity = (req, res, next) => {
+  const userId = req.userId;
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ msg: "User not found" });
+      }
+      let commName = checkCommunitynameExists(req.body.name);
+      if(commName)
+      {
+        return res.status(404).json({ msg: "Community name already exists" });
+      }
+      const community = {
+        name: req.body.name, 
+        type: req.body.privacy,
+        ageRestriction: req.body.ageRestriction,
+      };
+      user.communities.push(community);
+      user
+        .save()
+        .then((updatedUser) => {
+          console.log("Community created: ", community);
+          res.json(community);
+        })
+        .catch((err) => {
+          console.error("Error saving community:", err);
+          res.status(500).json({ msg: "Server error" });
+        });
+        subReddit = new Subreddit({
+          name: req.body.name,
+          privacy: req.body.privacy,
+          ageRestriction: req.body.ageRestriction,
+          description: req.body.description,
+          title: req.body.title,
+          sideBar: req.body.sideBar,
+          submissionText: req.body.submissionText,
+          contentOptions: req.body.contentOptions,
+          wiki: req.body.wiki,
+          spamFilter: req.body.spamFilter,
+        });
+        subReddit
+          .save()
+          .then((subReddit) => {
+            console.log("Community created: ", subReddit);
+            res.json(subReddit);
+          })
+          .catch((err) => {
+            console.error("Error saving community:", err);
+            res.status(500).json({ msg: "Server error" });
+          });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ msg: "Server error" });
+    });
+};
+
 module.exports = {
-  createCommunity,
-  sorting,
+    sorting,
+    createCommunity
 };

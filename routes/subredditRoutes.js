@@ -11,4 +11,8 @@ router.post(
   subredditController.createCommunity
 );
 
-router.get("/sorting", bodyParser.json(), subRedditController.sorting);
+router.post(
+    "/createCommunity",
+    bodyParser.json(),
+    subredditController.createCommunity
+  );
