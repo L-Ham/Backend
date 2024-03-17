@@ -273,10 +273,18 @@ const generateRandomUsername = () => {
     "spectacle",
     "cascade",
   ];
-  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-  const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  const randomNumber = Math.floor(Math.random() * 3000);
-  console.log(adjective + noun + randomNumber);
-  return `${adjective}-${noun}-${randomNumber}`;
+  // const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+  // const noun = nouns[Math.floor(Math.random() * nouns.length)];
+  // const randomNumber = Math.floor(Math.random() * 3000);
+  // console.log(adjective + noun + randomNumber);
+  usernames = [];
+  for (let i = 0; i < 10; i++) {
+    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    const randomNumber = Math.floor(Math.random() * 3000);
+    const username = `${adjective}-${noun}-${randomNumber}`;
+    usernames.push(username);
+  }
+  return usernames;
 };
 module.exports = { generateRandomUsername };

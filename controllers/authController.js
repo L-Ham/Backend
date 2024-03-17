@@ -35,15 +35,15 @@ const googleSignUp = async (req, res, next) => {
     }
     let randomUsername = authService.generateRandomUsername();
     console.log(randomUsername);
-    let user = await checkUsernameExists(randomUsername);
+    let user = await checkUsernameExists(randomUsername[0]);
     while (user) {
       randomUsername = authService.generateRandomUsername();
-      user = await checkUsernameExists(randomUsername);
+      user = await checkUsernameExists(randomUsername[0]);
     }
 
     const randomPassword = Math.random().toString(36).slice(-8);
     user = new User({
-      userName: randomUsername,
+      userName: randomUsername[0],
       email: payload["email"],
       password: randomPassword,
       signupGoogle: true,
