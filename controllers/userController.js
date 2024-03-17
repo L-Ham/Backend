@@ -177,37 +177,7 @@ const editNotificationSettings = (req, res, next) => {
     });
 };
 
-const createCommunity = (req, res, next) => {
-  const userId = req.userId;
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
-      }
-      const community = {
-        name: req.body.name,
-        type: req.body.privacy,
-        ageRestriction: req.body.ageRestriction,
-      };
-      user.communities.push(community);
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Community created: ", community);
-          res.json(community);
-        })
-        .catch((err) => {
-          console.error("Error saving community:", err);
-          res.status(500).json({ msg: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ msg: "Server error" });
-    });
-};
 
 module.exports = {
   getUserSettings,
@@ -216,6 +186,5 @@ module.exports = {
   getProfileSettings,
   editProfileSettings,
   getSafetyAndPrivacySettings,
-  createCommunity,
-  editSafetyAndPrivacySettings,
+  editSafetyAndPrivacySettings
 };

@@ -9,3 +9,9 @@ router.get(
     bodyParser.json(),
     subRedditController.sorting
 );
+
+router.post(
+    "/createCommunity",
+    bodyParser.json(),
+    subredditController.createCommunity
+  );
