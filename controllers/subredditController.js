@@ -2,6 +2,11 @@ const subReddit = require("../models/subReddit");
 const User = require("../models/user"); // to use it for create community
 const authenticateToken = require("../middleware/authenticateToken");
 
+
+const checkCommunitynameExists = async (Communityname) => {
+    return await subReddit.findOne({ name: Communityname });
+  };
+
 const sorting = (req, res, next) => {
   const subreddit = Subreddit.findById(req.params.id)
   .then((subreddit) => {
@@ -39,8 +44,13 @@ const createCommunity = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ msg: "User not found" });
       }
+      let commName = checkCommunitynameExists(req.body.name);
+      if(commName)
+      {
+        return res.status(404).json({ msg: "Community name already exists" });
+      }
       const community = {
-        name: req.body.name, // after the finish of username availability i should call it to check if the name is available
+        name: req.body.name, 
         type: req.body.privacy,
         ageRestriction: req.body.ageRestriction,
       };
