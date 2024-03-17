@@ -17,5 +17,9 @@ router.post(
   bodyParser.json(),
   authController.forgetUsername
 );
-
+router.post(
+  "/forgotPassword",
+  bodyParser.json(),
+  authController.forgetPassword
+);
 module.exports = router;

@@ -105,6 +105,30 @@ const userSchema = new Schema({
     required: false,
   },
 
+  communities: 
+    {
+      type: [Schema.Types.ObjectId],
+      ref: "subReddit",
+
+    },
+  feedSettings:{
+    type: Map,
+    of: string,
+    required: true,
+    default: {
+      showNSFW:"true",
+      blurNSFW:"true",
+      enableHomeFeedRecommendations:"true",
+      autoplayMedia:"true",
+      reduceAnimations:"true",
+      communityThemes:"true",
+      communityContentSort:"Hot",
+      rememberPerCommunity:"true",
+      globalContentView:"Card",
+      openPostsInNewTab:"true",
+      defaultToMarkdown:"true",
+    }
+  }
   communities: {
     type: [Schema.Types.ObjectId],
     ref: "subReddit",

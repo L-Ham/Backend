@@ -1,5 +1,6 @@
 const User = require("../models/user");
-const authenticateToken= require("../middleware/authenticateToken")
+const authenticateToken = require("../middleware/authenticateToken");
+const jwt = require("jsonwebtoken");
 
 //TODO: add tokens in headers
 const getUserSettings = (req, res, next) => {
@@ -19,6 +20,7 @@ const getUserSettings = (req, res, next) => {
       res.status(500).json({ msg: "Server error" });
     });
 };
+
 
 const getNotificationSettings = (req, res, next) => {
   const userId = req.userId;
@@ -185,17 +187,97 @@ const followUser = (req, res, next) => {
   const userTofollowId = req.body.toFollowId;
   User.findById(userId)
     .then((user) => {
-      user.following.push();
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ msg: "User not found" });
+      }
+      const community = {
+        name: req.body.name,
+        type: req.body.privacy,
+        ageRestriction: req.body.ageRestriction,
+      };
+      user.communities.push(community);
+      user
+        .save()
+        .then((updatedUser) => {
+          console.log("Community created: ", community);
+          res.json(community);
+        })
+        .catch((err) => {
+          console.error("Error saving community:", err);
+          res.status(500).json({ msg: "Server error" });
+        });
     })
-    .catch(() => {});
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ msg: "Server error" });
+    });
 };
-const unfollowUser = (req, res, next) => {
-  const userId = req.userId;
-  const userToUnfollowId = req.body.toUnfollowId;
-  User.findById(userId)
-    .then((user) => {})
-    .catch(() => {});
+const checkUserNameAvailability = (req, res, next) => {
+  const userName = req.params.username;
+  User.findOne({ userName: userName })
+    .then((user) => {
+      if (user) {
+        console.error("Username already taken:", userName);
+        return res.status(409).json({ msg: "Username already taken" });
+      }
+      console.log("Username available:", userName);
+      res.json({ msg: "Username available" });
+    })
+    .catch((err) => {
+      console.error("Error checking username availability:", err);
+      res.status(500).json({ msg: "Server error" });
+    });
 };
+const blockUser = (req, res, next) => {
+  const blockedUserName = req.body.UserName;
+  const userId = jwt.verify(req.headers.authorization, process.env.ACCESS_TOKEN_SECRET)._id;
+  User.findOne({ userName: blockedUserName })
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for username:", blockedUserName);
+        return res.status(404).json({ msg: "User not found" });
+      }
+      User.findByIdAndUpdate(userId, { $push: { blockUsers: user._id } }, { new: true })
+        .then((updatedUser) => {
+          console.log("User blocked:", user.userName);
+          res.json({ message: "User blocked", user: updatedUser });
+        })
+        .catch((err) => {
+          console.error("Error blocking user:", err);
+          res.status(500).json({ msg: "Server error" });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ msg: "Server error" });
+    });
+}
+const unblockUser = (req, res, next) => {
+  const blockedUserName = req.body.UserName;
+  const userId = jwt.verify(req.headers.authorization, process.env.ACCESS_TOKEN_SECRET)._id;
+  User.findOne({ userName: blockedUserName })
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for username:", blockedUserName);
+        return res.status(404).json({ msg: "User not found" });
+      }
+      User.findByIdAndUpdate(userId, { $pull: { blockUsers: user._id } }, { new: true })
+        .then((updatedUser) => {
+          console.log("User unblocked:", user.userName);
+          res.json({ message: "User unblocked", user: updatedUser });
+        })
+        .catch((err) => {
+          console.error("Error unblocking user:", err);
+          res.status(500).json({ msg: "Server error" });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ msg: "Server error" });
+    });
+}
+
 module.exports = {
   getUserSettings,
   getNotificationSettings,
@@ -206,4 +288,7 @@ module.exports = {
   editSafetyAndPrivacySettings,
   followUser,
   unfollowUser,
+  checkUserNameAvailability,
+  blockUser,
+  unblockUser,
 };
