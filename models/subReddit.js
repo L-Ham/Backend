@@ -22,6 +22,14 @@ const subRedditSchema = new Schema({
     required: true,
     unique: true,
   },
+  moderators: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+  },
+  members: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+  },
   ageRestriction: {
     type: Boolean,
     required: true,

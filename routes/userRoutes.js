@@ -49,4 +49,17 @@ router.patch(
   userController.editNotificationSettings
 );
 
+router.patch(
+"/followUser",
+bodyParser.json(),
+authenticateToken,
+userController.followUser
+);
+
+router.patch(
+  "/unfollowUser",
+  bodyParser.json(),
+  authenticateToken,
+  userController.unfollowUser
+  );
 module.exports = router;

@@ -9,10 +9,6 @@ router.post("/googleLogin", bodyParser.json(), authController.googleLogin);
 router.post("/signUp", bodyParser.json(), authController.signUp);
 router.post(
   "/login",
-  [
-    check("email", "Please include a valid email").isEmail(),
-    check("password", "Password is required").exists(),
-  ],
   bodyParser.json(),
   authController.login
 );
