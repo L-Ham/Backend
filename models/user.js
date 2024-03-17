@@ -88,6 +88,14 @@ const userSchema = new Schema({
       clearHistory: false,
     },
   },
+  followers: {
+    type: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    required: false,
+  },
+  following: {
+    type: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    required: false,
+  },
   blockUsers: {
     type: [{ type: Schema.Types.ObjectId, ref: "user" }],
     required: false,
