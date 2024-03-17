@@ -93,8 +93,8 @@ const userSchema = new Schema({
     required: false,
   },
   muteCommunities: {
-    type: Schema.Types.ObjectId,
-    ref: "subReddit",
+    type: [{ type: Schema.Types.ObjectId, ref: "subReddit" }],
+    required: false,
   },
 
   communities: {
