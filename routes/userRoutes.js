@@ -48,35 +48,31 @@ router.patch(
   authenticateToken,
   userController.editNotificationSettings
 );
+router.post(
+  "/createCommunity",
+  bodyParser.json(),
+  subredditController.createCommunity
+);
 
 router.patch(
-"/followUser",
-bodyParser.json(),
-authenticateToken,
-userController.followUser
+  "/followUser",
+  bodyParser.json(),
+  authenticateToken,
+  userController.followUser
 );
 
 router.patch(
   "/unfollowUser",
   bodyParser.json(),
-  userController.createCommunity
+  authenticateToken,
+  userController.unfollowUser
 );
 
 router.get(
   "/usernameAvailability/:username",
   userController.checkUserNameAvailability
 );
-router.patch(
-  "/blockUser",
-  bodyParser.json(),
-  userController.blockUser
-)
-router.patch(
-  "/unblockUser",
-  bodyParser.json(),
-  userController.unblockUser
-)
-  authenticateToken,
-  userController.unfollowUser
-  );
+router.patch("/blockUser", bodyParser.json(), userController.blockUser);
+router.patch("/unblockUser", bodyParser.json(), userController.unblockUser);
+
 module.exports = router;

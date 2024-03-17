@@ -10,14 +10,14 @@ const getUserSettings = (req, res, next) => {
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       console.log("User settings: ", user);
       res.json({ gender: user.gender, email: user.email });
     })
     .catch((err) => {
       console.error("Error retrieving user settings:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 
@@ -29,14 +29,14 @@ const getNotificationSettings = (req, res, next) => {
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       console.log("Notification settings: ", user.notificationSettings);
       res.json({ notificationSettings: user.notificationSettings });
     })
     .catch((err) => {
       console.error("Error retrieving notification settings:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 const getProfileSettings = (req, res, next) => {
@@ -47,7 +47,7 @@ const getProfileSettings = (req, res, next) => {
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       const profileSettings = {
         displayName: user.profileSettings.get("displayName"),
@@ -66,7 +66,7 @@ const getProfileSettings = (req, res, next) => {
     })
     .catch((err) => {
       console.error("Error retrieving profile settings:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 
@@ -77,7 +77,7 @@ const editProfileSettings = (req, res, next) => {
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       user.profileSettings.set("displayName", req.body.displayName);
       user.profileSettings.set("about", req.body.about);
@@ -103,12 +103,12 @@ const editProfileSettings = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error updating profile settings:", err);
-          res.status(500).json({ msg: "Server error" });
+          res.status(500).json({ message: "Server error" });
         });
     })
     .catch((err) => {
       console.error("Error retrieving user:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 
@@ -119,7 +119,7 @@ const getSafetyAndPrivacySettings = (req, res, next) => {
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       const safetyAndPrivacySettings = {
         blockUsers: user.blockUsers,
@@ -130,7 +130,7 @@ const getSafetyAndPrivacySettings = (req, res, next) => {
     })
     .catch((err) => {
       console.error("Error retrieving safety and privacy settings:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 const editSafetyAndPrivacySettings = (req, res, next) => {
@@ -140,7 +140,7 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       user.blockUsers = req.body.blockUsers;
       user.muteCommunities = req.body.muteCommunities;
@@ -155,12 +155,12 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error updating safety and privacy settings:", err);
-          res.status(500).json({ msg: "Server error" });
+          res.status(500).json({ message: "Server error" });
         });
     })
     .catch((err) => {
       console.error("Error retrieving user:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 const editNotificationSettings = (req, res, next) => {
@@ -171,14 +171,14 @@ const editNotificationSettings = (req, res, next) => {
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       console.log("Updated notification settings: ", user.notificationSettings);
       res.json({ notificationSettings: user.notificationSettings });
     })
     .catch((err) => {
       console.error("Error updating notification settings:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 
@@ -187,9 +187,26 @@ const followUser = (req, res, next) => {
   const userTofollowId = req.body.toFollowId;
   User.findById(userId)
     .then((user) => {
+      user.following.push();
+    })
+    .catch(() => {});
+};
+const unfollowUser = (req, res, next) => {
+  const userId = req.userId;
+  const userToUnfollowId = req.body.toUnfollowId;
+  User.findById(userId)
+    .then((user) => {})
+    .catch(() => {});
+};
+
+const createCommunity = (req, res, next) => {
+  const userId = req.userId;
+
+  User.findById(userId)
+    .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       const community = {
         name: req.body.name,
@@ -205,12 +222,12 @@ const followUser = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error saving community:", err);
-          res.status(500).json({ msg: "Server error" });
+          res.status(500).json({ message: "Server error" });
         });
     })
     .catch((err) => {
       console.error("Error retrieving user:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 const checkUserNameAvailability = (req, res, next) => {
@@ -219,14 +236,14 @@ const checkUserNameAvailability = (req, res, next) => {
     .then((user) => {
       if (user) {
         console.error("Username already taken:", userName);
-        return res.status(409).json({ msg: "Username already taken" });
+        return res.status(409).json({ message: "Username already taken" });
       }
       console.log("Username available:", userName);
-      res.json({ msg: "Username available" });
+      res.json({ message: "Username available" });
     })
     .catch((err) => {
       console.error("Error checking username availability:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 const blockUser = (req, res, next) => {
@@ -236,7 +253,7 @@ const blockUser = (req, res, next) => {
     .then((user) => {
       if (!user) {
         console.error("User not found for username:", blockedUserName);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       User.findByIdAndUpdate(userId, { $push: { blockUsers: user._id } }, { new: true })
         .then((updatedUser) => {
@@ -245,12 +262,12 @@ const blockUser = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error blocking user:", err);
-          res.status(500).json({ msg: "Server error" });
+          res.status(500).json({ message: "Server error" });
         });
     })
     .catch((err) => {
       console.error("Error retrieving user:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 }
 const unblockUser = (req, res, next) => {
@@ -260,7 +277,7 @@ const unblockUser = (req, res, next) => {
     .then((user) => {
       if (!user) {
         console.error("User not found for username:", blockedUserName);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
       User.findByIdAndUpdate(userId, { $pull: { blockUsers: user._id } }, { new: true })
         .then((updatedUser) => {
@@ -269,12 +286,12 @@ const unblockUser = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error unblocking user:", err);
-          res.status(500).json({ msg: "Server error" });
+          res.status(500).json({ message: "Server error" });
         });
     })
     .catch((err) => {
       console.error("Error retrieving user:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 }
 
@@ -291,4 +308,5 @@ module.exports = {
   checkUserNameAvailability,
   blockUser,
   unblockUser,
+  createCommunity
 };
