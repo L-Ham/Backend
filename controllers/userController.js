@@ -1,5 +1,4 @@
 const User = require("../models/user");
-const authenticateToken = require("../middleware/authenticateToken");
 
 //TODO: add tokens in headers
 const getUserSettings = (req, res, next) => {
@@ -41,7 +40,7 @@ const getNotificationSettings = (req, res, next) => {
 
 const getProfileSettings = (req, res, next) => {
   const userId = req.userId;
-
+  
   User.findById(userId)
     .then((user) => {
       if (!user) {
