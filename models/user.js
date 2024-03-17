@@ -106,7 +106,7 @@ const userSchema = new Schema({
   },
   feedSettings: {
     type: Map,
-    of: string,
+    of: String,
     required: true,
     default: {
       showNSFW: "true",
