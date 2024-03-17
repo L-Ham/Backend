@@ -1,5 +1,4 @@
 const subReddit = require("../models/subReddit");
-const Subreddit = require("../models/subReddit");
 const User = require("../models/user"); // to use it for create community
 
 const sorting = (req, res, next) => {
