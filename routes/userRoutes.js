@@ -48,12 +48,6 @@ router.patch(
   authenticateToken,
   userController.editNotificationSettings
 );
-router.post(
-  "/createCommunity",
-  bodyParser.json(),
-  subredditController.createCommunity
-);
-
 router.patch(
   "/followUser",
   bodyParser.json(),

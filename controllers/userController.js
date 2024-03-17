@@ -199,37 +199,6 @@ const unfollowUser = (req, res, next) => {
     .catch(() => {});
 };
 
-const createCommunity = (req, res, next) => {
-  const userId = req.userId;
-
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      const community = {
-        name: req.body.name,
-        type: req.body.privacy,
-        ageRestriction: req.body.ageRestriction,
-      };
-      user.communities.push(community);
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Community created: ", community);
-          res.json(community);
-        })
-        .catch((err) => {
-          console.error("Error saving community:", err);
-          res.status(500).json({ message: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
-    });
-};
 const checkUserNameAvailability = (req, res, next) => {
   const userName = req.params.username;
   User.findOne({ userName: userName })
@@ -307,6 +276,5 @@ module.exports = {
   unfollowUser,
   checkUserNameAvailability,
   blockUser,
-  unblockUser,
-  createCommunity
+  unblockUser
 };
