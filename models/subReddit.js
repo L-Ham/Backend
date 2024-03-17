@@ -3,11 +3,11 @@ const { boolean } = require("webidl-conversions");
 
 const Schema = mongoose.Schema;
 const subRedditSchema = new Schema({
-  subReddit_ID: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
+  // subReddit_ID: {
+  //   type: Number,
+  //   required: true,
+  //   unique: true,
+  // },
   posts: {
     type: [Schema.Types.ObjectId],
     ref: "post",
@@ -20,6 +20,7 @@ const subRedditSchema = new Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   ageRestriction: {
     type: Boolean,
@@ -33,50 +34,50 @@ const subRedditSchema = new Schema({
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   sideBar: {
     type: String,
-    required: true
+    required: true,
   },
   submissionText: {
     type: String,
-    required: true
+    required: true,
   },
   contentOptions: {
     type: String,
     required: true,
-    default: "any"
+    default: "any",
   },
   wiki: {
     type: String,
     required: true,
-    default: "disabled"
+    default: "disabled",
   },
   spamFilter: {
     type: [String],
     required: true,
-    default: ["low","low","low"]
+    default: ["low", "low", "low"],
   },
   discoverabilityOptions: {
     type: [Boolean],
     required: true,
-    default: [false,false,false]
+    default: [false, false, false],
   },
   otherOptions: {
     type: [String],
     required: true,
-    default: ["low","low","low"]
+    default: ["low", "low", "low"],
   },
   mobileLookAndFeel: {
     type: String,
     required: true,
-    default: "red"
-  }
+    default: "red",
+  },
 });
 
 module.exports = mongoose.model("subReddit", subRedditSchema);

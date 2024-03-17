@@ -7,12 +7,14 @@ const authenticateToken = require("../middleware/authenticateToken");
 router.get(
   "/accountSettings",
   bodyParser.json(),
+  authenticateToken,
   userController.getUserSettings
 );
 
 router.get(
   "/notificationsSettings",
   bodyParser.json(),
+  authenticateToken,
   userController.getNotificationSettings
 );
 router.get(
@@ -29,23 +31,22 @@ router.patch(
 );
 router.get(
   "/safetyAndPrivacySettings",
+  bodyParser.json(),
+  authenticateToken,
   userController.getSafetyAndPrivacySettings
 );
 router.patch(
   "/safetyAndPrivacySettings",
+  bodyParser.json(),
+  authenticateToken,
   userController.editSafetyAndPrivacySettings
 );
 
 router.patch(
   "/notificationsSettings",
   bodyParser.json(),
+  authenticateToken,
   userController.editNotificationSettings
-);
-
-router.post(
-  "/createCommunity",
-  bodyParser.json(),
-  userController.createCommunity
 );
 
 module.exports = router;

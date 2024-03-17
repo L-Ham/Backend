@@ -21,10 +21,6 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
-  allowFollow: {
-    type: String,
-    required: false,
-  },
   password: {
     type: String,
     required: true,
@@ -42,10 +38,6 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
-  isNSFW: {
-    type: Boolean,
-    required: false,
-  },
   postHistory: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -53,10 +45,6 @@ const userSchema = new Schema({
       required: false,
     },
   ],
-  About: {
-    type: String,
-    required: false,
-  },
   socialLinks: [
     {
       type: Schema.Types.ObjectId,
@@ -65,18 +53,6 @@ const userSchema = new Schema({
   ],
   bannerImage: {
     type: String,
-    required: false,
-  },
-  contentVisibility: {
-    type: Boolean,
-    required: false,
-  },
-  communitiesVisibility: {
-    type: Boolean,
-    required: false,
-  },
-  clearHistory: {
-    type: Boolean,
     required: false,
   },
   notificationSettings: {
@@ -94,6 +70,22 @@ const userSchema = new Schema({
       repliesToComments: true,
       newFollowers: true,
       modNotifications: true,
+    },
+  },
+  profileSettings: {
+    type: Map,
+    of: mongoose.Schema.Types.Mixed,
+    required: true,
+    default: {
+      displayName: "",
+      about: "",
+      avatarImage: "",
+      bannerImage: "",
+      NSFW: false,
+      allowFollow: true,
+      contentVisibility: true,
+      communitiesVisibility: true,
+      clearHistory: false,
     },
   },
   blockUsers: {
