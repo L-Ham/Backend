@@ -185,12 +185,32 @@ const editNotificationSettings = (req, res, next) => {
 
 const followUser = (req, res, next) => {
   const userId = req.userId;
-  const userTofollowId = req.body.toFollowId;
+  const usernameToFollow = req.body.usernameToFollow;
   User.findById(userId)
     .then((user) => {
-      user.following.push();
+      User.findOne({ userName: usernameToFollow })
+        .then((userToFollow) => {
+          if (user.following.includes(userToFollow._id)) {
+            res.status(500).json({ message: "User already followed" });
+          } else {
+            user.following.push(userToFollow._id);
+            userToFollow.followers.push(userId);
+            user.save();
+            userToFollow.save();
+            res.status(200).json({ message: "User followed successfully" });
+          }
+        })
+        .catch((err) => {
+          res
+            .status(500)
+            .json({ message: "Failed to find the user to follow", error: err });
+        });
     })
-    .catch(() => {});
+    .catch((err) => {
+      res
+        .status(500)
+        .json({ message: "Follow user Request Failed", error: err });
+    });
 };
 const unfollowUser = (req, res, next) => {
   const userId = req.userId;
