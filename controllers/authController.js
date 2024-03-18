@@ -74,48 +74,56 @@ const googleLogin = (req, res, next) => {
   const token = req.body.token;
 };
 
-const forgetUsername = (req, res, next) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "admin@gmail.com",
-      pass: "123456",
-    },
-  });
-  const email = req.body.email;
-  const user = User.find((user) => user.email === email);
-  if (!user) {
-    return res.status(404).send("User not found");
-  }
-  transporter.sendMail(
-    {
-      from: "admin@gmail.com",
-      to: email,
-      subject: "So you wanna know your Reddit username, huh?",
-      text: `Hi there,
-
-        You forgot it didn't you? Hey, it happens. Here you go:
-        
-        Your username is ${user.username}
-        
-        (Username checks out, nicely done.)`,
-    },
-    (err) => {
-      if (err) {
-        console.error("Error sending email:", err);
-        return res.status(500).send("Failed to send email");
-      }
-      res.send("Email sent");
+const forgetUsername = async (req, res, next) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: "r75118106@gmail.com",
+        pass: "L-Ham123456",
+      },
+    });
+  
+    const email = req.body.email;
+    const user = await User.findOne({ email });
+  
+    if (!user) {
+      return res.status(404).send("User not found");
     }
-  );
-};
+  
+    transporter.sendMail(
+      {
+        from: "r75118106@gmail.com",
+        to: email,
+        subject: "So you wanna know your Reddit username, huh?",
+        text: `Hi there,
+  
+          You forgot it didn't you? Hey, it happens. Here you go:
+          
+          Your username is ${user.userName}
+          
+          (Username checks out, nicely done.)`,
+      },
+      (err, info) => {
+        if (err) {
+          console.error("Error sending email:", err);
+          return res.status(500).send("Failed to send email: " + err.message);
+        }
+        console.log("Email sent:", info.response);
+        res.send("Email sent");
+      }
+    );
+  };
+  
 
 const forgetPassword = (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "admin@gmail.com",
-      pass: "123456",
+      user: "r75118106@gmail.com",
+      pass: "L-Ham123456",
     },
   });
   const email = req.body.email;
@@ -125,7 +133,7 @@ const forgetPassword = (req, res, next) => {
   }
   transporter.sendMail(
     {
-      from: "admon@gmail.com",
+      from: "r75118106@gmail.com",
       to: email,
       subject: "So you wanna reset your Reddit password, huh?",
       text: `Hi there,
