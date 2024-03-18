@@ -88,4 +88,4 @@ const subRedditSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("subReddit", subRedditSchema);
+module.exports = mongoose.model("subreddits", subRedditSchema);
