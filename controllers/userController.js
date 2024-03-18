@@ -2,7 +2,6 @@ const User = require("../models/user");
 const authenticateToken = require("../middleware/authenticateToken");
 const jwt = require("jsonwebtoken");
 
-//TODO: add tokens in headers
 const getUserSettings = (req, res, next) => {
   const userId = req.userId;
 
@@ -158,7 +157,9 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error updating safety and privacy settings:", err);
-          res.status(500).json({ message: "Failed to update safety and privacy settings " });
+          res
+            .status(500)
+            .json({ message: "Failed to update safety and privacy settings " });
         });
     })
     .catch((err) => {
@@ -216,10 +217,32 @@ const followUser = (req, res, next) => {
 };
 const unfollowUser = (req, res, next) => {
   const userId = req.userId;
-  const userToUnfollowId = req.body.toUnfollowId;
+  const usernameToUnfollow = req.body.usernameToUnfollow;
   User.findById(userId)
-    .then((user) => {})
-    .catch(() => {});
+    .then((user) => {
+      User.findOne({ userName: usernameToUnfollow })
+        .then(async (userToUnfollow) => {
+          if (!user.following.includes(userToUnfollow._id)) {
+            return res.status(500).json({ message: "User not followed" });
+          }
+          user.following.pull(userToUnfollow._id);
+          userToUnfollow.followers.pull(userId);
+          await user.save();
+          userToUnfollow.save();
+          res.status(200).json({ message: "User unfollowed successfully" });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            message: "Failed to find the user to unfollow",
+            error: err,
+          });
+        });
+    })
+    .catch((err) => {
+      res
+        .status(500)
+        .json({ message: "Unfollow user Request Failed", error: err });
+    });
 };
 
 const checkUserNameAvailability = (req, res, next) => {
