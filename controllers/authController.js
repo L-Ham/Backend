@@ -77,6 +77,9 @@ const googleLogin = (req, res, next) => {
 const forgetUsername = async (req, res, next) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: {
         user: "r75118106@gmail.com",
         pass: "L-Ham123456",
