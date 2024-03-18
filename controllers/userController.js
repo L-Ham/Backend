@@ -104,7 +104,9 @@ const editProfileSettings = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error updating profile settings:", err);
-          res.status(500).json({ message: "Server error" });
+          res
+            .status(500)
+            .json({ message: "Error updating profile settings", error: err });
         });
     })
     .catch((err) => {
