@@ -156,7 +156,7 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error updating safety and privacy settings:", err);
-          res.status(500).json({ message: "Server error" });
+          res.status(500).json({ message: "Failed to update safety and privacy settings " });
         });
     })
     .catch((err) => {
