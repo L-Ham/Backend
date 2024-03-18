@@ -48,13 +48,10 @@ const subRedditSchema = new Schema({
     type: String,
     required: true,
   },
-  sideBar: {
-    type: String,
-    required: true,
-  },
   submissionText: {
     type: String,
     required: true,
+    default: "disabled",
   },
   contentOptions: {
     type: String,

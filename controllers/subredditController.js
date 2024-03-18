@@ -1,4 +1,4 @@
-const subReddit = require("../models/subReddit");
+const SubReddit = require("../models/subReddit");
 const User = require("../models/user"); // to use it for create community
 const authenticateToken = require("../middleware/authenticateToken");
 
@@ -7,7 +7,7 @@ const checkCommunitynameExists =  (Communityname) => {
 };
 
 const sorting = (req, res, next) => {
-  const subreddit = Subreddit.findById(req.params.id)
+  const subreddit = SubReddit.findById(req.params.id)
     .then((subreddit) => {
       const { Hot, New, Top, Random } = req.params;
       if (Hot == true) {
