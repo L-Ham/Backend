@@ -2,8 +2,8 @@ const subReddit = require("../models/subReddit");
 const User = require("../models/user"); // to use it for create community
 const authenticateToken = require("../middleware/authenticateToken");
 
-const checkCommunitynameExists = async (Communityname) => {
-  return await subReddit.findOne({ name: Communityname });
+const checkCommunitynameExists =  (Communityname) => {
+  return  subReddit.findOne({ name: Communityname });
 };
 
 const sorting = (req, res, next) => {
@@ -32,6 +32,8 @@ const sorting = (req, res, next) => {
 
 const createCommunity = (req, res, next) => {
   const userId = req.userId;
+  console.log("createee communittyyyy heree")
+  console.log("userr idd: ", userId)
 
   User.findById(userId)
     .then((user) => {
@@ -39,43 +41,49 @@ const createCommunity = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ msg: "User not found" });
       }
-      let commName = checkCommunitynameExists(req.body.name);
-      if (commName) {
-        return res.status(404).json({ msg: "Community name already exists" });
-      }
-      subReddit = new subReddit({
-        name: req.body.name,
-        privacy: req.body.privacy,
-        moderators: [user],
-        members: [user],
-        ageRestriction: req.body.ageRestriction,
-        description: req.body.description,
-        title: req.body.title,
-        submissionText: req.body.submissionText,
-        contentOptions: req.body.contentOptions,
-        wiki: req.body.wiki,
-        spamFilter: req.body.spamFilter,
-      });
-      subReddit
-        .save()
-        .then((subReddit) => {
-          user.communities.push(subReddit);
-          user
-            .save()
-            .then((user) => {
-              console.log("Subreddit attached to user: ", user);
-              // res.json(user);
+
+      checkCommunitynameExists(req.body.name)
+        .then((existingCommunity) => {
+          if (existingCommunity) {
+            return res.status(400).json({ msg: "Community name already exists" });
+          }
+
+          const newCommunity = new subReddit({
+            name: req.body.name,
+            privacy: req.body.privacy,
+            moderators: [user],
+            members: [user],
+            ageRestriction: req.body.ageRestriction,
+            description: req.body.description,
+            title: req.body.title,
+            submissionText: req.body.submissionText,
+            contentOptions: req.body.contentOptions,
+            wiki: req.body.wiki,
+            spamFilter: req.body.spamFilter,
+          });
+
+          newCommunity.save()
+            .then((savedCommunity) => {
+              user.communities.push(savedCommunity);
+              user.save()
+                .then((savedUser) => {
+                  console.log("Subreddit attached to user: ", savedUser);
+                  console.log("Community created: ", savedCommunity);
+                  res.json(savedCommunity);
+                })
+                .catch((err) => {
+                  console.error("Error attaching subReddit to user:", err);
+                  res.status(500).json({ msg: "Server error" });
+                });
             })
             .catch((err) => {
-              console.error("Error attaching subReddit to user:", err);
-              res.status(500).json({ msg: "Server error" });
+              console.error("Error saving community:", err);
+              res.status(500).json({ msg: "Server error", subReddit: newCommunity });
             });
-          console.log("Community created: ", subReddit);
-          res.json(subReddit);
         })
         .catch((err) => {
-          console.error("Error saving community:", err);
-          res.status(500).json({ msg: "Server error", subReddit: subReddit });
+          console.error("Error checking existing community:", err);
+          res.status(500).json({ msg: "Server error" });
         });
     })
     .catch((err) => {
@@ -86,5 +94,5 @@ const createCommunity = (req, res, next) => {
 
 module.exports = {
   sorting,
-  createCommunity,
+  createCommunity
 };
