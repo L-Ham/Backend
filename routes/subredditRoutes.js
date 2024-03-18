@@ -16,3 +16,6 @@ router.get(
     bodyParser.json(),
     subredditController.sorting
   );
+
+
+module.exports = router;
