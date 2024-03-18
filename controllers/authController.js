@@ -99,15 +99,16 @@ const forgetUsername = async (req, res, next) => {
   
           You forgot it didn't you? Hey, it happens. Here you go:
           
-          Your username is ${user.username}
+          Your username is ${user.userName}
           
           (Username checks out, nicely done.)`,
       },
-      (err) => {
+      (err, info) => {
         if (err) {
           console.error("Error sending email:", err);
-          return res.status(500).send("Failed to send email");
+          return res.status(500).send("Failed to send email: " + err.message);
         }
+        console.log("Email sent:", info.response);
         res.send("Email sent");
       }
     );
