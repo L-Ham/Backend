@@ -166,19 +166,39 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
 };
 const editNotificationSettings = (req, res, next) => {
   const userId = req.userId;
-  const notificationSettings = req.body.notificationSettings;
 
-  User.findByIdAndUpdate(userId, { notificationSettings }, { new: true })
+  User.findById(userId)
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
-      console.log("Updated notification settings: ", user.notificationSettings);
-      res.json({ notificationSettings: user.notificationSettings });
+      user.notificationSettings.set("inboxMessage", req.body.inboxMessage);
+      user.notificationSettings.set("chatMessages", req.body.chatMessages);
+      user.notificationSettings.set("chatRequest", req.body.chatRequest);
+      user.notificationSettings.set("mentions", req.body.mentions);
+      user.notificationSettings.set("comments", req.body.comments);
+      user.notificationSettings.set("upvotesToPosts", req.body.upvotesToPosts);
+      user.notificationSettings.set("upvotesToComments", req.body.upvotesToComments);
+      user.notificationSettings.set("repliesToComments", req.body.repliesToComments);
+      user.notificationSettings.set( "newFollowers", req.body.newFollowers);
+      user.notificationSettings.set("modNotifications", req.body.modNotifications);
+      user
+        .save()
+        .then((user) => {
+          console.log("Notification settings updated: ", user);
+          res.json({
+            message: "User Notification settings updated successfully",
+            user: user,
+          });
+        })
+        .catch((err) => {
+          console.error("Error updating Notification settings:", err);
+          res.status(500).json({ message: "Server error" });
+        });
     })
     .catch((err) => {
-      console.error("Error updating notification settings:", err);
+      console.error("Error retrieving user:", err);
       res.status(500).json({ message: "Server error" });
     });
 };
