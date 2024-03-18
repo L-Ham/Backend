@@ -2,8 +2,8 @@ const SubReddit = require("../models/subReddit");
 const User = require("../models/user"); // to use it for create community
 const authenticateToken = require("../middleware/authenticateToken");
 
-const checkCommunitynameExists =  (Communityname) => {
-  return  SubReddit.findOne({ name: Communityname });
+const checkCommunitynameExists = (Communityname) => {
+  return SubReddit.findOne({ name: Communityname });
 };
 
 const sorting = (req, res, next) => {
@@ -32,20 +32,22 @@ const sorting = (req, res, next) => {
 
 const createCommunity = (req, res, next) => {
   const userId = req.userId;
-  console.log("createee communittyyyy heree")
-  console.log("userr idd: ", userId)
+  console.log("createee communittyyyy heree");
+  console.log("userr idd: ", userId);
 
   User.findById(userId)
     .then((user) => {
       if (!user) {
         console.error("User not found for user ID:", userId);
-        return res.status(404).json({ msg: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
 
       checkCommunitynameExists(req.body.name)
         .then((existingCommunity) => {
           if (existingCommunity) {
-            return res.status(400).json({ msg: "Community name already exists" });
+            return res
+              .status(400)
+              .json({ message: "Community name already exists" });
           }
 
           const newCommunity = new SubReddit({
@@ -62,14 +64,19 @@ const createCommunity = (req, res, next) => {
             spamFilter: req.body.spamFilter,
           });
 
-          newCommunity.save()
+          newCommunity
+            .save()
             .then((savedCommunity) => {
               user.communities.push(savedCommunity);
-              user.save()
+              user
+                .save()
                 .then((savedUser) => {
                   console.log("Subreddit attached to user: ", savedUser);
                   console.log("Community created: ", savedCommunity);
-                  res.json(savedCommunity);
+                  res.json({
+                    message: "Created community successfully",
+                    savedCommunity,
+                  });
                 })
                 .catch((err) => {
                   console.error("Error attaching subReddit to user:", err);
@@ -78,21 +85,23 @@ const createCommunity = (req, res, next) => {
             })
             .catch((err) => {
               console.error("Error saving community:", err);
-              res.status(500).json({ msg: "Server error", subReddit: newCommunity });
+              res
+                .status(500)
+                .json({ message: "Server error", subReddit: newCommunity });
             });
         })
         .catch((err) => {
           console.error("Error checking existing community:", err);
-          res.status(500).json({ msg: "Server error" });
+          res.status(500).json({ message: "Server error" });
         });
     })
     .catch((err) => {
       console.error("Error retrieving user:", err);
-      res.status(500).json({ msg: "Server error" });
+      res.status(500).json({ message: "Server error" });
     });
 };
 
 module.exports = {
   sorting,
-  createCommunity
+  createCommunity,
 };
