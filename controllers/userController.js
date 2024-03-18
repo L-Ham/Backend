@@ -21,7 +21,6 @@ const getUserSettings = (req, res, next) => {
     });
 };
 
-
 const getNotificationSettings = (req, res, next) => {
   const userId = req.userId;
 
@@ -58,10 +57,12 @@ const getProfileSettings = (req, res, next) => {
         NSFW: user.profileSettings.get("NSFW"),
         allowFollow: user.profileSettings.get("allowFollow"),
         contentVisibility: user.profileSettings.get("contentVisibility"),
-        communitiesVisibility: user.profileSettings.get("communitiesVisibility"),
+        communitiesVisibility: user.profileSettings.get(
+          "communitiesVisibility"
+        ),
         clearHistory: user.profileSettings.get("clearHistory"),
       };
-      
+
       res.json({ profileSettings });
     })
     .catch((err) => {
@@ -217,14 +218,21 @@ const checkUserNameAvailability = (req, res, next) => {
 };
 const blockUser = (req, res, next) => {
   const blockedUserName = req.body.UserName;
-  const userId = jwt.verify(req.headers.authorization, process.env.ACCESS_TOKEN_SECRET)._id;
+  const userId = jwt.verify(
+    req.headers.authorization,
+    process.env.ACCESS_TOKEN_SECRET
+  )._id;
   User.findOne({ userName: blockedUserName })
     .then((user) => {
       if (!user) {
         console.error("User not found for username:", blockedUserName);
         return res.status(404).json({ message: "User not found" });
       }
-      User.findByIdAndUpdate(userId, { $push: { blockUsers: user._id } }, { new: true })
+      User.findByIdAndUpdate(
+        userId,
+        { $push: { blockUsers: user._id } },
+        { new: true }
+      )
         .then((updatedUser) => {
           console.log("User blocked:", user.userName);
           res.json({ message: "User blocked", user: updatedUser });
@@ -238,17 +246,24 @@ const blockUser = (req, res, next) => {
       console.error("Error retrieving user:", err);
       res.status(500).json({ message: "Server error" });
     });
-}
+};
 const unblockUser = (req, res, next) => {
   const blockedUserName = req.body.UserName;
-  const userId = jwt.verify(req.headers.authorization, process.env.ACCESS_TOKEN_SECRET)._id;
+  const userId = jwt.verify(
+    req.headers.authorization,
+    process.env.ACCESS_TOKEN_SECRET
+  )._id;
   User.findOne({ userName: blockedUserName })
     .then((user) => {
       if (!user) {
         console.error("User not found for username:", blockedUserName);
         return res.status(404).json({ message: "User not found" });
       }
-      User.findByIdAndUpdate(userId, { $pull: { blockUsers: user._id } }, { new: true })
+      User.findByIdAndUpdate(
+        userId,
+        { $pull: { blockUsers: user._id } },
+        { new: true }
+      )
         .then((updatedUser) => {
           console.log("User unblocked:", user.userName);
           res.json({ message: "User unblocked", user: updatedUser });
@@ -262,7 +277,7 @@ const unblockUser = (req, res, next) => {
       console.error("Error retrieving user:", err);
       res.status(500).json({ message: "Server error" });
     });
-}
+};
 
 module.exports = {
   getUserSettings,
@@ -276,5 +291,5 @@ module.exports = {
   unfollowUser,
   checkUserNameAvailability,
   blockUser,
-  unblockUser
+  unblockUser,
 };

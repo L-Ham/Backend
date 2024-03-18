@@ -7,11 +7,7 @@ const { check } = require("express-validator");
 router.post("/googleSignUp", bodyParser.json(), authController.googleSignUp);
 router.post("/googleLogin", bodyParser.json(), authController.googleLogin);
 router.post("/signUp", bodyParser.json(), authController.signUp);
-router.post(
-  "/login",
-  bodyParser.json(),
-  authController.login
-);
+router.post("/login", bodyParser.json(), authController.login);
 router.post(
   "/forgotUsername",
   bodyParser.json(),
@@ -21,5 +17,10 @@ router.post(
   "/forgotPassword",
   bodyParser.json(),
   authController.forgetPassword
+);
+router.get(
+  "/generateUsernames",
+  bodyParser.json(),
+  authController.generateUserName
 );
 module.exports = router;
