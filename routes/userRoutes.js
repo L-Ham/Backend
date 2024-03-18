@@ -63,10 +63,21 @@ router.patch(
 );
 
 router.get(
-  "/usernameAvailability/:username",
+  "/usernameAvailability",
+  bodyParser.json(),
   userController.checkUserNameAvailability
 );
-router.patch("/blockUser", bodyParser.json(), userController.blockUser);
-router.patch("/unblockUser", bodyParser.json(), userController.unblockUser);
+router.patch(
+  "/blockUser",
+  bodyParser.json(),
+  authenticateToken,
+  userController.blockUser
+);
+router.patch(
+  "/unblockUser",
+  bodyParser.json(),
+  authenticateToken,
+  userController.unblockUser
+);
 
 module.exports = router;
