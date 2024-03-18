@@ -3,7 +3,7 @@ const User = require("../models/user"); // to use it for create community
 const authenticateToken = require("../middleware/authenticateToken");
 
 const checkCommunitynameExists =  (Communityname) => {
-  return  subReddit.findOne({ name: Communityname });
+  return  SubReddit.findOne({ name: Communityname });
 };
 
 const sorting = (req, res, next) => {
@@ -48,7 +48,7 @@ const createCommunity = (req, res, next) => {
             return res.status(400).json({ msg: "Community name already exists" });
           }
 
-          const newCommunity = new subReddit({
+          const newCommunity = new SubReddit({
             name: req.body.name,
             privacy: req.body.privacy,
             moderators: [user],
