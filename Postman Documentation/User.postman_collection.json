@@ -128,7 +128,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"blockUser\":\"ziad\",\r\n    \"muteCommunity\":\"NSFW\"\r\n}",
+					"raw": "{\r\n    \"blockUsers\": [\"65f5f65b7f56ab526462d526\"],\r\n    \"muteCommunities\": \"subredditId\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -281,8 +281,58 @@
 		{
 			"name": "Follow User",
 			"request": {
-				"method": "GET",
-				"header": [],
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlY2Q5OGZlZWIyZmRjNWVjYzkwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3MjI3MzEsImV4cCI6NTAxNzEwNzIyNzMxfQ.NGopSxvR9UNfXrveJVdZAZcELzRowCh4Rvn3NpnziVo",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"usernameToFollow\":\"Marly\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/followUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"followUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unfollow User",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlY2Q5OGZlZWIyZmRjNWVjYzkwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3MjI3MzEsImV4cCI6NTAxNzEwNzIyNzMxfQ.NGopSxvR9UNfXrveJVdZAZcELzRowCh4Rvn3NpnziVo",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"usernameToFollow\":\"Marly\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "http://localhost:5000/user/followUser",
 					"protocol": "http",

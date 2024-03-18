@@ -185,12 +185,32 @@ const editNotificationSettings = (req, res, next) => {
 
 const followUser = (req, res, next) => {
   const userId = req.userId;
-  const userTofollowId = req.body.toFollowId;
+  const usernameToFollow = req.body.usernameToFollow;
   User.findById(userId)
     .then((user) => {
-      user.following.push();
+      User.findOne({ userName: usernameToFollow })
+        .then((userToFollow) => {
+          if (user.following.includes(userToFollow._id)) {
+            res.status(500).json({ message: "User already followed" });
+          } else {
+            user.following.push(userToFollow._id);
+            userToFollow.followers.push(userId);
+            user.save();
+            userToFollow.save();
+            res.status(200).json({ message: "User followed successfully" });
+          }
+        })
+        .catch((err) => {
+          res
+            .status(500)
+            .json({ message: "Failed to find the user to follow", error: err });
+        });
     })
-    .catch(() => {});
+    .catch((err) => {
+      res
+        .status(500)
+        .json({ message: "Follow user Request Failed", error: err });
+    });
 };
 const unfollowUser = (req, res, next) => {
   const userId = req.userId;
@@ -201,7 +221,8 @@ const unfollowUser = (req, res, next) => {
 };
 
 const checkUserNameAvailability = (req, res, next) => {
-  const userName = req.params.username;
+  const userName = req.query.username;
+  console.log("Checking username availability:", userName);
   User.findOne({ userName: userName })
     .then((user) => {
       if (user) {
@@ -217,24 +238,22 @@ const checkUserNameAvailability = (req, res, next) => {
     });
 };
 const blockUser = (req, res, next) => {
-  const blockedUserName = req.body.UserName;
-  const userId = jwt.verify(
-    req.headers.authorization,
-    process.env.ACCESS_TOKEN_SECRET
-  )._id;
+  const blockedUserName = req.body.usernameToBlock;
+  const userId = req.userId;
   User.findOne({ userName: blockedUserName })
-    .then((user) => {
-      if (!user) {
+    .then((userToBlock) => {
+      if (!userToBlock) {
         console.error("User not found for username:", blockedUserName);
         return res.status(404).json({ message: "User not found" });
       }
       User.findByIdAndUpdate(
         userId,
-        { $push: { blockUsers: user._id } },
+        { $push: { blockUsers: userToBlock._id } },
+        { $pull: { following: userToBlock._id } },
         { new: true }
       )
         .then((updatedUser) => {
-          console.log("User blocked:", user.userName);
+          console.log("User blocked:", userToBlock.userName);
           res.json({ message: "User blocked", user: updatedUser });
         })
         .catch((err) => {
@@ -248,11 +267,8 @@ const blockUser = (req, res, next) => {
     });
 };
 const unblockUser = (req, res, next) => {
+  const userId = req.userId;
   const blockedUserName = req.body.UserName;
-  const userId = jwt.verify(
-    req.headers.authorization,
-    process.env.ACCESS_TOKEN_SECRET
-  )._id;
   User.findOne({ userName: blockedUserName })
     .then((user) => {
       if (!user) {
