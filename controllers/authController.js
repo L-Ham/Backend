@@ -114,18 +114,18 @@ const forgetPassword = (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "admin@gmail.com",
-      pass: "123456",
+      user: "r75118106@gmail.com",
+      pass: "L-Ham123456",
     },
   });
   const email = req.body.email;
-  const user = User.find((user) => user.email === email);
+const user = User.findOne({ email });
   if (!user) {
     return res.status(404).send("User not found");
   }
   transporter.sendMail(
     {
-      from: "admon@gmail.com",
+      from: "r75118106@gmail.com",
       to: email,
       subject: "So you wanna reset your Reddit password, huh?",
       text: `Hi there,
