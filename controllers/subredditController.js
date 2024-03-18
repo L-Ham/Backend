@@ -3,11 +3,11 @@ const User = require("../models/user"); // to use it for create community
 const authenticateToken = require("../middleware/authenticateToken");
 
 const checkCommunitynameExists = async (Communityname) => {
-  return await subReddit.findOne({ name: Communityname });
+  return await SubReddit.findOne({ name: Communityname });
 };
 
 const sorting = (req, res, next) => {
-  const subreddit = Subreddit.findById(req.params.id)
+  const subreddit = SubReddit.findById(req.params.id)
     .then((subreddit) => {
       const { Hot, New, Top, Random } = req.params;
       if (Hot == true) {
@@ -43,7 +43,7 @@ const createCommunity = (req, res, next) => {
       if (commName) {
         return res.status(404).json({ msg: "Community name already exists" });
       }
-      subReddit = new subReddit({
+      SubReddit = new SubReddit({
         name: req.body.name,
         privacy: req.body.privacy,
         moderators: [user],
@@ -56,7 +56,7 @@ const createCommunity = (req, res, next) => {
         wiki: req.body.wiki,
         spamFilter: req.body.spamFilter,
       });
-      subReddit
+      SubReddit
         .save()
         .then((subReddit) => {
           user.communities.push(subReddit);
@@ -75,7 +75,7 @@ const createCommunity = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error saving community:", err);
-          res.status(500).json({ msg: "Server error", subReddit: subReddit });
+          res.status(500).json({ msg: "Server error", subReddit: SubReddit });
         });
     })
     .catch((err) => {
