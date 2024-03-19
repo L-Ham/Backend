@@ -85,6 +85,12 @@ router.post(
   authenticateToken,
   userController.addSocialLink
 );
+router.patch(
+  "/socialLink",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editSocialLink
+);
 router.delete(
   "/socialLink",
   bodyParser.json(),

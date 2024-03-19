@@ -399,6 +399,41 @@ const addSocialLink = (req, res, next) => {
       res.status(500).json({ message: "Server error" });
     });
 };
+const editSocialLink = (req, res, next) => {
+  const userId = req.userId;
+  const { linkId, linkOrUsername, appName, logo, displayText } = req.body;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      socialLinkToUpdate = user.socialLinks.find((link) => link._id == linkId);
+      socialLinkToUpdate.linkOrUsername = linkOrUsername;
+      socialLinkToUpdate.appName = appName;
+      socialLinkToUpdate.logo = logo;
+      socialLinkToUpdate.displayText = displayText;
+      user
+        .save()
+        .then((updatedUser) => {
+          console.log("Social link updated: ", updatedUser);
+          res.json({
+            message: "Social link updated successfully",
+            user: updatedUser,
+          });
+        })
+        .catch((err) => {
+          console.error("Error updating social link:", err);
+          res
+            .status(500)
+            .json({ message: "Error updating social link for user", error: err });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ message: "Error Retrieving User", error: err });
+    });
+};
 const deleteSocialLink = (req, res, next) => {
   const userId = req.userId;
   const linkId = req.body.socialLinkId;
@@ -447,5 +482,6 @@ module.exports = {
   blockUser,
   unblockUser,
   addSocialLink,
+  editSocialLink,
   deleteSocialLink,
 };
