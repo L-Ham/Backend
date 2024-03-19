@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"userName\":\"Maghawry\",\n    \"password\":\"345678\"\n}",
+					"raw": "{\n    \"userName\":\"Amr\",\n    \"password\":\"1234\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -210,7 +210,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"userName\": \"Maghawry\",\n    \"email\": \"maghawry@gmail.com\",\n    \"password\": \"345678\"\n}",
+					"raw": "{\n    \"userName\": \"Amr\",\n    \"email\": \"Amr@gmail.com\",\n    \"password\": \"1234\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

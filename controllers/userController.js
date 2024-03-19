@@ -29,12 +29,14 @@ const getNotificationSettings = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
-      console.log("Notification settings: ", user.notificationSettings);
-      res.json({ notificationSettings: user.notificationSettings });
+      res.status(200).json({ notificationSettings: user.notificationSettings });
     })
     .catch((err) => {
-      console.error("Error retrieving notification settings:", err);
-      res.status(500).json({ message: "Server error" });
+      console.log(err);
+      res.status(500).json({
+        message: "Error retrieving notification settings",
+        error: err,
+      });
     });
 };
 const getProfileSettings = (req, res, next) => {
@@ -81,7 +83,6 @@ const editProfileSettings = (req, res, next) => {
       }
       user.profileSettings.set("displayName", req.body.displayName);
       user.profileSettings.set("about", req.body.about);
-      user.socialLinks = req.body.socialLinks;
       user.profileSettings.set("avatarImage", req.body.avatarImage);
       user.profileSettings.set("bannerImage", req.body.bannerImage);
       user.profileSettings.set("NSFW", req.body.NSFW);
@@ -135,9 +136,10 @@ const getSafetyAndPrivacySettings = (req, res, next) => {
       res.status(500).json({ message: "Server error" });
     });
 };
+
+//REDUNDANT
 const editSafetyAndPrivacySettings = (req, res, next) => {
   const userId = req.userId;
-
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -182,10 +184,19 @@ const editNotificationSettings = (req, res, next) => {
       user.notificationSettings.set("mentions", req.body.mentions);
       user.notificationSettings.set("comments", req.body.comments);
       user.notificationSettings.set("upvotesToPosts", req.body.upvotesToPosts);
-      user.notificationSettings.set("upvotesToComments", req.body.upvotesToComments);
-      user.notificationSettings.set("repliesToComments", req.body.repliesToComments);
-      user.notificationSettings.set( "newFollowers", req.body.newFollowers);
-      user.notificationSettings.set("modNotifications", req.body.modNotifications);
+      user.notificationSettings.set(
+        "upvotesToComments",
+        req.body.upvotesToComments
+      );
+      user.notificationSettings.set(
+        "repliesToComments",
+        req.body.repliesToComments
+      );
+      user.notificationSettings.set("newFollowers", req.body.newFollowers);
+      user.notificationSettings.set(
+        "modNotifications",
+        req.body.modNotifications
+      );
       user
         .save()
         .then((user) => {
@@ -340,6 +351,88 @@ const unblockUser = (req, res, next) => {
     });
 };
 
+const addSocialLink = (req, res, next) => {
+  const userId = req.userId;
+  const { linkOrUsername, appName, logo, displayText } = req.body;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      // Count no of social links for the user
+      console.log(user.socialLinks.length);
+      if (user.socialLinks.length >= 5) {
+        console.error("User has reached the maximum number of social links");
+        return res
+          .status(400)
+          .json({ message: "Maximum number of social links reached" });
+      }
+      //Check if the user has a social link with the same link or username
+      // for (let i = 0; i < user.socialLinks.length; i++) {
+      //   if (user.socialLinks[i].linkOrUsername === linkOrUsername) {
+      //     console.error("User already has a social link with the same link");
+      //     return res.status(400).json({
+      //       message: "User already has a social link with the same link",
+      //     });
+      //   }
+      // }
+      user.socialLinks.push({ linkOrUsername, appName, logo, displayText });
+      user
+        .save()
+        .then((updatedUser) => {
+          console.log("Social link added: ", updatedUser);
+          res.json({
+            message: "Social link added successfully",
+            user: updatedUser,
+          });
+        })
+        .catch((err) => {
+          console.error("Error adding social link:", err);
+          res
+            .status(500)
+            .json({ message: "Error adding social link to user", error: err });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ message: "Server error" });
+    });
+};
+const deleteSocialLink = (req, res, next) => {
+  const userId = req.userId;
+  const linkId = req.body.socialLinkId;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      // Find the social link with the given link ID and remove it
+      socialLinkToDelete = user.socialLinks.find((link) => link._id == linkId);
+      user.socialLinks.pull(socialLinkToDelete);
+      user
+        .save()
+        .then((updatedUser) => {
+          console.log("Social link deleted: ", updatedUser);
+          res.json({
+            message: "Social link deleted successfully",
+            user: updatedUser,
+          });
+        })
+        .catch((err) => {
+          console.error("Error deleting social link:", err);
+          res.status(500).json({
+            message: "Error deleting social link from user",
+            error: err,
+          });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ message: "Error Retrieving User", error: err });
+    });
+};
 module.exports = {
   getUserSettings,
   getNotificationSettings,
@@ -353,4 +446,6 @@ module.exports = {
   checkUserNameAvailability,
   blockUser,
   unblockUser,
+  addSocialLink,
+  deleteSocialLink,
 };

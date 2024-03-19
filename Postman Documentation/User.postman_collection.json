@@ -1,14 +1,14 @@
 {
 	"info": {
-		"_postman_id": "c972b770-ef60-4d1c-aa25-304a6fe9a9dc",
+		"_postman_id": "749ac8bd-daae-4813-a019-3f39d5fe385e",
 		"name": "User",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33377382",
-		"_collection_link": "https://solar-star-469904.postman.co/workspace/Reddit~2be89b45-d5ac-483e-9999-7000ac61276c/collection/33377382-c972b770-ef60-4d1c-aa25-304a6fe9a9dc?action=share&source=collection_link&creator=33377382"
+		"_exporter_id": "23392578",
+		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-749ac8bd-daae-4813-a019-3f39d5fe385e?action=share&source=collection_link&creator=23392578"
 	},
 	"item": [
 		{
-			"name": "Username Availability",
+			"name": "Check Username Availability",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -25,7 +25,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/user/usernameAvailability?username=ZiadWareth",
+					"raw": "http://localhost:5000/user/usernameAvailability?username=Maghawr",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -38,7 +38,7 @@
 					"query": [
 						{
 							"key": "username",
-							"value": "ZiadWareth"
+							"value": "Maghawr"
 						}
 					]
 				}
@@ -75,76 +75,6 @@
 							"key": "Authorization",
 							"value": "Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170"
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Profile Settings",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTQ1MTcsImV4cCI6NTAxNzEwNzk0NTE3fQ.e1dwPV9wJffQiZDHUye8l0i_ssOr9YHpwDC8be7BKTI",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"displayName\":\"amr\",\r\n    \"about\":\"i am a software engineer\",\r\n    \"socialLinks\":[{\r\n        \"link\":\"www.instagram.com\",\r\n        \"appName\":\"instagram\"}],\r\n    \"avatarImage\":\"amr's photo\",\r\n    \"bannerImage\":\"amrrr banner\",\r\n    \"NSFW\":false,\r\n    \"allowFollow\":false,\r\n    \"contentVisibility\":true,\r\n    \"communitiesVisibility\":true,\r\n    \"clearHistory\":false\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/user/profileSettings",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"user",
-						"profileSettings"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Safety And Privacy Settings",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTEzNDIsImV4cCI6NTAxNzEwNzkxMzQyfQ.mYN2YHkShg5oXfAXUw2bMzd_Bt6cYOKH8vF92FZNyYk",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"blockUsers\": [\"65f5f65b7f56ab526462d526\"],\r\n    \"muteCommunities\": \"subredditId\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/user/safetyAndPrivacySettings",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"user",
-						"safetyAndPrivacySettings"
 					]
 				}
 			},
@@ -192,86 +122,13 @@
 			"response": []
 		},
 		{
-			"name": "Notifications",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTM2NjUsImV4cCI6NTAxNzEwNzkzNjY1fQ.IlJnlnDVRsUXzw_OIHDqXypCFyU2XWADl1fX_pFV55E",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"inboxMessage\": true,\r\n    \"chatMessages\": true,\r\n    \"chatRequest\": false,\r\n    \"mentions\": true,\r\n    \"comments\": true,\r\n    \"upvotesToPosts\": true,\r\n    \"upvotesToComments\": true,\r\n    \"repliesToComments\": true,\r\n    \"newFollowers\": true,\r\n    \"modNotifications\": true\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/user/notificationsSettings",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"user",
-						"notificationsSettings"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Notifications",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTM2NjUsImV4cCI6NTAxNzEwNzkzNjY1fQ.IlJnlnDVRsUXzw_OIHDqXypCFyU2XWADl1fX_pFV55E",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"inboxMessage\": true,\r\n    \"chatMessages\": true,\r\n    \"chatRequest\": false,\r\n    \"mentions\": true,\r\n    \"comments\": true,\r\n    \"upvotesToPosts\": true,\r\n    \"upvotesToComments\": true,\r\n    \"repliesToComments\": true,\r\n    \"newFollowers\": true,\r\n    \"modNotifications\": true\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/user/notificationsSettings",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"user",
-						"notificationsSettings"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Profile Settings",
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTM2NjUsImV4cCI6NTAxNzEwNzkzNjY1fQ.IlJnlnDVRsUXzw_OIHDqXypCFyU2XWADl1fX_pFV55E",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
 						"type": "text"
 					}
 				],
@@ -291,13 +148,48 @@
 			"response": []
 		},
 		{
-			"name": "Safety And Privacy Settings",
+			"name": "Profile Settings",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"displayName\":\"amr\",\r\n    \"about\":\"i am a COMPUTER engineer\",\r\n    \"avatarImage\":\"amr's photo\",\r\n    \"bannerImage\":\"amrrr banner\",\r\n    \"NSFW\":false,\r\n    \"allowFollow\":true,\r\n    \"contentVisibility\":true,\r\n    \"communitiesVisibility\":true,\r\n    \"clearHistory\":false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/profileSettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"profileSettings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Safety And Privacy Settings",
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTEzNDIsImV4cCI6NTAxNzEwNzkxMzQyfQ.mYN2YHkShg5oXfAXUw2bMzd_Bt6cYOKH8vF92FZNyYk",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
 						"type": "text"
 					}
 				],
@@ -317,13 +209,121 @@
 			"response": []
 		},
 		{
+			"name": "Safety And Privacy Settings",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"blockUsers\": \"65f5f65b7f56ab526462d526\",\r\n  \"muteCommunities\": \"65f896298e6c8994a653a3ed\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/safetyAndPrivacySettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"safetyAndPrivacySettings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Notification Settings",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/notificationsSettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"notificationsSettings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Notification Settings",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"inboxMessage\": true,\r\n    \"chatMessages\": true,\r\n    \"chatRequest\": false,\r\n    \"mentions\": false,\r\n    \"comments\": true,\r\n    \"upvotesToPosts\": true,\r\n    \"upvotesToComments\": true,\r\n    \"repliesToComments\": true,\r\n    \"newFollowers\": true,\r\n    \"modNotifications\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/notificationsSettings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"notificationsSettings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Follow User",
 			"request": {
 				"method": "PATCH",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlY2Q5OGZlZWIyZmRjNWVjYzkwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3MjI3MzEsImV4cCI6NTAxNzEwNzIyNzMxfQ.NGopSxvR9UNfXrveJVdZAZcELzRowCh4Rvn3NpnziVo",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTQ0MDQsImV4cCI6NTAxNzEwNzk0NDA0fQ.dx0kammj4L2HbMHpoRs2AlnEZtKOHtpHQ5_BI5FdsFw",
 						"type": "text"
 					}
 				],
@@ -358,13 +358,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlY2Q5OGZlZWIyZmRjNWVjYzkwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3MjI3MzEsImV4cCI6NTAxNzEwNzIyNzMxfQ.NGopSxvR9UNfXrveJVdZAZcELzRowCh4Rvn3NpnziVo",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTQ0MDQsImV4cCI6NTAxNzEwNzk0NDA0fQ.dx0kammj4L2HbMHpoRs2AlnEZtKOHtpHQ5_BI5FdsFw",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"usernameToFollow\":\"Marly\"\n}",
+					"raw": "{\n    \"usernameToUnfollow\":\"Marly\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -372,7 +372,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/user/followUser",
+					"raw": "http://localhost:5000/user/unfollowUser",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -380,7 +380,112 @@
 					"port": "5000",
 					"path": [
 						"user",
-						"followUser"
+						"unfollowUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Block User",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlY2Q5OGZlZWIyZmRjNWVjYzkwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTExNjIsImV4cCI6NTAxNzEwNzkxMTYyfQ.Io0wcsk6LS8juXEJOOdFq7qPvjxFzrN_nrwhbYIMoBQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"usernameToBlock\":\"Marly\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/blockUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"blockUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Social Link",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"linkOrUsername\":\"www.instagram.com\",\n    \"appName\":\"instagram\",\n    \"logo\":\"Insta Logo\",\n    \"displayText\":\"My instagram profile\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/socialLink",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"socialLink"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Social Link",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"socialLinkId\":\"65f9a2b858e967b6afeaa851\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/socialLink",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"socialLink"
 					]
 				}
 			},

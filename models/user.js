@@ -47,8 +47,23 @@ const userSchema = new Schema({
   ],
   socialLinks: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "socialLink",
+      linkOrUsername: {
+        type: String,
+        required: true,
+        unique: true,
+      },
+      appName: {
+        type: String,
+        required: true,
+      },
+      logo: {
+        type: String,
+        required: true,
+      },
+      displayText: {
+        type: String,
+        required: false,
+      },
     },
   ],
   bannerImage: {

@@ -79,5 +79,16 @@ router.patch(
   authenticateToken,
   userController.unblockUser
 );
-
+router.post(
+  "/socialLink",
+  bodyParser.json(),
+  authenticateToken,
+  userController.addSocialLink
+);
+router.delete(
+  "/socialLink",
+  bodyParser.json(),
+  authenticateToken,
+  userController.deleteSocialLink
+);
 module.exports = router;
