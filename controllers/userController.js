@@ -360,23 +360,12 @@ const addSocialLink = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
-      // Count no of social links for the user
-      console.log(user.socialLinks.length);
       if (user.socialLinks.length >= 5) {
         console.error("User has reached the maximum number of social links");
         return res
           .status(400)
           .json({ message: "Maximum number of social links reached" });
       }
-      //Check if the user has a social link with the same link or username
-      // for (let i = 0; i < user.socialLinks.length; i++) {
-      //   if (user.socialLinks[i].linkOrUsername === linkOrUsername) {
-      //     console.error("User already has a social link with the same link");
-      //     return res.status(400).json({
-      //       message: "User already has a social link with the same link",
-      //     });
-      //   }
-      // }
       user.socialLinks.push({ linkOrUsername, appName, logo, displayText });
       user
         .save()
