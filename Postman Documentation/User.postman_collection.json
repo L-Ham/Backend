@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "749ac8bd-daae-4813-a019-3f39d5fe385e",
+		"_postman_id": "3e81f283-e345-458f-bb99-9530ca3eeba2",
 		"name": "User",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23392578",
-		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-749ac8bd-daae-4813-a019-3f39d5fe385e?action=share&source=collection_link&creator=23392578"
+		"_exporter_id": "32069311"
 	},
 	"item": [
 		{
@@ -323,7 +322,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTQ0MDQsImV4cCI6NTAxNzEwNzk0NDA0fQ.dx0kammj4L2HbMHpoRs2AlnEZtKOHtpHQ5_BI5FdsFw",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4NjQwNTYsImV4cCI6NTAxNzEwODY0MDU2fQ.8BObyFYwYzi5HKc48CB_0Wq3t7SnAkjAjxz9CQyevHo",
 						"type": "text"
 					}
 				],
@@ -358,7 +357,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTQ0MDQsImV4cCI6NTAxNzEwNzk0NDA0fQ.dx0kammj4L2HbMHpoRs2AlnEZtKOHtpHQ5_BI5FdsFw",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4NjQwNTYsImV4cCI6NTAxNzEwODY0MDU2fQ.8BObyFYwYzi5HKc48CB_0Wq3t7SnAkjAjxz9CQyevHo",
 						"type": "text"
 					}
 				],
@@ -428,13 +427,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4NjQwNTYsImV4cCI6NTAxNzEwODY0MDU2fQ.8BObyFYwYzi5HKc48CB_0Wq3t7SnAkjAjxz9CQyevHo",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"linkOrUsername\":\"www.instagram.com\",\n    \"appName\":\"instagram\",\n    \"logo\":\"Insta Logo\",\n    \"displayText\":\"My instagram profile\"\n}",
+					"raw": "{\n    \"linkOrUsername\":\"www.whatsapp.com\",\n    \"appName\":\"whatsapp\",\n    \"logo\":\"whatsapp Logo\",\n    \"displayText\":\"Marly's profile\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -463,13 +462,48 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4NjQwNTYsImV4cCI6NTAxNzEwODY0MDU2fQ.8BObyFYwYzi5HKc48CB_0Wq3t7SnAkjAjxz9CQyevHo",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"socialLinkId\":\"65f9a2b858e967b6afeaa851\"\n}",
+					"raw": "{\n    \"socialLinkId\":\"65f9bb06329e908e7ad2c2bc\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/socialLink",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"socialLink"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Social Link",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4NjQwNTYsImV4cCI6NTAxNzEwODY0MDU2fQ.8BObyFYwYzi5HKc48CB_0Wq3t7SnAkjAjxz9CQyevHo",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"linkId\":\"65f9b760329e908e7ad2c2a1\",\r\n    \"linkOrUsername\":\"www.facebook.com\",\r\n    \"appName\":\"facebook\",\r\n    \"logo\":\"facebook logo\",\r\n    \"displayText\":\"Marly's facebook\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
