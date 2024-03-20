@@ -237,6 +237,7 @@ const followUser = (req, res, next) => {
           } else if (user.blockUsers.includes(userToFollow._id)) {
             user.blockUsers.remove(userToFollow._id);
             user.save();
+            user.following.push(userToFollow._id);
             userToFollow.followers.push(userId);
             userToFollow.save();
             res.status(200).json({ message: "User followed successfully" });
