@@ -82,7 +82,7 @@ const forgetUsername = async (req, res, next) => {
       secure: true,
       auth: {
         user: "r75118106@gmail.com",
-        pass: "L-Ham123456",
+        pass: "bcmiawurnnoaxoeg",
       },
     });
   
@@ -121,10 +121,13 @@ const forgetUsername = async (req, res, next) => {
 const forgetPassword = (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
-    auth: {
-      user: "r75118106@gmail.com",
-      pass: "L-Ham123456",
-    },
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: "r75118106@gmail.com",
+        pass: "bcmiawurnnoaxoeg",
+      },
   });
   const email = req.body.email;
   const user = User.find((user) => user.email === email);
