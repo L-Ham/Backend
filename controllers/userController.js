@@ -1,6 +1,8 @@
 const User = require("../models/user");
 const authenticateToken = require("../middleware/authenticateToken");
 const jwt = require("jsonwebtoken");
+const { updateOne } = require("../models/socialLink");
+const user = require("../models/user");
 
 const getUserSettings = (req, res, next) => {
   const userId = req.userId;
@@ -217,6 +219,8 @@ const editNotificationSettings = (req, res, next) => {
     });
 };
 
+
+
 const followUser = (req, res, next) => {
   const userId = req.userId;
   const usernameToFollow = req.body.usernameToFollow;
@@ -302,29 +306,40 @@ const blockUser = (req, res, next) => {
         console.error("User not found for username:", blockedUserName);
         return res.status(404).json({ message: "User not found" });
       }
-      User.findByIdAndUpdate(
-        userId,
-        { $push: { blockUsers: userToBlock._id } },
-        { $pull: { following: userToBlock._id } },
-        { new: true }
-      )
-        .then((updatedUser) => {
-          console.log("User blocked:", userToBlock.userName);
-          res.json({ message: "User blocked", user: updatedUser });
-        })
+      userToBlock.following.pull(userId);
+      userToBlock.save();
+
+      
+      User.findById(userId)
+      .then((user) => {
+        if (user.blockUsers.includes(userToBlock._id)) {
+          console.error("User already blocked:", userToBlock.userName);
+          return res.status(409).json({ message: "User already blocked" });
+        }
+        user.blockUsers.push(userToBlock._id);
+        user.followers.pull(userToBlock._id);
+        
+        user.save()
+          .then((updatedUser) => {
+            console.log("User blocked:", userToBlock.userName);
+            res.json({ message: "User blocked", user: updatedUser });
+          })
+
         .catch((err) => {
           console.error("Error blocking user:", err);
           res.status(500).json({ message: "Server error" });
         });
+      })
+      .catch((err) => {
+        console.error("Error retrieving user:", err);
+        res.status(500).json({ message: "Server error" });
+      });
     })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
-    });
 };
+
 const unblockUser = (req, res, next) => {
   const userId = req.userId;
-  const blockedUserName = req.body.UserName;
+  const blockedUserName = req.body.UserNameToUnblock;
   User.findOne({ userName: blockedUserName })
     .then((user) => {
       if (!user) {
@@ -350,6 +365,74 @@ const unblockUser = (req, res, next) => {
       res.status(500).json({ message: "Server error" });
     });
 };
+
+const editFeedSettings = (req, res, next) => {
+  const userId = req.userId;  
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      user.feedSettings.set("showNSFW", req.body.showNSFW);
+      user.feedSettings.set("blurNSFW", req.body.blurNSFW);
+      user.feedSettings.set("enableHomeFeedRecommendations", req.body.enableHomeFeedRecommendations);
+      user.feedSettings.set("autoplayMedia", req.body.autoplayMedia);
+      user.feedSettings.set("reduceAnimations", req.body.reduceAnimations);
+      user.feedSettings.set("communityThemes", req.body.communityThemes);
+      user.feedSettings.set("communityContentSort", req.body.communityContentSort);
+      user.feedSettings.set("rememberPerCommunity", req.body.rememberPerCommunity);
+      user.feedSettings.set("globalContentView", req.body.globalContentView);
+      user.feedSettings.set("openPostsInNewTab", req.body.openPostsInNewTab);
+      user.feedSettings.set("defaultToMarkdown", req.body.defaultToMarkdown);
+      user.save()
+        .then((user) => {
+          console.log("Feed settings updated: ", user);
+          res.json({
+            message: "User Feed settings updated successfully",
+            user: user,
+          });
+        })
+        .catch((err) => {
+          console.error("Error updating Feed settings:", err);
+          res.status(500).json({ message: "Server error" });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ message: "Server error" });
+    });
+};
+
+const viewFeedSettings = (req, res, next) => {
+  const userId = req.userId;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      const feedSettings = {
+        showNSFW: user.feedSettings.get("showNSFW"),
+        blurNSFW: user.feedSettings.get("blurNSFW"),
+        enableHomeFeedRecommendations: user.feedSettings.get("enableHomeFeedRecommendations"),
+        autoplayMedia: user.feedSettings.get("autoplayMedia"),
+        reduceAnimations: user.feedSettings.get("reduceAnimations"),
+        communityThemes: user.feedSettings.get("communityThemes"),
+        communityContentSort: user.feedSettings.get("communityContentSort"),
+        rememberPerCommunity: user.feedSettings.get("rememberPerCommunity"),
+        globalContentView: user.feedSettings.get("globalContentView"),
+        openPostsInNewTab: user.feedSettings.get("openPostsInNewTab"),
+        defaultToMarkdown: user.feedSettings.get("defaultToMarkdown"),
+      };
+      res.json({ feedSettings });
+    })
+    .catch((err) => {
+      console.error("Error retrieving feed settings:", err);
+      res.status(500).json({ message: "Server error" });
+    });
+};
+
 
 const addSocialLink = (req, res, next) => {
   const userId = req.userId;
@@ -473,4 +556,6 @@ module.exports = {
   addSocialLink,
   editSocialLink,
   deleteSocialLink,
+  editFeedSettings,
+  viewFeedSettings,
 };

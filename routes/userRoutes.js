@@ -79,6 +79,18 @@ router.patch(
   authenticateToken,
   userController.unblockUser
 );
+router.patch(
+  "/feedSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editFeedSettings
+)
+router.get(
+  "/feedSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.viewFeedSettings
+)
 router.post(
   "/socialLink",
   bodyParser.json(),
