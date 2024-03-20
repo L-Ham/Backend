@@ -224,9 +224,11 @@ const editNotificationSettings = (req, res, next) => {
 const followUser = (req, res, next) => {
   const userId = req.userId;
   const usernameToFollow = req.body.usernameToFollow;
+  const userToFollow = new User();
+
   User.findById(userId)
     .then((user) => {
-      User.findOne({ userName: usernameToFollow })
+      userToFollow.findOne({ userName: usernameToFollow })
         .then((userToFollow) => {
           if (user.following.includes(userToFollow._id)) {
             res.status(500).json({ message: "User already followed" });
