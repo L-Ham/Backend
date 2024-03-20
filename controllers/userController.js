@@ -230,6 +230,16 @@ const followUser = (req, res, next) => {
         .then((userToFollow) => {
           if (user.following.includes(userToFollow._id)) {
             res.status(500).json({ message: "User already followed" });
+          } else if (userToFollow.blockUsers.includes(user._id)) {
+            res.status(500).json({ message: "User blocked you" });
+          } else if (user._id == userToFollow._id) {
+            res.status(500).json({ message: "You can't follow yourself" });
+          } else if (user.blockUsers.includes(userToFollow._id)) {
+            user.blockUsers.remove(userToFollow._id);
+            user.save();
+            userToFollow.followers.push(userId);
+            userToFollow.save();
+            res.status(200).json({ message: "User followed successfully" });
           } else {
             user.following.push(userToFollow._id);
             userToFollow.followers.push(userId);
@@ -309,31 +319,31 @@ const blockUser = (req, res, next) => {
       userToBlock.following.pull(userId);
       userToBlock.save();
 
-      
-      User.findById(userId)
-      .then((user) => {
-        if (user.blockUsers.includes(userToBlock._id)) {
-          console.error("User already blocked:", userToBlock.userName);
-          return res.status(409).json({ message: "User already blocked" });
-        }
-        user.blockUsers.push(userToBlock._id);
-        user.followers.pull(userToBlock._id);
-        
-        user.save()
-          .then((updatedUser) => {
-            console.log("User blocked:", userToBlock.userName);
-            res.json({ message: "User blocked", user: updatedUser });
-          })
 
+      User.findById(userId)
+        .then((user) => {
+          if (user.blockUsers.includes(userToBlock._id)) {
+            console.error("User already blocked:", userToBlock.userName);
+            return res.status(409).json({ message: "User already blocked" });
+          }
+          user.blockUsers.push(userToBlock._id);
+          user.followers.pull(userToBlock._id);
+
+          user.save()
+            .then((updatedUser) => {
+              console.log("User blocked:", userToBlock.userName);
+              res.json({ message: "User blocked", user: updatedUser });
+            })
+
+            .catch((err) => {
+              console.error("Error blocking user:", err);
+              res.status(500).json({ message: "Server error" });
+            });
+        })
         .catch((err) => {
-          console.error("Error blocking user:", err);
+          console.error("Error retrieving user:", err);
           res.status(500).json({ message: "Server error" });
         });
-      })
-      .catch((err) => {
-        console.error("Error retrieving user:", err);
-        res.status(500).json({ message: "Server error" });
-      });
     })
 };
 
@@ -367,7 +377,7 @@ const unblockUser = (req, res, next) => {
 };
 
 const editFeedSettings = (req, res, next) => {
-  const userId = req.userId;  
+  const userId = req.userId;
   User.findById(userId)
     .then((user) => {
       if (!user) {
