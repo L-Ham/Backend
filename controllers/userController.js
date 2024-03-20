@@ -227,41 +227,48 @@ const followUser = (req, res, next) => {
 
   User.findById(userId)
     .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
       User.findOne({ userName: usernameToFollow })
         .then((userToFollow) => {
-          if (user.following.includes(userToFollow._id)) {
-            res.status(500).json({ message: "User already followed" });
-          } else if (userToFollow.blockUsers.includes(user._id)) {
-            res.status(500).json({ message: "User blocked you" });
-          } else if (user._id == userToFollow._id) {
-            res.status(500).json({ message: "You can't follow yourself" });
-          } else if (user.blockUsers.includes(userToFollow._id)) {
-            user.blockUsers.remove(userToFollow._id);
-            user.following.push(userToFollow._id);
-            user.save();
-            userToFollow.followers.push(userId);
-            userToFollow.save();
-            res.status(200).json({ message: "User followed successfully", user: userToFollow });
-          } else {
-            user.following.push(userToFollow._id);
-            userToFollow.followers.push(userId);
-            user.save();
-            userToFollow.save();
-            res.status(200).json({ message: "User followed successfully", user: userToFollow });
+          if (!userToFollow) {
+            return res.status(404).json({ message: "User to follow not found" });
           }
+
+          if (userToFollow._id.equals(userId)) {
+            return res.status(400).json({ message: "You can't follow yourself" });
+          }
+
+          if (user.blockUsers.includes(userToFollow._id)) {
+            return res.status(400).json({ message: "You have been blocked by this user" });
+          }
+
+          if (user.following.includes(userToFollow._id)) {
+            return res.status(400).json({ message: "User already followed" });
+          }
+
+          user.following.push(userToFollow._id);
+          userToFollow.followers.push(userId);
+
+          Promise.all([user.save(), userToFollow.save()])
+            .then(() => {
+              res.status(200).json({ message: "User followed successfully", user: userToFollow });
+            })
+            .catch((err) => {
+              res.status(500).json({ message: "Failed to follow user", error: err });
+            });
         })
         .catch((err) => {
-          res
-            .status(500)
-            .json({ message: "Failed to find the user to follow", error: err });
+          res.status(500).json({ message: "Failed to find the user to follow", error: err });
         });
     })
     .catch((err) => {
-      res
-        .status(500)
-        .json({ message: "Follow user Request Failed", error: err });
+      res.status(500).json({ message: "Failed to find the current user", error: err });
     });
 };
+
 const unfollowUser = (req, res, next) => {
   const userId = req.userId;
   const usernameToUnfollow = req.body.usernameToUnfollow;
