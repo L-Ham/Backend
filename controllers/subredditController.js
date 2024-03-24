@@ -1,6 +1,5 @@
 const SubReddit = require("../models/subReddit");
-const User = require("../models/user"); // to use it for create community
-const authenticateToken = require("../middleware/authenticateToken");
+const User = require("../models/user");
 
 const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
