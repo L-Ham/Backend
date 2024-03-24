@@ -53,8 +53,8 @@ const createCommunity = (req, res, next) => {
           const newCommunity = new SubReddit({
             name: req.body.name,
             privacy: req.body.privacy,
-            moderators: [user],
-            members: [user],
+            moderators: [user._id],
+            members: [user._id],
             ageRestriction: req.body.ageRestriction,
             description: req.body.description,
             title: req.body.title,
@@ -67,7 +67,7 @@ const createCommunity = (req, res, next) => {
           newCommunity
             .save()
             .then((savedCommunity) => {
-              user.communities.push(savedCommunity);
+              user.communities.push(savedCommunity._id);
               user
                 .save()
                 .then((savedUser) => {
