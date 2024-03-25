@@ -3,39 +3,29 @@ const { boolean } = require("webidl-conversions");
 
 const Schema = mongoose.Schema;
 const postSchema = new Schema({
-  post_ID: {
-    type: Number,
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
     required: true,
-    unique: true,
+  },
+  subReddit: {
+    type: Schema.Types.ObjectId,
+    ref: "subReddit",
+    required: false,
+  },
+  title: {
+    type: String,
+    required: true,
+    unique: true
   },
   content: {
     type: String,
-    required: true,
+    required: true
   },
-  upvotes: {
+  votes: {
     type: Number,
-    required: true,
-    default: 0,
+    required: true
   },
-  downvotes: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
-  upvotedUsers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
-    },
-  ],
-  downvotedUsers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
-    },
-  ],
   title: {
     type: String,
     required: true,
@@ -57,8 +47,9 @@ const postSchema = new Schema({
   },
   comments: {
     type: [Schema.Types.ObjectId],
-    ref: "comment",
-  },
+    ref: "comment"
+  }
+  
 });
 
 module.exports = mongoose.model("post", postSchema);
