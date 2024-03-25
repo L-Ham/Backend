@@ -536,6 +536,10 @@ const deleteSocialLink = (req, res, next) => {
       }
       // Find the social link with the given link ID and remove it
       socialLinkToDelete = user.socialLinks.find((link) => link._id == linkId);
+      if(!socialLinkToDelete) {
+        console.error("Social link not found for link ID:", linkId);
+        return res.status(404).json({ message: "Social link not found" });
+      }
       user.socialLinks.pull(socialLinkToDelete);
       user
         .save()
