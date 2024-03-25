@@ -20,6 +20,13 @@ const commentSchema=new Schema({
         type:String,
         required: true
     },
+    replies:[
+        {
+            type: [Schema.Types.ObjectId],
+            ref: "comment",
+            required: false,
+        }
+    ],
     parentCommentId:[
         {
             type: [Schema.Types.ObjectId],
