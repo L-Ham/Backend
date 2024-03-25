@@ -45,14 +45,14 @@ const userSchema = new Schema({
       required: false,
     },
   ],
-  savedPost: [
+  savedPosts: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
       required: false,
     },
   ],
-  hidePost: [
+  hidePosts: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
