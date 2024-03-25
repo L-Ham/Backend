@@ -17,7 +17,7 @@ router.patch(
     commentController.unhideComment  
 );
 
-router.patch(
+router.post(
     "/addComment",
     bodyParser.json(),
     authenticateToken,

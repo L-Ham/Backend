@@ -66,8 +66,6 @@ const createComment = (req, res, next) => {
                     userId: userId,
                     text: req.body.text,
                     parentCommentId: req.body.parentCommentId,
-                    replies: [],
-                    votes: 0,
                     isHidden: req.body.isHidden,
                 });
                 comment.save()
