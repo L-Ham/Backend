@@ -45,7 +45,7 @@ const unhideComment = (req, res, next) => {
 }
 
 const createComment = (req, res) => {
-    const userId = req.body.userId;
+    const userId = req.userId;
 
     User.findById(userId)
         .then((user) => {

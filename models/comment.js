@@ -20,10 +20,13 @@ const commentSchema=new Schema({
         type:String,
         required:false
     },
-    parentCommentId:{
-        type:Number,
-        required:true
-    },
+    parentCommentId:[
+        {
+            type: [Schema.Types.ObjectId],
+            ref: "comment",
+            required: false,
+        }
+    ],
     votes:{
         type:Number,
         required:false
