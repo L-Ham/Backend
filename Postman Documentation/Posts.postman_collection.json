@@ -201,7 +201,7 @@
 			"response": []
 		},
 		{
-			"name": "unlockPost",
+			"name": "UnlockPost",
 			"request": {
 				"method": "PUT",
 				"header": [],
@@ -282,6 +282,35 @@
 					"path": [
 						"post",
 						"hide"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unhide Post",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"postId\":\"123456\",\n    \"hidden\":\"True\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/post/unhide",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"post",
+						"unhide"
 					]
 				}
 			},
