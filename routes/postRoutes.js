@@ -44,25 +44,4 @@ router.delete(
     postController.unhidePost
 );
 
-router.delete(
-    "/unsave",
-    bodyParser.json(),
-    authenticateToken,
-    postController.unsavePost
-);
-
-router.patch(
-    "/hide",
-    bodyParser.json(),
-    authenticateToken,
-    postController.hidePost
-);
-
-router.delete(
-    "/unhide",
-    bodyParser.json(),
-    authenticateToken,
-    postController.unhidePost
-);
-
 module.exports = router;
