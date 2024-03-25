@@ -11,8 +11,8 @@ const savePost = (req, res, next) => {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const post = new Post(req.body.Post);
-            user.savedPost.push(post);
+            //const post = new Post(req.body.Post);
+            user.savedPost.push(req.body.Post);
 
             user.save()
                 .then(() => {
