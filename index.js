@@ -18,13 +18,13 @@ mongoose
       const userRoutes = require("./routes/userRoutes");
       const authRoutes = require("./routes/authRoutes");
       const socialLinkRoutes = require("./routes/socialLinkRoutes");
-      // const postRoutes = require("./routes/postRoutes");
+      const postRoutes = require("./routes/postRoutes");
       // const commentRoutes = require("./routes/commentRoutes");
       const subredditRoutes = require("./routes/subredditRoutes");
       app.use("/user", userRoutes);
       app.use("/auth", authRoutes);
       app.use("/socialLink", socialLinkRoutes);
-      // app.use("/post", postRoutes);
+      app.use("/post", postRoutes);
       // app.use("/comment", commentRoutes);
       app.use("/subreddit", subredditRoutes);
       app.get("/", function (req, res) {
