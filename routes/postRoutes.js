@@ -10,5 +10,17 @@ router.patch(
     authenticateToken,
     postController.savePost
   );
+  router.patch(
+    "/upvote",
+    bodyParser.json(),
+    authenticateToken,
+    postController.upvote
+  );
+  router.post(
+    "/downvote",
+    bodyParser.json(),
+    authenticateToken,
+    postController.downvote
+  );
 
 module.exports = router;

@@ -52,6 +52,20 @@ const userSchema = new Schema({
       required: false,
     },
   ],
+  upvotedPosts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: false,
+    },
+  ],
+  downvotedPosts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: false,
+    },
+  ],
   socialLinks: [
     {
       linkOrUsername: {
