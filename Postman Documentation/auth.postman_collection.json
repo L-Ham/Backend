@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"userName\":\"Amr\",\n    \"password\":\"1234\"\n}",
+					"raw": "{\n    \"userName\":\"test0\",\n    \"password\":\"123456\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -117,7 +117,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"ziad@yahoo.com\"\r\n}",
+					"raw": "{\r\n    \"email\":\"ziad.wareth@gmail.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -210,7 +210,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"userName\": \"Amr\",\n    \"email\": \"Amr@gmail.com\",\n    \"password\": \"1234\"\n}",
+					"raw": "{\n    \"userName\": \"test0\",\n    \"email\": \"test0@gmail.com\",\n    \"password\": \"123456\",\n    \"gender\":\"Male\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
