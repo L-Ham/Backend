@@ -10,7 +10,12 @@ router.post(
     authenticateToken,
     postController.createPost
   );
-
+router.patch(
+    "/editPost",
+    bodyParser.json(),
+    authenticateToken,
+    postController.editPost
+  );
 router.patch(
     "/save",
     bodyParser.json(),
