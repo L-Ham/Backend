@@ -28,5 +28,9 @@ const commentSchema=new Schema({
         type:Number,
         required:false
     },
+    isHidden:{
+        type:Boolean,
+        required: false
+    },
 });
 module.exports=mongoose.model('comment',commentSchema);
