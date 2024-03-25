@@ -25,4 +25,11 @@ router.patch(
     postController.hidePost
 );
 
+router.delete(
+    "/unhide",
+    bodyParser.json(),
+    authenticateToken,
+    postController.unhidePost
+);
+
 module.exports = router;
