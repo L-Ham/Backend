@@ -4,6 +4,13 @@ const postController = require("../controllers/postController");
 const bodyParser = require("body-parser");
 const authenticateToken = require("../middleware/authenticateToken");
 
+router.post(
+    "/createPost",
+    bodyParser.json(),
+    authenticateToken,
+    postController.createPost
+  );
+
 router.patch(
     "/save",
     bodyParser.json(),
