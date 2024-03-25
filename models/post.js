@@ -6,40 +6,59 @@ const postSchema = new Schema({
   post_ID: {
     type: Number,
     required: true,
-    unique: true
+    unique: true,
   },
   content: {
     type: String,
-    required: true
+    required: true,
   },
-  votes: {
+  upvotes: {
     type: Number,
-    required: true
+    required: true,
+    default: 0,
   },
+  downvotes: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  upvotedUsers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+  ],
+  downvotedUsers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+  ],
   title: {
     type: String,
-    required: true
+    required: true,
   },
   isNSFW: {
     type: Boolean,
     required: true,
-    default: false
+    default: false,
   },
   isSpoiler: {
     type: Boolean,
     required: true,
-    default: false
+    default: false,
   },
   isLocked: {
     type: Boolean,
     required: true,
-    default: false
+    default: false,
   },
   comments: {
     type: [Schema.Types.ObjectId],
-    ref: "comment"
-  }
-  
+    ref: "comment",
+  },
 });
 
 module.exports = mongoose.model("post", postSchema);

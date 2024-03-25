@@ -4,24 +4,6 @@ const jwt = require("jsonwebtoken");
 const { updateOne } = require("../models/socialLink");
 const user = require("../models/user");
 
-const getUserSettings = (req, res, next) => {
-  const userId = req.userId;
-
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      console.log("User settings: ", user);
-      res.json({ gender: user.gender, email: user.email });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user settings:", err);
-      res.status(500).json({ message: "Server error" });
-    });
-};
-
 const getNotificationSettings = (req, res, next) => {
   const userId = req.userId;
 
@@ -280,12 +262,10 @@ const followUser = (req, res, next) => {
 
           Promise.all([user.save(), userToFollow.save()])
             .then(() => {
-              res
-                .status(200)
-                .json({
-                  message: "User followed successfully",
-                  user: userToFollow,
-                });
+              res.status(200).json({
+                message: "User followed successfully",
+                user: userToFollow,
+              });
             })
             .catch((err) => {
               res
@@ -362,6 +342,7 @@ const blockUser = (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
     userToBlock.following.pull(userId);
+    userToBlock.followers.pull(userId);
     userToBlock.save();
 
     User.findById(userId)
@@ -371,6 +352,7 @@ const blockUser = (req, res, next) => {
           return res.status(409).json({ message: "User already blocked" });
         }
         user.blockUsers.push(userToBlock._id);
+        user.following.pull(userToBlock._id);
         user.followers.pull(userToBlock._id);
 
         user
@@ -562,12 +544,10 @@ const editSocialLink = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error updating social link:", err);
-          res
-            .status(500)
-            .json({
-              message: "Error updating social link for user",
-              error: err,
-            });
+          res.status(500).json({
+            message: "Error updating social link for user",
+            error: err,
+          });
         });
     })
     .catch((err) => {
@@ -584,7 +564,6 @@ const deleteSocialLink = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
-      // Find the social link with the given link ID and remove it
       socialLinkToDelete = user.socialLinks.find((link) => link._id == linkId);
       user.socialLinks.pull(socialLinkToDelete);
       user
@@ -609,8 +588,39 @@ const deleteSocialLink = (req, res, next) => {
       res.status(500).json({ message: "Error Retrieving User", error: err });
     });
 };
+
+const updateGender = (req, res, next) => {
+  const userId = req.userId;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      user.gender = req.body.gender;
+      user
+        .save()
+        .then((updatedUser) => {
+          res.status(200).json({
+            message: "User gender updated succesfully",
+            user: updatedUser,
+          });
+        })
+        .catch((err) => {
+          return res.status(500).json({
+            message: "Failed to update User Gender",
+            error: err,
+          });
+        });
+    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ message: "ERROR Retreiving user", error: err });
+    });
+};
 module.exports = {
-  getUserSettings,
+  getAccountSettings,
   getNotificationSettings,
   editNotificationSettings,
   getProfileSettings,
@@ -627,5 +637,5 @@ module.exports = {
   deleteSocialLink,
   editFeedSettings,
   viewFeedSettings,
-  getAccountSettings,
+  updateGender,
 };

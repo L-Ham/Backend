@@ -45,6 +45,20 @@ const userSchema = new Schema({
       required: false,
     },
   ],
+  upvotedPosts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: false,
+    },
+  ],
+  downvotedPosts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: false,
+    },
+  ],
   socialLinks: [
     {
       linkOrUsername: {
@@ -121,20 +135,20 @@ const userSchema = new Schema({
   },
   feedSettings: {
     type: Map,
-    of: String,
+    of: mongoose.Schema.Types.Mixed,
     required: true,
     default: {
-      showNSFW: "true",
-      blurNSFW: "true",
-      enableHomeFeedRecommendations: "true",
-      autoplayMedia: "true",
-      reduceAnimations: "true",
-      communityThemes: "true",
+      showNSFW: true,
+      blurNSFW: true,
+      enableHomeFeedRecommendations: true,
+      autoplayMedia: true,
+      reduceAnimations: true,
+      communityThemes: true,
       communityContentSort: "Hot",
-      rememberPerCommunity: "true",
+      rememberPerCommunity: true,
       globalContentView: "Card",
-      openPostsInNewTab: "true",
-      defaultToMarkdown: "true",
+      openPostsInNewTab: true,
+      defaultToMarkdown: true,
     },
   },
   communities: {
