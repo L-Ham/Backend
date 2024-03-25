@@ -82,7 +82,7 @@ const forgetUsername = async (req, res, next) => {
       secure: true,
       auth: {
         user: "r75118106@gmail.com",
-        pass: "L-Ham123456",
+        pass: "bcmiawurnnoaxoeg",
       },
     });
   
@@ -121,10 +121,13 @@ const forgetUsername = async (req, res, next) => {
 const forgetPassword = (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
-    auth: {
-      user: "r75118106@gmail.com",
-      pass: "L-Ham123456",
-    },
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: "r75118106@gmail.com",
+        pass: "bcmiawurnnoaxoeg",
+      },
   });
   const email = req.body.email;
   const user = User.find((user) => user.email === email);
@@ -151,6 +154,20 @@ const forgetPassword = (req, res, next) => {
     }
   );
 };
+
+const resetPassword = async (req, res, next) => {
+  const { token, password } = req.body;
+  const user = User.find((user) => user.token === token);
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(password, salt);
+  res.send("Password reset successfully");
+};
+
+
+
 
 const login = async (req, res) => {
   const errors = validationResult(req);
@@ -259,4 +276,5 @@ module.exports = {
   logout,
   forgetPassword,
   generateUserName,
+  resetPassword,
 };
