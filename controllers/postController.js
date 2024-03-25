@@ -90,6 +90,45 @@ const createPost = (req, res, next) => {
         return Promise.all([newPost.save(), subReddit.save()]);
     }
 }
+const editPost = (req, res, next) => {
+    const postId = req.params.postId;
+    const userId = req.userId;
+
+    Post.findById(postId)
+        .then((post) => {
+            if (!post) {
+                console.error("Post not found for post ID:", postId);
+                return res.status(404).json({ message: "Post not found" });
+            }
+
+            if (post.user.toString() !== userId) {
+                console.error("User not authorized to edit post");
+                return res.status(401).json({ message: "User not authorized to edit post" });
+            }
+
+            post.title = req.body.title || post.title;
+            post.content = req.body.content || post.content;
+            post.type = req.body.type || post.type;
+            post.isNSFW = req.body.isNSFW || post.isNSFW;
+            post.isSpoiler = req.body.isSpoiler || post.isSpoiler;
+            post.isLocked = req.body.isLocked || post.isLocked;
+            post.isOc = req.body.isOc || post.isOc;
+            post.poll = req.body.poll || post.poll;
+
+            post.save()
+                .then(() => {
+                    res.status(200).json({ message: "Post updated successfully" });
+                })
+                .catch((error) => {
+                    console.error("Error updating post:", error);
+                    res.status(500).json({ message: "Error updating post" });
+                });
+        })
+        .catch((error) => {
+            console.error("Error finding post:", error);
+            res.status(500).json({ message: "Error finding post" });
+        });
+};
 
 const savePost = (req, res, next) => {
     const userId = req.userId;
@@ -121,5 +160,6 @@ const savePost = (req, res, next) => {
 
 module.exports = {
     savePost,
-    createPost
+    createPost,
+    editPost
 };
