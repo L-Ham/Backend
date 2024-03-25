@@ -9,6 +9,13 @@ router.patch(
     bodyParser.json(),
     authenticateToken,
     postController.savePost
+);
+
+router.delete(
+    "/unsave",
+    bodyParser.json(),
+    authenticateToken,
+    postController.unsavePost
   );
 
 module.exports = router;
