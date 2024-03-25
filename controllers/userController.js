@@ -114,6 +114,28 @@ const editProfileSettings = (req, res, next) => {
       res.status(500).json({ message: "Server error" });
     });
 };
+const getAccountSettings = (req, res, next) => {
+  const userId = req.userId;
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      const accountSettings = {
+        email: user.email,
+        gender: user.gender,
+        connectedToGoogle: user.signupGoogle,
+      };
+      console.log("Account settings: ", accountSettings);
+      res.json({ accountSettings });
+    })
+    .catch((err) => {
+      console.error("Error retrieving account settings:", err);
+      res.status(500).json({ message: "Error Retreiving user", error: err });
+    });
+};
 
 const getSafetyAndPrivacySettings = (req, res, next) => {
   const userId = req.userId;
@@ -448,4 +470,5 @@ module.exports = {
   unblockUser,
   addSocialLink,
   deleteSocialLink,
+  getAccountSettings,
 };
