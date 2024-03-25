@@ -45,6 +45,13 @@ const userSchema = new Schema({
       required: false,
     },
   ],
+  savedPost: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: false,
+    },
+  ],
   socialLinks: [
     {
       linkOrUsername: {
