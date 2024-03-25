@@ -52,6 +52,13 @@ const userSchema = new Schema({
       required: false,
     },
   ],
+  hidePost: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: false,
+    },
+  ],
   socialLinks: [
     {
       linkOrUsername: {
