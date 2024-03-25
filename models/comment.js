@@ -18,7 +18,7 @@ const commentSchema=new Schema({
     },
     text:{
         type:String,
-        required:false
+        required: true
     },
     parentCommentId:[
         {
