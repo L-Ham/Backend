@@ -4,24 +4,6 @@ const jwt = require("jsonwebtoken");
 const { updateOne } = require("../models/socialLink");
 const user = require("../models/user");
 
-const getUserSettings = (req, res, next) => {
-  const userId = req.userId;
-
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      console.log("User settings: ", user);
-      res.json({ gender: user.gender, email: user.email });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user settings:", err);
-      res.status(500).json({ message: "Server error" });
-    });
-};
-
 const getNotificationSettings = (req, res, next) => {
   const userId = req.userId;
 
@@ -114,6 +96,28 @@ const editProfileSettings = (req, res, next) => {
     .catch((err) => {
       console.error("Error retrieving user:", err);
       res.status(500).json({ message: "Server error" });
+    });
+};
+const getAccountSettings = (req, res, next) => {
+  const userId = req.userId;
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      const accountSettings = {
+        email: user.email,
+        gender: user.gender,
+        connectedToGoogle: user.signupGoogle,
+      };
+      console.log("Account settings: ", accountSettings);
+      res.json({ accountSettings });
+    })
+    .catch((err) => {
+      console.error("Error retrieving account settings:", err);
+      res.status(500).json({ message: "Error Retreiving user", error: err });
     });
 };
 
@@ -219,8 +223,6 @@ const editNotificationSettings = (req, res, next) => {
     });
 };
 
-
-
 const followUser = (req, res, next) => {
   const userId = req.userId;
   const usernameToFollow = req.body.usernameToFollow;
@@ -230,19 +232,25 @@ const followUser = (req, res, next) => {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       User.findOne({ userName: usernameToFollow })
         .then((userToFollow) => {
           if (!userToFollow) {
-            return res.status(404).json({ message: "User to follow not found" });
+            return res
+              .status(404)
+              .json({ message: "User to follow not found" });
           }
 
           if (userToFollow._id.equals(userId)) {
-            return res.status(400).json({ message: "You can't follow yourself" });
+            return res
+              .status(400)
+              .json({ message: "You can't follow yourself" });
           }
 
           if (user.blockUsers.includes(userToFollow._id)) {
-            return res.status(400).json({ message: "You have been blocked by this user" });
+            return res
+              .status(400)
+              .json({ message: "You have been blocked by this user" });
           }
 
           if (user.following.includes(userToFollow._id)) {
@@ -254,18 +262,27 @@ const followUser = (req, res, next) => {
 
           Promise.all([user.save(), userToFollow.save()])
             .then(() => {
-              res.status(200).json({ message: "User followed successfully", user: userToFollow });
+              res.status(200).json({
+                message: "User followed successfully",
+                user: userToFollow,
+              });
             })
             .catch((err) => {
-              res.status(500).json({ message: "Failed to follow user", error: err });
+              res
+                .status(500)
+                .json({ message: "Failed to follow user", error: err });
             });
         })
         .catch((err) => {
-          res.status(500).json({ message: "Failed to find the user to follow", error: err });
+          res
+            .status(500)
+            .json({ message: "Failed to find the user to follow", error: err });
         });
     })
     .catch((err) => {
-      res.status(500).json({ message: "Failed to find the current user", error: err });
+      res
+        .status(500)
+        .json({ message: "Failed to find the current user", error: err });
     });
 };
 
@@ -319,41 +336,42 @@ const checkUserNameAvailability = (req, res, next) => {
 const blockUser = (req, res, next) => {
   const blockedUserName = req.body.usernameToBlock;
   const userId = req.userId;
-  User.findOne({ userName: blockedUserName })
-    .then((userToBlock) => {
-      if (!userToBlock) {
-        console.error("User not found for username:", blockedUserName);
-        return res.status(404).json({ message: "User not found" });
-      }
-      userToBlock.following.pull(userId);
-      userToBlock.save();
+  User.findOne({ userName: blockedUserName }).then((userToBlock) => {
+    if (!userToBlock) {
+      console.error("User not found for username:", blockedUserName);
+      return res.status(404).json({ message: "User not found" });
+    }
+    userToBlock.following.pull(userId);
+    userToBlock.followers.pull(userId);
+    userToBlock.save();
 
+    User.findById(userId)
+      .then((user) => {
+        if (user.blockUsers.includes(userToBlock._id)) {
+          console.error("User already blocked:", userToBlock.userName);
+          return res.status(409).json({ message: "User already blocked" });
+        }
+        user.blockUsers.push(userToBlock._id);
+        user.following.pull(userToBlock._id);
+        user.followers.pull(userToBlock._id);
 
-      User.findById(userId)
-        .then((user) => {
-          if (user.blockUsers.includes(userToBlock._id)) {
-            console.error("User already blocked:", userToBlock.userName);
-            return res.status(409).json({ message: "User already blocked" });
-          }
-          user.blockUsers.push(userToBlock._id);
-          user.followers.pull(userToBlock._id);
+        user
+          .save()
+          .then((updatedUser) => {
+            console.log("User blocked:", userToBlock.userName);
+            res.json({ message: "User blocked", user: updatedUser });
+          })
 
-          user.save()
-            .then((updatedUser) => {
-              console.log("User blocked:", userToBlock.userName);
-              res.json({ message: "User blocked", user: updatedUser });
-            })
-
-            .catch((err) => {
-              console.error("Error blocking user:", err);
-              res.status(500).json({ message: "Server error" });
-            });
-        })
-        .catch((err) => {
-          console.error("Error retrieving user:", err);
-          res.status(500).json({ message: "Server error" });
-        });
-    })
+          .catch((err) => {
+            console.error("Error blocking user:", err);
+            res.status(500).json({ message: "Server error" });
+          });
+      })
+      .catch((err) => {
+        console.error("Error retrieving user:", err);
+        res.status(500).json({ message: "Server error" });
+      });
+  });
 };
 
 const unblockUser = (req, res, next) => {
@@ -395,16 +413,26 @@ const editFeedSettings = (req, res, next) => {
       }
       user.feedSettings.set("showNSFW", req.body.showNSFW);
       user.feedSettings.set("blurNSFW", req.body.blurNSFW);
-      user.feedSettings.set("enableHomeFeedRecommendations", req.body.enableHomeFeedRecommendations);
+      user.feedSettings.set(
+        "enableHomeFeedRecommendations",
+        req.body.enableHomeFeedRecommendations
+      );
       user.feedSettings.set("autoplayMedia", req.body.autoplayMedia);
       user.feedSettings.set("reduceAnimations", req.body.reduceAnimations);
       user.feedSettings.set("communityThemes", req.body.communityThemes);
-      user.feedSettings.set("communityContentSort", req.body.communityContentSort);
-      user.feedSettings.set("rememberPerCommunity", req.body.rememberPerCommunity);
+      user.feedSettings.set(
+        "communityContentSort",
+        req.body.communityContentSort
+      );
+      user.feedSettings.set(
+        "rememberPerCommunity",
+        req.body.rememberPerCommunity
+      );
       user.feedSettings.set("globalContentView", req.body.globalContentView);
       user.feedSettings.set("openPostsInNewTab", req.body.openPostsInNewTab);
       user.feedSettings.set("defaultToMarkdown", req.body.defaultToMarkdown);
-      user.save()
+      user
+        .save()
         .then((user) => {
           console.log("Feed settings updated: ", user);
           res.json({
@@ -434,7 +462,9 @@ const viewFeedSettings = (req, res, next) => {
       const feedSettings = {
         showNSFW: user.feedSettings.get("showNSFW"),
         blurNSFW: user.feedSettings.get("blurNSFW"),
-        enableHomeFeedRecommendations: user.feedSettings.get("enableHomeFeedRecommendations"),
+        enableHomeFeedRecommendations: user.feedSettings.get(
+          "enableHomeFeedRecommendations"
+        ),
         autoplayMedia: user.feedSettings.get("autoplayMedia"),
         reduceAnimations: user.feedSettings.get("reduceAnimations"),
         communityThemes: user.feedSettings.get("communityThemes"),
@@ -451,7 +481,6 @@ const viewFeedSettings = (req, res, next) => {
       res.status(500).json({ message: "Server error" });
     });
 };
-
 
 const addSocialLink = (req, res, next) => {
   const userId = req.userId;
@@ -515,9 +544,10 @@ const editSocialLink = (req, res, next) => {
         })
         .catch((err) => {
           console.error("Error updating social link:", err);
-          res
-            .status(500)
-            .json({ message: "Error updating social link for user", error: err });
+          res.status(500).json({
+            message: "Error updating social link for user",
+            error: err,
+          });
         });
     })
     .catch((err) => {
@@ -534,7 +564,6 @@ const deleteSocialLink = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
-      // Find the social link with the given link ID and remove it
       socialLinkToDelete = user.socialLinks.find((link) => link._id == linkId);
       if(!socialLinkToDelete) {
         console.error("Social link not found for link ID:", linkId);
@@ -563,8 +592,39 @@ const deleteSocialLink = (req, res, next) => {
       res.status(500).json({ message: "Error Retrieving User", error: err });
     });
 };
+
+const updateGender = (req, res, next) => {
+  const userId = req.userId;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      user.gender = req.body.gender;
+      user
+        .save()
+        .then((updatedUser) => {
+          res.status(200).json({
+            message: "User gender updated succesfully",
+            user: updatedUser,
+          });
+        })
+        .catch((err) => {
+          return res.status(500).json({
+            message: "Failed to update User Gender",
+            error: err,
+          });
+        });
+    })
+    .catch((err) => {
+      return res
+        .status(500)
+        .json({ message: "ERROR Retreiving user", error: err });
+    });
+};
 module.exports = {
-  getUserSettings,
+  getAccountSettings,
   getNotificationSettings,
   editNotificationSettings,
   getProfileSettings,
@@ -581,4 +641,5 @@ module.exports = {
   deleteSocialLink,
   editFeedSettings,
   viewFeedSettings,
+  updateGender,
 };

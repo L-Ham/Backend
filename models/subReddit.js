@@ -3,10 +3,12 @@ const { boolean } = require("webidl-conversions");
 
 const Schema = mongoose.Schema;
 const subRedditSchema = new Schema({
-  posts: {
-    type: [Schema.Types.ObjectId],
-    ref: "post",
-  },
+  posts: [
+    {
+      type: [Schema.Types.ObjectId],
+      ref: "post",
+    },
+  ],
   privacy: {
     type: String,
     required: true,
@@ -45,11 +47,11 @@ const subRedditSchema = new Schema({
   },
   submissionText: {
     type: String,
-    required: false
+    required: false,
   },
   contentOptions: {
     type: String,
-    required: false
+    required: false,
   },
   wiki: {
     type: String,

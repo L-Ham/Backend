@@ -8,7 +8,7 @@ router.get(
   "/accountSettings",
   bodyParser.json(),
   authenticateToken,
-  userController.getUserSettings
+  userController.getAccountSettings
 );
 
 router.get(
@@ -84,13 +84,13 @@ router.patch(
   bodyParser.json(),
   authenticateToken,
   userController.editFeedSettings
-)
+);
 router.get(
   "/feedSettings",
   bodyParser.json(),
   authenticateToken,
   userController.viewFeedSettings
-)
+);
 router.post(
   "/socialLink",
   bodyParser.json(),
@@ -108,5 +108,11 @@ router.delete(
   bodyParser.json(),
   authenticateToken,
   userController.deleteSocialLink
+);
+router.patch(
+  "/gender",
+  bodyParser.json(),
+  authenticateToken,
+  userController.updateGender
 );
 module.exports = router;
