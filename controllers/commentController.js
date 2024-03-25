@@ -66,6 +66,8 @@ const createComment = (req, res, next) => {
                     userId: userId,
                     text: req.body.text,
                     parentCommentId: req.body.parentCommentId,
+                    replies: [],
+                    votes: 0,
                     isHidden: req.body.isHidden,
                 });
                 comment.save()
@@ -79,6 +81,24 @@ const createComment = (req, res, next) => {
                                 parentComment.replies.push(savedComment);
                                 parentComment.save().then((savedParentComment) => {
                                     console.log("Comment attached to parent comment: ", savedParentComment);
+                                    post.replies.push(savedComment._id);
+                                    post.save().then((savedPost) => {
+                                        console.log("Comment attached to post: ", savedPost);
+                                        user.comments.push(savedComment._id);
+                                        user.save().then((savedUser) => {
+                                            console.log("Comment attached to user: ", savedUser);
+                                            res.json({
+                                                message: "Comment Created successfully",
+                                                savedComment,
+                                            });
+                                        }).catch(err => {
+                                            console.error(err);
+                                            res.status(400).send("Could not attach comment to the user");
+                                        });
+                                    }).catch((err) => {
+                                        console.error(err);
+                                        res.status(400).send("Could not attach comment to the post");
+                                    });
                                 }).catch((err) => {
                                     console.error(err);
                                     res.status(400).send("Could not attach comment to the parent comment");
@@ -87,24 +107,21 @@ const createComment = (req, res, next) => {
                                 console.error("Error retrieving parent comment:", err);
                                 res.status(500).json({ message: "Error Retrieving Parent Comment", error: err });
                             });
-
-                            post.comments.push(savedComment._id);
+                        } else {
+                            post.replies.push(savedComment._id);
                             post.save().then((savedPost) => {
                                 console.log("Comment attached to post: ", savedPost);
                                 user.comments.push(savedComment._id);
-                                user
-                                    .save()
-                                    .then((savedUser) => {
-                                        console.log("Comment attached to user: ", savedUser);
-                                        res.json({
-                                            message: "Comment Created successfully",
-                                            savedComment,
-                                        });
-                                    })
-                                    .catch(err => {
-                                        console.error(err);
-                                        res.status(400).send("Could not attach comment to the user");
+                                user.save().then((savedUser) => {
+                                    console.log("Comment attached to user: ", savedUser);
+                                    res.json({
+                                        message: "Comment Created successfully",
+                                        savedComment,
                                     });
+                                }).catch(err => {
+                                    console.error(err);
+                                    res.status(400).send("Could not attach comment to the user");
+                                });
                             }).catch((err) => {
                                 console.error(err);
                                 res.status(400).send("Could not attach comment to the post");
@@ -125,6 +142,7 @@ const createComment = (req, res, next) => {
             res.status(500).json({ message: "Error Retrieving User", error: err });
         });
 };
+
 
 module.exports = {
     hideComment,

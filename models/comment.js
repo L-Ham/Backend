@@ -1,20 +1,16 @@
 const mongoose=require('mongoose');
 const Schema=mongoose.Schema;
 const commentSchema=new Schema({
-    commentId:{
-        type:Number,
-        required:true,
-        unique:true
-    },
-    postId:{
-        type:Number,
-        ref:'post',
-        required:true
+
+    postId: {
+        type: Schema.Types.ObjectId,
+        ref: "post",
+        required: true,
     },
     userId:{
-        type:Number,
-        ref:'user',
-        required:true
+        type: Schema.Types.ObjectId,
+        ref: "user",
+        required: true,
     },
     text:{
         type:String,
