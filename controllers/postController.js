@@ -222,7 +222,7 @@ const upvote = async (req, res, next) => {
 module.exports = {
     savePost,
     createPost,
-    editPost
+    editPost,
     downvote,
     upvote
 };
