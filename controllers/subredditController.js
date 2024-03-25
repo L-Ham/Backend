@@ -5,7 +5,7 @@ const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
 };
 
-const sorting = (req, res, next) => {
+const sorting = (req, res, next) => {   // we may face an error and the solution is to replace else if -> if , and use promise.all
   const subreddit = SubReddit.findById(req.params.id)
     .then((subreddit) => {
       const { Hot, New, Top, Random } = req.params;
