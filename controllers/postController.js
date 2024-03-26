@@ -318,21 +318,26 @@ const lockPost = async (req, res, next) => {
             console.error("User not found for user ID:", userId);
             return res.status(404).json({ message: "User not found" });
         }
-
+        
         const subReddit = await SubReddit.findById(post.subReddit);
         if (!subReddit) {
-            console.error("SubReddit not found for ID:", post.subReddit);
-            return res.status(404).json({ message: "SubReddit not found" });
-        }
-
-        if (post.subReddit === null) {
             if (!post.user.equals(userId)) {
                 console.error("User not authorized to lock post");
                 return res.status(400).json({ message: "User not authorized to lock post" });
             }
+            else {
+                if (post.isLocked === true) {
+                    console.error("Post is already locked");
+                    return res.status(400).json({ message: "Post is already locked" });
+                }
+                post.isLocked = true;
+                await post.save();
+                return res.status(200).json({ message: "Post locked successfully" });
+            }
         }
+
         if (post.subReddit !== null) {
-            if (!post.subReddit.moderators.includes(userId)) {
+            if (!subReddit.moderators.includes(userId)) {
                 console.error("User not authorized to lock post in the subreddit", post.subReddit.name);
                 return res.status(400).json({ message: "User not authorized to lock post in the subreddit" });
             }
@@ -366,23 +371,28 @@ const unlockPost = async (req, res, next) => {
             console.error("User not found for user ID:", userId);
             return res.status(404).json({ message: "User not found" });
         }
-
+        
         const subReddit = await SubReddit.findById(post.subReddit);
         if (!subReddit) {
-            console.error("SubReddit not found for ID:", post.subReddit);
-            return res.status(404).json({ message: "SubReddit not found" });
-        }
-
-        if (post.subReddit === null) {
             if (!post.user.equals(userId)) {
-                console.error("User not authorized to lock post");
-                return res.status(400).json({ message: "User not authorized to lock post" });
+                console.error("User not authorized to unlock post");
+                return res.status(400).json({ message: "User not authorized to unlock post" });
+            }
+            else {
+                if (post.isLocked === false) {
+                    console.error("Post is already unlocked");
+                    return res.status(400).json({ message: "Post is already unlocked" });
+                }
+                post.isLocked = false;
+                await post.save();
+                return res.status(200).json({ message: "Post unlocked successfully" });
             }
         }
+
         if (post.subReddit !== null) {
-            if (!post.subReddit.moderators.includes(userId)) {
-                console.error("User not authorized to lock post in the subreddit", post.subReddit.name);
-                return res.status(400).json({ message: "User not authorized to lock post in the subreddit" });
+            if (!subReddit.moderators.includes(userId)) {
+                console.error("User not authorized to unlock post in the subreddit", post.subReddit.name);
+                return res.status(400).json({ message: "User not authorized to unlock post in the subreddit" });
             }
         }
         if (post.isLocked === false) {
@@ -390,7 +400,6 @@ const unlockPost = async (req, res, next) => {
             return res.status(400).json({ message: "Post is already unlocked" });
         }
         post.isLocked = false;
-
         await post.save();
 
         res.status(200).json({ message: "Post unlocked successfully" });
@@ -398,7 +407,7 @@ const unlockPost = async (req, res, next) => {
         console.error("Error unlocking post:", error);
         res.status(500).json({ message: "Error unlocking post" });
     }
-}
+};
 
 module.exports = {
     savePost,
