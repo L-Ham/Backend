@@ -101,7 +101,9 @@ const editProfileSettings = (req, res, next) => {
 };
 const getAccountSettings = (req, res, next) => {
   const userId = req.userId;
-
+  if (!userId) {
+    return res.status(404).json({ message: "User not found" });
+  }
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -124,7 +126,9 @@ const getAccountSettings = (req, res, next) => {
 
 const getSafetyAndPrivacySettings = (req, res, next) => {
   const userId = req.userId;
-
+  if (!userId) {
+    return res.status(404).json({ message: "User Id not provided" });
+  }
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -135,8 +139,7 @@ const getSafetyAndPrivacySettings = (req, res, next) => {
         blockUsers: user.blockUsers,
         muteCommunities: user.muteCommunities,
       };
-      console.log("Safety and privacy settings: ", safetyAndPrivacySettings);
-      res.json({ safetyAndPrivacySettings });
+      res.json({ safetyAndPrivacySettings: safetyAndPrivacySettings });
     })
     .catch((err) => {
       console.error("Error retrieving safety and privacy settings:", err);
