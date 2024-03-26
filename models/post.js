@@ -118,7 +118,7 @@ const postSchema = new Schema({
       ref: "user",
     },
   ],
-  replies: [
+  comments: [
     {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "comment",

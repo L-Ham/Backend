@@ -97,7 +97,7 @@ const googleLogin = async (req, res, next) => {
     };
 
     const jwtOptions = {
-      expiresIn: "1d", // Adjust the expiration time as needed
+      expiresIn: "1d", 
     };
 
     const jwtToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, jwtOptions);
