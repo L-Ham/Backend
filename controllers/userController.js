@@ -529,6 +529,10 @@ const editSocialLink = (req, res, next) => {
         return res.status(404).json({ message: "User not found" });
       }
       socialLinkToUpdate = user.socialLinks.find((link) => link._id == linkId);
+      if (!socialLinkToUpdate) {
+        console.error("Social link not found for link ID:", linkId);
+        return res.status(404).json({ message: "Social link not found" });
+      }
       socialLinkToUpdate.linkOrUsername = linkOrUsername;
       socialLinkToUpdate.appName = appName;
       socialLinkToUpdate.logo = logo;
@@ -565,7 +569,7 @@ const deleteSocialLink = (req, res, next) => {
         return res.status(404).json({ message: "User not found" });
       }
       socialLinkToDelete = user.socialLinks.find((link) => link._id == linkId);
-      if(!socialLinkToDelete) {
+      if (!socialLinkToDelete) {
         console.error("Social link not found for link ID:", linkId);
         return res.status(404).json({ message: "Social link not found" });
       }

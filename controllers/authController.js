@@ -6,15 +6,13 @@ const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
 const { OAuth2Client } = require("google-auth-library");
 require("dotenv").config();
-const CLIENT_ID =
-  "332399911432-vjl376a05ukf0hhpj6kq0hnuibij26dh.apps.googleusercontent.com";
-const client = new OAuth2Client(CLIENT_ID);
+
+const client = new OAuth2Client(process.env.CLIENT_ID);
 
 const googleSignUp = async (req, res, next) => {
   let token = req.body.token;
   let payload = {};
 
-  // Function to check if the generated username exists in the database
   const checkUsernameExists = async (username) => {
     return await User.findOne({ userName: username });
   };
@@ -70,8 +68,50 @@ const logout = (req, res, next) => {
   res.clearCookie("token");
 };
 
-const googleLogin = (req, res, next) => {
-  const token = req.body.token;
+const googleLogin = async (req, res, next) => {
+  const { token } = req.body;
+
+  try {
+    // Verify the Google token
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.CLIENT_ID, // Your Google OAuth2 client ID
+    });
+
+    const payload = ticket.getPayload();
+    const email = payload.email;
+
+    // Check if the user exists in the database
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate JWT token
+    const jwtPayload = {
+      user: {
+        id: user._id,
+        type: "google",
+      },
+    };
+
+    const jwtOptions = {
+      expiresIn: "1d", // Adjust the expiration time as needed
+    };
+
+    const jwtToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, jwtOptions);
+
+    res.status(200).json({
+      message: "User logged in successfully",
+      token: jwtToken,
+    });
+  } catch (error) {
+    console.error("Google login failed:", error);
+    res
+      .status(500)
+      .json({ message: "Google login failed", error: error.message });
+  }
 };
 
 const forgetUsername = async (req, res, next) => {

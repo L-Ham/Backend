@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "8db06bb0-25fd-4f2c-b3a6-8b2354a54bf2",
+		"_postman_id": "e9a8926f-b98b-4f77-8867-e693b01352e7",
 		"name": "Comment",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23392578",
-		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-8db06bb0-25fd-4f2c-b3a6-8b2354a54bf2?action=share&source=collection_link&creator=23392578"
+		"_exporter_id": "33377382"
 	},
 	"item": [
 		{
@@ -121,6 +120,41 @@
 					"path": [
 						"comment",
 						"hide"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Comment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTAzNjAsImV4cCI6NTAxNzExNDEwMzYwfQ.JqZsWACiAo5fc-ERZPCBkbuHl-g3CrTAlbT2NT8Y5bI",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"postId\":\"66017774a46916045eefd332\",\n    \"text\":\"123456\",\n    \"parentCommentId\": null,\n    \"isHidden\": false\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/comment/addComment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"comment",
+						"addComment"
 					]
 				}
 			},
