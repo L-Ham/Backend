@@ -14,7 +14,7 @@ const createPost = async (req, res, next) => {
         }
 
         let subReddit = null;
-        if (subRedditId!="") {
+        if (subRedditId != "") {
             subReddit = await SubReddit.findById(subRedditId);
             if (!subReddit) {
                 console.error("Subreddit not found for subreddit ID:", subRedditId);
@@ -41,7 +41,7 @@ const createPost = async (req, res, next) => {
 function createNewPost(req, userId, subRedditId) {
     return new Post({
         user: userId,
-        subReddit: subRedditId==""? null : subRedditId,
+        subReddit: subRedditId == "" ? null : subRedditId,
         title: req.body.title,
         text: req.body.text,
         images: req.body.images || [],
@@ -67,7 +67,7 @@ function createNewPost(req, userId, subRedditId) {
 }
 
 const editPost = (req, res, next) => {
-    const postId = req.body.postId; 
+    const postId = req.body.postId;
     const userId = req.userId;
     console.log("postId", postId);
     console.log("userId", userId);
@@ -313,24 +313,35 @@ const lockPost = async (req, res, next) => {
             return res.status(404).json({ message: "Post not found" });
         }
 
+        const user = await User.findById(userId);
+        if (!user) {
+            console.error("User not found for user ID:", userId);
+            return res.status(404).json({ message: "User not found" });
+        }
+
         const subReddit = await SubReddit.findById(post.subReddit);
         if (!subReddit) {
             console.error("SubReddit not found for ID:", post.subReddit);
             return res.status(404).json({ message: "SubReddit not found" });
         }
 
-        const moderators = subReddit.moderators;
-        if (!moderators.includes(userId)) {
-            console.error("User not authorized to lock post");
-            return res.status(401).json({ message: "User not authorized to lock post" });
+        if (post.subReddit === null) {
+            if (!post.user.equals(userId)) {
+                console.error("User not authorized to lock post");
+                return res.status(400).json({ message: "User not authorized to lock post" });
+            }
         }
-        if(post.isLocked === true){
+        if (post.subReddit !== null) {
+            if (!post.subReddit.moderators.includes(userId)) {
+                console.error("User not authorized to lock post in the subreddit", post.subReddit.name);
+                return res.status(400).json({ message: "User not authorized to lock post in the subreddit" });
+            }
+        }
+        if (post.isLocked === true) {
             console.error("Post is already locked");
             return res.status(400).json({ message: "Post is already locked" });
         }
-
         post.isLocked = true;
-
         await post.save();
 
         res.status(200).json({ message: "Post locked successfully" });
@@ -349,19 +360,32 @@ const unlockPost = async (req, res, next) => {
             console.error("Post not found for post ID:", postId);
             return res.status(404).json({ message: "Post not found" });
         }
-        
+
+        const user = await User.findById(userId);
+        if (!user) {
+            console.error("User not found for user ID:", userId);
+            return res.status(404).json({ message: "User not found" });
+        }
+
         const subReddit = await SubReddit.findById(post.subReddit);
         if (!subReddit) {
             console.error("SubReddit not found for ID:", post.subReddit);
             return res.status(404).json({ message: "SubReddit not found" });
         }
 
-        const moderators = subReddit.moderators;
-        if (!moderators.includes(userId)) {
-            console.error("User not authorized to unlock post");
-            return res.status(401).json({ message: "User not authorized to unlock post" });
+        if (post.subReddit === null) {
+            if (!post.user.equals(userId)) {
+                console.error("User not authorized to lock post");
+                return res.status(400).json({ message: "User not authorized to lock post" });
+            }
         }
-        if(post.isLocked === false){
+        if (post.subReddit !== null) {
+            if (!post.subReddit.moderators.includes(userId)) {
+                console.error("User not authorized to lock post in the subreddit", post.subReddit.name);
+                return res.status(400).json({ message: "User not authorized to lock post in the subreddit" });
+            }
+        }
+        if (post.isLocked === false) {
             console.error("Post is already unlocked");
             return res.status(400).json({ message: "Post is already unlocked" });
         }
