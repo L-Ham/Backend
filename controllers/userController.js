@@ -323,6 +323,10 @@ const unfollowUser = (req, res, next) => {
 const checkUserNameAvailability = (req, res, next) => {
   const userName = req.query.username;
   console.log("Checking username availability:", userName);
+  if (userName === "") {
+    console.error("Username is empty");
+    return res.status(400).json({ message: "Username is empty" });
+  }
   User.findOne({ userName: userName })
     .then((user) => {
       if (user) {
