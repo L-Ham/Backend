@@ -747,7 +747,7 @@ const joinCommunity = (req, res, next) => {
               .status(400)
               .json({ message: "Community already joined" });
           }
-          if (community.privacy === "private") {
+          if (community.privacy === "private" || community.privacy === "Private") {
             if (community.pendingMembers.includes(userId)) {
               return res
                 .status(400)
@@ -771,7 +771,7 @@ const joinCommunity = (req, res, next) => {
               });
             return;
           }
-          if (community.privacy === "restricted" || community.privacy === "public") {
+          if (community.privacy === "restricted" || community.privacy === "public" || community.privacy === "Restricted" || community.privacy === "Public") {
             community.members.push(userId);
             community
               .save()
