@@ -629,7 +629,6 @@ const updateGender = (req, res, next) => {
     });
 };
 
-
 const muteCommunities = (req, res, next) => {
   const userId = req.userId;
   const communityId = req.body.subRedditId;
@@ -639,16 +638,15 @@ const muteCommunities = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
-      subReddit.findById(communityId)
+      subReddit
+        .findById(communityId)
         .then((community) => {
           if (!community) {
             console.error("Community not found for community ID:", communityId);
             return res.status(404).json({ message: "Community not found" });
           }
           if (user.muteCommunities.includes(communityId)) {
-            return res
-              .status(400)
-              .json({ message: "Community already muted" });
+            return res.status(400).json({ message: "Community already muted" });
           }
           user.muteCommunities.push(communityId);
           user
@@ -662,22 +660,22 @@ const muteCommunities = (req, res, next) => {
             })
             .catch((err) => {
               console.error("Error muting community:", err);
-              res
-                .status(500)
-                .json({ message: "Error muting community for user", error: err });
+              res.status(500).json({
+                message: "Error muting community for user",
+                error: err,
+              });
             });
         })
         .catch((err) => {
           console.error("Error retrieving community:", err);
-          res.status(500).json({ message: "Server error" });
+          res.status(500).json({ message: "Error retrieving community:" });
         });
     })
     .catch((err) => {
       console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: "Error retrieving user:" });
     });
 };
-
 
 const unmuteCommunities = (req, res, next) => {
   const userId = req.userId;
@@ -688,16 +686,21 @@ const unmuteCommunities = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
-      subReddit.findById(communityId)
+      subReddit
+        .findById(communityId)
         .then((community) => {
           if (!community) {
             console.error("Community not found for community ID:", communityId);
             return res.status(404).json({ message: "Community not found" });
           }
-          const unmute = user.muteCommunities.find((muteCommunity) => muteCommunity.equals(communityId));
+          const unmute = user.muteCommunities.find((muteCommunity) =>
+            muteCommunity.equals(communityId)
+          );
           if (!unmute) {
             console.error("This subReddit is not muted for you:", communityId);
-            return res.status(404).json({ message: "This subReddit is not muted for you" });
+            return res
+              .status(404)
+              .json({ message: "This subReddit is not muted for you" });
           }
           user.muteCommunities.pull(communityId);
           user
@@ -711,9 +714,10 @@ const unmuteCommunities = (req, res, next) => {
             })
             .catch((err) => {
               console.error("Error unmuting community:", err);
-              res
-                .status(500)
-                .json({ message: "Error unmuting community for user", error: err });
+              res.status(500).json({
+                message: "Error unmuting community for user",
+                error: err,
+              });
             });
         })
         .catch((err) => {
@@ -726,7 +730,6 @@ const unmuteCommunities = (req, res, next) => {
       res.status(500).json({ message: "Server error" });
     });
 };
-
 
 module.exports = {
   getAccountSettings,
