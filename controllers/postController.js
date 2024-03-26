@@ -99,8 +99,10 @@ const createPost = (req, res, next) => {
 }
 
 const editPost = (req, res, next) => {
-    const postId = req.params.postId;
+    const postId = req.body.postId; 
     const userId = req.userId;
+    console.log("postId", postId);
+    console.log("userId", userId);
 
     Post.findById(postId)
         .then((post) => {
@@ -115,7 +117,10 @@ const editPost = (req, res, next) => {
             }
 
             post.title = req.body.title || post.title;
-            post.content = req.body.content || post.content;
+            post.text = req.body.text || post.text;
+            post.images = req.body.images || post.images;
+            post.videos = req.body.videos || post.videos;
+            post.url = req.body.url || post.url;
             post.type = req.body.type || post.type;
             post.isNSFW = req.body.isNSFW || post.isNSFW;
             post.isSpoiler = req.body.isSpoiler || post.isSpoiler;
@@ -413,5 +418,6 @@ module.exports = {
     downvote,
     upvote,
     lockPost,
-    unlockPost
+    unlockPost,
+    getPost
 };
