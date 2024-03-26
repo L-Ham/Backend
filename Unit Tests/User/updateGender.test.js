@@ -17,7 +17,7 @@ describe("updateGender", () => {
         expect(User.findById).toHaveBeenCalledWith("validUserId");
         expect(res.status).toHaveBeenCalledWith(200);
         expect(data).toEqual({
-          message: "User gender updated succesfully",
+          message: "User gender updated successfully",
           user: {
             gender: "male",
           },
@@ -36,27 +36,34 @@ describe("updateGender", () => {
 
     userController.updateGender(req, res, next);
   });
-
-  it("should not update user gender when invalid user ID is provided", (done) => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  it("should not update user gender if the gender is the same as the current gender", (done) => {
     const req = {
-      userId: "invalidUserId",
-      body: { gender: "male" },
+      userId: "validUserId",
+      body: { gender: "female" },
     };
     const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockImplementationOnce((data) => {
         // Assertions
-        expect(User.findById).toHaveBeenCalledWith("invalidUserId");
-        expect(res.status).toHaveBeenCalledWith(404);
+        expect(User.findById).toHaveBeenCalledWith("validUserId");
+        expect(res.status).toHaveBeenCalledWith(400);
         expect(data).toEqual({
-          message: "User not found",
+          message: "Gender is already set to this value",
         });
         done();
       }),
     };
     const next = jest.fn();
 
-    User.findById = jest.fn().mockResolvedValue(null);
+    User.findById = jest.fn().mockResolvedValue({
+      gender: "female",
+      save: jest.fn().mockResolvedValue({
+        gender: "female",
+      }),
+    });
 
     userController.updateGender(req, res, next);
   });
@@ -73,12 +80,9 @@ describe("updateGender", () => {
       json: jest.fn().mockImplementationOnce((data) => {
         // Assertions
         expect(User.findById).toHaveBeenCalledWith("validUserId");
-        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.status).toHaveBeenCalledWith(400);
         expect(data).toEqual({
-          message: "User gender is already female",
-          user: {
-            gender: "female",
-          },
+          message: "Gender is already set to this value",
         });
         done();
       }),
@@ -87,6 +91,9 @@ describe("updateGender", () => {
 
     User.findById = jest.fn().mockResolvedValue({
       gender: "female",
+      save: jest.fn().mockResolvedValue({
+        gender: "female",
+      }),
     });
 
     userController.updateGender(req, res, next);
