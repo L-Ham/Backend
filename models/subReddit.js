@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const subRedditSchema = new Schema({
   posts: [
     {
-      type: [Schema.Types.ObjectId],
+      type: Schema.Types.ObjectId,
       ref: "post",
     },
   ],

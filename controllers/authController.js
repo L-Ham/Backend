@@ -70,37 +70,33 @@ const logout = (req, res, next) => {
 
 const googleLogin = async (req, res, next) => {
   const { token } = req.body;
-
   try {
-    // Verify the Google token
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: process.env.CLIENT_ID, // Your Google OAuth2 client ID
+      audience: process.env.CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
     const email = payload.email;
-
-    // Check if the user exists in the database
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    // Generate JWT token
+    if (user && user.signupGoogle === false) {
+      return res
+        .status(404)
+        .json({ message: "User didn't signup using google signup" });
+    }
     const jwtPayload = {
       user: {
         id: user._id,
         type: "google",
       },
     };
+    const expirationTime = Math.floor(Date.now() / 1000) + 50000000000;
+    jwtPayload.exp = expirationTime;
 
-    const jwtOptions = {
-      expiresIn: "1d", 
-    };
-
-    const jwtToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, jwtOptions);
+    const jwtToken = jwt.sign(jwtPayload, process.env.JWT_SECRET);
 
     res.status(200).json({
       message: "User logged in successfully",
@@ -160,13 +156,13 @@ const forgetUsername = async (req, res, next) => {
 const forgetPassword = async (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: "r75118106@gmail.com",
-        pass: "bcmiawurnnoaxoeg",
-      },
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "r75118106@gmail.com",
+      pass: "bcmiawurnnoaxoeg",
+    },
   });
   const email = req.body.email;
   const user = await User.findOne({ email });
@@ -196,9 +192,8 @@ const forgetPassword = async (req, res, next) => {
   );
 };
 
-
 const resetPassword = async (req, res, next) => {
-  const {  password } = req.body;
+  const { password } = req.body;
   const userId = req.userId;
   const user = User.findById(userId);
   if (!user) {
@@ -307,7 +302,7 @@ const generateUserName = (req, res, next) => {
   }
 };
 const updatePassword = async (req, res, next) => {
-  const  password  = req.body.Password;
+  const password = req.body.Password;
   const userId = req.userId;
   const user = await User.findById(userId);
   if (!user) {
@@ -317,7 +312,7 @@ const updatePassword = async (req, res, next) => {
   user.password = await bcrypt.hash(password, salt);
   await user.save();
   res.send("Password updated successfully");
-}
+};
 
 module.exports = {
   googleSignUp,
@@ -329,5 +324,5 @@ module.exports = {
   forgetPassword,
   generateUserName,
   resetPassword,
-  updatePassword
+  updatePassword,
 };
