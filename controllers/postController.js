@@ -261,7 +261,11 @@ const hidePost = (req, res, next) => {
                 console.error("User not found for user ID:", userId);
                 return res.status(404).json({ message: "User not found" });
             }
-
+            const hide = user.hidePosts.find((hidePost) => hidePost._id.equals(req.body.postId));
+            if (hide) {
+                console.error("This post is already hidden in your profile:", req.body.Post);
+                return res.status(404).json({ message: "This post is already hidden in your profile" });
+            }
             user.hidePosts.push(req.body.postId);
 
             user.save()
@@ -289,12 +293,12 @@ const unhidePost = (req, res, next) => {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const unhide = user.hidePosts.find((hidePost) => hidePost._id.equals(post_ID));
-            if (!unsave) {
+            const unhide = user.hidePosts.find((hidePost) => hidePost._id.equals(req.body.postId));
+            if (!unhide) {
                 console.error("This post is not hidden in your profile:", req.body.Post);
                 return res.status(404).json({ message: "This post is not hidden in your profile" });
             }
-            user.hidePosts.pull(req.body.Post);
+            user.hidePosts.pull(req.body.postId);
 
             user.save()
                 .then(() => {
