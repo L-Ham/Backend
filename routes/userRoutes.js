@@ -115,4 +115,18 @@ router.patch(
   authenticateToken,
   userController.updateGender
 );
+
+router.patch(
+  "/muteCommunity",
+  bodyParser.json(),
+  authenticateToken,
+  userController.muteCommunities
+);
+
+router.delete(
+  "/unmuteCommunity",
+  bodyParser.json(),
+  authenticateToken,
+  userController.unmuteCommunities
+);
 module.exports = router;

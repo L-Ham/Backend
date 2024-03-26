@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "749ac8bd-daae-4813-a019-3f39d5fe385e",
+		"_postman_id": "f015bd64-a972-40af-a7b0-25ed518be892",
 		"name": "User",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23392578",
-		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-749ac8bd-daae-4813-a019-3f39d5fe385e?action=share&source=collection_link&creator=23392578"
+		"_exporter_id": "33377382"
 	},
 	"item": [
 		{
@@ -48,16 +47,19 @@
 		{
 			"name": "Account Settings",
 			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMGVjOTU4YTc2NzUyYWExN2ZkMTYwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzY2MjksImV4cCI6NTAxNzExMzM2NjI5fQ.qG7cJn8Q_popz0LErOtNgqD2S9ErMVL-ZT4p8iI7l1c",
-						"type": "text"
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"ziad@yahoo.com\",\r\n    \"gender\":\"Male\",\r\n    \"deleteAccount\":\"False\"\r\n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
 					}
-				],
+				},
 				"url": {
-					"raw": "http://localhost:5000/user/accountSettings",
+					"raw": "http://localhost:5000/user/accountSettings?Authorization=Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -66,32 +68,12 @@
 					"path": [
 						"user",
 						"accountSettings"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Feed Settings",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzM1ODUsImV4cCI6NTAxNzExMzMzNTg1fQ._LyW0l2P5XJZscHh6xMnsgeG9jKAuyPgrN1PkLuHLV8",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:5000/user/feedSettings",
-					"protocol": "http",
-					"host": [
-						"localhost"
 					],
-					"port": "5000",
-					"path": [
-						"user",
-						"feedSettings"
+					"query": [
+						{
+							"key": "Authorization",
+							"value": "Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170"
+						}
 					]
 				}
 			},
@@ -103,14 +85,14 @@
 				"method": "PATCH",
 				"header": [
 					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzM1ODUsImV4cCI6NTAxNzExMzMzNTg1fQ._LyW0l2P5XJZscHh6xMnsgeG9jKAuyPgrN1PkLuHLV8",
+						"key": "token",
+						"value": "djjdhbcdiuvbriuvb",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"showNSFW\": false,\r\n  \"blurNSFW\": true,\r\n  \"enableHomeFeedRecommendations\": true,\r\n  \"autoplayMedia\": true,\r\n  \"reduceAnimations\": true,\r\n  \"communityThemes\": true,\r\n  \"communityContentSort\": \"Hot\",\r\n  \"rememberPerCommunity\": true,\r\n  \"globalContentView\": \"Card\",\r\n  \"openPostsInNewTab\": true,\r\n  \"defaultToMarkdown\": true\r\n}",
+					"raw": "{\r\n    \"adultContent\":\"True\",\r\n    \"autoPlayMedia\":\"True\",\r\n    \"communityThemes\":\"True\",\r\n    \"communityContentSort\":\"Hot\",\r\n    \"globalContentView\":\"Card\",\r\n    \"postsInNewTab\":\"True\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -118,7 +100,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/user/feedSettings",
+					"raw": "http://localhost:5000/user/feedSettings?Authorization=Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -127,6 +109,12 @@
 					"path": [
 						"user",
 						"feedSettings"
+					],
+					"query": [
+						{
+							"key": "Authorization",
+							"value": "Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170"
+						}
 					]
 				}
 			},
@@ -328,13 +316,58 @@
 			"response": []
 		},
 		{
+			"name": "Mute Community",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true,
+					"host": true,
+					"content-length": true
+				}
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTg4NjcsImV4cCI6NTAxNzExNDE4ODY3fQ.rY06OpHMjoVlHXu3avZPd6oaQlkWzZvA3S-0qPVZE78",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subRedditId\":\"6600763f0e1e9482675cf856\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/muteCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"muteCommunity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Follow User",
 			"request": {
 				"method": "PATCH",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMGVjOTU4YTc2NzUyYWExN2ZkMTYwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzY2MjksImV4cCI6NTAxNzExMzM2NjI5fQ.qG7cJn8Q_popz0LErOtNgqD2S9ErMVL-ZT4p8iI7l1c",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4NjQwNTYsImV4cCI6NTAxNzEwODY0MDU2fQ.8BObyFYwYzi5HKc48CB_0Wq3t7SnAkjAjxz9CQyevHo",
 						"type": "text"
 					}
 				],
@@ -369,7 +402,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTQ0MDQsImV4cCI6NTAxNzEwNzk0NDA0fQ.dx0kammj4L2HbMHpoRs2AlnEZtKOHtpHQ5_BI5FdsFw",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4NjQwNTYsImV4cCI6NTAxNzEwODY0MDU2fQ.8BObyFYwYzi5HKc48CB_0Wq3t7SnAkjAjxz9CQyevHo",
 						"type": "text"
 					}
 				],
@@ -404,7 +437,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMGVjOTU4YTc2NzUyYWExN2ZkMTYwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzY2MjksImV4cCI6NTAxNzExMzM2NjI5fQ.qG7cJn8Q_popz0LErOtNgqD2S9ErMVL-ZT4p8iI7l1c",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlY2Q5OGZlZWIyZmRjNWVjYzkwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTExNjIsImV4cCI6NTAxNzEwNzkxMTYyfQ.Io0wcsk6LS8juXEJOOdFq7qPvjxFzrN_nrwhbYIMoBQ",
 						"type": "text"
 					}
 				],
@@ -439,13 +472,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNTkwNTYsImV4cCI6NTAxNzExMzU5MDU2fQ.OHidxY_xe8ev12pZv4MokJRQFdjwmGsKnmpxtQ_qgRQ",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"linkOrUsername\":\"www.instagram.com\",\n    \"appName\":\"instagram\",\n    \"logo\":\"Insta Logo\",\n    \"displayText\":\"My instagram profile\"\n}",
+					"raw": "{\n    \"linkOrUsername\":\"www.whatsapp.com\",\n    \"appName\":\"whatsapp\",\n    \"logo\":\"whatsapp Logo\",\n    \"displayText\":\"Marly's profile\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -474,13 +507,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNTkxODUsImV4cCI6NTAxNzExMzU5MTg1fQ.TP4CV-gRm-bmFHVPX8O5cbbEAKJ7rIZFlSAyx-mKNZU",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"socialLinkId\":\"65f9a2b858e967b6afeaa851\"\n}",
+					"raw": "{\n    \"socialLinkId\":\"66014487a9321e56242629ae\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -503,19 +536,19 @@
 			"response": []
 		},
 		{
-			"name": "Update Gender",
+			"name": "Edit Social Link",
 			"request": {
 				"method": "PATCH",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMGVjOTU4YTc2NzUyYWExN2ZkMTYwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzY2MjksImV4cCI6NTAxNzExMzM2NjI5fQ.qG7cJn8Q_popz0LErOtNgqD2S9ErMVL-ZT4p8iI7l1c",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4NjQwNTYsImV4cCI6NTAxNzEwODY0MDU2fQ.8BObyFYwYzi5HKc48CB_0Wq3t7SnAkjAjxz9CQyevHo",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"gender\":\"Female\"\n}",
+					"raw": "{\r\n    \"linkId\":\"65f9b760329e908e7ad2c2a1\",\r\n    \"linkOrUsername\":\"www.facebook.com\",\r\n    \"appName\":\"facebook\",\r\n    \"logo\":\"facebook logo\",\r\n    \"displayText\":\"Marly's facebook\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -523,7 +556,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/user/gender",
+					"raw": "http://localhost:5000/user/socialLink",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -531,7 +564,7 @@
 					"port": "5000",
 					"path": [
 						"user",
-						"gender"
+						"socialLink"
 					]
 				}
 			},

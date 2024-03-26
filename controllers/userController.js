@@ -2,7 +2,8 @@ const User = require("../models/user");
 const authenticateToken = require("../middleware/authenticateToken");
 const jwt = require("jsonwebtoken");
 const { updateOne } = require("../models/socialLink");
-const user = require("../models/user");
+const SubReddit = require("../models/subReddit");
+const subReddit = require("../models/subReddit");
 
 const getNotificationSettings = (req, res, next) => {
   const userId = req.userId;
@@ -627,6 +628,106 @@ const updateGender = (req, res, next) => {
         .json({ message: "ERROR Retreiving user", error: err });
     });
 };
+
+
+const muteCommunities = (req, res, next) => {
+  const userId = req.userId;
+  const communityId = req.body.subRedditId;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      subReddit.findById(communityId)
+        .then((community) => {
+          if (!community) {
+            console.error("Community not found for community ID:", communityId);
+            return res.status(404).json({ message: "Community not found" });
+          }
+          if (user.muteCommunities.includes(communityId)) {
+            return res
+              .status(400)
+              .json({ message: "Community already muted" });
+          }
+          user.muteCommunities.push(communityId);
+          user
+            .save()
+            .then((updatedUser) => {
+              console.log("Community muted: ", updatedUser);
+              res.json({
+                message: "Community muted successfully",
+                user: updatedUser,
+              });
+            })
+            .catch((err) => {
+              console.error("Error muting community:", err);
+              res
+                .status(500)
+                .json({ message: "Error muting community for user", error: err });
+            });
+        })
+        .catch((err) => {
+          console.error("Error retrieving community:", err);
+          res.status(500).json({ message: "Server error" });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ message: "Server error" });
+    });
+};
+
+
+const unmuteCommunities = (req, res, next) => {
+  const userId = req.userId;
+  const communityId = req.body.subRedditId;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      subReddit.findById(communityId)
+        .then((community) => {
+          if (!community) {
+            console.error("Community not found for community ID:", communityId);
+            return res.status(404).json({ message: "Community not found" });
+          }
+          const unmute = user.muteCommunities.find((muteCommunity) => muteCommunity.equals(communityId));
+          if (!unmute) {
+            console.error("This subReddit is not muted for you:", communityId);
+            return res.status(404).json({ message: "This subReddit is not muted for you" });
+          }
+          user.muteCommunities.pull(communityId);
+          user
+            .save()
+            .then((updatedUser) => {
+              console.log("Community unmuted: ", updatedUser);
+              res.json({
+                message: "Community unmuted successfully",
+                user: updatedUser,
+              });
+            })
+            .catch((err) => {
+              console.error("Error unmuting community:", err);
+              res
+                .status(500)
+                .json({ message: "Error unmuting community for user", error: err });
+            });
+        })
+        .catch((err) => {
+          console.error("Error retrieving community:", err);
+          res.status(500).json({ message: "Server error" });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ message: "Server error" });
+    });
+};
+
+
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -646,4 +747,6 @@ module.exports = {
   editFeedSettings,
   viewFeedSettings,
   updateGender,
+  muteCommunities,
+  unmuteCommunities,
 };
