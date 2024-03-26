@@ -324,23 +324,31 @@ const checkUserNameAvailability = (req, res, next) => {
   const userName = req.query.username;
   console.log("Checking username availability:", userName);
   if (userName === "") {
-    console.error("Username is empty");
-    return res.status(400).json({ message: "Username is empty" });
+      console.error("Username is empty");
+      return res.status(400).json({ message: "Username is empty" });
   }
   User.findOne({ userName: userName })
-    .then((user) => {
-      if (user) {
-        console.error("Username already taken:", userName);
-        return res.status(409).json({ message: "Username already taken" });
-      }
-      console.log("Username available:", userName);
-      res.json({ message: "Username available" });
-    })
-    .catch((err) => {
-      console.error("Error checking username availability:", err);
-      res.status(500).json({ message: "Server error" });
-    });
+      .then((user) => {
+          if (user) {
+              console.error("Username already taken:", userName);
+              return res.status(409).json({ message: "Username already taken" });
+          }
+          console.log("Username available:", userName);
+          res.json({ message: "Username available" });
+      })
+      .catch((err) => {
+          console.error("Error checking username availability:", err);
+          // Ensure that res is an instance of the Express response object
+          if (res.status) {
+              res.status(500).json({ message: "Server error" });
+          } else {
+              // Handle the case where res is not an Express response object
+              console.error("Invalid res object:", res);
+              next(err);
+          }
+      });
 };
+
 const blockUser = (req, res, next) => {
   const blockedUserName = req.body.usernameToBlock;
   const userId = req.userId;
