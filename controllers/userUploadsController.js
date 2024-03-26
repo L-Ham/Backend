@@ -31,7 +31,39 @@ async function uploadImage(req, res) {
     res.status(500).json({ error: 'Failed to upload image' });
   }
 }
+async function uploadVideo(req, res) {
+    const userId = req.userId;
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Create a new document in the userUploads collection for the uploaded video
+      const newVideoUpload = await UserUpload.create({
+        userId: user._id,
+        filename: req.file.filename,
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        url: `/uploads/videos/${req.file.filename}`,
+      });
+      console.log('Video uploaded successfully:', newVideoUpload);
+  
+      // Return success response with the newly created userUpload
+      res.json({
+        message: 'Video uploaded successfully',
+        userUpload: newVideoUpload
+      });
+    } catch (error) {
+      // Handle errors
+      console.error('Error uploading video:', error);
+      res.status(500).json({ error: 'Failed to upload video' });
+    }
+  }
+  
 
 module.exports = {
-  uploadImage
+  uploadImage,
+  uploadVideo
 };
