@@ -731,6 +731,108 @@ const unmuteCommunities = (req, res, next) => {
     });
 };
 
+const joinCommunity = (req, res, next) => {
+  const userId = req.userId;
+  const communityId = req.body.subRedditId;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      SubReddit.findById(communityId)
+        .then((community) => {
+          if (!community) {
+            console.error("Community not found for community ID:", communityId);
+            return res.status(404).json({ message: "Community not found" });
+          }
+          if (user.communities.includes(communityId)) {
+            return res
+              .status(400)
+              .json({ message: "Community already joined" });
+          }
+          if (community.privacy === "private") {
+            if (community.pendingMembers.includes(userId)) {
+              return res
+                .status(400)
+                .json({ message: "User already requested to join community" });
+            }
+            community.pendingMembers.push(userId);
+            community
+              .save()
+              .then((updatedCommunity) => {
+                console.log(
+                  "User requested to join community: ",
+                  updatedCommunity
+                );
+                res.json({
+                  message: "User requested to join community",
+                  community: updatedCommunity,
+                });
+              })
+              .catch((err) => {
+                console.error("Error requesting to join community:", err);
+                res
+                  .status(500)
+                  .json({
+                    message: "Error requesting to join community",
+                    error: err,
+                  });
+              });
+            return;
+          }
+          if (
+            community.privacy === "restricted" ||
+            community.privacy === "public"
+          ) {
+            community.members.push(userId);
+            community
+              .save()
+              .then((updatedCommunity) => {
+                console.log("User joined community: ", updatedCommunity);
+                res.json({
+                  message: "User joined community",
+                  community: updatedCommunity,
+                });
+              })
+              .catch((err) => {
+                console.error("Error joining community:", err);
+                res
+                  .status(500)
+                  .json({ message: "Error joining community", error: err });
+              });
+          }
+          user.communities.push(communityId);
+          user
+            .save()
+            .then((updatedUser) => {
+              console.log("Community joined: ", updatedUser);
+              res.json({
+                message: "Community joined successfully",
+                user: updatedUser,
+              });
+            })
+            .catch((err) => {
+              console.error("Error joining community:", err);
+              res
+                .status(500)
+                .json({
+                  message: "Error joining community for user",
+                  error: err,
+                });
+            });
+        })
+        .catch((err) => {
+          console.error("Error retrieving community:", err);
+          res.status(500).json({ message: "Server error" });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ message: "Server error" });
+    });
+};
+
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -752,4 +854,5 @@ module.exports = {
   updateGender,
   muteCommunities,
   unmuteCommunities,
+  joinCommunity,
 };

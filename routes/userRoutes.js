@@ -129,4 +129,12 @@ router.delete(
   authenticateToken,
   userController.unmuteCommunities
 );
+
+router.patch(
+  "/joinCommunity",
+  bodyParser.json(),
+  authenticateToken,
+  userController.joinCommunity
+);
+
 module.exports = router;
