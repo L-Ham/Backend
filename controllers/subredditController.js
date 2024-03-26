@@ -11,15 +11,14 @@ const sorting = (req, res, next) => {   // we may face an error and the solution
       const { Hot, New, Top, Random } = req.params;
       if (Hot == true) {
         res.json(subreddit.posts.sort((a, b) => b.votes - a.votes));
-      } else if (New == true) {
+      }
+      if (New == true) {
         res.json(subreddit.posts.sort((a, b) => b.createdAt - a.createdAt)); // need to add createdAt time stamp
-      } else if (Top == true) {
-        res.json(
-          subreddit.posts.sort(
-            (a, b) => b.comments.length - a.comments.length + b.votes - a.votes
-          )
-        );
-      } else if (Random == true) {
+      }
+      if (Top == true) {
+        res.json(subreddit.posts.sort((a, b) => b.comments.length - a.comments.length + b.votes - a.votes));
+      }
+      if (Random == true) {
         res.json(subreddit.posts.sort(() => Math.random() - 0.5));
       }
     })
