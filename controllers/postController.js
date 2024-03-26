@@ -302,7 +302,7 @@ const unhidePost = (req, res, next) => {
 
             user.save()
                 .then(() => {
-                    res.status(200).json({ message: "Post hidden successfully" });
+                    res.status(200).json({ message: "Post unhidden successfully" });
                 })
                 .catch((error) => {
                     console.error("Error unhidding post:", error);
