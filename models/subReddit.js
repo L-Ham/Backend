@@ -27,6 +27,10 @@ const subRedditSchema = new Schema({
     type: [Schema.Types.ObjectId],
     ref: "user",
   },
+  pendingMembers: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+  },
   ageRestriction: {
     type: Boolean,
     required: true,
