@@ -101,7 +101,9 @@ const editProfileSettings = (req, res, next) => {
 };
 const getAccountSettings = (req, res, next) => {
   const userId = req.userId;
-
+  if (!userId) {
+    return res.status(404).json({ message: "User not found" });
+  }
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -124,7 +126,9 @@ const getAccountSettings = (req, res, next) => {
 
 const getSafetyAndPrivacySettings = (req, res, next) => {
   const userId = req.userId;
-
+  if (!userId) {
+    return res.status(404).json({ message: "User Id not provided" });
+  }
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -135,8 +139,7 @@ const getSafetyAndPrivacySettings = (req, res, next) => {
         blockUsers: user.blockUsers,
         muteCommunities: user.muteCommunities,
       };
-      console.log("Safety and privacy settings: ", safetyAndPrivacySettings);
-      res.json({ safetyAndPrivacySettings });
+      res.json({ safetyAndPrivacySettings: safetyAndPrivacySettings });
     })
     .catch((err) => {
       console.error("Error retrieving safety and privacy settings:", err);
@@ -606,12 +609,15 @@ const updateGender = (req, res, next) => {
         console.error("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
+      if (user.gender === req.body.gender) {
+        return res.status(400).json({ message: "Gender is already set to this value" });
+      }
       user.gender = req.body.gender;
       user
         .save()
         .then((updatedUser) => {
           res.status(200).json({
-            message: "User gender updated succesfully",
+            message: "User gender updated successfully",
             user: updatedUser,
           });
         })
@@ -625,7 +631,7 @@ const updateGender = (req, res, next) => {
     .catch((err) => {
       return res
         .status(500)
-        .json({ message: "ERROR Retreiving user", error: err });
+        .json({ message: "ERROR Retrieving user", error: err });
     });
 };
 
