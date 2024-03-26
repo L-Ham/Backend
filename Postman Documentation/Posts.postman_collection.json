@@ -261,11 +261,17 @@
 		{
 			"name": "Hide Post",
 			"request": {
-				"method": "PUT",
-				"header": [],
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTE1NTcsImV4cCI6NTAxNzExNDExNTU3fQ.i23A5BtU0y3cnv_vQVylKOxXqVMhgC4K7jxsVAjCIjY",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"postId\":\"123456\",\n    \"hidden\":\"True\"\n}",
+					"raw": "{\n    \"postId\":\"66017914d947243f70e9e90a\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -288,13 +294,54 @@
 			"response": []
 		},
 		{
+			"name": "Save Post",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTMyMzMsImV4cCI6NTAxNzExNDEzMjMzfQ.WwQ-cZ2eTxoZ4ujpd2ffOiQ9k5JqDKN2hQIStLQOsH0",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"postId\":\"66017914d947243f70e9e90a\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/post/save",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"post",
+						"save"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Unhide Post",
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTE1NTcsImV4cCI6NTAxNzExNDExNTU3fQ.i23A5BtU0y3cnv_vQVylKOxXqVMhgC4K7jxsVAjCIjY",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"postId\":\"123456\",\n    \"hidden\":\"True\"\n}",
+					"raw": "{\n    \"postId\":\"66017914d947243f70e9e90a\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -311,6 +358,41 @@
 					"path": [
 						"post",
 						"unhide"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unsave Post",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTM3MDQsImV4cCI6NTAxNzExNDEzNzA0fQ.uhrxOFNdOyiCTuX8e97JsGSLE-FqNcg8S53NIA2SfQo",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"postId\":\"66017774a46916045eefd332\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/post/unsave",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"post",
+						"unsave"
 					]
 				}
 			},

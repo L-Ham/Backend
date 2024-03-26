@@ -140,8 +140,12 @@ const savePost = (req, res, next) => {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            //const post = new Post(req.body.Post);
-            user.savedPosts.push(req.body.Post);
+            const save = user.savedPosts.find((savedPost) => savedPost.equals(req.body.postId));
+            if (save) {
+                console.error("This post is already saved in your profile:", req.body.postId);
+                return res.status(404).json({ message: "This post is already saved in your profile" });
+            }
+            user.savedPosts.push(req.body.postId);
 
             user.save()
                 .then(() => {
@@ -157,67 +161,68 @@ const savePost = (req, res, next) => {
             res.status(500).json({ message: "Error finding user" });
         });
 };
+
 const upvote = async (req, res, next) => {
     const userId = req.userId;
     const postId = req.body.postId;
     Post.findById(postId)
-      .then((post) => {
-        if (!post) {
-          return res.status(404).json({ message: "Post not found" });
-        }
-        if (post.upvotedUsers.includes(userId)) {
-          return res.status(400).json({ message: "Post already upvoted" });
-        }
-        post.upvotes += 1;
-        post.upvotedUsers.push(req.userId);
-        post.save();
-        User.findById(userId)
-          .then((user) => {
-            user.upvotedPosts.push(postId);
-            user.save();
-            res.status(200).json({ message: "Post upvoted & added to user" });
-          })
-          .catch((err) => {
-            return res
-              .status(500)
-              .json({ message: "Error finding user", error: err });
-          });
-      })
-      .catch((err) => {
-        res.status(400).json({ message: "Error finding post", error: err });
-      });
-  };
-  
-  const downvote = async (req, res, next) => {
+        .then((post) => {
+            if (!post) {
+                return res.status(404).json({ message: "Post not found" });
+            }
+            if (post.upvotedUsers.includes(userId)) {
+                return res.status(400).json({ message: "Post already upvoted" });
+            }
+            post.upvotes += 1;
+            post.upvotedUsers.push(req.userId);
+            post.save();
+            User.findById(userId)
+                .then((user) => {
+                    user.upvotedPosts.push(postId);
+                    user.save();
+                    res.status(200).json({ message: "Post upvoted & added to user" });
+                })
+                .catch((err) => {
+                    return res
+                        .status(500)
+                        .json({ message: "Error finding user", error: err });
+                });
+        })
+        .catch((err) => {
+            res.status(400).json({ message: "Error finding post", error: err });
+        });
+};
+
+const downvote = async (req, res, next) => {
     const userId = req.userId;
     const postId = req.body.postId;
     Post.findById(postId)
-      .then((post) => {
-        if (!post) {
-          return res.status(404).json({ message: "Post not found" });
-        }
-        if (post.downvotedUsers.includes(userId)) {
-          return res.status(400).json({ message: "Post already downvoted" });
-        }
-        post.downvotes += 1;
-        post.downvotedUsers.push(req.body.userId);
-        post.save();
-        User.findById(userId)
-          .then((user) => {
-            user.downvotedPosts.push(postId);
-            user.save();
-            res.status(200).json({ message: "Post downvoted & added to user" });
-          })
-          .catch((err) => {
-            return res
-              .status(500)
-              .json({ message: "Error finding user", error: err });
-          });
-      })
-      .catch((err) => {
-        res.status(400).json({ message: "Error finding post", error: err });
-      });
-  };
+        .then((post) => {
+            if (!post) {
+                return res.status(404).json({ message: "Post not found" });
+            }
+            if (post.downvotedUsers.includes(userId)) {
+                return res.status(400).json({ message: "Post already downvoted" });
+            }
+            post.downvotes += 1;
+            post.downvotedUsers.push(req.body.userId);
+            post.save();
+            User.findById(userId)
+                .then((user) => {
+                    user.downvotedPosts.push(postId);
+                    user.save();
+                    res.status(200).json({ message: "Post downvoted & added to user" });
+                })
+                .catch((err) => {
+                    return res
+                        .status(500)
+                        .json({ message: "Error finding user", error: err });
+                });
+        })
+        .catch((err) => {
+            res.status(400).json({ message: "Error finding post", error: err });
+        });
+};
 
 
 const unsavePost = (req, res, next) => {
@@ -230,16 +235,16 @@ const unsavePost = (req, res, next) => {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const unsave = user.savedPosts.find((savedPosts) => savedPosts._id.equals(post_ID));
+            const unsave = user.savedPosts.find((savedPost) => savedPost.equals(req.body.postId));
             if (!unsave) {
-                console.error("This post is not saved in your profile:", req.body.Post);
+                console.error("This post is not saved in your profile:", req.body.postId);
                 return res.status(404).json({ message: "This post is not saved in your profile" });
             }
-            user.savedPosts.pull(req.body.Post);
+            user.savedPosts.pull(req.body.postId);
 
             user.save()
                 .then(() => {
-                    res.status(200).json({ message: "Post saved successfully" });
+                    res.status(200).json({ message: "Post unsaved successfully" });
                 })
                 .catch((error) => {
                     console.error("Error unsaving post:", error);
@@ -252,6 +257,7 @@ const unsavePost = (req, res, next) => {
         });
 };
 
+
 const hidePost = (req, res, next) => {
     const userId = req.userId;
 
@@ -261,8 +267,12 @@ const hidePost = (req, res, next) => {
                 console.error("User not found for user ID:", userId);
                 return res.status(404).json({ message: "User not found" });
             }
-
-            user.hidePosts.push(req.body.Post);
+            const hide = user.hidePosts.find((hidePost) => hidePost._id.equals(req.body.postId));
+            if (hide) {
+                console.error("This post is already hidden in your profile:", req.body.Post);
+                return res.status(404).json({ message: "This post is already hidden in your profile" });
+            }
+            user.hidePosts.push(req.body.postId);
 
             user.save()
                 .then(() => {
@@ -289,16 +299,16 @@ const unhidePost = (req, res, next) => {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const unhide = user.hidePosts.find((hidePost) => hidePost._id.equals(post_ID));
-            if (!unsave) {
+            const unhide = user.hidePosts.find((hidePost) => hidePost._id.equals(req.body.postId));
+            if (!unhide) {
                 console.error("This post is not hidden in your profile:", req.body.Post);
                 return res.status(404).json({ message: "This post is not hidden in your profile" });
             }
-            user.hidePosts.pull(req.body.Post);
+            user.hidePosts.pull(req.body.postId);
 
             user.save()
                 .then(() => {
-                    res.status(200).json({ message: "Post hidden successfully" });
+                    res.status(200).json({ message: "Post unhidden successfully" });
                 })
                 .catch((error) => {
                     console.error("Error unhidding post:", error);
