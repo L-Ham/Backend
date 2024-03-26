@@ -629,7 +629,7 @@ const updateGender = (req, res, next) => {
     });
 };
 
-const muteCommunities = (req, res, next) => {
+const muteCommunity = (req, res, next) => {
   const userId = req.userId;
   const communityId = req.body.subRedditId;
   User.findById(userId)
@@ -677,7 +677,7 @@ const muteCommunities = (req, res, next) => {
     });
 };
 
-const unmuteCommunities = (req, res, next) => {
+const unmuteCommunity = (req, res, next) => {
   const userId = req.userId;
   const communityId = req.body.subRedditId;
   User.findById(userId)
@@ -772,12 +772,10 @@ const joinCommunity = (req, res, next) => {
               })
               .catch((err) => {
                 console.error("Error requesting to join community:", err);
-                res
-                  .status(500)
-                  .json({
-                    message: "Error requesting to join community",
-                    error: err,
-                  });
+                res.status(500).json({
+                  message: "Error requesting to join community",
+                  error: err,
+                });
               });
             return;
           }
@@ -814,12 +812,10 @@ const joinCommunity = (req, res, next) => {
             })
             .catch((err) => {
               console.error("Error joining community:", err);
-              res
-                .status(500)
-                .json({
-                  message: "Error joining community for user",
-                  error: err,
-                });
+              res.status(500).json({
+                message: "Error joining community for user",
+                error: err,
+              });
             });
         })
         .catch((err) => {
@@ -852,7 +848,7 @@ module.exports = {
   editFeedSettings,
   viewFeedSettings,
   updateGender,
-  muteCommunities,
-  unmuteCommunities,
+  muteCommunity,
+  unmuteCommunity,
   joinCommunity,
 };

@@ -120,14 +120,14 @@ router.patch(
   "/muteCommunity",
   bodyParser.json(),
   authenticateToken,
-  userController.muteCommunities
+  userController.muteCommunity
 );
 
-router.delete(
+router.patch(
   "/unmuteCommunity",
   bodyParser.json(),
   authenticateToken,
-  userController.unmuteCommunities
+  userController.unmuteCommunity
 );
 
 router.patch(
