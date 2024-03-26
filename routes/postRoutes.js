@@ -3,6 +3,7 @@ const router = express.Router();
 const postController = require("../controllers/postController");
 const bodyParser = require("body-parser");
 const authenticateToken = require("../middleware/authenticateToken");
+const { auth } = require("google-auth-library");
 
 router.post(
     "/createPost",
@@ -34,5 +35,14 @@ router.patch(
     authenticateToken,
     postController.downvote
   );
-
+router.patch(
+  "/lockPost",
+  authenticateToken,
+  postController.lockPost
+)
+router.patch(
+  "/unlockPost",
+  authenticateToken,
+  postController.unlockPost
+)
 module.exports = router;

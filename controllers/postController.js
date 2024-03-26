@@ -219,10 +219,86 @@ const upvote = async (req, res, next) => {
       });
   };
 
+const lockPost = async (req, res, next) => {
+    const postId = req.body.postId;
+    const userId = req.userId;
+
+    try {
+        const post = await Post.findById(postId);
+        if (!post) {
+            console.error("Post not found for post ID:", postId);
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        const subReddit = await SubReddit.findById(post.subReddit);
+        if (!subReddit) {
+            console.error("SubReddit not found for ID:", post.subReddit);
+            return res.status(404).json({ message: "SubReddit not found" });
+        }
+
+        const moderators = subReddit.moderators;
+        if (!moderators.includes(userId)) {
+            console.error("User not authorized to lock post");
+            return res.status(401).json({ message: "User not authorized to lock post" });
+        }
+        if(post.isLocked === true){
+            console.error("Post is already locked");
+            return res.status(400).json({ message: "Post is already locked" });
+        }
+
+        post.isLocked = true;
+
+        await post.save();
+
+        res.status(200).json({ message: "Post locked successfully" });
+    } catch (error) {
+        console.error("Error locking post:", error);
+        res.status(500).json({ message: "Error locking post" });
+    }
+};
+const unlockPost = async (req, res, next) => {
+    const postId = req.body.postId;
+    const userId = req.userId;
+
+    try {
+        const post = await Post.findById(postId);
+        if (!post) {
+            console.error("Post not found for post ID:", postId);
+            return res.status(404).json({ message: "Post not found" });
+        }
+        
+        const subReddit = await SubReddit.findById(post.subReddit);
+        if (!subReddit) {
+            console.error("SubReddit not found for ID:", post.subReddit);
+            return res.status(404).json({ message: "SubReddit not found" });
+        }
+
+        const moderators = subReddit.moderators;
+        if (!moderators.includes(userId)) {
+            console.error("User not authorized to unlock post");
+            return res.status(401).json({ message: "User not authorized to unlock post" });
+        }
+        if(post.isLocked === false){
+            console.error("Post is already unlocked");
+            return res.status(400).json({ message: "Post is already unlocked" });
+        }
+        post.isLocked = false;
+
+        await post.save();
+
+        res.status(200).json({ message: "Post unlocked successfully" });
+    } catch (error) {
+        console.error("Error unlocking post:", error);
+        res.status(500).json({ message: "Error unlocking post" });
+    }
+}
+
 module.exports = {
     savePost,
     createPost,
     editPost,
     downvote,
-    upvote
+    upvote,
+    lockPost,
+    unlockPost
 };
