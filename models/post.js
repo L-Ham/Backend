@@ -17,9 +17,31 @@ const postSchema = new Schema({
     type: String,
     required: true,
   },
-  content: {
+  text: {
     type: String,
-    required: true,
+    required: false,
+  },
+  images: {
+    type: [
+      {
+        type: String,
+        required: false,
+      },
+    ],
+    default: [],
+  },
+  videos: {
+    type: [
+      {
+        type: String,
+        required: false,
+      },
+    ],
+    default: [],
+  },
+  url: {
+    type: String,
+    required: false,
   },
   poll: {
     options: {

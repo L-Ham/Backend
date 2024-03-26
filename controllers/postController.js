@@ -35,61 +35,69 @@ const createPost = (req, res, next) => {
             res.status(500).json({ message: "Error creating post" });
         });
 
-    function createPostUnderUser(user) {
-        const newPost = new Post({
-            user: userId,
-            title: req.body.title,
-            content: req.body.content,
-            type: req.body.type,
-            isNSFW: req.body.isNSFW || false,
-            isSpoiler: req.body.isSpoiler || false,
-            isLocked: req.body.isLocked || false,
-            isOc: req.body.isOc || false,
-            votes: 0,
-            views: 0,
-            commentCount: 0,
-            spamCount: 0,
-            poll: req.body.poll ? {
-                options: req.body.poll.options || [],
-                votingLength: req.body.poll.votingLength || 0,
-                voters: [],
-                startTime: req.body.poll.startTime || null,
-                endTime: req.body.poll.endTime || null,
-            } : {}
-        });
-        user.posts.push(newPost);
-        console.log("user posts", user.posts)
-        return Promise.all([newPost.save(), user.save()]);
-    }
-
-    function createPostUnderSubReddit(subReddit) {
-        const newPost = new Post({
-            user: userId,
-            subReddit: subRedditId,
-            title: req.body.title,
-            content: req.body.content,
-            type: req.body.type,
-            isNSFW: req.body.isNSFW || false,
-            isSpoiler: req.body.isSpoiler || false,
-            isLocked: req.body.isLocked || false,
-            isOc: req.body.isOc || false,
-            votes: 0,
-            views: 0,
-            commentCount: 0,
-            spamCount: 0,
-            poll: req.body.poll ? {
-                options: req.body.poll.options || [],
-                votingLength: req.body.poll.votingLength || 0,
-                voters: [],
-                startTime: req.body.poll.startTime || null,
-                endTime: req.body.poll.endTime || null,
-            } : {}
-        });
-        subReddit.posts.push(newPost);
-        console.log("subreddit posts", subReddit.posts)
-        return Promise.all([newPost.save(), subReddit.save()]);
-    }
+        function createPostUnderUser(user) {
+            const newPost = new Post({
+                user: userId,
+                subReddit: subRedditId,
+                title: req.body.title,
+                text: req.body.text,
+                images: req.body.images || [],
+                videos: req.body.videos || [],
+                url: req.body.url || "", 
+                type: req.body.type,
+                isNSFW: req.body.isNSFW || false,
+                isSpoiler: req.body.isSpoiler || false,
+                isLocked: req.body.isLocked || false,
+                isOc: req.body.isOc || false,
+                votes: 0,
+                views: 0,
+                commentCount: 0,
+                spamCount: 0,
+                poll: req.body.poll ? {
+                    options: req.body.poll.options || [],
+                    votingLength: req.body.poll.votingLength || 0,
+                    voters: [],
+                    startTime: req.body.poll.startTime || null,
+                    endTime: req.body.poll.endTime || null,
+                } : {}
+            });
+            user.posts.push(newPost);
+            console.log("user posts", user.posts)
+            return Promise.all([newPost.save(), user.save()]);
+        }
+    
+        function createPostUnderSubReddit(subReddit) {
+            const newPost = new Post({
+                user: userId,
+                subReddit: subRedditId,
+                title: req.body.title,
+                text: req.body.text,
+                images: req.body.images || [],
+                videos: req.body.videos || [],
+                url: req.body.url || "",
+                type: req.body.type,
+                isNSFW: req.body.isNSFW || false,
+                isSpoiler: req.body.isSpoiler || false,
+                isLocked: req.body.isLocked || false,
+                isOc: req.body.isOc || false,
+                votes: 0,
+                views: 0,
+                commentCount: 0,
+                spamCount: 0,
+                poll: req.body.poll ? {
+                    options: req.body.poll.options || [],
+                    votingLength: req.body.poll.votingLength || 0,
+                    voters: [],
+                    startTime: req.body.poll.startTime || null,
+                    endTime: req.body.poll.endTime || null,
+                } : {}
+            });
+            subReddit.posts.push(newPost);
+            console.log("subreddit posts", subReddit.posts)
+            return Promise.all([newPost.save(), subReddit.save()]);
+        }
 }
+
 const editPost = (req, res, next) => {
     const postId = req.params.postId;
     const userId = req.userId;
