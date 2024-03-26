@@ -45,6 +45,13 @@ const userSchema = new Schema({
       required: false,
     },
   ],
+  comments: [
+    {
+      type: [Schema.Types.ObjectId],
+      ref: "comment",
+      required: false,
+    },
+  ],
   postHistory: [
     {
       type: mongoose.Schema.Types.ObjectId,

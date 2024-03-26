@@ -17,4 +17,11 @@ router.patch(
     commentController.unhideComment  
 );
 
+router.post(
+    "/addComment",
+    bodyParser.json(),
+    authenticateToken,
+    commentController.createComment
+);
+
 module.exports = router;

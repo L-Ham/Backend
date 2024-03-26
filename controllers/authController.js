@@ -157,19 +157,21 @@ const forgetUsername = async (req, res, next) => {
   );
 };
 
-const forgetPassword = (req, res, next) => {
+const forgetPassword = async (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: "r75118106@gmail.com",
-      pass: "bcmiawurnnoaxoeg",
-    },
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: "r75118106@gmail.com",
+        pass: "bcmiawurnnoaxoeg",
+      },
   });
   const email = req.body.email;
-  const user = User.find((user) => user.email === email);
+  const user = await User.findOne({ email });
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
   if (!user) {
     return res.status(404).send("User not found");
   }
@@ -182,7 +184,7 @@ const forgetPassword = (req, res, next) => {
 
         You forgot it didn't you? Hey, it happens. Here you go:
         
-        Your password is https://localhost:5000/user/resetPassword/${token}`,
+        Your password reset link is https://localhost:5000/user/resetPassword?token=${token}`,
     },
     (err) => {
       if (err) {
@@ -194,9 +196,11 @@ const forgetPassword = (req, res, next) => {
   );
 };
 
+
 const resetPassword = async (req, res, next) => {
-  const { token, password } = req.body;
-  const user = User.find((user) => user.token === token);
+  const {  password } = req.body;
+  const userId = req.userId;
+  const user = User.findById(userId);
   if (!user) {
     return res.status(404).send("User not found");
   }
@@ -302,6 +306,19 @@ const generateUserName = (req, res, next) => {
     res.status(500).json({ message: "Error Creating usernames" });
   }
 };
+const updatePassword = async (req, res, next) => {
+  const  password  = req.body.Password;
+  const userId = req.userId;
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(password, salt);
+  await user.save();
+  res.send("Password updated successfully");
+}
+
 module.exports = {
   googleSignUp,
   googleLogin,
@@ -312,4 +329,5 @@ module.exports = {
   forgetPassword,
   generateUserName,
   resetPassword,
+  updatePassword
 };
