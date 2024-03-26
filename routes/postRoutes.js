@@ -42,7 +42,7 @@ router.delete(
     "/unhide",
     bodyParser.json(),
     authenticateToken,
-    postController.downvote
+    postController.unhidePost
   );
 router.patch(
   "/lockPost",
