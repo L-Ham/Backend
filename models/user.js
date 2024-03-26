@@ -40,7 +40,7 @@ const userSchema = new Schema({
   },
   posts: [
     {
-      type: [Schema.Types.ObjectId],
+      type: Schema.Types.ObjectId,
       ref: "post",
       required: false,
     },
@@ -159,10 +159,10 @@ const userSchema = new Schema({
   },
   muteCommunities: [
     {
-    type: Schema.Types.ObjectId, 
-    ref: "subReddit",
-    required: false,
-    }
+      type: Schema.Types.ObjectId,
+      ref: "subReddit",
+      required: false,
+    },
   ],
   feedSettings: {
     type: Map,
