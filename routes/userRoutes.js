@@ -1,22 +1,147 @@
-const Post = require("../../models/post");
-const postController = require("../../routes/postController");
+const express = require("express");
+const router = express.Router();
+const userController = require("../controllers/userController");
+const bodyParser = require("body-parser");
+const authenticateToken = require("../middleware/authenticateToken");
 
-jest.mock("../models/Post");
+router.get(
+  "/accountSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getAccountSettings
+);
 
-describe("unlockPost", () => {
-  it("should unlock a post", async () => {
-    // Arrange
-    const postId = "123";
-    const post = {
-      isLocked: true,
-      save: jest.fn().mockResolvedValueOnce(),
-    };
-    Post.findById = jest.fn().mockResolvedValueOnce(post);
-    await postController.unlockPost(postId);
+router.get(
+  "/notificationsSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getNotificationSettings
+);
+router.get(
+  "/profileSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getProfileSettings
+);
+router.patch(
+  "/profileSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editProfileSettings
+);
+router.get(
+  "/safetyAndPrivacySettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getSafetyAndPrivacySettings
+);
+router.patch(
+  "/safetyAndPrivacySettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editSafetyAndPrivacySettings
+);
 
-    // Assert
-    expect(Post.findById).toHaveBeenCalledWith(postId);
-    expect(post.isLocked).toBe(false);
-    expect(post.save).toHaveBeenCalled();
-  });
-});
+router.patch(
+  "/notificationsSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editNotificationSettings
+);
+router.patch(
+  "/followUser",
+  bodyParser.json(),
+  authenticateToken,
+  userController.followUser
+);
+
+router.patch(
+  "/unfollowUser",
+  bodyParser.json(),
+  authenticateToken,
+  userController.unfollowUser
+);
+
+router.get(
+  "/usernameAvailability",
+  bodyParser.json(),
+  userController.checkUserNameAvailability
+);
+router.patch(
+  "/blockUser",
+  bodyParser.json(),
+  authenticateToken,
+  userController.blockUser
+);
+router.patch(
+  "/unblockUser",
+  bodyParser.json(),
+  authenticateToken,
+  userController.unblockUser
+);
+router.patch(
+  "/feedSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editFeedSettings
+);
+router.get(
+  "/feedSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.viewFeedSettings
+);
+router.post(
+  "/socialLink",
+  bodyParser.json(),
+  authenticateToken,
+  userController.addSocialLink
+);
+router.patch(
+  "/socialLink",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editSocialLink
+);
+router.delete(
+  "/socialLink",
+  bodyParser.json(),
+  authenticateToken,
+  userController.deleteSocialLink
+);
+router.patch(
+  "/gender",
+  bodyParser.json(),
+  authenticateToken,
+  userController.updateGender
+);
+
+router.patch(
+  "/muteCommunity",
+  bodyParser.json(),
+  authenticateToken,
+  userController.muteCommunity
+);
+
+router.patch(
+  "/unmuteCommunity",
+  bodyParser.json(),
+  authenticateToken,
+  userController.unmuteCommunity
+);
+
+router.patch(
+  "/joinCommunity",
+  bodyParser.json(),
+  authenticateToken,
+  userController.joinCommunity
+);
+
+router.delete(
+  "/unjoinCommunity",
+  bodyParser.json(),
+  authenticateToken,
+  userController.unjoinCommunity
+);
+
+module.exports = router;

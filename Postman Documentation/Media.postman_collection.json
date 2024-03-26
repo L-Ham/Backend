@@ -1,0 +1,82 @@
+{
+	"info": {
+		"_postman_id": "e5587337-2c8b-48aa-b384-6ad10068f801",
+		"name": "Media",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32069311"
+	},
+	"item": [
+		{
+			"name": "Add image",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTA1MTIsImV4cCI6NTAxNzExNDEwNTEyfQ.Shhggj-giwtsZBfnHsREUfHvwfqzl_1DEqNDN3sa1ic",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/marly/OneDrive/Pictures/Screenshots/Screenshot 2024-03-25 115656.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:5000/upload/image",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"upload",
+						"image"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add video",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTA1MTIsImV4cCI6NTAxNzExNDEwNTEyfQ.Shhggj-giwtsZBfnHsREUfHvwfqzl_1DEqNDN3sa1ic",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/marly/Videos/WhatsApp Video 2024-03-26 at 2.35.17 AM.mp4"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:5000/upload/videos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"upload",
+						"videos"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
