@@ -47,7 +47,12 @@ const createCommunity = (req, res, next) => {
               .status(400)
               .json({ message: "Community name already exists" });
           }
-
+          if (req.body.name=="") {
+            return res
+              .status(400)
+              .json({ message: "Community name is required" });
+          }
+          
           const newCommunity = new SubReddit({
             name: req.body.name,
             privacy: req.body.privacy,
