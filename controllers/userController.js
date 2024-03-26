@@ -679,6 +679,54 @@ const muteCommunities = (req, res, next) => {
 };
 
 
+const unmuteCommunities = (req, res, next) => {
+  const userId = req.userId;
+  const communityId = req.body.subRedditId;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        console.error("User not found for user ID:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      subReddit.findById(communityId)
+        .then((community) => {
+          if (!community) {
+            console.error("Community not found for community ID:", communityId);
+            return res.status(404).json({ message: "Community not found" });
+          }
+          const unmute = user.muteCommunities.find((muteCommunity) => muteCommunity.equals(communityId));
+          if (!unmute) {
+            console.error("This subReddit is not muted for you:", communityId);
+            return res.status(404).json({ message: "This subReddit is not muted for you" });
+          }
+          user.muteCommunities.pull(communityId);
+          user
+            .save()
+            .then((updatedUser) => {
+              console.log("Community unmuted: ", updatedUser);
+              res.json({
+                message: "Community unmuted successfully",
+                user: updatedUser,
+              });
+            })
+            .catch((err) => {
+              console.error("Error unmuting community:", err);
+              res
+                .status(500)
+                .json({ message: "Error unmuting community for user", error: err });
+            });
+        })
+        .catch((err) => {
+          console.error("Error retrieving community:", err);
+          res.status(500).json({ message: "Server error" });
+        });
+    })
+    .catch((err) => {
+      console.error("Error retrieving user:", err);
+      res.status(500).json({ message: "Server error" });
+    });
+};
+
 
 module.exports = {
   getAccountSettings,
@@ -700,4 +748,5 @@ module.exports = {
   viewFeedSettings,
   updateGender,
   muteCommunities,
+  unmuteCommunities,
 };

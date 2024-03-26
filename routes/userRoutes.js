@@ -122,4 +122,11 @@ router.patch(
   authenticateToken,
   userController.muteCommunities
 );
+
+router.delete(
+  "/unmuteCommunity",
+  bodyParser.json(),
+  authenticateToken,
+  userController.unmuteCommunities
+);
 module.exports = router;
