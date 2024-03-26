@@ -87,6 +87,10 @@ const createComment = (req, res, next) => {
                 return res.status(404).json({ message: "Subreddit not found" });
               });
           }
+          if (req.body.text == null || req.body.text == "") {
+            console.error("Comment text is required");
+            return res.status(400).json({ message: "Comment text is required" });
+          }
           const comment = new Comment({
             postId: req.body.postId,
             userId: userId,
