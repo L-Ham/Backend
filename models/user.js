@@ -157,10 +157,13 @@ const userSchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: "user" }],
     required: false,
   },
-  muteCommunities: {
-    type: [{ type: Schema.Types.ObjectId, ref: "subReddit" }],
+  muteCommunities: [
+    {
+    type: Schema.Types.ObjectId, 
+    ref: "subReddit",
     required: false,
-  },
+    }
+  ],
   feedSettings: {
     type: Map,
     of: mongoose.Schema.Types.Mixed,
