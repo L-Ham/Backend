@@ -137,4 +137,11 @@ router.patch(
   userController.joinCommunity
 );
 
+router.delete(
+  "/unjoinCommunity",
+  bodyParser.json(),
+  authenticateToken,
+  userController.unjoinCommunity
+);
+
 module.exports = router;
