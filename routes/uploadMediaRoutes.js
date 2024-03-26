@@ -3,7 +3,7 @@ const router = express.Router();
 const authenticateToken = require("../middleware/authenticateToken");
 const bodyParser = require("body-parser");
 const userUploadsController = require("../controllers/userUploadsController");
-const { uploadImage } = require("../middleware/multerConfig");
+const { uploadImage , uploadVideo } = require("../middleware/multerConfig");
 
 router.post(
   "/image",
@@ -11,6 +11,13 @@ router.post(
   bodyParser.json(),
   authenticateToken,
   userUploadsController.uploadImage
+);
+router.post(
+  "/videos",
+  uploadVideo.single('file'),
+  bodyParser.json(),
+  authenticateToken,
+  userUploadsController.uploadVideo
 );
 
 module.exports = router;
