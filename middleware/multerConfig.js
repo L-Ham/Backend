@@ -36,5 +36,6 @@ router.post("/video", uploadVideo.array("file"), (req, res) => {
 });
 
 router.post('/image', uploadImage.single('file'), userUploadsController.uploadImage);
+//router.post('/video', uploadVideo.single('file'), userUploadsController.uploadVideo);
 
 module.exports = { router, uploadImage, uploadVideo };
