@@ -316,16 +316,79 @@
 			"response": []
 		},
 		{
+			"name": "Join Community",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0NTg5NjQsImV4cCI6NTAxNzExNDU4OTY0fQ.PBSfTy7Zi_0XLj2cP2lvPb46vp6SaOW299KYwFgdEHw",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subRedditId\": \"6600768e0e1e9482675cf861\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/joinCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"joinCommunity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unjoin Community",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0NTg5NjQsImV4cCI6NTAxNzExNDU4OTY0fQ.PBSfTy7Zi_0XLj2cP2lvPb46vp6SaOW299KYwFgdEHw",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subRedditId\": \"6600768e0e1e9482675cf861\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/unjoinCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"unjoinCommunity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Mute Community",
 			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {
-					"connection": true,
-					"accept-encoding": true,
-					"accept": true,
-					"user-agent": true,
-					"host": true,
-					"content-length": true
-				}
+				"disabledSystemHeaders": {}
 			},
 			"request": {
 				"method": "PATCH",
@@ -355,6 +418,44 @@
 					"path": [
 						"user",
 						"muteCommunity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unmute Community",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MjEwMzgsImV4cCI6NTAxNzExNDIxMDM4fQ.Ep_5aTsnoNn2l9w9DdVgWqdOkWc3t9fNE33uNcQTe58",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subRedditId\":\"6600763f0e1e9482675cf856\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/unmuteCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"unmuteCommunity"
 					]
 				}
 			},
@@ -478,7 +579,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"linkOrUsername\":\"www.whatsapp.com\",\n    \"appName\":\"whatsapp\",\n    \"logo\":\"whatsapp Logo\",\n    \"displayText\":\"Marly's profile\"\n}",
+					"raw": "{\n    \"linkOrUsername\":\"www.whatsapp.com\",\n    \"appName\":\"whatsapp\",\n    \"logo\":\"whatsapp Logo\",\n    \"displayText\":\"amr's profile\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
