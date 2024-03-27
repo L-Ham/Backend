@@ -5,25 +5,22 @@ const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
 const subReddit = require("../models/subReddit");
 
-const getNotificationSettings = (req, res, next) => {
-  const userId = req.userId;
+const getNotificationSettings = async (req, res, next) => {
+  try {
+    const userId = req.userId;
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.status(200).json({ notificationSettings: user.notificationSettings });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        message: "Error retrieving notification settings",
-        error: err,
-      });
-    });
-};
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ notificationSettings: user.notificationSettings });
+  } catch (err) {
+    console.error("Error retrieving notification settings:", err);
+    res.status(500).json({ message: "Error retrieving notification settings", error: err });
+  }
+}
 const getProfileSettings = (req, res, next) => {
   const userId = req.userId;
 
@@ -179,53 +176,114 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
       res.status(500).json({ message: "Server error" });
     });
 };
-const editNotificationSettings = (req, res, next) => {
-  const userId = req.userId;
+const editNotificationSettings = async (req, res, next) => {
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      user.notificationSettings.set("inboxMessage", req.body.inboxMessage);
-      user.notificationSettings.set("chatMessages", req.body.chatMessages);
-      user.notificationSettings.set("chatRequest", req.body.chatRequest);
-      user.notificationSettings.set("mentions", req.body.mentions);
-      user.notificationSettings.set("comments", req.body.comments);
-      user.notificationSettings.set("upvotesToPosts", req.body.upvotesToPosts);
-      user.notificationSettings.set(
-        "upvotesToComments",
-        req.body.upvotesToComments
-      );
-      user.notificationSettings.set(
-        "repliesToComments",
-        req.body.repliesToComments
-      );
-      user.notificationSettings.set("newFollowers", req.body.newFollowers);
-      user.notificationSettings.set(
-        "modNotifications",
-        req.body.modNotifications
-      );
-      user
-        .save()
-        .then((user) => {
-          console.log("Notification settings updated: ", user);
-          res.json({
-            message: "User Notification settings updated successfully",
-            user: user,
-          });
-        })
-        .catch((err) => {
-          console.error("Error updating Notification settings:", err);
-          res.status(500).json({ message: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
+  try {
+    const userId = req.userId;
+
+    // Find the user and handle potential not-found scenario
+    const user = await User.findById(userId).select('notificationSettings'); // Select only the notificationSettings field
+
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Validate incoming data (optional, based on your requirements)
+    // ... validation logic here ...
+
+    user.notificationSettings.set("inboxMessage", req.body.inboxMessage);
+    user.notificationSettings.set("chatMessages", req.body.chatMessages);
+    user.notificationSettings.set("chatRequest", req.body.chatRequest);
+    user.notificationSettings.set("mentions", req.body.mentions);
+    user.notificationSettings.set("comments", req.body.comments);
+    user.notificationSettings.set("upvotesToPosts", req.body.upvotesToPosts);
+    user.notificationSettings.set("upvotesToComments", req.body.upvotesToComments);
+    user.notificationSettings.set("repliesToComments", req.body.repliesToComments);
+    user.notificationSettings.set("newFollowers", req.body.newFollowers);
+    user.notificationSettings.set("modNotifications", req.body.modNotifications);
+
+
+    // Save the updated user and handle potential errors
+    await user.save();
+
+    console.log("Notification settings updated: ", user);
+    res.json({
+      message: "User Notification settings updated successfully",
+      user,
     });
-};
+  } catch (err) {
+    console.error("Error updating Notification settings:", err);
+
+    // Handle specific errors (optional)
+    // ... error handling logic here ...
+
+    res.status(500).json({ message: "Error updating notification settings" });
+  }
+}
+
+// const followUser = async (req, res, next) => {
+//   const userId = req.userId;
+//   const usernameToFollow = req.body.usernameToFollow;
+
+//   User.findById(userId)
+//     .then((user) => {
+//       if (!user) {
+//         return res.status(404).json({ message: "User not found" });
+//       }
+
+//       User.findOne({ userName: usernameToFollow })
+//         .then((userToFollow) => {
+//           if (!userToFollow) {
+//             return res
+//               .status(404)
+//               .json({ message: "User to follow not found" });
+//           }
+
+//           if (userToFollow._id.equals(userId)) {
+//             return res
+//               .status(400)
+//               .json({ message: "You can't follow yourself" });
+//           }
+
+//           if (user.blockUsers.includes(userToFollow._id)) {
+//             return res
+//               .status(400)
+//               .json({ message: "You have been blocked by this user" });
+//           }
+
+//           if (user.following.includes(userToFollow._id)) {
+//             return res.status(400).json({ message: "User already followed" });
+//           }
+
+//           user.following.push(userToFollow._id);
+//           userToFollow.followers.push(userId);
+
+//           Promise.all([user.save(), userToFollow.save()])
+//             .then(() => {
+//               res.status(200).json({
+//                 message: "User followed successfully",
+//                 user: userToFollow,
+//               });
+//             })
+//             .catch((err) => {
+//               res
+//                 .status(500)
+//                 .json({ message: "Failed to follow user", error: err });
+//             });
+//         })
+//         .catch((err) => {
+//           res
+//             .status(500)
+//             .json({ message: "Failed to find the user to follow", error: err });
+//         });
+//     })
+//     .catch((err) => {
+//       res
+//         .status(500)
+//         .json({ message: "Failed to find the current user", error: err });
+//     });
+// };
 const followUser = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -307,8 +365,29 @@ const checkUserNameAvailability = (req, res, next) => {
   if (userName === "") {
     console.error("Username is empty");
     return res.status(400).json({ message: "Username is empty" });
+    console.error("Username is empty");
+    return res.status(400).json({ message: "Username is empty" });
   }
   User.findOne({ userName: userName })
+    .then((user) => {
+      if (user) {
+        console.error("Username already taken:", userName);
+        return res.status(409).json({ message: "Username already taken" });
+      }
+      console.log("Username available:", userName);
+      res.json({ message: "Username available" });
+    })
+    .catch((err) => {
+      console.error("Error checking username availability:", err);
+      // Ensure that res is an instance of the Express response object
+      if (res.status) {
+        res.status(500).json({ message: "Server error" });
+      } else {
+        // Handle the case where res is not an Express response object
+        console.error("Invalid res object:", res);
+        next(err);
+      }
+    });
     .then((user) => {
       if (user) {
         console.error("Username already taken:", userName);
@@ -630,105 +709,83 @@ const updateGender = (req, res, next) => {
     });
 };
 
-const muteCommunity = (req, res, next) => {
-  const userId = req.userId;
-  const communityId = req.body.subRedditId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      subReddit
-        .findById(communityId)
-        .then((community) => {
-          if (!community) {
-            return res.status(404).json({ message: "Community not found" });
-          }
-          if (user.muteCommunities.includes(communityId)) {
-            return res.status(400).json({ message: "Community already muted" });
-          }
-          user.muteCommunities.push(communityId);
-          user
-            .save()
-            .then((updatedUser) => {
-              console.log("Community muted: ", updatedUser);
-              res.json({
-                message: "Community muted successfully",
-                user: updatedUser,
-              });
-            })
-            .catch((err) => {
-              console.error("Error muting community:", err);
-              res.status(500).json({
-                message: "Error muting community for user",
-                error: err,
-              });
-            });
-        })
-        .catch((err) => {
-          console.error("Error retrieving community:", err);
-          res.status(500).json({ message: "Error retrieving community:" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Error retrieving user:" });
+const muteCommunity = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const communityId = req.body.subRedditId;
+
+    const [user, community] = await Promise.all([
+      User.findById(userId),
+      subReddit.findById(communityId),
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    if (user.muteCommunities.includes(communityId)) {
+      return res.status(400).json({ message: "Community already muted" });
+    }
+
+    user.muteCommunities.push(communityId);
+    await user.save();
+
+    console.log("Community muted: ", user);
+    res.json({
+      message: "Community muted successfully",
+      user,
     });
+  } catch (err) {
+    console.error("Error muting community:", err);
+    res.status(500).json({
+      message: "Error muting community for user",
+      error: err, // Include error for debugging purposes (optional)
+    });
+  }
 };
 
-const unmuteCommunity = (req, res, next) => {
-  const userId = req.userId;
-  const communityId = req.body.subRedditId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      subReddit
-        .findById(communityId)
-        .then((community) => {
-          if (!community) {
-            console.error("Community not found for community ID:", communityId);
-            return res.status(404).json({ message: "Community not found" });
-          }
-          const unmute = user.muteCommunities.find((muteCommunity) =>
-            muteCommunity.equals(communityId)
-          );
-          if (!unmute) {
-            console.error("This subReddit is not muted for you:", communityId);
-            return res
-              .status(404)
-              .json({ message: "This subReddit is not muted for you" });
-          }
-          user.muteCommunities.pull(communityId);
-          user
-            .save()
-            .then((updatedUser) => {
-              console.log("Community unmuted: ", updatedUser);
-              res.json({
-                message: "Community unmuted successfully",
-                user: updatedUser,
-              });
-            })
-            .catch((err) => {
-              console.error("Error unmuting community:", err);
-              res.status(500).json({
-                message: "Error unmuting community for user",
-                error: err,
-              });
-            });
-        })
-        .catch((err) => {
-          console.error("Error retrieving community:", err);
-          res.status(500).json({ message: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
+const unmuteCommunity = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const communityId = req.body.subRedditId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const community = await subReddit.findById(communityId);
+    if (!community) {
+      console.error("Community not found for community ID:", communityId);
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    const isMuted = user.muteCommunities.find((muteCommunity) =>
+      muteCommunity.equals(communityId)
+    );
+    if (!isMuted) {
+      console.error("This subReddit is not muted for you:", communityId);
+      return res.status(404).json({ message: "This subReddit is not muted for you" });
+    }
+
+    user.muteCommunities.pull(communityId);
+    await user.save();
+
+    console.log("Community unmuted: ", user);
+    res.json({
+      message: "Community unmuted successfully",
+      user,
     });
-};
+  } catch (err) {
+    console.error("Error unmuting community:", err);
+    res.status(500).json({ message: "Error unmuting community for user", error: err });
+  }
+}
 
 const joinCommunity = (req, res, next) => {
   const userId = req.userId;
