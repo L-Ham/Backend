@@ -257,45 +257,39 @@ const unsavePost = (req, res, next) => {
       res.status(500).json({ message: "Error finding user" });
     });
 };
-
-const hidePost = (req, res, next) => {
+async function hidePost(req, res, next) {
   const userId = req.userId;
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      const hide = user.hidePosts.find((hidePost) =>
-        hidePost._id.equals(req.body.postId)
-      );
-      if (hide) {
-        console.error(
-          "This post is already hidden in your profile:",
-          req.body.Post
-        );
-        return res
-          .status(404)
-          .json({ message: "This post is already hidden in your profile" });
-      }
-      user.hidePosts.push(req.body.postId);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      user
-        .save()
-        .then(() => {
-          res.status(200).json({ message: "Post hidden successfully" });
-        })
-        .catch((error) => {
-          console.error("Error hidding post:", error);
-          res.status(500).json({ message: "Error hidding post" });
-        });
-    })
-    .catch((error) => {
-      console.error("Error finding user:", error);
-      res.status(500).json({ message: "Error finding user" });
-    });
-};
+    const isAlreadyHidden = user.hidePosts.some((hidePost) =>
+      hidePost._id.equals(req.body.postId)
+    );
+    if (isAlreadyHidden) {
+      console.log(
+        "This post is already hidden in your profile:",
+        req.body.postId
+      );
+      return res
+        .status(404)
+        .json({ message: "This post is already hidden in your profile" });
+    }
+
+    user.hidePosts.push(req.body.postId);
+    await user.save();
+
+    res.status(200).json({ message: "Post hidden successfully" });
+  } catch (error) {
+    console.log("Error hidding post:", error);
+    res.status(500).json({ message: "Error hidding post" });
+  }
+}
+
 
 const unhidePost = (req, res, next) => {
   const userId = req.userId;
