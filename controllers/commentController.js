@@ -3,56 +3,52 @@ const Post = require("../models/post");
 const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
 
-const hideComment = (req, res, next) => {
-  const { commentId } = req.body;
-  Comment.findById(commentId)
-    .then((comment) => {
-      if (!comment) {
-        res.status(404).json({ message: "Comment not found" });
-        return null;
-      }
-      if (comment.isHidden) {
-        res.status(200).json({ message: "Comment is already hidden" });
-        return null;
-      }
-      comment.isHidden = true;
-      return comment.save();
-    })
-    .then((result) => {
-      if (result) {
-        res.status(200).json({ message: "Comment hidden successfully" });
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(400).json({ message: "Could not hide comment" });
-    });
+const hideComment = async (req, res, next) => {
+  try {
+    const { commentId } = req.body;
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    if (comment.isHidden) {
+      return res.status(200).json({ message: "Comment is already hidden" });
+    }
+
+    comment.isHidden = true;
+    await comment.save();
+
+    return res.status(200).json({ message: "Comment hidden successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json({ message: "Could not hide comment" });
+  }
 };
-const unhideComment = (req, res, next) => {
-  const { commentId } = req.body;
-  Comment.findById(commentId)
-    .then((comment) => {
-      if (!comment) {
-        res.status(404).json({ message: "Comment not found" });
-        return null;
-      }
-      if (!comment.isHidden) {
-        res.status(200).json({ message: "Comment is already visible" });
-        return null;
-      }
-      comment.isHidden = false;
-      return comment.save();
-    })
-    .then((result) => {
-      if (result) {
-        res.status(200).json({ message: "Comment unhidden successfully" });
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(400).json({ message: "Could not unhide comment" });
-    });
+
+const unhideComment = async (req, res, next) => {
+  try {
+    const { commentId } = req.body;
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    if (!comment.isHidden) {
+      return res.status(200).json({ message: "Comment is already visible" });
+    }
+
+    comment.isHidden = false;
+    await comment.save();
+
+    return res.status(200).json({ message: "Comment unhidden successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json({ message: "Could not unhide comment" });
+  }
 };
+
 
 const createComment = async (req, res, next) => {
   const userId = req.userId;
