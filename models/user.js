@@ -153,10 +153,13 @@ const userSchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: "user" }],
     required: false,
   },
-  blockUsers: {
-    type: [{ type: Schema.Types.ObjectId, ref: "user" }],
-    required: false,
-  },
+  blockUsers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: false,
+    },
+  ],
   muteCommunities: [
     {
       type: Schema.Types.ObjectId,
