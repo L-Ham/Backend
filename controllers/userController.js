@@ -18,9 +18,11 @@ const getNotificationSettings = async (req, res, next) => {
     res.status(200).json({ notificationSettings: user.notificationSettings });
   } catch (err) {
     console.error("Error retrieving notification settings:", err);
-    res.status(500).json({ message: "Error retrieving notification settings", error: err });
+    res
+      .status(500)
+      .json({ message: "Error retrieving notification settings", error: err });
   }
-}
+};
 const getProfileSettings = (req, res, next) => {
   const userId = req.userId;
 
@@ -177,12 +179,11 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
     });
 };
 const editNotificationSettings = async (req, res, next) => {
-
   try {
     const userId = req.userId;
 
     // Find the user and handle potential not-found scenario
-    const user = await User.findById(userId).select('notificationSettings'); // Select only the notificationSettings field
+    const user = await User.findById(userId).select("notificationSettings"); // Select only the notificationSettings field
 
     if (!user) {
       console.error("User not found for user ID:", userId);
@@ -198,11 +199,19 @@ const editNotificationSettings = async (req, res, next) => {
     user.notificationSettings.set("mentions", req.body.mentions);
     user.notificationSettings.set("comments", req.body.comments);
     user.notificationSettings.set("upvotesToPosts", req.body.upvotesToPosts);
-    user.notificationSettings.set("upvotesToComments", req.body.upvotesToComments);
-    user.notificationSettings.set("repliesToComments", req.body.repliesToComments);
+    user.notificationSettings.set(
+      "upvotesToComments",
+      req.body.upvotesToComments
+    );
+    user.notificationSettings.set(
+      "repliesToComments",
+      req.body.repliesToComments
+    );
     user.notificationSettings.set("newFollowers", req.body.newFollowers);
-    user.notificationSettings.set("modNotifications", req.body.modNotifications);
-
+    user.notificationSettings.set(
+      "modNotifications",
+      req.body.modNotifications
+    );
 
     // Save the updated user and handle potential errors
     await user.save();
@@ -220,7 +229,7 @@ const editNotificationSettings = async (req, res, next) => {
 
     res.status(500).json({ message: "Error updating notification settings" });
   }
-}
+};
 
 // const followUser = async (req, res, next) => {
 //   const userId = req.userId;
@@ -388,25 +397,6 @@ const checkUserNameAvailability = (req, res, next) => {
         next(err);
       }
     });
-    .then((user) => {
-      if (user) {
-        console.error("Username already taken:", userName);
-        return res.status(409).json({ message: "Username already taken" });
-      }
-      console.log("Username available:", userName);
-      res.json({ message: "Username available" });
-    })
-    .catch((err) => {
-      console.error("Error checking username availability:", err);
-      // Ensure that res is an instance of the Express response object
-      if (res.status) {
-        res.status(500).json({ message: "Server error" });
-      } else {
-        // Handle the case where res is not an Express response object
-        console.error("Invalid res object:", res);
-        next(err);
-      }
-    });
 };
 
 const blockUser = (req, res, next) => {
@@ -479,8 +469,6 @@ const unblockUser = (req, res, next) => {
     });
 };
 
-
-
 async function editFeedSettings(req, res, next) {
   try {
     const userId = req.userId;
@@ -492,25 +480,25 @@ async function editFeedSettings(req, res, next) {
     }
 
     user.feedSettings.set("showNSFW", req.body.showNSFW);
-      user.feedSettings.set("blurNSFW", req.body.blurNSFW);
-      user.feedSettings.set(
-        "enableHomeFeedRecommendations",
-        req.body.enableHomeFeedRecommendations
-      );
-      user.feedSettings.set("autoplayMedia", req.body.autoplayMedia);
-      user.feedSettings.set("reduceAnimations", req.body.reduceAnimations);
-      user.feedSettings.set("communityThemes", req.body.communityThemes);
-      user.feedSettings.set(
-        "communityContentSort",
-        req.body.communityContentSort
-      );
-      user.feedSettings.set(
-        "rememberPerCommunity",
-        req.body.rememberPerCommunity
-      );
-      user.feedSettings.set("globalContentView", req.body.globalContentView);
-      user.feedSettings.set("openPostsInNewTab", req.body.openPostsInNewTab);
-      user.feedSettings.set("defaultToMarkdown", req.body.defaultToMarkdown);
+    user.feedSettings.set("blurNSFW", req.body.blurNSFW);
+    user.feedSettings.set(
+      "enableHomeFeedRecommendations",
+      req.body.enableHomeFeedRecommendations
+    );
+    user.feedSettings.set("autoplayMedia", req.body.autoplayMedia);
+    user.feedSettings.set("reduceAnimations", req.body.reduceAnimations);
+    user.feedSettings.set("communityThemes", req.body.communityThemes);
+    user.feedSettings.set(
+      "communityContentSort",
+      req.body.communityContentSort
+    );
+    user.feedSettings.set(
+      "rememberPerCommunity",
+      req.body.rememberPerCommunity
+    );
+    user.feedSettings.set("globalContentView", req.body.globalContentView);
+    user.feedSettings.set("openPostsInNewTab", req.body.openPostsInNewTab);
+    user.feedSettings.set("defaultToMarkdown", req.body.defaultToMarkdown);
 
     const updatedUser = await user.save();
     console.log("Feed settings updated: ", updatedUser);
@@ -523,7 +511,6 @@ async function editFeedSettings(req, res, next) {
     res.status(500).json({ message: "Server error" });
   }
 }
-
 
 async function viewFeedSettings(req, res, next) {
   try {
@@ -770,7 +757,9 @@ const unmuteCommunity = async (req, res, next) => {
     );
     if (!isMuted) {
       console.error("This subReddit is not muted for you:", communityId);
-      return res.status(404).json({ message: "This subReddit is not muted for you" });
+      return res
+        .status(404)
+        .json({ message: "This subReddit is not muted for you" });
     }
 
     user.muteCommunities.pull(communityId);
@@ -783,9 +772,11 @@ const unmuteCommunity = async (req, res, next) => {
     });
   } catch (err) {
     console.error("Error unmuting community:", err);
-    res.status(500).json({ message: "Error unmuting community for user", error: err });
+    res
+      .status(500)
+      .json({ message: "Error unmuting community for user", error: err });
   }
-}
+};
 
 const joinCommunity = (req, res, next) => {
   const userId = req.userId;
