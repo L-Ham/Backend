@@ -1,7 +1,7 @@
 {
     "source": {
         "include": [
-            "./controllers/userController.js"
+            "./controllers/userController.js","./models/userModel.js"
         ],
         "includePattern": ".+\\.jsx?$"
     },
