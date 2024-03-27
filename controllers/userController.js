@@ -545,42 +545,32 @@ const editSocialLink = (req, res, next) => {
       res.status(500).json({ message: "Error Retrieving User", error: err });
     });
 };
-const deleteSocialLink = (req, res, next) => {
+const deleteSocialLink = async (req, res, next) => {
   const userId = req.userId;
   const linkId = req.body.socialLinkId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      socialLinkToDelete = user.socialLinks.find((link) => link._id == linkId);
-      if (!socialLinkToDelete) {
-        console.error("Social link not found for link ID:", linkId);
-        return res.status(404).json({ message: "Social link not found" });
-      }
-      user.socialLinks.pull(socialLinkToDelete);
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Social link deleted: ", updatedUser);
-          res.json({
-            message: "Social link deleted successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          console.error("Error deleting social link:", err);
-          res.status(500).json({
-            message: "Error deleting social link from user",
-            error: err,
-          });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Error Retrieving User", error: err });
-    });
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const socialLinkToDelete = user.socialLinks.find((link) => link._id.toString() === linkId);
+    if (!socialLinkToDelete) {
+      console.error("Social link not found for link ID:", linkId);
+      return res.status(404).json({ message: "Social link not found" });
+    }
+
+    user.socialLinks.pull(socialLinkToDelete);
+    const updatedUser = await user.save();
+
+    console.log("Social link deleted: ", updatedUser);
+    res.json({ message: "Social link deleted successfully", user: updatedUser });
+  } catch (err) {
+    console.error("Error deleting social link:", err);
+    res.status(500).json({ message: "Error deleting social link from user", error: err });
+  }
 };
 
 const updateGender = (req, res, next) => {
