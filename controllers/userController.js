@@ -5,25 +5,22 @@ const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
 const subReddit = require("../models/subReddit");
 
-const getNotificationSettings = (req, res, next) => {
-  const userId = req.userId;
+const getNotificationSettings = async (req, res, next) => {
+  try {
+    const userId = req.userId;
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.status(200).json({ notificationSettings: user.notificationSettings });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        message: "Error retrieving notification settings",
-        error: err,
-      });
-    });
-};
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ notificationSettings: user.notificationSettings });
+  } catch (err) {
+    console.error("Error retrieving notification settings:", err);
+    res.status(500).json({ message: "Error retrieving notification settings", error: err });
+  }
+}
 const getProfileSettings = (req, res, next) => {
   const userId = req.userId;
 
