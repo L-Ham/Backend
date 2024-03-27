@@ -132,7 +132,7 @@ async function getSafetyAndPrivacySettings(req, res, next) {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
