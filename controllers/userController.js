@@ -316,6 +316,9 @@ const followUser = async (req, res, next) => {
     }
 
     if (user.blockUsers.includes(userToFollow._id)) {
+      return res.status(400).json({ message: "You have blocked this user" });
+    }
+    if (userToFollow.blockUsers.includes(user._id)) {
       return res
         .status(400)
         .json({ message: "You have been blocked by this user" });
