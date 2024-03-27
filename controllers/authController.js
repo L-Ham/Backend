@@ -290,14 +290,15 @@ const signUp = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-const generateUserName = (req, res, next) => {
+const generateUserName = async (req, res, next) => {
   try {
-    let userNames = authService.generateRandomUsername();
+    const userNames = await authService.generateRandomUsername();
     res.status(200).json({
       message: "Usernames created Successfully",
       usernames: userNames,
     });
-  } catch {
+  } catch (err) {
+    console.error("Error generating usernames:", err);
     res.status(500).json({ message: "Error Creating usernames" });
   }
 };
