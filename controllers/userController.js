@@ -227,67 +227,111 @@ const editNotificationSettings = (req, res, next) => {
     });
 };
 
-const followUser = (req, res, next) => {
-  const userId = req.userId;
-  const usernameToFollow = req.body.usernameToFollow;
+// const followUser = async (req, res, next) => {
+//   const userId = req.userId;
+//   const usernameToFollow = req.body.usernameToFollow;
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
+//   User.findById(userId)
+//     .then((user) => {
+//       if (!user) {
+//         return res.status(404).json({ message: "User not found" });
+//       }
 
-      User.findOne({ userName: usernameToFollow })
-        .then((userToFollow) => {
-          if (!userToFollow) {
-            return res
-              .status(404)
-              .json({ message: "User to follow not found" });
-          }
+//       User.findOne({ userName: usernameToFollow })
+//         .then((userToFollow) => {
+//           if (!userToFollow) {
+//             return res
+//               .status(404)
+//               .json({ message: "User to follow not found" });
+//           }
 
-          if (userToFollow._id.equals(userId)) {
-            return res
-              .status(400)
-              .json({ message: "You can't follow yourself" });
-          }
+//           if (userToFollow._id.equals(userId)) {
+//             return res
+//               .status(400)
+//               .json({ message: "You can't follow yourself" });
+//           }
 
-          if (user.blockUsers.includes(userToFollow._id)) {
-            return res
-              .status(400)
-              .json({ message: "You have been blocked by this user" });
-          }
+//           if (user.blockUsers.includes(userToFollow._id)) {
+//             return res
+//               .status(400)
+//               .json({ message: "You have been blocked by this user" });
+//           }
 
-          if (user.following.includes(userToFollow._id)) {
-            return res.status(400).json({ message: "User already followed" });
-          }
+//           if (user.following.includes(userToFollow._id)) {
+//             return res.status(400).json({ message: "User already followed" });
+//           }
 
-          user.following.push(userToFollow._id);
-          userToFollow.followers.push(userId);
+//           user.following.push(userToFollow._id);
+//           userToFollow.followers.push(userId);
 
-          Promise.all([user.save(), userToFollow.save()])
-            .then(() => {
-              res.status(200).json({
-                message: "User followed successfully",
-                user: userToFollow,
-              });
-            })
-            .catch((err) => {
-              res
-                .status(500)
-                .json({ message: "Failed to follow user", error: err });
-            });
-        })
-        .catch((err) => {
-          res
-            .status(500)
-            .json({ message: "Failed to find the user to follow", error: err });
-        });
-    })
-    .catch((err) => {
-      res
-        .status(500)
-        .json({ message: "Failed to find the current user", error: err });
+//           Promise.all([user.save(), userToFollow.save()])
+//             .then(() => {
+//               res.status(200).json({
+//                 message: "User followed successfully",
+//                 user: userToFollow,
+//               });
+//             })
+//             .catch((err) => {
+//               res
+//                 .status(500)
+//                 .json({ message: "Failed to follow user", error: err });
+//             });
+//         })
+//         .catch((err) => {
+//           res
+//             .status(500)
+//             .json({ message: "Failed to find the user to follow", error: err });
+//         });
+//     })
+//     .catch((err) => {
+//       res
+//         .status(500)
+//         .json({ message: "Failed to find the current user", error: err });
+//     });
+// };
+const followUser = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const usernameToFollow = req.body.usernameToFollow;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userToFollow = await User.findOne({ userName: usernameToFollow });
+
+    if (!userToFollow) {
+      return res.status(404).json({ message: "User to follow not found" });
+    }
+
+    if (userToFollow._id.equals(userId)) {
+      return res.status(400).json({ message: "You can't follow yourself" });
+    }
+
+    if (user.blockUsers.includes(userToFollow._id)) {
+      return res
+        .status(400)
+        .json({ message: "You have been blocked by this user" });
+    }
+
+    console.log(user.following.includes(userToFollow._id));
+    console.log(user.following);
+    console.log(userToFollow._id);
+    if (user.following.includes(userToFollow._id)) {
+      return res.status(400).json({ message: "User already followed" });
+    }
+    user.following.push(userToFollow._id);
+    userToFollow.followers.push(userId);
+    await Promise.all([user.save(), userToFollow.save()]);
+    res.status(200).json({
+      message: "User followed successfully",
+      user: userToFollow,
     });
+  } catch (err) {
+    console.log(err); // Log error for debugging
+    res.status(500).json({ message: "Failed to follow user", error: err });
+  }
 };
 
 const unfollowUser = (req, res, next) => {
@@ -323,20 +367,32 @@ const unfollowUser = (req, res, next) => {
 const checkUserNameAvailability = (req, res, next) => {
   const userName = req.query.username;
   console.log("Checking username availability:", userName);
+  if (userName === "") {
+      console.error("Username is empty");
+      return res.status(400).json({ message: "Username is empty" });
+  }
   User.findOne({ userName: userName })
-    .then((user) => {
-      if (user) {
-        console.error("Username already taken:", userName);
-        return res.status(409).json({ message: "Username already taken" });
-      }
-      console.log("Username available:", userName);
-      res.json({ message: "Username available" });
-    })
-    .catch((err) => {
-      console.error("Error checking username availability:", err);
-      res.status(500).json({ message: "Server error" });
-    });
+      .then((user) => {
+          if (user) {
+              console.error("Username already taken:", userName);
+              return res.status(409).json({ message: "Username already taken" });
+          }
+          console.log("Username available:", userName);
+          res.json({ message: "Username available" });
+      })
+      .catch((err) => {
+          console.error("Error checking username availability:", err);
+          // Ensure that res is an instance of the Express response object
+          if (res.status) {
+              res.status(500).json({ message: "Server error" });
+          } else {
+              // Handle the case where res is not an Express response object
+              console.error("Invalid res object:", res);
+              next(err);
+          }
+      });
 };
+
 const blockUser = (req, res, next) => {
   const blockedUserName = req.body.usernameToBlock;
   const userId = req.userId;
@@ -610,7 +666,9 @@ const updateGender = (req, res, next) => {
         return res.status(404).json({ message: "User not found" });
       }
       if (user.gender === req.body.gender) {
-        return res.status(400).json({ message: "Gender is already set to this value" });
+        return res
+          .status(400)
+          .json({ message: "Gender is already set to this value" });
       }
       user.gender = req.body.gender;
       user
@@ -641,14 +699,12 @@ const muteCommunity = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        console.error("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
       subReddit
         .findById(communityId)
         .then((community) => {
           if (!community) {
-            console.error("Community not found for community ID:", communityId);
             return res.status(404).json({ message: "Community not found" });
           }
           if (user.muteCommunities.includes(communityId)) {
@@ -753,31 +809,59 @@ const joinCommunity = (req, res, next) => {
             return res.status(404).json({ message: "Community not found" });
           }
           if (user.communities.includes(communityId)) {
-            return res.status(400).json({ message: "Community already joined" });
+            return res
+              .status(400)
+              .json({ message: "Community already joined" });
           }
-          if (community.privacy === "private" || community.privacy === "Private") {
+          if (
+            community.privacy === "private" ||
+            community.privacy === "Private"
+          ) {
             if (community.pendingMembers.includes(userId)) {
-              return res.status(400).json({ message: "User already requested to join community" });
+              return res
+                .status(400)
+                .json({ message: "User already requested to join community" });
             }
             community.pendingMembers.push(userId);
-          } else if (community.privacy === "restricted" || community.privacy === "public" || community.privacy === "Restricted" || community.privacy === "Public") {
+          } else if (
+            community.privacy === "restricted" ||
+            community.privacy === "public" ||
+            community.privacy === "Restricted" ||
+            community.privacy === "Public"
+          ) {
             if (community.members.includes(userId)) {
-              return res.status(400).json({ message: "User already in this community" });
+              return res
+                .status(400)
+                .json({ message: "User already in this community" });
             }
             community.members.push(userId);
           }
-          community.save()
+          community
+            .save()
             .then((updatedCommunity) => {
-              if (community.privacy === "private" || community.privacy === "Private") {
-                console.log("User requested to join community: ", updatedCommunity);
-                res.json({ message: "User requested to join community", community: updatedCommunity });
+              if (
+                community.privacy === "private" ||
+                community.privacy === "Private"
+              ) {
+                console.log(
+                  "User requested to join community: ",
+                  updatedCommunity
+                );
+                res.json({
+                  message: "User requested to join community",
+                  community: updatedCommunity,
+                });
               } else {
                 console.log("User joined community: ", updatedCommunity);
-                res.json({ message: "User joined community", community: updatedCommunity });
+                res.json({
+                  message: "User joined community",
+                  community: updatedCommunity,
+                });
 
                 // Save the user after sending the response
                 user.communities.push(communityId);
-                user.save()
+                user
+                  .save()
                   .then((updatedUser) => {
                     console.log("Community joined: ", updatedUser);
                   })
@@ -788,7 +872,9 @@ const joinCommunity = (req, res, next) => {
             })
             .catch((err) => {
               console.error("Error updating community:", err);
-              res.status(500).json({ message: "Error updating community", error: err });
+              res
+                .status(500)
+                .json({ message: "Error updating community", error: err });
             });
         })
         .catch((err) => {
@@ -817,9 +903,17 @@ const unjoinCommunity = (req, res) => {
             console.error("Community not found for community ID:", communityId);
             return res.status(404).json({ message: "Community not found" });
           }
-          if (community.privacy === "private" || community.privacy === "Private") {
-            if (!community.pendingMembers.includes(userId) && !community.members.includes(userId)) {
-              return res.status(400).json({ message: "User is not pending or a member of this community" });
+          if (
+            community.privacy === "private" ||
+            community.privacy === "Private"
+          ) {
+            if (
+              !community.pendingMembers.includes(userId) &&
+              !community.members.includes(userId)
+            ) {
+              return res.status(400).json({
+                message: "User is not pending or a member of this community",
+              });
             }
             if (community.pendingMembers.includes(userId)) {
               community.pendingMembers.pull(userId);
@@ -827,20 +921,32 @@ const unjoinCommunity = (req, res) => {
             if (community.members.includes(userId)) {
               community.members.pull(userId);
             }
-          } else if (community.privacy === "restricted" || community.privacy === "public" || community.privacy === "Restricted" || community.privacy === "Public") {
+          } else if (
+            community.privacy === "restricted" ||
+            community.privacy === "public" ||
+            community.privacy === "Restricted" ||
+            community.privacy === "Public"
+          ) {
             if (!community.members.includes(userId)) {
-              return res.status(400).json({ message: "User is not a member of this community" });
+              return res
+                .status(400)
+                .json({ message: "User is not a member of this community" });
             }
             community.members.pull(userId);
           }
-          community.save()
+          community
+            .save()
             .then((updatedCommunity) => {
               console.log("User unjoined community: ", updatedCommunity);
-              res.json({ message: "User unjoined community", community: updatedCommunity });
+              res.json({
+                message: "User unjoined community",
+                community: updatedCommunity,
+              });
 
               // Remove the community from the user after sending the response
               user.communities.pull(communityId);
-              user.save()
+              user
+                .save()
                 .then((updatedUser) => {
                   console.log("Community unjoined: ", updatedUser);
                 })
@@ -850,7 +956,9 @@ const unjoinCommunity = (req, res) => {
             })
             .catch((err) => {
               console.error("Error updating community:", err);
-              res.status(500).json({ message: "Error updating community", error: err });
+              res
+                .status(500)
+                .json({ message: "Error updating community", error: err });
             });
         })
         .catch((err) => {
