@@ -151,4 +151,5 @@ describe("followUser", () => {
       message: "You have been blocked by this user",
     });
   });
+  //
 });

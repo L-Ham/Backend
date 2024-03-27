@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"userName\":\"test0\",\n    \"password\":\"123456\"\n}",
+					"raw": "{\n    \"userName\":\"Soso\",\n    \"password\":\"123456\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -145,14 +145,14 @@
 				"method": "POST",
 				"header": [
 					{
-						"key": "token",
-						"value": "zsdxfcgvbhvfcxrtcybuytctvb",
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlY2Q5OGZlZWIyZmRjNWVjYzkwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTExNjIsImV4cCI6NTAxNzEwNzkxMTYyfQ.Io0wcsk6LS8juXEJOOdFq7qPvjxFzrN_nrwhbYIMoBQ",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"ZiadWareth\",\r\n    \"email\":\"ziad@yahoo.com\"\r\n}",
+					"raw": "{\n    \"email\":\"Ranaabdallammi@gmail.com\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -175,13 +175,93 @@
 			"response": []
 		},
 		{
+			"name": "Update Password",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOWRiODk3NmJkNjcxNjZjZGYxN2M0IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTM1MjQsImV4cCI6NTAxNzExNDEzNTI0fQ.7fvcYKY41cH_rMh6dEsVyUtCYY-wwAf_XFafd1RIznc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Password\":\"12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/auth/updatePassword",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"updatePassword"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Google Login",
 			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "tokenName",
+							"value": "test1-login",
+							"type": "string"
+						},
+						{
+							"key": "accessTokenUrl",
+							"value": "https://oauth2.googleapis.com/token",
+							"type": "string"
+						},
+						{
+							"key": "useBrowser",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "scope",
+							"value": "profile email",
+							"type": "string"
+						},
+						{
+							"key": "authUrl",
+							"value": "https://accounts.google.com/o/oauth2/v2/auth",
+							"type": "string"
+						},
+						{
+							"key": "clientSecret",
+							"value": "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",
+							"type": "string"
+						},
+						{
+							"key": "clientId",
+							"value": "332399911432-vjl376a05ukf0hhpj6kq0hnuibij26dh.apps.googleusercontent.com",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"token\":\"\"\n}",
+					"raw": "{\n    \"token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6ImFkZjVlNzEwZWRmZWJlY2JlZmE5YTYxNDk1NjU0ZDAzYzBiOGVkZjgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiLW9Fd0ItcWc4TERpQk5jOUg2YmMxUSIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0wxQlZLNW9SQWVCZ2NSYk82cG00T3NDVkhNT2t2a0UwODY0Z202QURmYT1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMTQxOTAyMywiZXhwIjoxNzExNDIyNjIzfQ.B9JGg59751McnfCbqkW3gf0gVkjHRzKtguDK49VHwHvjmKUlajHrWzRYwUN3rlbHkwgETNCr5LElsFOBnL-8do79S8FMaxz8weBEHYWnNcLWlaEPQhN7D5K-AJll3zgiPgqhgfVlxA4nTA8jpasd0aqio8bOa4k0fGDZ2RHWPchLLxgflZDpUW95KdRWH9lYFSWSWn1Zae1SXqCx7prpI_v73ie5jYeD-kfVN4f5MUgDDkIMvv6rlRrXSNyFUmYVGsRcbVdllTZaCPb3bGR0BTXjVo1oHZOgHxREsNjnPc78ab7SAicmFaqLSNhd5QzqFk8Sc8gmSokEm-SvhHy3Mg\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
