@@ -304,11 +304,11 @@ const generateUserName = async (req, res, next) => {
 };
 const updatePassword = async (req, res, next) => {
   const password = req.body.password;
-  const passwordConfirm = req.body.passwordConfirm;	
+  const passwordConfirm = req.body.passwordConfirm;
   if (password !== passwordConfirm) {
     return res.status(400).send("Passwords do not match");
   }
-  if(password.length==0 || passwordConfirm.length==0){
+  if (password.length == 0 || passwordConfirm.length == 0) {
     return res.status(400).send("Password cannot be empty");
   }
 
