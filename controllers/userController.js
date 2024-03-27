@@ -328,46 +328,43 @@ const checkUserNameAvailability = async (req, res, next) => {
   }
 };
 
-const blockUser = (req, res, next) => {
-  const blockedUserName = req.body.usernameToBlock;
-  const userId = req.userId;
-  User.findOne({ userName: blockedUserName }).then((userToBlock) => {
+ blockUser=async(req, res, next) => {
+  try {
+    const blockedUserName = req.body.usernameToBlock;
+    const userId = req.userId;
+
+    // Find the user to block
+    const userToBlock = await User.findOne({ userName: blockedUserName });
+
     if (!userToBlock) {
       console.error("User not found for username:", blockedUserName);
       return res.status(404).json({ message: "User not found" });
     }
-    userToBlock.following.pull(userId);
-    userToBlock.followers.pull(userId);
-    userToBlock.save();
 
-    User.findById(userId)
-      .then((user) => {
-        if (user.blockUsers.includes(userToBlock._id)) {
-          console.error("User already blocked:", userToBlock.userName);
-          return res.status(409).json({ message: "User already blocked" });
-        }
-        user.blockUsers.push(userToBlock._id);
-        user.following.pull(userToBlock._id);
-        user.followers.pull(userToBlock._id);
+    // Update the blocked user
+    userToBlock.following.pull(userId);;
+    await userToBlock.save();
 
-        user
-          .save()
-          .then((updatedUser) => {
-            console.log("User blocked:", userToBlock.userName);
-            res.json({ message: "User blocked", user: updatedUser });
-          })
+    // Find the current user
+    const user = await User.findById(userId);
 
-          .catch((err) => {
-            console.error("Error blocking user:", err);
-            res.status(500).json({ message: "Server error" });
-          });
-      })
-      .catch((err) => {
-        console.error("Error retrieving user:", err);
-        res.status(500).json({ message: "Server error" });
-      });
-  });
-};
+    if (user.blockUsers.includes(userToBlock._id)) {
+      console.log("User already blocked:", userToBlock.userName);
+      return res.status(409).json({ message: "User already blocked" });
+    }
+
+    // Update the current user
+    user.blockUsers.push(userToBlock._id);;
+    user.followers.pull(userToBlock._id);
+    const updatedUser = await user.save();
+
+    console.log("User blocked:", userToBlock.userName);
+    res.json({ message: "User blocked", user: updatedUser });
+  } catch (err) {
+    console.error("Error blocking user:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
 
 const unblockUser = (req, res, next) => {
   const userId = req.userId;
