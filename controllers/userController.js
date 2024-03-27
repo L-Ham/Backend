@@ -23,81 +23,72 @@ const getNotificationSettings = async (req, res, next) => {
       .json({ message: "Error retrieving notification settings", error: err });
   }
 };
-const getProfileSettings = (req, res, next) => {
+const getProfileSettings= async(req, res, next)=>{
+  const userId = req.userId;
+ 
+  try {
+    const user = await User.findById(userId).populate("socialLinks");
+ 
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+ 
+    const profileSettings = {
+      displayName: user.profileSettings.get("displayName"),
+      about: user.profileSettings.get("about"),
+      socialLinks: user.socialLinks,
+      avatarImage: user.profileSettings.get("avatarImage"),
+      bannerImage: user.profileSettings.get("bannerImage"),
+      NSFW: user.profileSettings.get("NSFW"),
+      allowFollow: user.profileSettings.get("allowFollow"),
+      contentVisibility: user.profileSettings.get("contentVisibility"),
+      communitiesVisibility: user.profileSettings.get("communitiesVisibility"),
+      clearHistory: user.profileSettings.get("clearHistory"),
+    };
+ 
+    res.json({ profileSettings });
+  } catch (err) {
+    console.log("Error retrieving profile settings:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+ }
+ 
+
+ const editProfileSettings=async(req, res, next)=> {
   const userId = req.userId;
 
-  User.findById(userId)
-    .populate("socialLinks")
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      const profileSettings = {
-        displayName: user.profileSettings.get("displayName"),
-        about: user.profileSettings.get("about"),
-        socialLinks: user.socialLinks,
-        avatarImage: user.profileSettings.get("avatarImage"),
-        bannerImage: user.profileSettings.get("bannerImage"),
-        NSFW: user.profileSettings.get("NSFW"),
-        allowFollow: user.profileSettings.get("allowFollow"),
-        contentVisibility: user.profileSettings.get("contentVisibility"),
-        communitiesVisibility: user.profileSettings.get(
-          "communitiesVisibility"
-        ),
-        clearHistory: user.profileSettings.get("clearHistory"),
-      };
+  try {
+    const user = await User.findById(userId);
 
-      res.json({ profileSettings });
-    })
-    .catch((err) => {
-      console.error("Error retrieving profile settings:", err);
-      res.status(500).json({ message: "Server error" });
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.profileSettings.set("displayName", req.body.displayName);
+    user.profileSettings.set("about", req.body.about);
+    user.profileSettings.set("avatarImage", req.body.avatarImage);
+    user.profileSettings.set("bannerImage", req.body.bannerImage);
+    user.profileSettings.set("NSFW", req.body.NSFW);
+    user.profileSettings.set("allowFollow", req.body.allowFollow);
+    user.profileSettings.set("contentVisibility", req.body.contentVisibility);
+    user.profileSettings.set("communitiesVisibility", req.body.communitiesVisibility);
+    user.profileSettings.set("clearHistory", req.body.clearHistory);
+
+    const updatedUser = await user.save();
+
+    console.log("Profile settings updated: ", updatedUser);
+    res.json({
+      message: "User profile settings updated successfully",
+      user: updatedUser,
     });
-};
+  } catch (err) {
+    console.error("Error updating profile settings:", err);
+    res.status(500).json({ message: "Error updating profile settings", error: err });
+  }
+}
 
-const editProfileSettings = (req, res, next) => {
-  const userId = req.userId;
-
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      user.profileSettings.set("displayName", req.body.displayName);
-      user.profileSettings.set("about", req.body.about);
-      user.profileSettings.set("avatarImage", req.body.avatarImage);
-      user.profileSettings.set("bannerImage", req.body.bannerImage);
-      user.profileSettings.set("NSFW", req.body.NSFW);
-      user.profileSettings.set("allowFollow", req.body.allowFollow);
-      user.profileSettings.set("contentVisibility", req.body.contentVisibility);
-      user.profileSettings.set(
-        "communitiesVisibility",
-        req.body.communitiesVisibility
-      );
-      user.profileSettings.set("clearHistory", req.body.clearHistory);
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Profile settings updated: ", updatedUser);
-          res.json({
-            message: "User profile settings updated successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          console.error("Error updating profile settings:", err);
-          res
-            .status(500)
-            .json({ message: "Error updating profile settings", error: err });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
-    });
-};
 // /**
 //  * @param {Object} req - The request object.
 //  * @param {Object} res - The response object.
