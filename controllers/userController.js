@@ -505,46 +505,43 @@ async function addSocialLink(req, res, next) {
   }
 }
 
-const editSocialLink = (req, res, next) => {
+const editSocialLink= async(req, res, next) =>{
   const userId = req.userId;
   const { linkId, linkOrUsername, appName, logo, displayText } = req.body;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      socialLinkToUpdate = user.socialLinks.find((link) => link._id == linkId);
-      if (!socialLinkToUpdate) {
-        console.error("Social link not found for link ID:", linkId);
-        return res.status(404).json({ message: "Social link not found" });
-      }
-      socialLinkToUpdate.linkOrUsername = linkOrUsername;
-      socialLinkToUpdate.appName = appName;
-      socialLinkToUpdate.logo = logo;
-      socialLinkToUpdate.displayText = displayText;
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Social link updated: ", updatedUser);
-          res.json({
-            message: "Social link updated successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          console.error("Error updating social link:", err);
-          res.status(500).json({
-            message: "Error updating social link for user",
-            error: err,
-          });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Error Retrieving User", error: err });
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const socialLinkToUpdate = user.socialLinks.find((link) => link._id.toString() === linkId); // Ensure proper comparison
+
+    if (!socialLinkToUpdate) {
+      console.log("Social link not found for link ID:", linkId);
+      return res.status(404).json({ message: "Social link not found" });
+    }
+
+    socialLinkToUpdate.linkOrUsername = linkOrUsername;
+    socialLinkToUpdate.appName = appName;
+    socialLinkToUpdate.logo = logo;
+    socialLinkToUpdate.displayText = displayText;
+
+    const updatedUser = await user.save();
+
+    console.log("Social link updated: ", updatedUser);
+    res.json({
+      message: "Social link updated successfully",
+      user: updatedUser,
     });
-};
+  } catch (err) {
+    console.log("Error updating social link:", err);
+    res.status(500).json({ message: "Error updating social link for user", error: err });
+  }
+}
+
 const deleteSocialLink = (req, res, next) => {
   const userId = req.userId;
   const linkId = req.body.socialLinkId;
@@ -583,41 +580,36 @@ const deleteSocialLink = (req, res, next) => {
     });
 };
 
-const updateGender = (req, res, next) => {
-  const userId = req.userId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      if (user.gender === req.body.gender) {
-        return res
-          .status(400)
-          .json({ message: "Gender is already set to this value" });
-      }
-      user.gender = req.body.gender;
-      user
-        .save()
-        .then((updatedUser) => {
-          res.status(200).json({
-            message: "User gender updated successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          return res.status(500).json({
-            message: "Failed to update User Gender",
-            error: err,
-          });
-        });
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ message: "ERROR Retrieving user", error: err });
+const updateGender= async(req, res, next) =>{
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.gender === req.body.gender) {
+      return res.status(400).json({ message: "Gender is already set to this value" });
+    }
+
+    user.gender = req.body.gender;
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      message: "User gender updated successfully",
+      user: updatedUser,
     });
-};
+  } catch (err) {
+    console.log("Error updating user gender:", err);
+    res.status(500).json({
+      message: "Failed to update User Gender",
+      error: err,
+    });
+  }
+}
+
 
 const muteCommunity = async (req, res, next) => {
   try {
