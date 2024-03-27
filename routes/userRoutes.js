@@ -123,7 +123,7 @@ router.patch(
   userController.muteCommunity
 );
 
-router.patch(
+router.delete(
   "/unmuteCommunity",
   bodyParser.json(),
   authenticateToken,
