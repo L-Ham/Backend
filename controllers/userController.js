@@ -193,8 +193,7 @@ const editNotificationSettings = async (req, res, next) => {
       console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
-    console.log("USERSSSS");
-    console.log(user.notificationSettings);
+
     user.notificationSettings.set("inboxMessage", req.body.inboxMessage);
     user.notificationSettings.set("chatMessages", req.body.chatMessages);
     user.notificationSettings.set("chatRequest", req.body.chatRequest);
