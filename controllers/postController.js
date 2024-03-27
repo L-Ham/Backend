@@ -288,7 +288,7 @@ const hidePost = async (req, res, next) => {
   }
 };
 
-async function unhidePost(req, res, next) {
+unhidePost= async(req, res, next)=> {
   try {
     const userId = req.userId;
     const postId = req.body.postId;
