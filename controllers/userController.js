@@ -226,69 +226,6 @@ const editNotificationSettings = (req, res, next) => {
       res.status(500).json({ message: "Server error" });
     });
 };
-
-// const followUser = async (req, res, next) => {
-//   const userId = req.userId;
-//   const usernameToFollow = req.body.usernameToFollow;
-
-//   User.findById(userId)
-//     .then((user) => {
-//       if (!user) {
-//         return res.status(404).json({ message: "User not found" });
-//       }
-
-//       User.findOne({ userName: usernameToFollow })
-//         .then((userToFollow) => {
-//           if (!userToFollow) {
-//             return res
-//               .status(404)
-//               .json({ message: "User to follow not found" });
-//           }
-
-//           if (userToFollow._id.equals(userId)) {
-//             return res
-//               .status(400)
-//               .json({ message: "You can't follow yourself" });
-//           }
-
-//           if (user.blockUsers.includes(userToFollow._id)) {
-//             return res
-//               .status(400)
-//               .json({ message: "You have been blocked by this user" });
-//           }
-
-//           if (user.following.includes(userToFollow._id)) {
-//             return res.status(400).json({ message: "User already followed" });
-//           }
-
-//           user.following.push(userToFollow._id);
-//           userToFollow.followers.push(userId);
-
-//           Promise.all([user.save(), userToFollow.save()])
-//             .then(() => {
-//               res.status(200).json({
-//                 message: "User followed successfully",
-//                 user: userToFollow,
-//               });
-//             })
-//             .catch((err) => {
-//               res
-//                 .status(500)
-//                 .json({ message: "Failed to follow user", error: err });
-//             });
-//         })
-//         .catch((err) => {
-//           res
-//             .status(500)
-//             .json({ message: "Failed to find the user to follow", error: err });
-//         });
-//     })
-//     .catch((err) => {
-//       res
-//         .status(500)
-//         .json({ message: "Failed to find the current user", error: err });
-//     });
-// };
 const followUser = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -368,29 +305,29 @@ const checkUserNameAvailability = (req, res, next) => {
   const userName = req.query.username;
   console.log("Checking username availability:", userName);
   if (userName === "") {
-      console.error("Username is empty");
-      return res.status(400).json({ message: "Username is empty" });
+    console.error("Username is empty");
+    return res.status(400).json({ message: "Username is empty" });
   }
   User.findOne({ userName: userName })
-      .then((user) => {
-          if (user) {
-              console.error("Username already taken:", userName);
-              return res.status(409).json({ message: "Username already taken" });
-          }
-          console.log("Username available:", userName);
-          res.json({ message: "Username available" });
-      })
-      .catch((err) => {
-          console.error("Error checking username availability:", err);
-          // Ensure that res is an instance of the Express response object
-          if (res.status) {
-              res.status(500).json({ message: "Server error" });
-          } else {
-              // Handle the case where res is not an Express response object
-              console.error("Invalid res object:", res);
-              next(err);
-          }
-      });
+    .then((user) => {
+      if (user) {
+        console.error("Username already taken:", userName);
+        return res.status(409).json({ message: "Username already taken" });
+      }
+      console.log("Username available:", userName);
+      res.json({ message: "Username available" });
+    })
+    .catch((err) => {
+      console.error("Error checking username availability:", err);
+      // Ensure that res is an instance of the Express response object
+      if (res.status) {
+        res.status(500).json({ message: "Server error" });
+      } else {
+        // Handle the case where res is not an Express response object
+        console.error("Invalid res object:", res);
+        next(err);
+      }
+    });
 };
 
 const blockUser = (req, res, next) => {
