@@ -1,22 +1,18 @@
 const User = require("../../models/user");
 const userController = require("../../controllers/userController");
 
-// Mocking request and response objects
-const req = {
-  userId: 'user123',
-};
-const res = {
-  status: jest.fn().mockReturnThis(),
-  json: jest.fn(),
-};
-
 // Mocking User.findById function
-jest.mock('../../models/user', () => ({
+jest.mock("../../models/user", () => ({
   findById: jest.fn(),
 }));
 
 describe('viewFeedSettings', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should return user feed settings', async () => {
+    const userId = 'user123';
     const user = {
       feedSettings: new Map([
         ['showNSFW', true],
@@ -34,9 +30,15 @@ describe('viewFeedSettings', () => {
     };
     User.findById.mockResolvedValueOnce(user);
 
+    const req = { userId };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
     await userController.viewFeedSettings(req, res);
 
-    expect(User.findById).toHaveBeenCalledWith('user123');
+    expect(User.findById).toHaveBeenCalledWith(userId);
     expect(res.json).toHaveBeenCalledWith({
       feedSettings: {
         showNSFW: true,
@@ -55,14 +57,37 @@ describe('viewFeedSettings', () => {
   });
 
   it('should handle error if user is not found', async () => {
+    const userId = 'user123';
     User.findById.mockResolvedValueOnce(null);
+
+    const req = { userId };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
 
     await userController.viewFeedSettings(req, res);
 
-    expect(User.findById).toHaveBeenCalledWith('user123');
+    expect(User.findById).toHaveBeenCalledWith(userId);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ message: 'User not found' });
   });
 
+  it('should handle server error', async () => {
+    const userId = 'user123';
+    const errorMessage = 'Some error message';
+    User.findById.mockRejectedValueOnce(new Error(errorMessage));
 
+    const req = { userId };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    await userController.viewFeedSettings(req, res);
+
+    expect(User.findById).toHaveBeenCalledWith(userId);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Server error' });
+  });
 });
