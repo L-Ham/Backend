@@ -5,25 +5,22 @@ const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
 const subReddit = require("../models/subReddit");
 
-const getNotificationSettings = (req, res, next) => {
-  const userId = req.userId;
+const getNotificationSettings = async (req, res, next) => {
+  try {
+    const userId = req.userId;
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.status(200).json({ notificationSettings: user.notificationSettings });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        message: "Error retrieving notification settings",
-        error: err,
-      });
-    });
-};
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ notificationSettings: user.notificationSettings });
+  } catch (err) {
+    console.error("Error retrieving notification settings:", err);
+    res.status(500).json({ message: "Error retrieving notification settings", error: err });
+  }
+}
 const getProfileSettings = (req, res, next) => {
   const userId = req.userId;
 
@@ -630,105 +627,83 @@ const updateGender = (req, res, next) => {
     });
 };
 
-const muteCommunity = (req, res, next) => {
-  const userId = req.userId;
-  const communityId = req.body.subRedditId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      subReddit
-        .findById(communityId)
-        .then((community) => {
-          if (!community) {
-            return res.status(404).json({ message: "Community not found" });
-          }
-          if (user.muteCommunities.includes(communityId)) {
-            return res.status(400).json({ message: "Community already muted" });
-          }
-          user.muteCommunities.push(communityId);
-          user
-            .save()
-            .then((updatedUser) => {
-              console.log("Community muted: ", updatedUser);
-              res.json({
-                message: "Community muted successfully",
-                user: updatedUser,
-              });
-            })
-            .catch((err) => {
-              console.error("Error muting community:", err);
-              res.status(500).json({
-                message: "Error muting community for user",
-                error: err,
-              });
-            });
-        })
-        .catch((err) => {
-          console.error("Error retrieving community:", err);
-          res.status(500).json({ message: "Error retrieving community:" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Error retrieving user:" });
+const muteCommunity = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const communityId = req.body.subRedditId;
+
+    const [user, community] = await Promise.all([
+      User.findById(userId),
+      subReddit.findById(communityId),
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    if (user.muteCommunities.includes(communityId)) {
+      return res.status(400).json({ message: "Community already muted" });
+    }
+
+    user.muteCommunities.push(communityId);
+    await user.save();
+
+    console.log("Community muted: ", user);
+    res.json({
+      message: "Community muted successfully",
+      user,
     });
+  } catch (err) {
+    console.error("Error muting community:", err);
+    res.status(500).json({
+      message: "Error muting community for user",
+      error: err, // Include error for debugging purposes (optional)
+    });
+  }
 };
 
-const unmuteCommunity = (req, res, next) => {
-  const userId = req.userId;
-  const communityId = req.body.subRedditId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      subReddit
-        .findById(communityId)
-        .then((community) => {
-          if (!community) {
-            console.error("Community not found for community ID:", communityId);
-            return res.status(404).json({ message: "Community not found" });
-          }
-          const unmute = user.muteCommunities.find((muteCommunity) =>
-            muteCommunity.equals(communityId)
-          );
-          if (!unmute) {
-            console.error("This subReddit is not muted for you:", communityId);
-            return res
-              .status(404)
-              .json({ message: "This subReddit is not muted for you" });
-          }
-          user.muteCommunities.pull(communityId);
-          user
-            .save()
-            .then((updatedUser) => {
-              console.log("Community unmuted: ", updatedUser);
-              res.json({
-                message: "Community unmuted successfully",
-                user: updatedUser,
-              });
-            })
-            .catch((err) => {
-              console.error("Error unmuting community:", err);
-              res.status(500).json({
-                message: "Error unmuting community for user",
-                error: err,
-              });
-            });
-        })
-        .catch((err) => {
-          console.error("Error retrieving community:", err);
-          res.status(500).json({ message: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
+const unmuteCommunity = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const communityId = req.body.subRedditId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const community = await subReddit.findById(communityId);
+    if (!community) {
+      console.error("Community not found for community ID:", communityId);
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    const isMuted = user.muteCommunities.find((muteCommunity) =>
+      muteCommunity.equals(communityId)
+    );
+    if (!isMuted) {
+      console.error("This subReddit is not muted for you:", communityId);
+      return res.status(404).json({ message: "This subReddit is not muted for you" });
+    }
+
+    user.muteCommunities.pull(communityId);
+    await user.save();
+
+    console.log("Community unmuted: ", user);
+    res.json({
+      message: "Community unmuted successfully",
+      user,
     });
-};
+  } catch (err) {
+    console.error("Error unmuting community:", err);
+    res.status(500).json({ message: "Error unmuting community for user", error: err });
+  }
+}
 
 const joinCommunity = (req, res, next) => {
   const userId = req.userId;
