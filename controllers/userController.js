@@ -400,15 +400,19 @@ const unblockUser = (req, res, next) => {
     });
 };
 
-const editFeedSettings = (req, res, next) => {
-  const userId = req.userId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      user.feedSettings.set("showNSFW", req.body.showNSFW);
+
+
+async function editFeedSettings(req, res, next) {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.feedSettings.set("showNSFW", req.body.showNSFW);
       user.feedSettings.set("blurNSFW", req.body.blurNSFW);
       user.feedSettings.set(
         "enableHomeFeedRecommendations",
@@ -428,56 +432,52 @@ const editFeedSettings = (req, res, next) => {
       user.feedSettings.set("globalContentView", req.body.globalContentView);
       user.feedSettings.set("openPostsInNewTab", req.body.openPostsInNewTab);
       user.feedSettings.set("defaultToMarkdown", req.body.defaultToMarkdown);
-      user
-        .save()
-        .then((user) => {
-          console.log("Feed settings updated: ", user);
-          res.json({
-            message: "User Feed settings updated successfully",
-            user: user,
-          });
-        })
-        .catch((err) => {
-          console.error("Error updating Feed settings:", err);
-          res.status(500).json({ message: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
-    });
-};
 
-const viewFeedSettings = (req, res, next) => {
-  const userId = req.userId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      const feedSettings = {
-        showNSFW: user.feedSettings.get("showNSFW"),
-        blurNSFW: user.feedSettings.get("blurNSFW"),
-        enableHomeFeedRecommendations: user.feedSettings.get(
-          "enableHomeFeedRecommendations"
-        ),
-        autoplayMedia: user.feedSettings.get("autoplayMedia"),
-        reduceAnimations: user.feedSettings.get("reduceAnimations"),
-        communityThemes: user.feedSettings.get("communityThemes"),
-        communityContentSort: user.feedSettings.get("communityContentSort"),
-        rememberPerCommunity: user.feedSettings.get("rememberPerCommunity"),
-        globalContentView: user.feedSettings.get("globalContentView"),
-        openPostsInNewTab: user.feedSettings.get("openPostsInNewTab"),
-        defaultToMarkdown: user.feedSettings.get("defaultToMarkdown"),
-      };
-      res.json({ feedSettings });
-    })
-    .catch((err) => {
-      console.error("Error retrieving feed settings:", err);
-      res.status(500).json({ message: "Server error" });
+    const updatedUser = await user.save();
+    console.log("Feed settings updated: ", updatedUser);
+    res.json({
+      message: "User Feed settings updated successfully",
+      user: updatedUser,
     });
-};
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+
+async function viewFeedSettings(req, res, next) {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const feedSettings = {
+      showNSFW: user.feedSettings.get("showNSFW"),
+      blurNSFW: user.feedSettings.get("blurNSFW"),
+      enableHomeFeedRecommendations: user.feedSettings.get(
+        "enableHomeFeedRecommendations"
+      ),
+      autoplayMedia: user.feedSettings.get("autoplayMedia"),
+      reduceAnimations: user.feedSettings.get("reduceAnimations"),
+      communityThemes: user.feedSettings.get("communityThemes"),
+      communityContentSort: user.feedSettings.get("communityContentSort"),
+      rememberPerCommunity: user.feedSettings.get("rememberPerCommunity"),
+      globalContentView: user.feedSettings.get("globalContentView"),
+      openPostsInNewTab: user.feedSettings.get("openPostsInNewTab"),
+      defaultToMarkdown: user.feedSettings.get("defaultToMarkdown"),
+    };
+
+    res.json({ feedSettings });
+  } catch (err) {
+    console.error("Error retrieving feed settings:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
 
 const addSocialLink = (req, res, next) => {
   const userId = req.userId;
