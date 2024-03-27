@@ -113,8 +113,7 @@ describe("followUser", () => {
       message: "User already followed",
     });
   });
-  //should return an error message when attempting to follow a user who is blocked
-  it("should return an error message when attempting to follow a user who is blocked", async () => {
+  it("should return an error message when attempting to follow a user who has blocked you", async () => {
     const oid = new ObjectId("660361f20a90d8a02dff19e2");
     const oid2 = new ObjectId("660361f20a90d8a02dff19e3");
     const req = {
@@ -151,5 +150,84 @@ describe("followUser", () => {
       message: "You have been blocked by this user",
     });
   });
-  //
+  it("should return an error message when attempting to follow a user who you have blocked", async () => {
+    const oid = new ObjectId("660361f20a90d8a02dff19e2");
+    const oid2 = new ObjectId("660361f20a90d8a02dff19e3");
+    const req = {
+      userId: oid,
+      body: {
+        usernameToFollow: "user2",
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    const next = jest.fn();
+
+    const user1 = {
+      _id: oid,
+      following: [],
+      blockUsers: [oid2],
+    };
+
+    const user2 = {
+      _id: oid2,
+      followers: [],
+      blockUsers: [],
+    };
+
+    User.findById = jest.fn().mockResolvedValue(user1);
+    User.findOne = jest.fn().mockResolvedValue(user2);
+    await userController.followUser(req, res, next);
+    expect(User.findById).toHaveBeenCalledWith(req.userId);
+    expect(User.findOne).toHaveBeenCalledWith({ userName: "user2" });
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "You have blocked this user",
+    });
+  });
+  //should return an error message when attempting to follow yourself
+  it("should return an error message when attempting to follow yourself", async () => {
+    const oid = new ObjectId("660361f20a90d8a02dff19e2");
+    const req = {
+      userId: oid,
+      body: {
+        usernameToFollow: "user2",
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    const next = jest.fn();
+
+    const user1 = {
+      _id: oid,
+      following: [],
+    };
+
+    const user2 = {
+      _id: oid,
+      followers: [],
+      blockUsers: [],
+    };
+
+    // User.findById = jest.fn().mockResolvedValue(user1);
+    // await userController.followUser(req, res, next);
+    // expect(User.findById).toHaveBeenCalledWith(req.userId);
+    // expect(res.status).toHaveBeenCalledWith(400);
+    // expect(res.json).toHaveBeenCalledWith({
+    //   message: "You cannot follow yourself",
+    // });
+    User.findById = jest.fn().mockResolvedValue(user1);
+    User.findOne = jest.fn().mockResolvedValue(user2);
+    await userController.followUser(req, res, next);
+    expect(User.findById).toHaveBeenCalledWith(req.userId);
+    expect(User.findOne).toHaveBeenCalledWith({ userName: "user2" });
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "You can't follow yourself",
+    });
+  });
 });
