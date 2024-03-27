@@ -257,7 +257,8 @@ const unsavePost = (req, res, next) => {
       res.status(500).json({ message: "Error finding user" });
     });
 };
-async function hidePost(req, res, next) {
+
+const hidePost = async (req, res, next) => {
   const userId = req.userId;
 
   try {
@@ -267,16 +268,13 @@ async function hidePost(req, res, next) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const isAlreadyHidden = user.hidePosts.some((hidePost) =>
-      hidePost._id.equals(req.body.postId)
-    );
-    if (isAlreadyHidden) {
+    if (user.hidePosts.includes(req.body.postId)) {
       console.log(
         "This post is already hidden in your profile:",
         req.body.postId
       );
       return res
-        .status(404)
+        .status(500)
         .json({ message: "This post is already hidden in your profile" });
     }
 
@@ -288,8 +286,7 @@ async function hidePost(req, res, next) {
     console.log("Error hidding post:", error);
     res.status(500).json({ message: "Error hidding post" });
   }
-}
-
+};
 
 const unhidePost = (req, res, next) => {
   const userId = req.userId;

@@ -17,7 +17,7 @@ const getNotificationSettings = async (req, res, next) => {
 
     res.status(200).json({ notificationSettings: user.notificationSettings });
   } catch (err) {
-    console.error("Error retrieving notification settings:", err);
+    console.log("Error retrieving notification settings:", err);
     res
       .status(500)
       .json({ message: "Error retrieving notification settings", error: err });
@@ -133,7 +133,7 @@ const getAccountSettings = async (req, res, next) => {
   }
 };
 
-async function getSafetyAndPrivacySettings(req, res, next) {
+const getSafetyAndPrivacySettings = async (req, res, next) => {
   const userId = req.userId;
   if (!userId) {
     return res.status(404).json({ message: "User Id not provided" });
@@ -155,8 +155,7 @@ async function getSafetyAndPrivacySettings(req, res, next) {
     console.error("Error retrieving safety and privacy settings:", err);
     res.status(500).json({ message: "Server error" });
   }
-}
-
+};
 
 //REDUNDANT
 const editSafetyAndPrivacySettings = (req, res, next) => {
@@ -234,77 +233,11 @@ const editNotificationSettings = async (req, res, next) => {
       user,
     });
   } catch (err) {
-    console.error("Error updating Notification settings:", err);
-
-    // Handle specific errors (optional)
-    // ... error handling logic here ...
-
+    console.log("Error updating Notification settings:", err);
     res.status(500).json({ message: "Error updating notification settings" });
   }
 };
 
-// const followUser = async (req, res, next) => {
-//   const userId = req.userId;
-//   const usernameToFollow = req.body.usernameToFollow;
-
-//   User.findById(userId)
-//     .then((user) => {
-//       if (!user) {
-//         return res.status(404).json({ message: "User not found" });
-//       }
-
-//       User.findOne({ userName: usernameToFollow })
-//         .then((userToFollow) => {
-//           if (!userToFollow) {
-//             return res
-//               .status(404)
-//               .json({ message: "User to follow not found" });
-//           }
-
-//           if (userToFollow._id.equals(userId)) {
-//             return res
-//               .status(400)
-//               .json({ message: "You can't follow yourself" });
-//           }
-
-//           if (user.blockUsers.includes(userToFollow._id)) {
-//             return res
-//               .status(400)
-//               .json({ message: "You have been blocked by this user" });
-//           }
-
-//           if (user.following.includes(userToFollow._id)) {
-//             return res.status(400).json({ message: "User already followed" });
-//           }
-
-//           user.following.push(userToFollow._id);
-//           userToFollow.followers.push(userId);
-
-//           Promise.all([user.save(), userToFollow.save()])
-//             .then(() => {
-//               res.status(200).json({
-//                 message: "User followed successfully",
-//                 user: userToFollow,
-//               });
-//             })
-//             .catch((err) => {
-//               res
-//                 .status(500)
-//                 .json({ message: "Failed to follow user", error: err });
-//             });
-//         })
-//         .catch((err) => {
-//           res
-//             .status(500)
-//             .json({ message: "Failed to find the user to follow", error: err });
-//         });
-//     })
-//     .catch((err) => {
-//       res
-//         .status(500)
-//         .json({ message: "Failed to find the current user", error: err });
-//     });
-// };
 const followUser = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -383,37 +316,34 @@ const unfollowUser = (req, res, next) => {
     });
 };
 
-async function checkUserNameAvailability(req, res, next) {
+const checkUserNameAvailability = async (req, res, next) => {
   try {
     const userName = req.query.username;
 
     if (!userName) {
-      console.error("Username is empty");
+      console.log("Username is empty");
       return res.status(400).json({ message: "Username is empty" });
     }
 
     const user = await User.findOne({ userName: userName });
 
     if (user) {
-      console.error("Username already taken:", userName);
+      console.log("Username already taken:", userName);
       return res.status(409).json({ message: "Username already taken" });
     }
 
     console.log("Username available:", userName);
     res.json({ message: "Username available" });
   } catch (err) {
-    console.error("Error checking username availability:", err);
-    // Ensure that res is an instance of the Express response object
+    console.log("Error checking username availability:", err);
     if (res.status) {
       res.status(500).json({ message: "Server error" });
     } else {
-      // Handle the case where res is not an Express response object
-      console.error("Invalid res object:", res);
+      console.log("Invalid res object:", res);
       next(err);
     }
   }
-}
-
+};
 
 const blockUser = (req, res, next) => {
   const blockedUserName = req.body.usernameToBlock;
@@ -573,7 +503,7 @@ async function addSocialLink(req, res, next) {
     }
 
     if (user.socialLinks.length >= 5) {
-      console.error("User has reached the maximum number of social links");
+      console.log("User has reached the maximum number of social links");
       return res
         .status(400)
         .json({ message: "Maximum number of social links reached" });
@@ -585,8 +515,10 @@ async function addSocialLink(req, res, next) {
     console.log("Social link added: ", updatedUser);
     res.json({ message: "Social link added successfully", user: updatedUser });
   } catch (err) {
-    console.error("Error adding social link:", err);
-    res.status(500).json({ message: "Error adding social link to user", error: err });
+    console.log("Error adding social link:", err);
+    res
+      .status(500)
+      .json({ message: "Error adding social link to user", error: err });
   }
 }
 
@@ -735,10 +667,10 @@ const muteCommunity = async (req, res, next) => {
       user,
     });
   } catch (err) {
-    console.error("Error muting community:", err);
+    console.log("Error muting community:", err);
     res.status(500).json({
       message: "Error muting community for user",
-      error: err, // Include error for debugging purposes (optional)
+      error: err,
     });
   }
 };
@@ -779,7 +711,7 @@ const unmuteCommunity = async (req, res, next) => {
       user,
     });
   } catch (err) {
-    console.error("Error unmuting community:", err);
+    console.log("Error unmuting community:", err);
     res
       .status(500)
       .json({ message: "Error unmuting community for user", error: err });
@@ -792,7 +724,7 @@ const joinCommunity = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        console.error("User not found for user ID:", userId);
+        console.log("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
       SubReddit.findById(communityId)
