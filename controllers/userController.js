@@ -268,40 +268,42 @@ const followUser = async (req, res, next) => {
       user: userToFollow,
     });
   } catch (err) {
-    console.log(err); // Log error for debugging
+    console.log(err); 
     res.status(500).json({ message: "Failed to follow user", error: err });
   }
 };
 
-const unfollowUser = (req, res, next) => {
-  const userId = req.userId;
-  const usernameToUnfollow = req.body.usernameToUnfollow;
-  User.findById(userId)
-    .then((user) => {
-      User.findOne({ userName: usernameToUnfollow })
-        .then(async (userToUnfollow) => {
-          if (!user.following.includes(userToUnfollow._id)) {
-            return res.status(500).json({ message: "User not followed" });
-          }
-          user.following.pull(userToUnfollow._id);
-          userToUnfollow.followers.pull(userId);
-          await user.save();
-          userToUnfollow.save();
-          res.status(200).json({ message: "User unfollowed successfully" });
-        })
-        .catch((err) => {
-          res.status(500).json({
-            message: "Failed to find the user to unfollow",
-            error: err,
-          });
-        });
-    })
-    .catch((err) => {
-      res
-        .status(500)
-        .json({ message: "Unfollow user Request Failed", error: err });
+const unfollowUser = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const usernameToUnfollow = req.body.usernameToUnfollow;
+
+    const user = await User.findById(userId);
+    const userToUnfollow = await User.findOne({ userName: usernameToUnfollow });
+
+    if (!userToUnfollow) {
+      return res.status(500).json({ message: "User to unfollow not found" });
+    }
+
+    if (!user.following.includes(userToUnfollow._id)) {
+      return res.status(500).json({ message: "User not followed" });
+    }
+
+    user.following.pull(userToUnfollow._id);
+    userToUnfollow.followers.pull(userId);
+
+    await user.save();
+    await userToUnfollow.save();
+
+    res.status(200).json({ message: "User unfollowed successfully" });
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed to unfollow user",
+      error: err.message
     });
+  }
 };
+
 
 const checkUserNameAvailability = async (req, res, next) => {
   try {
