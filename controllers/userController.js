@@ -123,28 +123,30 @@ const getAccountSettings = (req, res, next) => {
     });
 };
 
-const getSafetyAndPrivacySettings = (req, res, next) => {
+async function getSafetyAndPrivacySettings(req, res, next) {
   const userId = req.userId;
   if (!userId) {
     return res.status(404).json({ message: "User Id not provided" });
   }
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      const safetyAndPrivacySettings = {
-        blockUsers: user.blockUsers,
-        muteCommunities: user.muteCommunities,
-      };
-      res.json({ safetyAndPrivacySettings: safetyAndPrivacySettings });
-    })
-    .catch((err) => {
-      console.error("Error retrieving safety and privacy settings:", err);
-      res.status(500).json({ message: "Server error" });
-    });
-};
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const safetyAndPrivacySettings = {
+      blockUsers: user.blockUsers,
+      muteCommunities: user.muteCommunities,
+    };
+    res.json({ safetyAndPrivacySettings });
+  } catch (err) {
+    console.error("Error retrieving safety and privacy settings:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
 
 //REDUNDANT
 const editSafetyAndPrivacySettings = (req, res, next) => {
