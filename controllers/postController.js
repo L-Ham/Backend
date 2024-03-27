@@ -288,45 +288,44 @@ const hidePost = async (req, res, next) => {
   }
 };
 
-const unhidePost = (req, res, next) => {
-  const userId = req.userId;
+async function unhidePost(req, res, next) {
+  try {
+    const userId = req.userId;
+    const postId = req.body.postId;
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
+    const user = await User.findById(userId);
 
-      const unhide = user.hidePosts.find((hidePost) =>
-        hidePost._id.equals(req.body.postId)
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const unhideIndex = user.hidePosts.findIndex((hidePost) =>
+      hidePost._id.equals(postId)
+    );
+
+    if (unhideIndex === -1) {
+      console.error(
+        "This post is not hidden in your profile:",
+        req.body.postId
       );
-      if (!unhide) {
-        console.error(
-          "This post is not hidden in your profile:",
-          req.body.Post
-        );
-        return res
-          .status(404)
-          .json({ message: "This post is not hidden in your profile" });
-      }
-      user.hidePosts.pull(req.body.postId);
+      return res
+        .status(404)
+        .json({ message: "This post is not hidden in your profile" });
+    }
 
-      user
-        .save()
-        .then(() => {
-          res.status(200).json({ message: "Post unhidden successfully" });
-        })
-        .catch((error) => {
-          console.error("Error unhidding post:", error);
-          res.status(500).json({ message: "Error unhidding post" });
-        });
-    })
-    .catch((error) => {
-      console.error("Error finding user:", error);
-      res.status(500).json({ message: "Error finding user" });
-    });
-};
+    user.hidePosts.pull(postId);
+
+    await user.save();
+
+    console.log("Post unhidden successfully");
+    res.status(200).json({ message: "Post unhidden successfully" });
+  } catch (error) {
+    console.error("Error unhidding post:", error);
+    res.status(500).json({ message: "Error unhidding post" });
+  }
+}
+
 
 const lockPost = async (req, res, next) => {
   const postId = req.body.postId;
