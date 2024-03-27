@@ -110,6 +110,11 @@ const createComment = async (req, res, next) => {
         );
         return res.status(404).json({ message: "Parent Comment not found" });
       }
+    
+      if (!parentComment.replies) {
+        parentComment.replies = [];
+      }
+    
       parentComment.replies.push(savedComment);
       await parentComment.save();
     }
