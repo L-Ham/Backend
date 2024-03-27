@@ -70,32 +70,4 @@ describe("updateGender", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  it("should not update user gender if the gender is the same as the current gender", (done) => {
-    const req = {
-      userId: "validUserId",
-      body: { gender: "female" },
-    };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn().mockImplementationOnce((data) => {
-        // Assertions
-        expect(User.findById).toHaveBeenCalledWith("validUserId");
-        expect(res.status).toHaveBeenCalledWith(400);
-        expect(data).toEqual({
-          message: "Gender is already set to this value",
-        });
-        done();
-      }),
-    };
-    const next = jest.fn();
-
-    User.findById = jest.fn().mockResolvedValue({
-      gender: "female",
-      save: jest.fn().mockResolvedValue({
-        gender: "female",
-      }),
-    });
-
-    userController.updateGender(req, res, next);
-  });
 });

@@ -137,7 +137,7 @@ router.patch(
   userController.joinCommunity
 );
 
-router.delete(
+router.patch(
   "/unjoinCommunity",
   bodyParser.json(),
   authenticateToken,

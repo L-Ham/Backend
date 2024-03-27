@@ -23,81 +23,76 @@ const getNotificationSettings = async (req, res, next) => {
       .json({ message: "Error retrieving notification settings", error: err });
   }
 };
-const getProfileSettings = (req, res, next) => {
+const getProfileSettings = async (req, res, next) => {
   const userId = req.userId;
 
-  User.findById(userId)
-    .populate("socialLinks")
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      const profileSettings = {
-        displayName: user.profileSettings.get("displayName"),
-        about: user.profileSettings.get("about"),
-        socialLinks: user.socialLinks,
-        avatarImage: user.profileSettings.get("avatarImage"),
-        bannerImage: user.profileSettings.get("bannerImage"),
-        NSFW: user.profileSettings.get("NSFW"),
-        allowFollow: user.profileSettings.get("allowFollow"),
-        contentVisibility: user.profileSettings.get("contentVisibility"),
-        communitiesVisibility: user.profileSettings.get(
-          "communitiesVisibility"
-        ),
-        clearHistory: user.profileSettings.get("clearHistory"),
-      };
+  try {
+    const user = await User.findById(userId).populate("socialLinks");
 
-      res.json({ profileSettings });
-    })
-    .catch((err) => {
-      console.error("Error retrieving profile settings:", err);
-      res.status(500).json({ message: "Server error" });
-    });
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const profileSettings = {
+      displayName: user.profileSettings.get("displayName"),
+      about: user.profileSettings.get("about"),
+      socialLinks: user.socialLinks,
+      avatarImage: user.profileSettings.get("avatarImage"),
+      bannerImage: user.profileSettings.get("bannerImage"),
+      NSFW: user.profileSettings.get("NSFW"),
+      allowFollow: user.profileSettings.get("allowFollow"),
+      contentVisibility: user.profileSettings.get("contentVisibility"),
+      communitiesVisibility: user.profileSettings.get("communitiesVisibility"),
+      clearHistory: user.profileSettings.get("clearHistory"),
+    };
+
+    res.json({ profileSettings });
+  } catch (err) {
+    console.log("Error retrieving profile settings:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-const editProfileSettings = (req, res, next) => {
+const editProfileSettings = async (req, res, next) => {
   const userId = req.userId;
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      user.profileSettings.set("displayName", req.body.displayName);
-      user.profileSettings.set("about", req.body.about);
-      user.profileSettings.set("avatarImage", req.body.avatarImage);
-      user.profileSettings.set("bannerImage", req.body.bannerImage);
-      user.profileSettings.set("NSFW", req.body.NSFW);
-      user.profileSettings.set("allowFollow", req.body.allowFollow);
-      user.profileSettings.set("contentVisibility", req.body.contentVisibility);
-      user.profileSettings.set(
-        "communitiesVisibility",
-        req.body.communitiesVisibility
-      );
-      user.profileSettings.set("clearHistory", req.body.clearHistory);
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Profile settings updated: ", updatedUser);
-          res.json({
-            message: "User profile settings updated successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          console.error("Error updating profile settings:", err);
-          res
-            .status(500)
-            .json({ message: "Error updating profile settings", error: err });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.profileSettings.set("displayName", req.body.displayName);
+    user.profileSettings.set("about", req.body.about);
+    user.profileSettings.set("avatarImage", req.body.avatarImage);
+    user.profileSettings.set("bannerImage", req.body.bannerImage);
+    user.profileSettings.set("NSFW", req.body.NSFW);
+    user.profileSettings.set("allowFollow", req.body.allowFollow);
+    user.profileSettings.set("contentVisibility", req.body.contentVisibility);
+    user.profileSettings.set(
+      "communitiesVisibility",
+      req.body.communitiesVisibility
+    );
+    user.profileSettings.set("clearHistory", req.body.clearHistory);
+
+    const updatedUser = await user.save();
+
+    console.log("Profile settings updated: ", updatedUser);
+    res.json({
+      message: "User profile settings updated successfully",
+      user: updatedUser,
     });
+  } catch (err) {
+    console.error("Error updating profile settings:", err);
+    res
+      .status(500)
+      .json({ message: "Error updating profile settings", error: err });
+  }
 };
+
 // /**
 //  * @param {Object} req - The request object.
 //  * @param {Object} res - The response object.
@@ -192,18 +187,14 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
 const editNotificationSettings = async (req, res, next) => {
   try {
     const userId = req.userId;
-
-    // Find the user and handle potential not-found scenario
-    const user = await User.findById(userId).select("notificationSettings"); // Select only the notificationSettings field
-
+    // const user = await User.findById(userId).select("notificationSettings");
+    const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
-
-    // Validate incoming data (optional, based on your requirements)
-    // ... validation logic here ...
-
+    console.log("USERSSSS");
+    console.log(user.notificationSettings);
     user.notificationSettings.set("inboxMessage", req.body.inboxMessage);
     user.notificationSettings.set("chatMessages", req.body.chatMessages);
     user.notificationSettings.set("chatRequest", req.body.chatRequest);
@@ -223,12 +214,8 @@ const editNotificationSettings = async (req, res, next) => {
       "modNotifications",
       req.body.modNotifications
     );
-
-    // Save the updated user and handle potential errors
     await user.save();
-
-    console.log("Notification settings updated: ", user);
-    res.json({
+    res.status(200).json({
       message: "User Notification settings updated successfully",
       user,
     });
@@ -345,45 +332,34 @@ const checkUserNameAvailability = async (req, res, next) => {
   }
 };
 
-const blockUser = (req, res, next) => {
-  const blockedUserName = req.body.usernameToBlock;
-  const userId = req.userId;
-  User.findOne({ userName: blockedUserName }).then((userToBlock) => {
+const blockUser = async (req, res, next) => {
+  try {
+    const blockedUserName = req.body.usernameToBlock;
+    const userId = req.userId;
+    const userToBlock = await User.findOne({ userName: blockedUserName });
+
     if (!userToBlock) {
       console.error("User not found for username:", blockedUserName);
       return res.status(404).json({ message: "User not found" });
     }
     userToBlock.following.pull(userId);
-    userToBlock.followers.pull(userId);
-    userToBlock.save();
+    await userToBlock.save();
+    const user = await User.findById(userId);
 
-    User.findById(userId)
-      .then((user) => {
-        if (user.blockUsers.includes(userToBlock._id)) {
-          console.error("User already blocked:", userToBlock.userName);
-          return res.status(409).json({ message: "User already blocked" });
-        }
-        user.blockUsers.push(userToBlock._id);
-        user.following.pull(userToBlock._id);
-        user.followers.pull(userToBlock._id);
+    if (user.blockUsers.includes(userToBlock._id)) {
+      console.log("User already blocked:", userToBlock.userName);
+      return res.status(409).json({ message: "User already blocked" });
+    }
+    user.blockUsers.push(userToBlock._id);
+    user.followers.pull(userToBlock._id);
+    const updatedUser = await user.save();
 
-        user
-          .save()
-          .then((updatedUser) => {
-            console.log("User blocked:", userToBlock.userName);
-            res.json({ message: "User blocked", user: updatedUser });
-          })
-
-          .catch((err) => {
-            console.error("Error blocking user:", err);
-            res.status(500).json({ message: "Server error" });
-          });
-      })
-      .catch((err) => {
-        console.error("Error retrieving user:", err);
-        res.status(500).json({ message: "Server error" });
-      });
-  });
+    console.log("User blocked:", userToBlock.userName);
+    res.json({ message: "User blocked", user: updatedUser });
+  } catch (err) {
+    console.error("Error blocking user:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 const unblockUser = (req, res, next) => {
@@ -522,118 +498,112 @@ async function addSocialLink(req, res, next) {
   }
 }
 
-const editSocialLink = (req, res, next) => {
+const editSocialLink = async (req, res, next) => {
   const userId = req.userId;
   const { linkId, linkOrUsername, appName, logo, displayText } = req.body;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      socialLinkToUpdate = user.socialLinks.find((link) => link._id == linkId);
-      if (!socialLinkToUpdate) {
-        console.error("Social link not found for link ID:", linkId);
-        return res.status(404).json({ message: "Social link not found" });
-      }
-      socialLinkToUpdate.linkOrUsername = linkOrUsername;
-      socialLinkToUpdate.appName = appName;
-      socialLinkToUpdate.logo = logo;
-      socialLinkToUpdate.displayText = displayText;
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Social link updated: ", updatedUser);
-          res.json({
-            message: "Social link updated successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          console.error("Error updating social link:", err);
-          res.status(500).json({
-            message: "Error updating social link for user",
-            error: err,
-          });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Error Retrieving User", error: err });
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const socialLinkToUpdate = user.socialLinks.find(
+      (link) => link._id.toString() === linkId
+    ); // Ensure proper comparison
+
+    if (!socialLinkToUpdate) {
+      console.log("Social link not found for link ID:", linkId);
+      return res.status(404).json({ message: "Social link not found" });
+    }
+
+    socialLinkToUpdate.linkOrUsername = linkOrUsername;
+    socialLinkToUpdate.appName = appName;
+    socialLinkToUpdate.logo = logo;
+    socialLinkToUpdate.displayText = displayText;
+
+    const updatedUser = await user.save();
+
+    console.log("Social link updated: ", updatedUser);
+    res.json({
+      message: "Social link updated successfully",
+      user: updatedUser,
     });
-};
-const deleteSocialLink = (req, res, next) => {
-  const userId = req.userId;
-  const linkId = req.body.socialLinkId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      socialLinkToDelete = user.socialLinks.find((link) => link._id == linkId);
-      if (!socialLinkToDelete) {
-        console.error("Social link not found for link ID:", linkId);
-        return res.status(404).json({ message: "Social link not found" });
-      }
-      user.socialLinks.pull(socialLinkToDelete);
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Social link deleted: ", updatedUser);
-          res.json({
-            message: "Social link deleted successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          console.error("Error deleting social link:", err);
-          res.status(500).json({
-            message: "Error deleting social link from user",
-            error: err,
-          });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Error Retrieving User", error: err });
-    });
+  } catch (err) {
+    console.log("Error updating social link:", err);
+    res
+      .status(500)
+      .json({ message: "Error updating social link for user", error: err });
+  }
 };
 
-const updateGender = (req, res, next) => {
+const deleteSocialLink = async (req, res, next) => {
   const userId = req.userId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      if (user.gender === req.body.gender) {
-        return res
-          .status(400)
-          .json({ message: "Gender is already set to this value" });
-      }
-      user.gender = req.body.gender;
-      user
-        .save()
-        .then((updatedUser) => {
-          res.status(200).json({
-            message: "User gender updated successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          return res.status(500).json({
-            message: "Failed to update User Gender",
-            error: err,
-          });
-        });
-    })
-    .catch((err) => {
-      return res
-        .status(500)
-        .json({ message: "ERROR Retrieving user", error: err });
+  const linkId = req.body.socialLinkId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const socialLinkToDelete = user.socialLinks.find(
+      (link) => link._id.toString() === linkId
+    );
+    if (!socialLinkToDelete) {
+      console.error("Social link not found for link ID:", linkId);
+      return res.status(404).json({ message: "Social link not found" });
+    }
+
+    user.socialLinks.pull(socialLinkToDelete);
+    const updatedUser = await user.save();
+
+    console.log("Social link deleted: ", updatedUser);
+    res.json({
+      message: "Social link deleted successfully",
+      user: updatedUser,
     });
+  } catch (err) {
+    console.error("Error deleting social link:", err);
+    res
+      .status(500)
+      .json({ message: "Error deleting social link from user", error: err });
+  }
+};
+
+const updateGender = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.gender === req.body.gender) {
+      return res
+        .status(400)
+        .json({ message: "Gender is already set to this value" });
+    }
+
+    user.gender = req.body.gender;
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      message: "User gender updated successfully",
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.log("Error updating user gender:", err);
+    res.status(500).json({
+      message: "Failed to update User Gender",
+      error: err,
+    });
+  }
 };
 
 const muteCommunity = async (req, res, next) => {
@@ -717,184 +687,124 @@ const unmuteCommunity = async (req, res, next) => {
       .json({ message: "Error unmuting community for user", error: err });
   }
 };
+const joinCommunity = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const communityId = req.body.subRedditId;
 
-const joinCommunity = (req, res, next) => {
-  const userId = req.userId;
-  const communityId = req.body.subRedditId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.log("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
+    // Find user and community
+    const user = await User.findById(userId);
+    const community = await SubReddit.findById(communityId);
+
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!community) {
+      console.error("Community not found for community ID:", communityId);
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    // Handle join logic based on community privacy
+    if (community.privacy === "private" || community.privacy === "Private") {
+      if (community.pendingMembers.includes(userId)) {
+        return res
+          .status(400)
+          .json({ message: "User already requested to join community" });
       }
-      SubReddit.findById(communityId)
-        .then((community) => {
-          if (!community) {
-            console.error("Community not found for community ID:", communityId);
-            return res.status(404).json({ message: "Community not found" });
-          }
-          if (user.communities.includes(communityId)) {
-            return res
-              .status(400)
-              .json({ message: "Community already joined" });
-          }
-          if (
-            community.privacy === "private" ||
-            community.privacy === "Private"
-          ) {
-            if (community.pendingMembers.includes(userId)) {
-              return res
-                .status(400)
-                .json({ message: "User already requested to join community" });
-            }
-            community.pendingMembers.push(userId);
-          } else if (
-            community.privacy === "restricted" ||
-            community.privacy === "public" ||
-            community.privacy === "Restricted" ||
-            community.privacy === "Public"
-          ) {
-            if (community.members.includes(userId)) {
-              return res
-                .status(400)
-                .json({ message: "User already in this community" });
-            }
-            community.members.push(userId);
-          }
-          community
-            .save()
-            .then((updatedCommunity) => {
-              if (
-                community.privacy === "private" ||
-                community.privacy === "Private"
-              ) {
-                console.log(
-                  "User requested to join community: ",
-                  updatedCommunity
-                );
-                res.json({
-                  message: "User requested to join community",
-                  community: updatedCommunity,
-                });
-              } else {
-                console.log("User joined community: ", updatedCommunity);
-                res.json({
-                  message: "User joined community",
-                  community: updatedCommunity,
-                });
+      community.pendingMembers.push(userId);
+    } else {
+      // Public, Restricted
+      if (community.members.includes(userId)) {
+        return res
+          .status(400)
+          .json({ message: "User already in this community" });
+      }
+      community.members.push(userId);
+      user.communities.push(communityId);
+    }
 
-                // Save the user after sending the response
-                user.communities.push(communityId);
-                user
-                  .save()
-                  .then((updatedUser) => {
-                    console.log("Community joined: ", updatedUser);
-                  })
-                  .catch((err) => {
-                    console.error("Error updating user:", err);
-                  });
-              }
-            })
-            .catch((err) => {
-              console.error("Error updating community:", err);
-              res
-                .status(500)
-                .json({ message: "Error updating community", error: err });
-            });
-        })
-        .catch((err) => {
-          console.error("Error retrieving community:", err);
-          res.status(500).json({ message: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
-    });
+    // Save community and potentially user
+    await community.save();
+    if (community.privacy !== "private" && community.privacy !== "Private") {
+      await user.save();
+    }
+
+    // Respond based on privacy
+    if (community.privacy === "private" || community.privacy === "Private") {
+      console.log("User requested to join community: ", community);
+      res.json({
+        message: "User requested to join community",
+        community,
+      });
+    } else {
+      console.log("User joined community: ", community);
+      res.json({
+        message: "User joined community",
+        community,
+      });
+    }
+  } catch (err) {
+    console.error("Error joining community:", err);
+    res.status(500).json({ message: "Error joining community", error: err });
+  }
 };
+const unjoinCommunity = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const communityId = req.body.subRedditId;
 
-const unjoinCommunity = (req, res) => {
-  const userId = req.userId;
-  const communityId = req.body.subRedditId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      SubReddit.findById(communityId)
-        .then((community) => {
-          if (!community) {
-            console.error("Community not found for community ID:", communityId);
-            return res.status(404).json({ message: "Community not found" });
-          }
-          if (
-            community.privacy === "private" ||
-            community.privacy === "Private"
-          ) {
-            if (
-              !community.pendingMembers.includes(userId) &&
-              !community.members.includes(userId)
-            ) {
-              return res.status(400).json({
-                message: "User is not pending or a member of this community",
-              });
-            }
-            if (community.pendingMembers.includes(userId)) {
-              community.pendingMembers.pull(userId);
-            }
-            if (community.members.includes(userId)) {
-              community.members.pull(userId);
-            }
-          } else if (
-            community.privacy === "restricted" ||
-            community.privacy === "public" ||
-            community.privacy === "Restricted" ||
-            community.privacy === "Public"
-          ) {
-            if (!community.members.includes(userId)) {
-              return res
-                .status(400)
-                .json({ message: "User is not a member of this community" });
-            }
-            community.members.pull(userId);
-          }
-          community
-            .save()
-            .then((updatedCommunity) => {
-              console.log("User unjoined community: ", updatedCommunity);
-              res.json({
-                message: "User unjoined community",
-                community: updatedCommunity,
-              });
+    // Find user and community
+    const user = await User.findById(userId);
+    const community = await SubReddit.findById(communityId);
 
-              // Remove the community from the user after sending the response
-              user.communities.pull(communityId);
-              user
-                .save()
-                .then((updatedUser) => {
-                  console.log("Community unjoined: ", updatedUser);
-                })
-                .catch((err) => {
-                  console.error("Error updating user:", err);
-                });
-            })
-            .catch((err) => {
-              console.error("Error updating community:", err);
-              res
-                .status(500)
-                .json({ message: "Error updating community", error: err });
-            });
-        })
-        .catch((err) => {
-          console.error("Error retrieving community:", err);
-          res.status(500).json({ message: "Server error" });
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!community) {
+      console.error("Community not found for community ID:", communityId);
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    // Unjoin logic based on community privacy
+    if (community.privacy === "private" || community.privacy === "Private") {
+      if (
+        !community.pendingMembers.includes(userId) &&
+        !community.members.includes(userId)
+      ) {
+        return res.status(400).json({
+          message: "User is not pending or a member of this community",
         });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
+      }
+      community.pendingMembers.pull(userId);
+      community.members.pull(userId);
+    } else {
+      // Public, Restricted
+      if (!community.members.includes(userId)) {
+        return res
+          .status(400)
+          .json({ message: "User is not a member of this community" });
+      }
+      community.members.pull(userId); // Remove directly
+    }
+
+    // Save community and user
+    await community.save();
+    user.communities.pull(communityId);
+    await user.save();
+
+    console.log("User unjoined community: ", community);
+    res.json({
+      message: "User unjoined community",
+      community,
     });
+  } catch (err) {
+    console.error("Error unjoining community:", err);
+    res.status(500).json({ message: "Error unjoining community", error: err });
+  }
 };
 
 module.exports = {
