@@ -370,36 +370,37 @@ const unfollowUser = (req, res, next) => {
     });
 };
 
-const checkUserNameAvailability = (req, res, next) => {
-  const userName = req.query.username;
-  console.log("Checking username availability:", userName);
-  if (userName === "") {
-    console.error("Username is empty");
-    return res.status(400).json({ message: "Username is empty" });
-    console.error("Username is empty");
-    return res.status(400).json({ message: "Username is empty" });
+async function checkUserNameAvailability(req, res, next) {
+  try {
+    const userName = req.query.username;
+
+    if (!userName) {
+      console.error("Username is empty");
+      return res.status(400).json({ message: "Username is empty" });
+    }
+
+    const user = await User.findOne({ userName: userName });
+
+    if (user) {
+      console.error("Username already taken:", userName);
+      return res.status(409).json({ message: "Username already taken" });
+    }
+
+    console.log("Username available:", userName);
+    res.json({ message: "Username available" });
+  } catch (err) {
+    console.error("Error checking username availability:", err);
+    // Ensure that res is an instance of the Express response object
+    if (res.status) {
+      res.status(500).json({ message: "Server error" });
+    } else {
+      // Handle the case where res is not an Express response object
+      console.error("Invalid res object:", res);
+      next(err);
+    }
   }
-  User.findOne({ userName: userName })
-    .then((user) => {
-      if (user) {
-        console.error("Username already taken:", userName);
-        return res.status(409).json({ message: "Username already taken" });
-      }
-      console.log("Username available:", userName);
-      res.json({ message: "Username available" });
-    })
-    .catch((err) => {
-      console.error("Error checking username availability:", err);
-      // Ensure that res is an instance of the Express response object
-      if (res.status) {
-        res.status(500).json({ message: "Server error" });
-      } else {
-        // Handle the case where res is not an Express response object
-        console.error("Invalid res object:", res);
-        next(err);
-      }
-    });
-};
+}
+
 
 const blockUser = (req, res, next) => {
   const blockedUserName = req.body.usernameToBlock;
@@ -546,44 +547,36 @@ async function viewFeedSettings(req, res, next) {
     res.status(500).json({ message: "Server error" });
   }
 }
+async function addSocialLink(req, res, next) {
+  try {
+    const userId = req.userId;
+    const { linkOrUsername, appName, logo, displayText } = req.body;
 
-const addSocialLink = (req, res, next) => {
-  const userId = req.userId;
-  const { linkOrUsername, appName, logo, displayText } = req.body;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      if (user.socialLinks.length >= 5) {
-        console.error("User has reached the maximum number of social links");
-        return res
-          .status(400)
-          .json({ message: "Maximum number of social links reached" });
-      }
-      user.socialLinks.push({ linkOrUsername, appName, logo, displayText });
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Social link added: ", updatedUser);
-          res.json({
-            message: "Social link added successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          console.error("Error adding social link:", err);
-          res
-            .status(500)
-            .json({ message: "Error adding social link to user", error: err });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
-    });
-};
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.socialLinks.length >= 5) {
+      console.error("User has reached the maximum number of social links");
+      return res
+        .status(400)
+        .json({ message: "Maximum number of social links reached" });
+    }
+
+    user.socialLinks.push({ linkOrUsername, appName, logo, displayText });
+
+    const updatedUser = await user.save();
+    console.log("Social link added: ", updatedUser);
+    res.json({ message: "Social link added successfully", user: updatedUser });
+  } catch (err) {
+    console.error("Error adding social link:", err);
+    res.status(500).json({ message: "Error adding social link to user", error: err });
+  }
+}
+
 const editSocialLink = (req, res, next) => {
   const userId = req.userId;
   const { linkId, linkOrUsername, appName, logo, displayText } = req.body;
