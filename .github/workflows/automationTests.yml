@@ -44,7 +44,7 @@ jobs:
          body: ${{ github.event_name }} event on ${{ github.repository }} triggered by ${{ github.actor }} at ${{ github.event.head_commit.timestamp }}
 
     - name : Send Email on failure
-      if: failure()
+      if: failure() 
       uses: hilarion5/send-mail@v1
       with:
          smtp-server: smtp.gmail.com
