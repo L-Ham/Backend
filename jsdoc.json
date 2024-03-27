@@ -1,0 +1,19 @@
+{
+    "source": {
+        "include": [
+            "./controllers/userController.js"
+        ],
+        "includePattern": ".+\\.jsx?$"
+    },
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "opts": {
+        "recurse": true,
+        "destination": "docs"
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    }
+}
