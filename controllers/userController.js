@@ -192,18 +192,14 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
 const editNotificationSettings = async (req, res, next) => {
   try {
     const userId = req.userId;
-
-    // Find the user and handle potential not-found scenario
-    const user = await User.findById(userId).select("notificationSettings"); // Select only the notificationSettings field
-
+    // const user = await User.findById(userId).select("notificationSettings");
+    const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
-
-    // Validate incoming data (optional, based on your requirements)
-    // ... validation logic here ...
-
+    console.log("USERSSSS");
+    console.log(user.notificationSettings);
     user.notificationSettings.set("inboxMessage", req.body.inboxMessage);
     user.notificationSettings.set("chatMessages", req.body.chatMessages);
     user.notificationSettings.set("chatRequest", req.body.chatRequest);
@@ -223,12 +219,8 @@ const editNotificationSettings = async (req, res, next) => {
       "modNotifications",
       req.body.modNotifications
     );
-
-    // Save the updated user and handle potential errors
     await user.save();
-
-    console.log("Notification settings updated: ", user);
-    res.json({
+    res.status(200).json({
       message: "User Notification settings updated successfully",
       user,
     });
@@ -717,184 +709,124 @@ const unmuteCommunity = async (req, res, next) => {
       .json({ message: "Error unmuting community for user", error: err });
   }
 };
+const joinCommunity = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const communityId = req.body.subRedditId;
 
-const joinCommunity = (req, res, next) => {
-  const userId = req.userId;
-  const communityId = req.body.subRedditId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.log("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
+    // Find user and community
+    const user = await User.findById(userId);
+    const community = await SubReddit.findById(communityId);
+
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!community) {
+      console.error("Community not found for community ID:", communityId);
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    // Handle join logic based on community privacy
+    if (community.privacy === "private" || community.privacy === "Private") {
+      if (community.pendingMembers.includes(userId)) {
+        return res
+          .status(400)
+          .json({ message: "User already requested to join community" });
       }
-      SubReddit.findById(communityId)
-        .then((community) => {
-          if (!community) {
-            console.error("Community not found for community ID:", communityId);
-            return res.status(404).json({ message: "Community not found" });
-          }
-          if (user.communities.includes(communityId)) {
-            return res
-              .status(400)
-              .json({ message: "Community already joined" });
-          }
-          if (
-            community.privacy === "private" ||
-            community.privacy === "Private"
-          ) {
-            if (community.pendingMembers.includes(userId)) {
-              return res
-                .status(400)
-                .json({ message: "User already requested to join community" });
-            }
-            community.pendingMembers.push(userId);
-          } else if (
-            community.privacy === "restricted" ||
-            community.privacy === "public" ||
-            community.privacy === "Restricted" ||
-            community.privacy === "Public"
-          ) {
-            if (community.members.includes(userId)) {
-              return res
-                .status(400)
-                .json({ message: "User already in this community" });
-            }
-            community.members.push(userId);
-          }
-          community
-            .save()
-            .then((updatedCommunity) => {
-              if (
-                community.privacy === "private" ||
-                community.privacy === "Private"
-              ) {
-                console.log(
-                  "User requested to join community: ",
-                  updatedCommunity
-                );
-                res.json({
-                  message: "User requested to join community",
-                  community: updatedCommunity,
-                });
-              } else {
-                console.log("User joined community: ", updatedCommunity);
-                res.json({
-                  message: "User joined community",
-                  community: updatedCommunity,
-                });
+      community.pendingMembers.push(userId);
+    } else {
+      // Public, Restricted
+      if (community.members.includes(userId)) {
+        return res
+          .status(400)
+          .json({ message: "User already in this community" });
+      }
+      community.members.push(userId);
+      user.communities.push(communityId);
+    }
 
-                // Save the user after sending the response
-                user.communities.push(communityId);
-                user
-                  .save()
-                  .then((updatedUser) => {
-                    console.log("Community joined: ", updatedUser);
-                  })
-                  .catch((err) => {
-                    console.error("Error updating user:", err);
-                  });
-              }
-            })
-            .catch((err) => {
-              console.error("Error updating community:", err);
-              res
-                .status(500)
-                .json({ message: "Error updating community", error: err });
-            });
-        })
-        .catch((err) => {
-          console.error("Error retrieving community:", err);
-          res.status(500).json({ message: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
-    });
+    // Save community and potentially user
+    await community.save();
+    if (community.privacy !== "private" && community.privacy !== "Private") {
+      await user.save();
+    }
+
+    // Respond based on privacy
+    if (community.privacy === "private" || community.privacy === "Private") {
+      console.log("User requested to join community: ", community);
+      res.json({
+        message: "User requested to join community",
+        community,
+      });
+    } else {
+      console.log("User joined community: ", community);
+      res.json({
+        message: "User joined community",
+        community,
+      });
+    }
+  } catch (err) {
+    console.error("Error joining community:", err);
+    res.status(500).json({ message: "Error joining community", error: err });
+  }
 };
+const unjoinCommunity = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const communityId = req.body.subRedditId;
 
-const unjoinCommunity = (req, res) => {
-  const userId = req.userId;
-  const communityId = req.body.subRedditId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      SubReddit.findById(communityId)
-        .then((community) => {
-          if (!community) {
-            console.error("Community not found for community ID:", communityId);
-            return res.status(404).json({ message: "Community not found" });
-          }
-          if (
-            community.privacy === "private" ||
-            community.privacy === "Private"
-          ) {
-            if (
-              !community.pendingMembers.includes(userId) &&
-              !community.members.includes(userId)
-            ) {
-              return res.status(400).json({
-                message: "User is not pending or a member of this community",
-              });
-            }
-            if (community.pendingMembers.includes(userId)) {
-              community.pendingMembers.pull(userId);
-            }
-            if (community.members.includes(userId)) {
-              community.members.pull(userId);
-            }
-          } else if (
-            community.privacy === "restricted" ||
-            community.privacy === "public" ||
-            community.privacy === "Restricted" ||
-            community.privacy === "Public"
-          ) {
-            if (!community.members.includes(userId)) {
-              return res
-                .status(400)
-                .json({ message: "User is not a member of this community" });
-            }
-            community.members.pull(userId);
-          }
-          community
-            .save()
-            .then((updatedCommunity) => {
-              console.log("User unjoined community: ", updatedCommunity);
-              res.json({
-                message: "User unjoined community",
-                community: updatedCommunity,
-              });
+    // Find user and community
+    const user = await User.findById(userId);
+    const community = await SubReddit.findById(communityId);
 
-              // Remove the community from the user after sending the response
-              user.communities.pull(communityId);
-              user
-                .save()
-                .then((updatedUser) => {
-                  console.log("Community unjoined: ", updatedUser);
-                })
-                .catch((err) => {
-                  console.error("Error updating user:", err);
-                });
-            })
-            .catch((err) => {
-              console.error("Error updating community:", err);
-              res
-                .status(500)
-                .json({ message: "Error updating community", error: err });
-            });
-        })
-        .catch((err) => {
-          console.error("Error retrieving community:", err);
-          res.status(500).json({ message: "Server error" });
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!community) {
+      console.error("Community not found for community ID:", communityId);
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    // Unjoin logic based on community privacy
+    if (community.privacy === "private" || community.privacy === "Private") {
+      if (
+        !community.pendingMembers.includes(userId) &&
+        !community.members.includes(userId)
+      ) {
+        return res.status(400).json({
+          message: "User is not pending or a member of this community",
         });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
+      }
+      community.pendingMembers.pull(userId);
+      community.members.pull(userId);
+    } else {
+      // Public, Restricted
+      if (!community.members.includes(userId)) {
+        return res
+          .status(400)
+          .json({ message: "User is not a member of this community" });
+      }
+      community.members.pull(userId); // Remove directly
+    }
+
+    // Save community and user
+    await community.save();
+    user.communities.pull(communityId);
+    await user.save();
+
+    console.log("User unjoined community: ", community);
+    res.json({
+      message: "User unjoined community",
+      community,
     });
+  } catch (err) {
+    console.error("Error unjoining community:", err);
+    res.status(500).json({ message: "Error unjoining community", error: err });
+  }
 };
 
 module.exports = {

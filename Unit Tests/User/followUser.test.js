@@ -212,14 +212,6 @@ describe("followUser", () => {
       followers: [],
       blockUsers: [],
     };
-
-    // User.findById = jest.fn().mockResolvedValue(user1);
-    // await userController.followUser(req, res, next);
-    // expect(User.findById).toHaveBeenCalledWith(req.userId);
-    // expect(res.status).toHaveBeenCalledWith(400);
-    // expect(res.json).toHaveBeenCalledWith({
-    //   message: "You cannot follow yourself",
-    // });
     User.findById = jest.fn().mockResolvedValue(user1);
     User.findOne = jest.fn().mockResolvedValue(user2);
     await userController.followUser(req, res, next);
