@@ -5,29 +5,33 @@ const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
 };
 
-const sorting = (req, res, next) => {   // we may face an error and the solution is to replace else if -> if , and use promise.all
-  const subreddit = SubReddit.findById(req.params.id)
-    .then((subreddit) => {
-      const { Hot, New, Top, Random } = req.params;
-      if (Hot == true) {
-        res.json(subreddit.posts.sort((a, b) => b.votes - a.votes));
-      }
-      if (New == true) {
-        res.json(subreddit.posts.sort((a, b) => b.createdAt - a.createdAt)); // need to add createdAt time stamp
-      }
-      if (Top == true) {
-        res.json(subreddit.posts.sort((a, b) => b.comments.length - a.comments.length + b.votes - a.votes));
-      }
-      if (Random == true) {
-        res.json(subreddit.posts.sort(() => Math.random() - 0.5));
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send("Error sorting posts");
-    });
-};
+const sorting = async (req, res, next) => {
+  const subredditId = req.params.id;
+  const { Hot, New, Top, Random } = req.params;
 
+  try {
+      const subreddit = await SubReddit.findById(subredditId);
+      if (!subreddit) {
+          return res.status(404).json({ message: 'Subreddit not found' });
+      }
+
+      let sortedPosts;
+      if (Hot) {
+          sortedPosts = subreddit.posts.sort((a, b) => b.votes - a.votes);
+      } else if (New) {
+          sortedPosts = subreddit.posts.sort((a, b) => b.createdAt - a.createdAt);
+      } else if (Top) {
+          sortedPosts = subreddit.posts.sort((a, b) => (b.votes + b.comments.length) - (a.votes + a.comments.length));
+      } else if (Random) {
+          sortedPosts = subreddit.posts.sort(() => Math.random() - 0.5);
+      }
+
+      res.json(sortedPosts);
+  } catch (error) {
+      console.error("Error sorting posts:", error);
+      res.status(500).json({ message: "Error sorting posts" });
+  }
+};
 const createCommunity = (req, res, next) => {
   const userId = req.userId;
   console.log("createee communittyyyy heree");
@@ -52,7 +56,7 @@ const createCommunity = (req, res, next) => {
               .status(400)
               .json({ message: "Community name is required" });
           }
-          
+
           const newCommunity = new SubReddit({
             name: req.body.name,
             privacy: req.body.privacy,
