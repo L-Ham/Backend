@@ -10,26 +10,26 @@ const sorting = async (req, res, next) => {
   const { Hot, New, Top, Random } = req.params;
 
   try {
-      const subreddit = await SubReddit.findById(subredditId);
-      if (!subreddit) {
-          return res.status(404).json({ message: 'Subreddit not found' });
-      }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: 'Subreddit not found' });
+    }
 
-      let sortedPosts;
-      if (Hot) {
-          sortedPosts = subreddit.posts.sort((a, b) => b.votes - a.votes);
-      } else if (New) {
-          sortedPosts = subreddit.posts.sort((a, b) => b.createdAt - a.createdAt);
-      } else if (Top) {
-          sortedPosts = subreddit.posts.sort((a, b) => (b.votes + b.comments.length) - (a.votes + a.comments.length));
-      } else if (Random) {
-          sortedPosts = subreddit.posts.sort(() => Math.random() - 0.5);
-      }
+    let sortedPosts;
+    if (Hot) {
+      sortedPosts = subreddit.posts.sort((a, b) => b.votes - a.votes);
+    } else if (New) {
+      sortedPosts = subreddit.posts.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (Top) {
+      sortedPosts = subreddit.posts.sort((a, b) => (b.votes + b.comments.length) - (a.votes + a.comments.length));
+    } else if (Random) {
+      sortedPosts = subreddit.posts.sort(() => Math.random() - 0.5);
+    }
 
-      res.json(sortedPosts);
+    res.json(sortedPosts);
   } catch (error) {
-      console.error("Error sorting posts:", error);
-      res.status(500).json({ message: "Error sorting posts" });
+    console.error("Error sorting posts:", error);
+    res.status(500).json({ message: "Error sorting posts" });
   }
 };
 const createCommunity = (req, res, next) => {
@@ -51,7 +51,7 @@ const createCommunity = (req, res, next) => {
               .status(400)
               .json({ message: "Community name already exists" });
           }
-          if (req.body.name=="") {
+          if (req.body.name == "") {
             return res
               .status(400)
               .json({ message: "Community name is required" });
