@@ -23,17 +23,17 @@ const getNotificationSettings = async (req, res, next) => {
       .json({ message: "Error retrieving notification settings", error: err });
   }
 };
-const getProfileSettings= async(req, res, next)=>{
+const getProfileSettings = async (req, res, next) => {
   const userId = req.userId;
- 
+
   try {
     const user = await User.findById(userId).populate("socialLinks");
- 
+
     if (!user) {
       console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
- 
+
     const profileSettings = {
       displayName: user.profileSettings.get("displayName"),
       about: user.profileSettings.get("about"),
@@ -46,16 +46,15 @@ const getProfileSettings= async(req, res, next)=>{
       communitiesVisibility: user.profileSettings.get("communitiesVisibility"),
       clearHistory: user.profileSettings.get("clearHistory"),
     };
- 
+
     res.json({ profileSettings });
   } catch (err) {
     console.log("Error retrieving profile settings:", err);
     res.status(500).json({ message: "Server error" });
   }
- }
- 
+};
 
- const editProfileSettings=async(req, res, next)=> {
+const editProfileSettings = async (req, res, next) => {
   const userId = req.userId;
 
   try {
@@ -73,7 +72,10 @@ const getProfileSettings= async(req, res, next)=>{
     user.profileSettings.set("NSFW", req.body.NSFW);
     user.profileSettings.set("allowFollow", req.body.allowFollow);
     user.profileSettings.set("contentVisibility", req.body.contentVisibility);
-    user.profileSettings.set("communitiesVisibility", req.body.communitiesVisibility);
+    user.profileSettings.set(
+      "communitiesVisibility",
+      req.body.communitiesVisibility
+    );
     user.profileSettings.set("clearHistory", req.body.clearHistory);
 
     const updatedUser = await user.save();
@@ -85,9 +87,11 @@ const getProfileSettings= async(req, res, next)=>{
     });
   } catch (err) {
     console.error("Error updating profile settings:", err);
-    res.status(500).json({ message: "Error updating profile settings", error: err });
+    res
+      .status(500)
+      .json({ message: "Error updating profile settings", error: err });
   }
-}
+};
 
 // /**
 //  * @param {Object} req - The request object.
@@ -328,33 +332,25 @@ const checkUserNameAvailability = async (req, res, next) => {
   }
 };
 
- blockUser=async(req, res, next) => {
+const blockUser = async (req, res, next) => {
   try {
     const blockedUserName = req.body.usernameToBlock;
     const userId = req.userId;
-
-    // Find the user to block
     const userToBlock = await User.findOne({ userName: blockedUserName });
 
     if (!userToBlock) {
       console.error("User not found for username:", blockedUserName);
       return res.status(404).json({ message: "User not found" });
     }
-
-    // Update the blocked user
-    userToBlock.following.pull(userId);;
+    userToBlock.following.pull(userId);
     await userToBlock.save();
-
-    // Find the current user
     const user = await User.findById(userId);
 
     if (user.blockUsers.includes(userToBlock._id)) {
       console.log("User already blocked:", userToBlock.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
-
-    // Update the current user
-    user.blockUsers.push(userToBlock._id);;
+    user.blockUsers.push(userToBlock._id);
     user.followers.pull(userToBlock._id);
     const updatedUser = await user.save();
 
@@ -364,7 +360,7 @@ const checkUserNameAvailability = async (req, res, next) => {
     console.error("Error blocking user:", err);
     res.status(500).json({ message: "Server error" });
   }
-}
+};
 
 const unblockUser = (req, res, next) => {
   const userId = req.userId;
@@ -502,7 +498,7 @@ async function addSocialLink(req, res, next) {
   }
 }
 
-const editSocialLink= async(req, res, next) =>{
+const editSocialLink = async (req, res, next) => {
   const userId = req.userId;
   const { linkId, linkOrUsername, appName, logo, displayText } = req.body;
 
@@ -514,7 +510,9 @@ const editSocialLink= async(req, res, next) =>{
       return res.status(404).json({ message: "User not found" });
     }
 
-    const socialLinkToUpdate = user.socialLinks.find((link) => link._id.toString() === linkId); // Ensure proper comparison
+    const socialLinkToUpdate = user.socialLinks.find(
+      (link) => link._id.toString() === linkId
+    ); // Ensure proper comparison
 
     if (!socialLinkToUpdate) {
       console.log("Social link not found for link ID:", linkId);
@@ -535,49 +533,48 @@ const editSocialLink= async(req, res, next) =>{
     });
   } catch (err) {
     console.log("Error updating social link:", err);
-    res.status(500).json({ message: "Error updating social link for user", error: err });
+    res
+      .status(500)
+      .json({ message: "Error updating social link for user", error: err });
   }
-}
-
-const deleteSocialLink = (req, res, next) => {
-  const userId = req.userId;
-  const linkId = req.body.socialLinkId;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-      socialLinkToDelete = user.socialLinks.find((link) => link._id == linkId);
-      if (!socialLinkToDelete) {
-        console.error("Social link not found for link ID:", linkId);
-        return res.status(404).json({ message: "Social link not found" });
-      }
-      user.socialLinks.pull(socialLinkToDelete);
-      user
-        .save()
-        .then((updatedUser) => {
-          console.log("Social link deleted: ", updatedUser);
-          res.json({
-            message: "Social link deleted successfully",
-            user: updatedUser,
-          });
-        })
-        .catch((err) => {
-          console.error("Error deleting social link:", err);
-          res.status(500).json({
-            message: "Error deleting social link from user",
-            error: err,
-          });
-        });
-    })
-    .catch((err) => {
-      console.error("Error retrieving user:", err);
-      res.status(500).json({ message: "Error Retrieving User", error: err });
-    });
 };
 
-const updateGender= async(req, res, next) =>{
+const deleteSocialLink = async (req, res, next) => {
+  const userId = req.userId;
+  const linkId = req.body.socialLinkId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const socialLinkToDelete = user.socialLinks.find(
+      (link) => link._id.toString() === linkId
+    );
+    if (!socialLinkToDelete) {
+      console.error("Social link not found for link ID:", linkId);
+      return res.status(404).json({ message: "Social link not found" });
+    }
+
+    user.socialLinks.pull(socialLinkToDelete);
+    const updatedUser = await user.save();
+
+    console.log("Social link deleted: ", updatedUser);
+    res.json({
+      message: "Social link deleted successfully",
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.error("Error deleting social link:", err);
+    res
+      .status(500)
+      .json({ message: "Error deleting social link from user", error: err });
+  }
+};
+
+const updateGender = async (req, res, next) => {
   try {
     const userId = req.userId;
     const user = await User.findById(userId);
@@ -588,7 +585,9 @@ const updateGender= async(req, res, next) =>{
     }
 
     if (user.gender === req.body.gender) {
-      return res.status(400).json({ message: "Gender is already set to this value" });
+      return res
+        .status(400)
+        .json({ message: "Gender is already set to this value" });
     }
 
     user.gender = req.body.gender;
@@ -605,8 +604,7 @@ const updateGender= async(req, res, next) =>{
       error: err,
     });
   }
-}
-
+};
 
 const muteCommunity = async (req, res, next) => {
   try {
