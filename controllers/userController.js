@@ -732,7 +732,7 @@ const muteCommunity = async (req, res, next) => {
   }
 };
 
-async function unmuteCommunity(req, res, next) {
+const unmuteCommunity = async (req, res, next) => {
   try {
     const userId = req.userId;
     const communityId = req.body.subRedditId;
