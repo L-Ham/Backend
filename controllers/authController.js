@@ -20,7 +20,7 @@ const googleSignUp = async (req, res, next) => {
   async function verify() {
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: CLIENT_ID,
+      audience: process.env.CLIENT_ID,
     });
     const tempPayload = ticket.getPayload();
     payload = tempPayload;
@@ -29,7 +29,7 @@ const googleSignUp = async (req, res, next) => {
     await verify();
     const existingUser = await User.findOne({ email: payload["email"] });
     if (existingUser) {
-      res.status(500).json({ message: "Email already Exists" });
+      return res.status(500).json({ message: "Email already Exists" });
     }
     let randomUsername = authService.generateRandomUsername();
     let user = await checkUsernameExists(randomUsername[0]);
@@ -47,7 +47,7 @@ const googleSignUp = async (req, res, next) => {
     });
 
     user = await user.save();
-
+    console.log(user);
     payload.user = { id: user._id, type: "google" };
     const expirationTime = Math.floor(Date.now() / 1000) + 50000000000;
     payload.exp = expirationTime;
