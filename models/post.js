@@ -21,15 +21,13 @@ const postSchema = new Schema({
     type: String,
     required: false,
   },
-  images: {
-    type: [
-      {
-        type: String,
-        required: false,
-      },
-    ],
-    default: [],
-  },
+  images: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+    },
+  ],
   approved: {
     type: Boolean,
     required: false,
@@ -50,15 +48,13 @@ const postSchema = new Schema({
     ref: "user",
     required: true,
   },
-  videos: {
-    type: [
-      {
-        type: String,
-        required: false,
-      },
-    ],
-    default: [],
-  },
+  videos: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+    },
+  ],
   url: {
     type: String,
     required: false,
