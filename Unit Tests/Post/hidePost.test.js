@@ -1,5 +1,5 @@
 const { hidePost } = require("../../controllers/postController");
-const User = require("../../models/User");
+const User = require("../../models/user");
 
 describe("hidePost", () => {
   it("should hide a post successfully when it is not already hidden", async () => {

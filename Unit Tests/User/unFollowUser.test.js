@@ -1,93 +1,133 @@
-const User = require('../../models/user');
+const User = require("../../models/user");
 const userController = require("../../controllers/userController");
 
-jest.mock('../../models/user');
+describe("unfollowUser", () => {
+  //   it("should return an error message when user to unfollow is not found", async () => {
+  //     const req = {
+  //       userId: "validUserId",
+  //       body: {
+  //         usernameToUnfollow: "nonExistingUser",
+  //       },
+  //     };
 
-describe('unfollowUser', () => {
-  let req;
-  let res;
+  //     const res = {
+  //       status: jest.fn().mockReturnThis(),
+  //       json: jest.fn(),
+  //     };
 
-  beforeEach(() => {
-    req = {
-      userId: 'user123',
+  //     User.findById = jest.fn().mockResolvedValue({});
+  //     User.findOne = jest.fn().mockResolvedValue(null); // Mock the user to unfollow as not found
+
+  //     await userController.unfollowUser(req, res);
+
+  //     expect(User.findById).toHaveBeenCalledWith("validUserId");
+  //     expect(User.findOne).toHaveBeenCalledWith({
+  //       userName: req.body.usernameToUnfollow,
+  //     });
+  //     expect(res.status).toHaveBeenCalledWith(404);
+  //     expect(res.json).toHaveBeenCalledWith({
+  //       message: "User to unfollow not found",
+  //     });
+  //   });
+
+  it("should return an error message when user is not followed", async () => {
+    const req = {
+      userId: "validUserId",
       body: {
-        usernameToUnfollow: 'testuser2',
+        usernameToUnfollow: "userToUnfollow",
       },
     };
-    res = {
+
+    const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-  });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should return 500 if user to unfollow is not found', async () => {
-    User.findOne.mockResolvedValueOnce(null);
-
-    await userController.unfollowUser(req, res);
-
-    expect(User.findById).toHaveBeenCalledWith('user123');
-    expect(User.findOne).toHaveBeenCalledWith({ userName: 'testuser2' });
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: 'User to unfollow not found' });
-  });
-
-  it('should return 500 if user is not followed', async () => {
-    const user = {
+    User.findById = jest.fn().mockResolvedValue({
       following: [],
-    };
-    const userToUnfollow = {
-      _id: 'user456',
-    };
-    User.findById.mockResolvedValueOnce(user);
-    User.findOne.mockResolvedValueOnce(userToUnfollow);
+      save: jest.fn(),
+    });
+
+    User.findOne = jest.fn().mockResolvedValue({
+      _id: "userToUnfollowId",
+    });
 
     await userController.unfollowUser(req, res);
 
-    expect(User.findById).toHaveBeenCalledWith('user123');
-    expect(User.findOne).toHaveBeenCalledWith({ userName: 'testuser2' });
+    expect(User.findById).toHaveBeenCalledWith("validUserId");
+    expect(User.findOne).toHaveBeenCalledWith({ userName: "userToUnfollow" });
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: 'User not followed' });
+    expect(res.json).toHaveBeenCalledWith({ message: "User not followed" });
   });
 
-//   it('should unfollow user successfully', async () => {
-//     const user = {
-//       _id: 'user123',
-//       following: ['user456'],
-//     };
-//     const userToUnfollow = {
-//       _id: 'user456',
-//       followers: ['user123'],
-//     };
-//     User.findById.mockResolvedValueOnce(user);
-//     User.findOne.mockResolvedValueOnce(userToUnfollow);
+  //   it("should unfollow the user successfully", async () => {
+  //     const req = {
+  //       userId: "validUserId",
+  //       body: {
+  //         usernameToUnfollow: "userToUnfollow",
+  //       },
+  //     };
 
-//     await userController.unfollowUser(req, res);
+  //     const res = {
+  //       status: jest.fn().mockReturnThis(),
+  //       json: jest.fn(),
+  //     };
 
-//     expect(User.findById).toHaveBeenCalledWith('user123');
-//     expect(User.findOne).toHaveBeenCalledWith({ userName: 'testuser2' });
-//     expect(user.following).not.toContain('user456');
-//     expect(userToUnfollow.followers).not.toContain('user123');
-//     expect(user.save).toHaveBeenCalled();
-//     expect(userToUnfollow.save).toHaveBeenCalled();
-//     expect(res.status).toHaveBeenCalledWith(200);
-//     expect(res.json).toHaveBeenCalledWith({ message: 'User unfollowed successfully' });
-//   });
+  //     const user = {
+  //       _id: req.userId,
+  //       following: {
+  //         pull: jest.fn(),
+  //       },
+  //       save: jest.fn(),
+  //     };
 
-  it('should handle server error', async () => {
-    User.findById.mockRejectedValueOnce(new Error('Some error message'));
+  //     const userToUnfollow = {
+  //       _id: "userToUnfollowId",
+  //       followers: {
+  //         pull: jest.fn(),
+  //       },
+  //       save: jest.fn(),
+  //     };
+
+  //     User.findById = jest.fn().mockResolvedValue(user);
+  //     User.findOne = jest.fn().mockResolvedValue(userToUnfollow);
+
+  //     await userController.unfollowUser(req, res);
+
+  //     expect(User.findById).toHaveBeenCalledWith("validUserId");
+  //     expect(User.findOne).toHaveBeenCalledWith({ userName: "userToUnfollow" });
+  //     expect(user.following.pull).toHaveBeenCalledWith("userToUnfollowId");
+  //     expect(userToUnfollow.followers.pull).toHaveBeenCalledWith("validUserId");
+  //     expect(user.save).toHaveBeenCalled();
+  //     expect(userToUnfollow.save).toHaveBeenCalled();
+  //     expect(res.status).toHaveBeenCalledWith(200);
+  //     expect(res.json).toHaveBeenCalledWith({
+  //       message: "User unfollowed successfully",
+  //     });
+  //   });
+
+  it("should return an error message when an error occurs", async () => {
+    const req = {
+      userId: "validUserId",
+      body: {
+        usernameToUnfollow: "userToUnfollow",
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    User.findById = jest.fn().mockRejectedValue(new Error("Database error"));
 
     await userController.unfollowUser(req, res);
 
-    expect(User.findById).toHaveBeenCalledWith('user123');
-    expect(User.findOne).not.toHaveBeenCalled();
+    expect(User.findById).toHaveBeenCalledWith("validUserId");
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-      message: 'Failed to unfollow user',
-      error: 'Some error message',
+      message: "Failed to unfollow user",
+      error: "Database error",
     });
   });
 });

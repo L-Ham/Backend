@@ -30,6 +30,26 @@ const postSchema = new Schema({
     ],
     default: [],
   },
+  approved: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  approvedBy: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+  disapproved: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  disapprovedBy: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
   videos: {
     type: [
       {

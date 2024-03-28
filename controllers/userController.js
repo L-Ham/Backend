@@ -11,7 +11,7 @@ const getNotificationSettings = async (req, res, next) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -61,7 +61,7 @@ const editProfileSettings = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -86,19 +86,19 @@ const editProfileSettings = async (req, res, next) => {
       user: updatedUser,
     });
   } catch (err) {
-    console.error("Error updating profile settings:", err);
+    console.log("Error updating profile settings:", err);
     res
       .status(500)
       .json({ message: "Error updating profile settings", error: err });
   }
 };
 
-// /**
-//  * @param {Object} req - The request object.
-//  * @param {Object} res - The response object.
-//  * @param {Function} next - Retrieves the account settings for a user..
-//  * @returns {Promise<void>} - A promise that resolves when the account settings are retrieved.
-//  */
+/**
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - Retrieves the account settings for a user..
+ * @returns {Promise<void>} - A promise that resolves when the account settings are retrieved.
+ */
 const getAccountSettings = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -110,7 +110,7 @@ const getAccountSettings = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -123,11 +123,19 @@ const getAccountSettings = async (req, res, next) => {
     console.log("Account settings: ", accountSettings);
     res.json({ accountSettings });
   } catch (err) {
-    console.error("Error retrieving account settings:", err);
+    console.log("Error retrieving account settings:", err);
     res.status(500).json({ message: "Error Retreiving user", error: err });
   }
 };
 
+/**
+ * Retrieves the safety and privacy settings for a user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @returns {Object} - The safety and privacy settings for the user.
+ */
 const getSafetyAndPrivacySettings = async (req, res, next) => {
   const userId = req.userId;
   if (!userId) {
@@ -147,7 +155,7 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
     };
     res.json({ safetyAndPrivacySettings });
   } catch (err) {
-    console.error("Error retrieving safety and privacy settings:", err);
+    console.log("Error retrieving safety and privacy settings:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -158,7 +166,7 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        console.error("User not found for user ID:", userId);
+        console.log("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
       user.blockUsers = req.body.blockUsers;
@@ -173,17 +181,28 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
           });
         })
         .catch((err) => {
-          console.error("Error updating safety and privacy settings:", err);
+          console.log("Error updating safety and privacy settings:", err);
           res
             .status(500)
             .json({ message: "Failed to update safety and privacy settings " });
         });
     })
     .catch((err) => {
-      console.error("Error retrieving user:", err);
+      console.log("Error retrieving user:", err);
       res.status(500).json({ message: "Server error" });
     });
 };
+/**
+ * Updates the notification settings for a user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.userId - The ID of the user.
+ * @param {Object} req.body - The request body containing the updated notification settings.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the notification settings are updated.
+ * @throws {Error} - If there is an error updating the notification settings.
+ */
 const editNotificationSettings = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -224,6 +243,15 @@ const editNotificationSettings = async (req, res, next) => {
   }
 };
 
+/**
+ * Follows a user.
+ *
+ * @param {Object} req - The request object. It should have a `userId` property (the ID of the user who wants to follow another user) and a `body` property with a `usernameToFollow` property (the username of the user to be followed).
+ * @param {Object} res - The response object. This function will set the status and JSON body of the response.
+ * @param {Function} next - The next middleware function. This function is not used in the current implementation, but is included for potential future use.
+ * @returns {Promise<void>} - A promise that resolves when the user is followed successfully. The promise does not resolve to any value.
+ * @throws {Error} - If there is an error while following the user, an error is thrown and the response status is set to 500 with a JSON body containing the error message.
+ */
 const followUser = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -235,15 +263,12 @@ const followUser = async (req, res, next) => {
     }
 
     const userToFollow = await User.findOne({ userName: usernameToFollow });
-
     if (!userToFollow) {
       return res.status(404).json({ message: "User to follow not found" });
     }
-
     if (userToFollow._id.equals(userId)) {
       return res.status(400).json({ message: "You can't follow yourself" });
     }
-
     if (user.blockUsers.includes(userToFollow._id)) {
       return res.status(400).json({ message: "You have blocked this user" });
     }
@@ -252,7 +277,6 @@ const followUser = async (req, res, next) => {
         .status(400)
         .json({ message: "You have been blocked by this user" });
     }
-
     console.log(user.following.includes(userToFollow._id));
     console.log(user.following);
     console.log(userToFollow._id);
@@ -267,7 +291,7 @@ const followUser = async (req, res, next) => {
       user: userToFollow,
     });
   } catch (err) {
-    console.log(err); 
+    console.log(err);
     res.status(500).json({ message: "Failed to follow user", error: err });
   }
 };
@@ -298,11 +322,10 @@ const unfollowUser = async (req, res, next) => {
   } catch (err) {
     res.status(500).json({
       message: "Failed to unfollow user",
-      error: err.message
+      error: err.message,
     });
   }
 };
-
 
 const checkUserNameAvailability = async (req, res, next) => {
   try {
@@ -340,7 +363,7 @@ const blockUser = async (req, res, next) => {
     const userToBlock = await User.findOne({ userName: blockedUserName });
 
     if (!userToBlock) {
-      console.error("User not found for username:", blockedUserName);
+      console.log("User not found for username:", blockedUserName);
       return res.status(404).json({ message: "User not found" });
     }
     userToBlock.following.pull(userId);
@@ -358,7 +381,7 @@ const blockUser = async (req, res, next) => {
     console.log("User blocked:", userToBlock.userName);
     res.json({ message: "User blocked", user: updatedUser });
   } catch (err) {
-    console.error("Error blocking user:", err);
+    console.log("Error blocking user:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -369,7 +392,7 @@ const unblockUser = (req, res, next) => {
   User.findOne({ userName: blockedUserName })
     .then((user) => {
       if (!user) {
-        console.error("User not found for username:", blockedUserName);
+        console.log("User not found for username:", blockedUserName);
         return res.status(404).json({ message: "User not found" });
       }
       User.findByIdAndUpdate(
@@ -382,12 +405,12 @@ const unblockUser = (req, res, next) => {
           res.json({ message: "User unblocked", user: updatedUser });
         })
         .catch((err) => {
-          console.error("Error unblocking user:", err);
+          console.log("Error unblocking user:", err);
           res.status(500).json({ message: "Server error" });
         });
     })
     .catch((err) => {
-      console.error("Error retrieving user:", err);
+      console.log("Error retrieving user:", err);
       res.status(500).json({ message: "Server error" });
     });
 };
@@ -398,7 +421,7 @@ async function editFeedSettings(req, res, next) {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -430,7 +453,7 @@ async function editFeedSettings(req, res, next) {
       user: updatedUser,
     });
   } catch (err) {
-    console.error("Error:", err);
+    console.log("Error:", err);
     res.status(500).json({ message: "Server error" });
   }
 }
@@ -441,7 +464,7 @@ async function viewFeedSettings(req, res, next) {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -463,7 +486,7 @@ async function viewFeedSettings(req, res, next) {
 
     res.json({ feedSettings });
   } catch (err) {
-    console.error("Error retrieving feed settings:", err);
+    console.log("Error retrieving feed settings:", err);
     res.status(500).json({ message: "Server error" });
   }
 }
@@ -475,7 +498,7 @@ async function addSocialLink(req, res, next) {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -547,7 +570,7 @@ const deleteSocialLink = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -555,7 +578,7 @@ const deleteSocialLink = async (req, res, next) => {
       (link) => link._id.toString() === linkId
     );
     if (!socialLinkToDelete) {
-      console.error("Social link not found for link ID:", linkId);
+      console.log("Social link not found for link ID:", linkId);
       return res.status(404).json({ message: "Social link not found" });
     }
 
@@ -568,7 +591,7 @@ const deleteSocialLink = async (req, res, next) => {
       user: updatedUser,
     });
   } catch (err) {
-    console.error("Error deleting social link:", err);
+    console.log("Error deleting social link:", err);
     res
       .status(500)
       .json({ message: "Error deleting social link from user", error: err });
@@ -653,13 +676,13 @@ const unmuteCommunity = async (req, res, next) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     const community = await subReddit.findById(communityId);
     if (!community) {
-      console.error("Community not found for community ID:", communityId);
+      console.log("Community not found for community ID:", communityId);
       return res.status(404).json({ message: "Community not found" });
     }
 
@@ -667,7 +690,7 @@ const unmuteCommunity = async (req, res, next) => {
       muteCommunity.equals(communityId)
     );
     if (!isMuted) {
-      console.error("This subReddit is not muted for you:", communityId);
+      console.log("This subReddit is not muted for you:", communityId);
       return res
         .status(404)
         .json({ message: "This subReddit is not muted for you" });
@@ -698,12 +721,12 @@ const joinCommunity = async (req, res, next) => {
     const community = await SubReddit.findById(communityId);
 
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     if (!community) {
-      console.error("Community not found for community ID:", communityId);
+      console.log("Community not found for community ID:", communityId);
       return res.status(404).json({ message: "Community not found" });
     }
 
@@ -747,7 +770,7 @@ const joinCommunity = async (req, res, next) => {
       });
     }
   } catch (err) {
-    console.error("Error joining community:", err);
+    console.log("Error joining community:", err);
     res.status(500).json({ message: "Error joining community", error: err });
   }
 };
@@ -761,12 +784,12 @@ const unjoinCommunity = async (req, res) => {
     const community = await SubReddit.findById(communityId);
 
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     if (!community) {
-      console.error("Community not found for community ID:", communityId);
+      console.log("Community not found for community ID:", communityId);
       return res.status(404).json({ message: "Community not found" });
     }
 
@@ -803,7 +826,7 @@ const unjoinCommunity = async (req, res) => {
       community,
     });
   } catch (err) {
-    console.error("Error unjoining community:", err);
+    console.log("Error unjoining community:", err);
     res.status(500).json({ message: "Error unjoining community", error: err });
   }
 };

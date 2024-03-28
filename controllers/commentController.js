@@ -3,53 +3,6 @@ const Post = require("../models/post");
 const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
 
-const hideComment = async (req, res, next) => {
-  try {
-    const { commentId } = req.body;
-    const comment = await Comment.findById(commentId);
-
-    if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
-    }
-
-    if (comment.isHidden) {
-      return res.status(200).json({ message: "Comment is already hidden" });
-    }
-
-    comment.isHidden = true;
-    await comment.save();
-
-    return res.status(200).json({ message: "Comment hidden successfully" });
-  } catch (err) {
-    console.error(err);
-    return res.status(400).json({ message: "Could not hide comment" });
-  }
-};
-
-const unhideComment = async (req, res, next) => {
-  try {
-    const { commentId } = req.body;
-    const comment = await Comment.findById(commentId);
-
-    if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
-    }
-
-    if (!comment.isHidden) {
-      return res.status(200).json({ message: "Comment is already visible" });
-    }
-
-    comment.isHidden = false;
-    await comment.save();
-
-    return res.status(200).json({ message: "Comment unhidden successfully" });
-  } catch (err) {
-    console.error(err);
-    return res.status(400).json({ message: "Could not unhide comment" });
-  }
-};
-
-
 const createComment = async (req, res, next) => {
   const userId = req.userId;
 
@@ -65,7 +18,6 @@ const createComment = async (req, res, next) => {
       console.error("Post not found for post ID:", req.body.postId);
       return res.status(404).json({ message: "Post not found" });
     }
-
 
     if (post.subReddit === null) {
       if (post.isLocked && !post.user.equals(userId)) {
@@ -106,11 +58,11 @@ const createComment = async (req, res, next) => {
         );
         return res.status(404).json({ message: "Parent Comment not found" });
       }
-    
+
       if (!parentComment.replies) {
         parentComment.replies = [];
       }
-    
+
       parentComment.replies.push(savedComment);
       await parentComment.save();
     }
@@ -133,7 +85,5 @@ const createComment = async (req, res, next) => {
 };
 
 module.exports = {
-  hideComment,
-  unhideComment,
   createComment,
 };
