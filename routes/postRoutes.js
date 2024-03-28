@@ -68,4 +68,11 @@ router.patch(
   authenticateToken,
   postController.downvote
 );
+
+router.get(
+  "/getAllPostComments",
+  bodyParser.json(),
+  authenticateToken,
+  postController.getAllPostComments
+);
 module.exports = router;

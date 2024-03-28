@@ -16,6 +16,12 @@ router.get(
     bodyParser.json(),
     subredditController.sorting
   );
+  router.post(
+    "/addRule",
+    bodyParser.json(),
+    authenticateToken,
+    subredditController.addRule
+  );
 
 
 module.exports = router;
