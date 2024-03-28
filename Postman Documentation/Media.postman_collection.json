@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "e948bbb1-df2e-41e7-bed8-29e68493c964",
+		"_postman_id": "01f36a84-3cdb-4642-8f25-9b07d36bfcdd",
 		"name": "Media",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23392578",
-		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-e948bbb1-df2e-41e7-bed8-29e68493c964?action=share&source=collection_link&creator=23392578"
+		"_exporter_id": "32069311"
 	},
 	"item": [
 		{
@@ -14,7 +13,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTA1MTIsImV4cCI6NTAxNzExNDEwNTEyfQ.Shhggj-giwtsZBfnHsREUfHvwfqzl_1DEqNDN3sa1ic",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE2MzIyNzYsImV4cCI6NTAxNzExNjMyMjc2fQ.dKmNHtAINg5uXCmqWzezlu7qVdh9rEhLUjV86JCOuPA",
 						"type": "text"
 					}
 				],
@@ -22,9 +21,19 @@
 					"mode": "formdata",
 					"formdata": [
 						{
+							"key": "postId",
+							"value": "66017914d947243f70e9e90a",
+							"type": "text"
+						},
+						{
 							"key": "file",
 							"type": "file",
-							"src": "/C:/Users/marly/OneDrive/Pictures/Screenshots/Screenshot 2024-03-25 115656.png"
+							"src": "/C:/Users/marly/OneDrive/Pictures/Screenshots/Screenshot 2024-03-27 230411.png"
+						},
+						{
+							"key": "type",
+							"value": "post",
+							"type": "text"
 						}
 					]
 				},
