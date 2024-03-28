@@ -263,15 +263,12 @@ const followUser = async (req, res, next) => {
     }
 
     const userToFollow = await User.findOne({ userName: usernameToFollow });
-
     if (!userToFollow) {
       return res.status(404).json({ message: "User to follow not found" });
     }
-
     if (userToFollow._id.equals(userId)) {
       return res.status(400).json({ message: "You can't follow yourself" });
     }
-
     if (user.blockUsers.includes(userToFollow._id)) {
       return res.status(400).json({ message: "You have blocked this user" });
     }
@@ -280,7 +277,6 @@ const followUser = async (req, res, next) => {
         .status(400)
         .json({ message: "You have been blocked by this user" });
     }
-
     console.log(user.following.includes(userToFollow._id));
     console.log(user.following);
     console.log(userToFollow._id);
