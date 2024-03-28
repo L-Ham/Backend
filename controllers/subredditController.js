@@ -82,9 +82,38 @@ const createCommunity = async (req, res, next) => {
     res.status(500).json({ message: "Failed to create community" });
   }
 };
+const addRule = async (req, res, next) => {
+  const subredditId = req.body.subredditId;
+  const { rule, description, appliedTo, reportReasonDefault } = req.body;
+
+  try {
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    subreddit.rules.push({
+      rule,
+      description,
+      appliedTo,
+      reportReasonDefault,
+    });
+
+    const savedSubreddit = await subreddit.save();
+    res.json({
+      message: "Rule added successfully",
+      savedSubreddit,
+    });
+  } catch (error) {
+    console.log("Error adding rule:", error);
+    res.status(500).json({ message: "Error adding rule" });
+  }
+}
+
 
 
 module.exports = {
   sorting,
   createCommunity,
+  addRule
 };
