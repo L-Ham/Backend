@@ -1,6 +1,7 @@
 const Post = require("../models/post");
 const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
+const Comment = require("../models/comment");
 
 const createPost = async (req, res, next) => {
   const userId = req.userId;
@@ -414,6 +415,24 @@ const unlockPost = async (req, res, next) => {
     res.status(500).json({ message: "Error unlocking post" });
   }
 };
+const getAllPostComments = async (req, res, next) => {
+  const postId = req.body.postId;
+
+
+  try {
+    const post = await Post.findById(postId).populate('comments');
+    if (!post) {
+      console.log("Post not found for post ID:", postId);
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json(post.comments);
+  } catch (error) {
+    console.log("Error getting comments for post:", error);
+    res.status(500).json({ message: "Error getting comments for post" });
+  }
+};
+
 
 module.exports = {
   savePost,
@@ -426,4 +445,5 @@ module.exports = {
   upvote,
   lockPost,
   unlockPost,
+  getAllPostComments
 };
