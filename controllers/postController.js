@@ -115,76 +115,56 @@ const editPost = (req, res, next) => {
       res.status(500).json({ message: "Error finding post" });
     });
 };
-
-const savePost = (req, res, next) => {
-  const userId = req.userId;
-
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const save = user.savedPosts.find((savedPost) =>
-        savedPost.equals(req.body.postId)
-      );
-      if (save) {
-        console.error(
-          "This post is already saved in your profile:",
-          req.body.postId
-        );
-        return res
-          .status(404)
-          .json({ message: "This post is already saved in your profile" });
-      }
-      user.savedPosts.push(req.body.postId);
-
-      user
-        .save()
-        .then(() => {
-          res.status(200).json({ message: "Post saved successfully" });
-        })
-        .catch((error) => {
-          console.error("Error saving post:", error);
-          res.status(500).json({ message: "Error saving post" });
-        });
-    })
-    .catch((error) => {
-      console.error("Error finding user:", error);
-      res.status(500).json({ message: "Error finding user" });
-    });
+const savePost = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const postId = req.body.postId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const savedPost = user.savedPosts.find((savedPost) =>
+      savedPost.equals(postId)
+    );
+    if (savedPost) {
+      return res
+        .status(400)
+        .json({ message: "This post is already saved in your profile" });
+    }
+    user.savedPosts.push(postId);
+    await user.save();
+    res.status(200).json({ message: "Post saved successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error saving post" });
+  }
 };
 
 const upvote = async (req, res, next) => {
-  const userId = req.userId;
-  const postId = req.body.postId;
-  Post.findById(postId)
-    .then((post) => {
-      if (!post) {
-        return res.status(404).json({ message: "Post not found" });
-      }
-      if (post.upvotedUsers.includes(userId)) {
-        return res.status(400).json({ message: "Post already upvoted" });
-      }
-      post.upvotes += 1;
-      post.upvotedUsers.push(req.userId);
-      post.save();
-      User.findById(userId)
-        .then((user) => {
-          user.upvotedPosts.push(postId);
-          user.save();
-          res.status(200).json({ message: "Post upvoted & added to user" });
-        })
-        .catch((err) => {
-          return res
-            .status(500)
-            .json({ message: "Error finding user", error: err });
-        });
-    })
-    .catch((err) => {
-      res.status(400).json({ message: "Error finding post", error: err });
-    });
+  try {
+    const userId = req.userId;
+    const postId = req.body.postId;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (post.upvotedUsers.includes(userId)) {
+      return res.status(400).json({ message: "Post already upvoted" });
+    }
+    post.upvotes += 1;
+    post.upvotedUsers.push(userId);
+    await post.save();
+    const user = await User.findById(userId);
+    if (user) {
+      user.upvotedPosts.push(postId);
+      await user.save();
+    }
+    res
+      .status(200)
+      .json({ message: "Post upvoted & added to user (if found)" });
+  } catch (err) {
+    console.error("Error upvoting post:", err);
+    res.status(500).json({ message: "Error upvoting post", error: err });
+  }
 };
 
 const downvote = async (req, res, next) => {
@@ -218,44 +198,32 @@ const downvote = async (req, res, next) => {
     });
 };
 
-const unsavePost = (req, res, next) => {
-  const userId = req.userId;
+const unsavePost = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const postId = req.body.postId;
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+    const savedPost = user.savedPosts.find((savedPost) =>
+      savedPost.equals(postId)
+    );
+    if (!savedPost) {
+      console.error("This post is not saved in your profile:", req.body.postId);
+      return res
+        .status(404)
+        .json({ message: "This post is not saved in your profile" });
+    }
+    user.savedPosts.pull(postId);
+    await user.save();
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        console.error("User not found for user ID:", userId);
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const unsave = user.savedPosts.find((savedPost) =>
-        savedPost.equals(req.body.postId)
-      );
-      if (!unsave) {
-        console.error(
-          "This post is not saved in your profile:",
-          req.body.postId
-        );
-        return res
-          .status(404)
-          .json({ message: "This post is not saved in your profile" });
-      }
-      user.savedPosts.pull(req.body.postId);
-
-      user
-        .save()
-        .then(() => {
-          res.status(200).json({ message: "Post unsaved successfully" });
-        })
-        .catch((error) => {
-          console.error("Error unsaving post:", error);
-          res.status(500).json({ message: "Error unsaving post" });
-        });
-    })
-    .catch((error) => {
-      console.error("Error finding user:", error);
-      res.status(500).json({ message: "Error finding user" });
-    });
+    res.status(200).json({ message: "Post unsaved successfully" });
+  } catch (error) {
+    console.error("Error unsaving post:", error);
+    res.status(500).json({ message: "Error unsaving post" });
+  }
 };
 
 const hidePost = async (req, res, next) => {
@@ -288,7 +256,7 @@ const hidePost = async (req, res, next) => {
   }
 };
 
-unhidePost= async(req, res, next)=> {
+const unhidePost = async (req, res, next) => {
   try {
     const userId = req.userId;
     const postId = req.body.postId;
@@ -324,8 +292,7 @@ unhidePost= async(req, res, next)=> {
     console.error("Error unhidding post:", error);
     res.status(500).json({ message: "Error unhidding post" });
   }
-}
-
+};
 
 const lockPost = async (req, res, next) => {
   const postId = req.body.postId;
