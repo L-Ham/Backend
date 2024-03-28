@@ -151,4 +151,11 @@ router.patch(
   userController.addFavoriteCommunity
 );
 
+router.delete(
+  "/unfavouriteSubreddit",
+  bodyParser.json(),
+  authenticateToken,
+  userController.removeFavoriteCommunity
+);
+
 module.exports = router;
