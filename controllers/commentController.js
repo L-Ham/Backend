@@ -9,31 +9,31 @@ const createComment = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
+      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     const post = await Post.findById(req.body.postId);
     if (!post) {
-      console.error("Post not found for post ID:", req.body.postId);
+      console.log("Post not found for post ID:", req.body.postId);
       return res.status(404).json({ message: "Post not found" });
     }
 
     if (post.subReddit === null) {
       if (post.isLocked && !post.user.equals(userId)) {
-        console.error("Post is locked");
+        console.log("Post is locked");
         return res.status(400).json({ message: "Post is locked" });
       }
     } else {
       const subReddit = await SubReddit.findById(post.subReddit);
       if (post.isLocked && !subReddit.moderators.includes(userId)) {
-        console.error("Post is locked");
+        console.log("Post is locked");
         return res.status(400).json({ message: "Post is locked" });
       }
     }
 
     if (req.body.text == null || req.body.text === "") {
-      console.error("Comment text is required");
+      console.log("Comment text is required");
       return res.status(400).json({ message: "Comment text is required" });
     }
 
@@ -79,7 +79,7 @@ const createComment = async (req, res, next) => {
       savedComment,
     });
   } catch (err) {
-    console.error("Error creating comment:", err);
+    console.log("Error creating comment:", err);
     res.status(500).json({ message: "Error Creating Comment", error: err });
   }
 };
