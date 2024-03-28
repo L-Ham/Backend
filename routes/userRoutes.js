@@ -137,11 +137,25 @@ router.patch(
   userController.joinCommunity
 );
 
-router.patch(
+router.delete(
   "/unjoinCommunity",
   bodyParser.json(),
   authenticateToken,
   userController.unjoinCommunity
+);
+
+router.patch(
+  "/favouriteSubreddit",
+  bodyParser.json(),
+  authenticateToken,
+  userController.addFavoriteCommunity
+);
+
+router.delete(
+  "/unfavouriteSubreddit",
+  bodyParser.json(),
+  authenticateToken,
+  userController.removeFavoriteCommunity
 );
 
 module.exports = router;

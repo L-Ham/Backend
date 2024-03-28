@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "749ac8bd-daae-4813-a019-3f39d5fe385e",
+		"_postman_id": "e4ff2f29-09ad-4eaa-97e1-8a1c72ad6568",
 		"name": "User",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23392578",
-		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-749ac8bd-daae-4813-a019-3f39d5fe385e?action=share&source=collection_link&creator=23392578"
+		"_exporter_id": "33377382"
 	},
 	"item": [
 		{
@@ -608,6 +607,146 @@
 			"response": []
 		},
 		{
+			"name": "Favourite Community",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwNTVlMzNiODAwNmRmMDQzODY5YjM2IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE2Mjc4NTAsImV4cCI6NTAxNzExNjI3ODUwfQ.cccw1rscqVkuuGpW4uC0dIjp7sj5NfJqRuJmkepi6dY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subRedditId\":\"6600768e0e1e9482675cf860\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/favouriteSubreddit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"favouriteSubreddit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unfavourite Community",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE2MjY2MDQsImV4cCI6NTAxNzExNjI2NjA0fQ.rzpuMNUw_vRW-l_AQVOrYY07ieekghYunwh4aW7MPRc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subRedditId\":\"6600763f0e1e9482675cf856\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/unfavouriteSubreddit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"unfavouriteSubreddit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Join Community",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwNTVlMzNiODAwNmRmMDQzODY5YjM2IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE2Mjc4NTAsImV4cCI6NTAxNzExNjI3ODUwfQ.cccw1rscqVkuuGpW4uC0dIjp7sj5NfJqRuJmkepi6dY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subRedditId\":\"6600763f0e1e9482675cf856\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/joinCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"joinCommunity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unjoin Community",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE2MjY2MDQsImV4cCI6NTAxNzExNjI2NjA0fQ.rzpuMNUw_vRW-l_AQVOrYY07ieekghYunwh4aW7MPRc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subRedditId\":\"6600763f0e1e9482675cf856\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/user/unjoinCommunity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"user",
+						"unjoinCommunity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Mute Community",
 			"request": {
 				"method": "PATCH",
@@ -645,7 +784,7 @@
 		{
 			"name": "Unmute Community",
 			"request": {
-				"method": "PATCH",
+				"method": "DELETE",
 				"header": [
 					{
 						"key": "Authorization",

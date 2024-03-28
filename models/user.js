@@ -258,6 +258,12 @@ const userSchema = new Schema({
       ref: "post",
     },
   ],
+  favoriteCommunities: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "subReddit",
+    },
+  ],
 });
 
 module.exports = mongoose.model("user", userSchema);
