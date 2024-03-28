@@ -212,7 +212,7 @@ const login = async (req, res) => {
   const { userName, password } = req.body;
   try {
     const user = await User.findOne({ userName });
-    console.log(user);
+    console.log("userrrr",user);
     if (!user) {
       return res.status(400).json({ message: "Invalid username or password" });
     }
@@ -236,7 +236,7 @@ const login = async (req, res) => {
       }
     );
   } catch (err) {
-    console.error(err.message);
+    console.log(err.message);
     res.status(500).json({message:"Server error"});
   }
 };
