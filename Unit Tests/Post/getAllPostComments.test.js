@@ -34,7 +34,7 @@ describe("getAllPostComments", () => {
 
     expect(Post.findById).toHaveBeenCalledWith(postId);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(comments);
+    expect(res.json).toHaveBeenCalledWith({ message: "Comments retrieved successfully", comments: comments });
   });
 
     it("should return 404 if post ID is invalid", async () => {
