@@ -831,6 +831,48 @@ const unjoinCommunity = async (req, res) => {
   }
 };
 
+const addFavoriteCommunity = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const communityId = req.body.subRedditId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+    const community = await SubReddit.findById(communityId);
+    if (!community) {
+      console.log("Community not found for community ID:", communityId);
+      return res.status(404).json({ message: "Community not found" });
+    }
+    if (user.favoriteCommunities.includes(communityId)) {
+      console.log("Community already favorited: ", community);
+      return res
+        .status(400)
+        .json({ message: "Community already favorited by user" });
+    }
+    if (!user.communities.includes(communityId)) {
+      console.log("User is not a member of this community");
+      return res
+        .status(400)
+        .json({ message: "User is not a member of this community" });
+    }
+    user.favoriteCommunities.push(communityId);
+    await user.save();
+    console.log("Community favorited: ", community);
+    res.json({
+      message: "Community favorited successfully",
+      community,
+    });
+  }
+  catch (err) {
+    console.log("Error favoriting community:", err);
+    res.status(500).json({ message: "Error favoriting community", error: err });
+  }
+};
+
+
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -854,4 +896,5 @@ module.exports = {
   unmuteCommunity,
   joinCommunity,
   unjoinCommunity,
+  addFavoriteCommunity,
 };
