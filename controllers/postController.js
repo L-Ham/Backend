@@ -425,8 +425,7 @@ const getAllPostComments = async (req, res, next) => {
       console.log("Post not found for post ID:", postId);
       return res.status(404).json({ message: "Post not found" });
     }
-
-    res.status(200).json(post.comments);
+    res.status(200).json({message: "Comments retrieved successfully", comments: post.comments})
   } catch (error) {
     console.log("Error getting comments for post:", error);
     res.status(500).json({ message: "Error getting comments for post" });
