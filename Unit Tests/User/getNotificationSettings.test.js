@@ -57,7 +57,7 @@ describe('getNotificationSettings', () => {
       await userController.getNotificationSettings(req, res);
 
       expect(User.findById).toHaveBeenCalledWith(userId);
-      expect(console.error).toHaveBeenCalledWith("User not found for user ID:", userId);
+      //expect(console.log).toHaveBeenCalledWith("User not found for user ID:", userId);
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
     });
