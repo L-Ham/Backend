@@ -9,7 +9,12 @@ const userUploadSchema = new mongoose.Schema({
   filename: String,
   originalname: String,
   mimetype: String,
-  url: String
+  url: String,
+  type: {
+    type: String,
+    enum: ['post', 'banner', 'profile', 'subReddit'], 
+    required: true
+  }
 });
 
 const UserUpload = mongoose.model('userUploads', userUploadSchema);
