@@ -128,6 +128,15 @@ const subRedditSchema = new Schema({
     required: true,
     default: "red",
   },
+  rules: [
+    {
+      rule: { type: String, required: true },
+      description: { type: String, required: true },
+      appliedTo: { type: String, required: true },
+      reportReasonDefault: { type: String, default: "Rule" },
+    },
+  ],
+  
 });
 
 module.exports = mongoose.model("subreddits", subRedditSchema);
