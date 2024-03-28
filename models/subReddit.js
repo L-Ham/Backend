@@ -27,10 +27,57 @@ const subRedditSchema = new Schema({
     type: [Schema.Types.ObjectId],
     ref: "user",
   },
-  pendingMembers: {
-    type: [Schema.Types.ObjectId],
-    ref: "user",
-  },
+  pendingMembers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
+  pendingPosts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "post",
+    },
+  ],
+  removedPosts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "post",
+    },
+  ],
+  reportedPosts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "post",
+    },
+  ],
+  pendingComments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "post",
+    },
+  ],
+  rules: [
+    {
+      ruleText: {
+        type: String,
+        required: true,
+        unique: true,
+      },
+      reportReason: {
+        type: String,
+        required: true,
+      },
+      appliesTo: {
+        type: String,
+        required: true,
+      },
+      fullDescription: {
+        type: String,
+        required: false,
+      },
+    },
+  ],
   ageRestriction: {
     type: Boolean,
     required: true,

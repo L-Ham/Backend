@@ -252,6 +252,12 @@ const userSchema = new Schema({
     type: [Schema.Types.ObjectId],
     ref: "subReddit",
   },
+  reportedPosts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "post",
+    },
+  ],
 });
 
 module.exports = mongoose.model("user", userSchema);
