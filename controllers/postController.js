@@ -441,6 +441,37 @@ const markAsNSFW = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (post.user.toString() !== userId) {
+      return res
+        .status(401)
+        .json({ message: "User not authorized to mark post as NSFW" });
+    }
+  } catch (error) {
+    console.log("Error Marking post as NSFW:", error);
+    res.status(500).json({ message: "Error Marking post as NSFW" });
+  }
+};
+const unmarkAsNSFW = async (req, res, next) => {
+  const userId = req.userId;
+  const postId = req.body.postId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (post.user.toString() !== userId) {
+      return res
+        .status(401)
+        .json({ message: "User not authorized to mark post as NSFW" });
+    }
   } catch (error) {
     console.log("Error Marking post as NSFW:", error);
     res.status(500).json({ message: "Error Marking post as NSFW" });
@@ -459,4 +490,5 @@ module.exports = {
   unlockPost,
   getAllPostComments,
   markAsNSFW,
+  unmarkAsNSFW,
 };

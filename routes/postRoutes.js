@@ -81,4 +81,10 @@ router.patch(
   authenticateToken,
   postController.markAsNSFW
 );
+router.patch(
+  "unmarkAsNSFW",
+  bodyParser.json(),
+  authenticateToken,
+  postController.unmarkAsNSFW
+);
 module.exports = router;
