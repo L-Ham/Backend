@@ -75,4 +75,10 @@ router.get(
   authenticateToken,
   postController.getAllPostComments
 );
+router.patch(
+  "markAsNSFW",
+  bodyParser.json(),
+  authenticateToken,
+  postController.markAsNSFW
+);
 module.exports = router;

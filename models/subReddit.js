@@ -78,6 +78,18 @@ const subRedditSchema = new Schema({
       },
     },
   ],
+  // widgets: [
+  //   {
+  //     textWidget: {
+  //       widgetName: {
+  //         type: String,
+  //         required: true,
+  //       },
+  //       text: { type: String, required: true },
+  //     },
+  //     rulesWidget: {},
+  //   },
+  // ],
   ageRestriction: {
     type: Boolean,
     required: true,
@@ -136,7 +148,6 @@ const subRedditSchema = new Schema({
       reportReasonDefault: { type: String, default: "Rule" },
     },
   ],
-  
 });
 
 module.exports = mongoose.model("subreddits", subRedditSchema);

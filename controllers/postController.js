@@ -418,21 +418,34 @@ const unlockPost = async (req, res, next) => {
 const getAllPostComments = async (req, res, next) => {
   const postId = req.body.postId;
 
-
   try {
-    const post = await Post.findById(postId).populate('comments');
+    const post = await Post.findById(postId).populate("comments");
     if (!post) {
       console.log("Post not found for post ID:", postId);
       return res.status(404).json({ message: "Post not found" });
     }
-    res.status(200).json({message: "Comments retrieved successfully", comments: post.comments})
+    res.status(200).json({
+      message: "Comments retrieved successfully",
+      comments: post.comments,
+    });
   } catch (error) {
     console.log("Error getting comments for post:", error);
     res.status(500).json({ message: "Error getting comments for post" });
   }
 };
-
-
+const markAsNSFW = async (req, res, next) => {
+  const userId = req.userId;
+  const postId = req.body.postId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+  } catch (error) {
+    console.log("Error Marking post as NSFW:", error);
+    res.status(500).json({ message: "Error Marking post as NSFW" });
+  }
+};
 module.exports = {
   savePost,
   unsavePost,
@@ -444,5 +457,6 @@ module.exports = {
   upvote,
   lockPost,
   unlockPost,
-  getAllPostComments
+  getAllPostComments,
+  markAsNSFW,
 };
