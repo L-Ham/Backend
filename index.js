@@ -22,14 +22,12 @@ mongoose
       const postRoutes = require("./routes/postRoutes");
       const commentRoutes = require("./routes/commentRoutes");
       const subredditRoutes = require("./routes/subredditRoutes");
-      const uploadMediaRoutes = require("./routes/uploadMediaRoutes");
       app.use("/user", userRoutes);
       app.use("/auth", authRoutes);
       app.use("/socialLink", socialLinkRoutes);
       app.use("/post", postRoutes);
       app.use("/comment", commentRoutes);
       app.use("/subreddit", subredditRoutes);
-      app.use("/upload", uploadMediaRoutes);
       app.get("/", function (req, res) {
         res.send("Hello World!");
       });
