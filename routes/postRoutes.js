@@ -4,7 +4,7 @@ const postController = require("../controllers/postController");
 const bodyParser = require("body-parser");
 const authenticateToken = require("../middleware/authenticateToken");
 const { auth } = require("google-auth-library");
-const { uploadImage , uploadVideo } = require("../middleware/multerConfig");
+const { uploadImage  } = require("../middleware/multerConfig");
 
 
 router.post(
