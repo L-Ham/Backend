@@ -4,8 +4,10 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const multerConfig = require("./middleware/multerConfig");
 const app = express();
+const cors = require('cors'); 
 const PORT = 5000;
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
 mongoose
