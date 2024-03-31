@@ -1,7 +1,6 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const userUploadsController = require('../controllers/userUploadsController');
 
 const router = express.Router();
 
@@ -35,7 +34,5 @@ router.post("/video", uploadVideo.array("file"), (req, res) => {
   });
 });
 
-router.post('/image', uploadImage.single('file'), userUploadsController.uploadImage);
-//router.post('/video', uploadVideo.single('file'), userUploadsController.uploadVideo);
 
 module.exports = { router, uploadImage, uploadVideo };

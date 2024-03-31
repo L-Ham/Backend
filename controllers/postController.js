@@ -2,6 +2,8 @@ const Post = require("../models/post");
 const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
 const Comment = require("../models/comment");
+const UserUpload = require("../controllers/userUploadsController");
+
 
 const createPost = async (req, res, next) => {
   const userId = req.userId;
@@ -23,6 +25,27 @@ const createPost = async (req, res, next) => {
     }
 
     const newPost = createNewPost(req, userId, subRedditId);
+    console.log("newPost", newPost);
+    console.log("files", req.files);    
+
+    if (req.files) {
+      for (const media of req.files) {
+        if (media.filename && media.originalname) { 
+          const uploadedImageId = await UserUpload.uploadMedia(media);
+          if (uploadedImageId &&  req.body.type === 'image') {
+            newPost.images.push(uploadedImageId);
+          } else if (uploadedImageId &&  req.body.type === 'video') {
+            newPost.videos.push(uploadedImageId);
+          }
+          else {
+            console.error("Media upload failed:", media);
+            return res.status(400).json({ message: "Failed to upload at least one media" }); 
+          }
+        } else {
+          console.error("Media data missing in form data:", media);
+        }
+      }
+    }
     if (subReddit) {
       subReddit.posts.push(newPost);
       await subReddit.save();
@@ -30,7 +53,6 @@ const createPost = async (req, res, next) => {
       user.posts.push(newPost);
       await user.save();
     }
-
     await newPost.save();
     res.status(200).json({ message: "Post created successfully" });
   } catch (error) {
