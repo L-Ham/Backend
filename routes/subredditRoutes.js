@@ -40,6 +40,12 @@ router.get(
     authenticateToken,
     subredditController.deleteTextWidget
   );
+  router.patch(
+    "/reorderRules",
+    bodyParser.json(),
+    authenticateToken,
+    subredditController.reorderRules
+  );
  
 
 module.exports = router;

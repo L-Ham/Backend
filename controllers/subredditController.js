@@ -221,6 +221,41 @@ const deleteTextWidget = async (req, res, next) => {
     res.status(500).json({ message: "Error deleting text widget" });
   }
 }
+const reorderRules = async (req, res, next) => {
+  const subredditId = req.body.subredditId;
+  const rulesOrder = req.body.rulesOrder;
+
+  try {
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    if (!subreddit.widgets || !subreddit.widgets.rulesWidgets) {
+      return res.status(404).json({ message: "No rule widgets found" });
+    }
+
+    const reorderedRules = [];
+    rulesOrder.forEach((ruleId) => {
+      const rule = subreddit.widgets.rulesWidgets.id(ruleId);
+      if (rule) {
+        reorderedRules.push(rule);
+      }
+    });
+
+    subreddit.widgets.rulesWidgets = reorderedRules;
+
+    const savedSubreddit = await subreddit.save();
+    res.json({
+      message: "Rules reordered successfully",
+      savedSubreddit,
+    });
+  } catch (error) {
+    console.log("Error reordering rules:", error);
+    res.status(500).json({ message: "Error reordering rules" });
+  }
+}
+
 
 
 module.exports = {
@@ -229,5 +264,6 @@ module.exports = {
   addRuleWidget,
   addTextWidget,
   editTextWidget,
-  deleteTextWidget
+  deleteTextWidget,
+  reorderRules,
 };
