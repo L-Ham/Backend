@@ -28,6 +28,18 @@ router.get(
     authenticateToken,
     subredditController.addTextWidget
   );
-
+  router.patch(
+    "/editTextWidget",
+    bodyParser.json(),
+    authenticateToken,
+    subredditController.editTextWidget
+  );
+  router.delete(
+    "/deleteTextWidget",
+    bodyParser.json(),
+    authenticateToken,
+    subredditController.deleteTextWidget
+  );
+ 
 
 module.exports = router;
