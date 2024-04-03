@@ -22,6 +22,12 @@ router.get(
     authenticateToken,
     subredditController.addRule
   );
+  router.post(
+    "/addTextWidget",
+    bodyParser.json(),
+    authenticateToken,
+    subredditController.addTextWidget
+  );
 
 
 module.exports = router;
