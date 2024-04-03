@@ -91,12 +91,18 @@ const addRule = async (req, res, next) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
+    if (!subreddit.widgets) {
+      subreddit.widgets = {};
+    }
+    if (!subreddit.widgets.rulesWidgets) {
+      subreddit.widgets.rulesWidgets = [];
+    }
 
-    subreddit.rules.push({
-      rule,
-      description,
-      appliedTo,
-      reportReasonDefault,
+    subreddit.widgets.rulesWidgets.push({
+      ruleText: rule,
+      fullDescription: description,
+      appliesTo: appliedTo,
+      reportReason: reportReasonDefault,
     });
 
     const savedSubreddit = await subreddit.save();
@@ -109,11 +115,46 @@ const addRule = async (req, res, next) => {
     res.status(500).json({ message: "Error adding rule" });
   }
 }
+const addTextWidget = async (req, res, next) => {
+  const subredditId = req.body.subredditId;
+  const { widgetName, text } = req.body;
+
+  try {
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    if (!subreddit.widgets) {
+      subreddit.widgets = {};
+    }
+
+    if (!subreddit.widgets.text) {
+      subreddit.widgets.text = [];
+    }
+  
+    subreddit.widgets.textWidgets.push({
+      widgetName,
+      text,
+    });
+    
+    const savedSubreddit = await subreddit.save();
+    res.json({
+      message: "Text widget added successfully",
+      savedSubreddit,
+    });
+  } catch (error) {
+    console.log("Error adding text widget:", error);
+    res.status(500).json({ message: "Error adding text widget" });
+  }
+}
+
 
 
 
 module.exports = {
   sorting,
   createCommunity,
-  addRule
+  addRule,
+  addTextWidget
 };
