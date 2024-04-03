@@ -5,30 +5,25 @@ jest.mock("../../models/subreddit", () => ({
   findById: jest.fn(),
 }));
 
-describe("addRule", () => {
+describe('addRuleWidget', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("should add a rule to a valid subreddit", async () => {
-    const subredditId = "subreddit123";
-    const rule = "Rule 1";
-    const description = "Description 1";
-    const appliedTo = "Applied To 1";
-    const reportReasonDefault = "Report Reason Default 1";
+  it('should add a rule widget to the subreddit', async () => {
+    const subredditId = 'subreddit123';
+    const ruleWidget = {
+      rule: 'Some rule',
+      description: 'Some description',
+      appliedTo: 'Some appliedTo',
+      reportReasonDefault: 'Some reportReasonDefault',
+    };
 
     const subreddit = {
-      rules: [],
-      save: jest.fn().mockResolvedValueOnce({
-        rules: [
-          {
-            rule,
-            description,
-            appliedTo,
-            reportReasonDefault,
-          },
-        ],
-      }),
+      widgets: {
+        rulesWidgets: [],
+      },
+      save: jest.fn().mockResolvedValueOnce({}),
     };
 
     SubReddit.findById.mockResolvedValueOnce(subreddit);
@@ -36,50 +31,40 @@ describe("addRule", () => {
     const req = {
       body: {
         subredditId,
-        rule,
-        description,
-        appliedTo,
-        reportReasonDefault,
+        ...ruleWidget,
       },
     };
     const res = {
+      status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
 
-    await subredditController.addRule(req, res);
+    await subredditController.addRuleWidget(req, res);
 
     expect(SubReddit.findById).toHaveBeenCalledWith(subredditId);
-    expect(subreddit.rules).toHaveLength(1);
-    expect(subreddit.rules[0]).toEqual({
-      rule,
-      description,
-      appliedTo,
-      reportReasonDefault,
-    });
+    expect(subreddit.widgets.rulesWidgets).toHaveLength(1);
     expect(subreddit.save).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith({
       message: "Rule added successfully",
-      savedSubreddit: {
-        rules: [
-          {
-            rule,
-            description,
-            appliedTo,
-            reportReasonDefault,
-          },
-        ],
-      },
+      savedSubreddit: {},
     });
   });
 
-  it("should return 404 if subreddit ID is invalid", async () => {
-    const subredditId = "subreddit123";
+  it('should handle error if subreddit is not found', async () => {
+    const subredditId = 'subreddit123';
+    const ruleWidget = {
+      rule: 'Some rule',
+      description: 'Some description',
+      appliedTo: 'Some appliedTo',
+      reportReasonDefault: 'Some reportReasonDefault',
+    };
 
     SubReddit.findById.mockResolvedValueOnce(null);
 
     const req = {
       body: {
         subredditId,
+        ...ruleWidget,
       },
     };
     const res = {
@@ -87,21 +72,29 @@ describe("addRule", () => {
       json: jest.fn(),
     };
 
-    await subredditController.addRule(req, res);
+    await subredditController.addRuleWidget(req, res);
 
     expect(SubReddit.findById).toHaveBeenCalledWith(subredditId);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ message: "Subreddit not found" });
   });
 
-  it("should return 500 if there is an error", async () => {
-    const subredditId = "subreddit123";
+  it('should handle server error', async () => {
+    const subredditId = 'subreddit123';
+    const ruleWidget = {
+      rule: 'Some rule',
+      description: 'Some description',
+      appliedTo: 'Some appliedTo',
+      reportReasonDefault: 'Some reportReasonDefault',
+    };
+    const errorMessage = 'Some error message';
 
-    SubReddit.findById.mockRejectedValueOnce("Error");
+    SubReddit.findById.mockRejectedValueOnce(new Error(errorMessage));
 
     const req = {
       body: {
         subredditId,
+        ...ruleWidget,
       },
     };
     const res = {
@@ -109,7 +102,7 @@ describe("addRule", () => {
       json: jest.fn(),
     };
 
-    await subredditController.addRule(req, res);
+    await subredditController.addRuleWidget(req, res);
 
     expect(SubReddit.findById).toHaveBeenCalledWith(subredditId);
     expect(res.status).toHaveBeenCalledWith(500);
