@@ -82,7 +82,7 @@ const createCommunity = async (req, res, next) => {
     res.status(500).json({ message: "Failed to create community" });
   }
 };
-const addRule = async (req, res, next) => {
+const addRuleWidget = async (req, res, next) => {
   const subredditId = req.body.subredditId;
   const { rule, description, appliedTo, reportReasonDefault } = req.body;
 
@@ -155,6 +155,6 @@ const addTextWidget = async (req, res, next) => {
 module.exports = {
   sorting,
   createCommunity,
-  addRule,
+  addRuleWidget,
   addTextWidget
 };

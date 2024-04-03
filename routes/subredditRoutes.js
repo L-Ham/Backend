@@ -17,10 +17,10 @@ router.get(
     subredditController.sorting
   );
   router.post(
-    "/addRule",
+    "/addRuleWidget",
     bodyParser.json(),
     authenticateToken,
-    subredditController.addRule
+    subredditController.addRuleWidget
   );
   router.post(
     "/addTextWidget",
