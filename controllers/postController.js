@@ -4,7 +4,6 @@ const SubReddit = require("../models/subReddit");
 const Comment = require("../models/comment");
 const UserUpload = require("../controllers/userUploadsController");
 
-
 const createPost = async (req, res, next) => {
   const userId = req.userId;
   const subRedditId = req.body.subreddit;
@@ -26,20 +25,21 @@ const createPost = async (req, res, next) => {
 
     const newPost = createNewPost(req, userId, subRedditId);
     console.log("newPost", newPost);
-    console.log("files", req.files);    
+    console.log("files", req.files);
 
     if (req.files) {
       for (const media of req.files) {
-        if (media.filename && media.originalname) { 
+        if (media.filename && media.originalname) {
           const uploadedImageId = await UserUpload.uploadMedia(media);
-          if (uploadedImageId &&  req.body.type === 'image') {
+          if (uploadedImageId && req.body.type === "image") {
             newPost.images.push(uploadedImageId);
-          } else if (uploadedImageId &&  req.body.type === 'video') {
+          } else if (uploadedImageId && req.body.type === "video") {
             newPost.videos.push(uploadedImageId);
-          }
-          else {
+          } else {
             console.error("Media upload failed:", media);
-            return res.status(400).json({ message: "Failed to upload at least one media" }); 
+            return res
+              .status(400)
+              .json({ message: "Failed to upload at least one media" });
           }
         } else {
           console.error("Media data missing in form data:", media);
@@ -185,9 +185,7 @@ const upvote = async (req, res, next) => {
       user.upvotedPosts.push(postId);
       await user.save();
     }
-    res
-      .status(200)
-      .json({ message: "Post upvoted & added to user (if found)" });
+    res.status(200).json({ message: "Post upvoted & added to user" });
   } catch (err) {
     console.error("Error upvoting post:", err);
     res.status(500).json({ message: "Error upvoting post", error: err });

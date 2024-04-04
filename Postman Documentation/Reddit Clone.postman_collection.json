@@ -1,0 +1,3209 @@
+{
+	"info": {
+		"_postman_id": "767f3a40-0685-4c4c-9b5f-75a4e8513ea0",
+		"name": "Reddit Clone",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23392578",
+		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-767f3a40-0685-4c4c-9b5f-75a4e8513ea0?action=share&source=collection_link&creator=23392578"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userName\": \"test3\",\n    \"email\": \"test3@gmail.com\",\n    \"password\": \"123456\",\n    \"gender\":\"Male\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/auth/signUp",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"signUp"
+							]
+						},
+						"description": "This request is responsible for ordinary user Signup using username, email, password, and gender"
+					},
+					"response": [
+						{
+							"name": "user existing Signup",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userName\": \"test1\",\n    \"email\": \"test1@gmail.com\",\n    \"password\": \"123456\",\n    \"gender\":\"Male\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/auth/signUp",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"auth",
+										"signUp"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "33"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"21-iGErLku/9taeeOQN+9qwFgLXnuo\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 31 Mar 2024 23:03:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User already exists\"\n}"
+						},
+						{
+							"name": "Signup",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userName\": \"test3\",\n    \"email\": \"test3@gmail.com\",\n    \"password\": \"123456\",\n    \"gender\":\"Male\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/auth/signUp",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"auth",
+										"signUp"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "260"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"104-/8wG3yQUYUqPhj0DAQoIOqvR85A\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 31 Mar 2024 23:04:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwOWViZjk0MThkNjAzYmIyYTdjMjllIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE5MjYyNjYsImV4cCI6NTAxNzExOTI2MjY2fQ.hPHV82_MAl79DYeEGzGKKShN1Pw3NuhA5fXGoktujkE\",\n    \"message\": \"User registered successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userName\":\"Soso\",\n    \"password\":\"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Responsible for normal user login using email and password"
+					},
+					"response": []
+				},
+				{
+					"name": "Google Signup",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessTokenUrl",
+									"value": "https://oauth2.googleapis.com/token",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "test1",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "scope",
+									"value": "profile email",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "https://accounts.google.com/o/oauth2/v2/auth",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "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",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "332399911432-vjl376a05ukf0hhpj6kq0hnuibij26dh.apps.googleusercontent.com",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6ImFkZjVlNzEwZWRmZWJlY2JlZmE5YTYxNDk1NjU0ZDAzYzBiOGVkZjgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiZEtxTzFDSG9HQ3VNbG5sOEUyYmtNQSIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0wxQlZLNW9SQWVCZ2NSYk82cG00T3NDVkhNT2t2a0UwODY0Z202QURmYT1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMTUyMDIyMywiZXhwIjoxNzExNTIzODIzfQ.i5BeaxuyUw8s2uBbYWOC3HdAZzNsuXee1VnH7WV9_xwl5VLe-0NecNdMs_ExP7rb76VycEBlhI4proZrCVRKdR0-XhREBmuYIQbRGSywK1AGWfliGOhvNibigj8ObiQWsTup8p53KixYFJ16dLWLM7FmexuDFtT9xrBwJd2g71u2t5dL_qPfGUW2eq-lDcLTUZyXLg0N3CNDS2XHO9SUXY7VyRHKyPRwolestlIHZ-Rf_4JeuNmUdfveglfqvNIG9zhX6riwnawXzGKp9iqY3wq5u6fAyDnoUynMtCxbleD6IwEJRqT29Pa2P-lx4YKv6sYyYOrz-pVlyC90rIhTaA\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/auth/googleSignUp",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"googleSignUp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Google Login",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "test1-login",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "https://oauth2.googleapis.com/token",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "scope",
+									"value": "profile email",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "https://accounts.google.com/o/oauth2/v2/auth",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "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",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "332399911432-vjl376a05ukf0hhpj6kq0hnuibij26dh.apps.googleusercontent.com",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6ImFkZjVlNzEwZWRmZWJlY2JlZmE5YTYxNDk1NjU0ZDAzYzBiOGVkZjgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiZjI5S09rT0JXVkpxMnl2cjQxbWtKZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0wxQlZLNW9SQWVCZ2NSYk82cG00T3NDVkhNT2t2a0UwODY0Z202QURmYT1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMTU5Mzk3NiwiZXhwIjoxNzExNTk3NTc2fQ.s1at_fljkO3_myNuaRtdgrEyYgdglGEVuuj-_wAlDLJakqTXEnJG9zLEiBhi1mIgFjo5ygsFGz4yzEkfTmhcL1rfoAmTU85MTogpmDyGxVb5xTpzkTmLIKrqrRWuXiC6iMlgFqn3DWXLpLLXfBIxyrn4CkQGaIS80f168ZtGM5gd2DmQw5H3gpm_UoZ2Sgv_trRXgKBOT0hXUpHB45WYP3qLqg5xB8h_bwCHNuuhQ36HAEJJp5r6riSPgRFB9Lc71hq9VXqg668YwrF8i0C-SreT3Oj51-6T0rx9cQTuAEBdzYzJZpRFd8K7oDF7aZgK5iTEbE1WoBu6htyTOtjciQ\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/auth/googleLogin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"googleLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Username",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"ziad.wareth@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/auth/forgotUsername",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"forgotUsername"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Forgot Username",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"ziad.wareth@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/auth/forgotUsername",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"auth",
+										"forgotUsername"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "10"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"a-gqjwaZwvtjQJJZ8NHSbAVa+nF4k\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 31 Mar 2024 23:33:21 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "Email sent"
+						}
+					]
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlY2Q5OGZlZWIyZmRjNWVjYzkwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTExNjIsImV4cCI6NTAxNzEwNzkxMTYyfQ.Io0wcsk6LS8juXEJOOdFq7qPvjxFzrN_nrwhbYIMoBQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"Ranaabdallammi@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/auth/forgotPassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"forgotPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOWRiODk3NmJkNjcxNjZjZGYxN2M0IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTM1MjQsImV4cCI6NTAxNzExNDEzNTI0fQ.7fvcYKY41cH_rMh6dEsVyUtCYY-wwAf_XFafd1RIznc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Password\":\"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/auth/updatePassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"updatePassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Usernames",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/auth/generateUsernames",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"generateUsernames"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Settings",
+					"item": [
+						{
+							"name": "Account Settings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNDE5MDQzLCJpYXQiOjE3MTE0MTkwNDN9.wDKiRvk35KbUefS1sCaB9fb0o5F7FCs9vM4wiHtNTBk",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/user/accountSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"accountSettings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Feed Settings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzM1ODUsImV4cCI6NTAxNzExMzMzNTg1fQ._LyW0l2P5XJZscHh6xMnsgeG9jKAuyPgrN1PkLuHLV8",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/user/feedSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"feedSettings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Feed Settings",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzM1ODUsImV4cCI6NTAxNzExMzMzNTg1fQ._LyW0l2P5XJZscHh6xMnsgeG9jKAuyPgrN1PkLuHLV8",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"showNSFW\": false,\r\n  \"blurNSFW\": true,\r\n  \"enableHomeFeedRecommendations\": true,\r\n  \"autoplayMedia\": true,\r\n  \"reduceAnimations\": true,\r\n  \"communityThemes\": true,\r\n  \"communityContentSort\": \"Hot\",\r\n  \"rememberPerCommunity\": true,\r\n  \"globalContentView\": \"Card\",\r\n  \"openPostsInNewTab\": true,\r\n  \"defaultToMarkdown\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/user/feedSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"feedSettings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Safety And Privacy Settings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/user/safetyAndPrivacySettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"safetyAndPrivacySettings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Safety And Privacy Settings",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"blockUsers\": \"65f5f65b7f56ab526462d526\",\r\n  \"muteCommunities\": \"65f896298e6c8994a653a3ed\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/user/safetyAndPrivacySettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"safetyAndPrivacySettings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Notification Settings",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNTIwMDMwLCJpYXQiOjE3MTE1MjAwMzB9.9YjnvqLmq5aXJsIVS4q05PCe6a5x3Uq5Kh7fbxbuXcY",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/user/notificationsSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"notificationsSettings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Notification Settings",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNDE5MDQzLCJpYXQiOjE3MTE0MTkwNDN9.wDKiRvk35KbUefS1sCaB9fb0o5F7FCs9vM4wiHtNTBk",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"inboxMessage\": false,\r\n    \"chatMessages\": true,\r\n    \"chatRequest\": false,\r\n    \"mentions\": false,\r\n    \"comments\": true,\r\n    \"upvotesToPosts\": true,\r\n    \"upvotesToComments\": true,\r\n    \"repliesToComments\": true,\r\n    \"newFollowers\": true,\r\n    \"modNotifications\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/user/notificationsSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"notificationsSettings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Profile Settings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/user/profileSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"profileSettings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Profile Settings",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA4MDY2NzIsImV4cCI6NTAxNzEwODA2NjcyfQ.Ae0X7pHzXBUZ_l9q4iBJZyYw5GIXiLlz-4gQfhJ6r0Q",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"displayName\":\"amr\",\r\n    \"about\":\"i am a COMPUTER engineer\",\r\n    \"avatarImage\":\"amr's photo\",\r\n    \"bannerImage\":\"amrrr banner\",\r\n    \"NSFW\":false,\r\n    \"allowFollow\":true,\r\n    \"contentVisibility\":true,\r\n    \"communitiesVisibility\":true,\r\n    \"clearHistory\":false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/user/profileSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"profileSettings"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Check Username Availability",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/usernameAvailability?username=Maghawry",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"usernameAvailability"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "Maghawry"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Follow User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNDE5MDQzLCJpYXQiOjE3MTE0MTkwNDN9.wDKiRvk35KbUefS1sCaB9fb0o5F7FCs9vM4wiHtNTBk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usernameToFollow\":\"Soso\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/followUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"followUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfollow User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOGEzZTRiZGNlYWU5YmNiODJkYWUwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTQ0MDQsImV4cCI6NTAxNzEwNzk0NDA0fQ.dx0kammj4L2HbMHpoRs2AlnEZtKOHtpHQ5_BI5FdsFw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usernameToUnfollow\":\"Soso\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/unfollowUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"unfollowUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Block User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMGVjOTU4YTc2NzUyYWExN2ZkMTYwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzY2MjksImV4cCI6NTAxNzExMzM2NjI5fQ.qG7cJn8Q_popz0LErOtNgqD2S9ErMVL-ZT4p8iI7l1c",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usernameToBlock\":\"Soso\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/blockUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"blockUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unblock User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlY2Q5OGZlZWIyZmRjNWVjYzkwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTA3OTExNjIsImV4cCI6NTAxNzEwNzkxMTYyfQ.Io0wcsk6LS8juXEJOOdFq7qPvjxFzrN_nrwhbYIMoBQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"UserNameToUnblock\":\"Marly\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/unblockUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"unblockUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Social Link",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMGVjOTU4YTc2NzUyYWExN2ZkMTYwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MDExOTQsImV4cCI6NTAxNzExNDAxMTk0fQ.q6euRpT01LC1lBuoHUPPd_u9tfHG3VMtcavMaIpzqao",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"linkOrUsername\":\"www.instagram.com\",\n    \"appName\":\"instagram\",\n    \"logo\":\"Insta Logo\",\n    \"displayText\":\"My instagram profile\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/socialLink",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"socialLink"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Social Link",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMGVjOTU4YTc2NzUyYWExN2ZkMTYwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MDExOTQsImV4cCI6NTAxNzExNDAxMTk0fQ.q6euRpT01LC1lBuoHUPPd_u9tfHG3VMtcavMaIpzqao",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"linkId\":\"6601e96263a3fd392c5e8c6d\",\n    \"linkOrUsername\":\"www.insta.com\",\n    \"appName\":\"facebook\",\n    \"logo\":\"facebook logo\",\n    \"displayText\":\"Marly's facebook\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/socialLink",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"socialLink"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Social Link",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMGVjOTU4YTc2NzUyYWExN2ZkMTYwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MDExOTQsImV4cCI6NTAxNzExNDAxMTk0fQ.q6euRpT01LC1lBuoHUPPd_u9tfHG3VMtcavMaIpzqao",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"socialLinkId\":\"6601e96263a3fd392c5e8c6d\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/socialLink",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"socialLink"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Gender",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMGVjOTU4YTc2NzUyYWExN2ZkMTYwIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzMzY2MjksImV4cCI6NTAxNzExMzM2NjI5fQ.qG7cJn8Q_popz0LErOtNgqD2S9ErMVL-ZT4p8iI7l1c",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gender\":\"Male\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/gender",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"gender"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mute Community",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNDE5MDQzLCJpYXQiOjE3MTE0MTkwNDN9.wDKiRvk35KbUefS1sCaB9fb0o5F7FCs9vM4wiHtNTBk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subRedditId\":\"6600763f0e1e9482675cf856\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/muteCommunity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"muteCommunity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unmute Community",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNDE5MDQzLCJpYXQiOjE3MTE0MTkwNDN9.wDKiRvk35KbUefS1sCaB9fb0o5F7FCs9vM4wiHtNTBk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subRedditId\":\"6600763f0e1e9482675cf856\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/unmuteCommunity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"unmuteCommunity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Join Community",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNDE5MDQzLCJpYXQiOjE3MTE0MTkwNDN9.wDKiRvk35KbUefS1sCaB9fb0o5F7FCs9vM4wiHtNTBk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subRedditId\": \"6600763f0e1e9482675cf856\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/joinCommunity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"joinCommunity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Leave Community",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNDE5MDQzLCJpYXQiOjE3MTE0MTkwNDN9.wDKiRvk35KbUefS1sCaB9fb0o5F7FCs9vM4wiHtNTBk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subRedditId\": \"6600763f0e1e9482675cf856\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/unjoinCommunity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"unjoinCommunity"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post",
+			"item": [
+				{
+					"name": "Get Post",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNzE5MTQsImV4cCI6NTAxNzExMzcxOTE0fQ.VVJzpgBZ8pSNAYB__lMbH0kI_DzF3ujOAqVvWDqIq5c",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"postId\":\"660225a3902208de2edc2bcc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/getPost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"getPost"
+							],
+							"query": [
+								{
+									"key": "postId",
+									"value": "\"660225a3902208de2edc2bcc\"",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/post/getAllPosts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"getAllPosts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNzE5MTQsImV4cCI6NTAxNzExMzcxOTE0fQ.VVJzpgBZ8pSNAYB__lMbH0kI_DzF3ujOAqVvWDqIq5c",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"user\": \"60d21b7067d0d7bb280b2740\",\r\n  \"subReddit\": \"60d21b7067d0d7bb280b2741\",\r\n  \"title\": \"bngrabbb ahwwwww222\",\r\n  \"text\": \"Post Text ntent\",\r\n  \"images\": [\"image1.jpg\", \"image2.png\"],\r\n  \"approved\": false,\r\n  \"approvedBy\": \"60d21b7067d0d7bb280b2742\",\r\n  \"disapproved\": false,\r\n  \"disapprovedBy\": \"60d21b7067d0d7bb280b2743\",\r\n  \"videos\": [\"video1.mp4\", \"video2.mov\"],\r\n  \"url\": \"https://example.com\",\r\n  \"poll\": {\r\n    \"options\": [\"Option 1\", \"Option 2\", \"Option 3\"],\r\n    \"votingLength\": 7,\r\n    \"voters\": [\"60d21b7067d0d7bb280b2744\"],\r\n    \"startTime\": \"2024-03-27T12:00:00Z\",\r\n    \"endTime\": \"2024-03-30T12:00:00Z\"\r\n  },\r\n  \"type\": \"text\",\r\n  \"isNSFW\": false,\r\n  \"isSpoiler\": false,\r\n  \"isLocked\": false,\r\n  \"isOc\": true,\r\n  \"upvotes\": 0,\r\n  \"downvotes\": 0,\r\n  \"upvotedUsers\": [],\r\n  \"downvotedUsers\": [],\r\n  \"views\": 0,\r\n  \"commentCount\": 0,\r\n  \"spamCount\": 0,\r\n  \"spammedBy\": [\"60d21b7067d0d7bb280b2747\"],\r\n  \"comments\": [\"60d21b7067d0d7bb280b2748\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/createPost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"createPost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Post",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNzE5MTQsImV4cCI6NTAxNzExMzcxOTE0fQ.VVJzpgBZ8pSNAYB__lMbH0kI_DzF3ujOAqVvWDqIq5c",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"postId\": \"660225a3902208de2edc2bcc\",\r\n  \"title\": \"Updated Post Title\",\r\n  \"text\": \"Updated post content text.\",\r\n  \"images\": [\r\n    \"https://example.com/image1.jpg\",\r\n    \"https://example.com/image2.jpg\"\r\n  ],\r\n  \"videos\": [\r\n    \"https://example.com/video1.mp4\",\r\n    \"https://example.com/video2.mp4\"\r\n  ],\r\n  \"url\": \"https://example.com/post-updated\",\r\n  \"type\": \"text\",\r\n  \"isNSFW\": false,\r\n  \"isSpoiler\": false,\r\n  \"isLocked\": false,\r\n  \"isOc\": true,\r\n  \"poll\": {\r\n    \"options\": [\"Option 1\", \"Option 2\"],\r\n    \"votingLength\": 7,\r\n    \"startTime\": \"2024-03-28T08:00:00Z\",\r\n    \"endTime\": \"2024-03-31T08:00:00Z\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/editPost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"editPost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Post",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/posts/delete",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"posts",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upvote",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE5Mjk3NjAsImV4cCI6NTAxNzExOTI5NzYwfQ.HhkOLOEMIuq6juKObFERY1tY4vrUUMF37eMI5ew-Wyc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"660878a72ffa8847797baf41\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/upvote",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"upvote"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Upvote",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE5Mjk3NjAsImV4cCI6NTAxNzExOTI5NzYwfQ.HhkOLOEMIuq6juKObFERY1tY4vrUUMF37eMI5ew-Wyc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"postId\":\"660878a72ffa8847797baf41\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/post/upvote",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"post",
+										"upvote"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "34"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"22-RiQUWrIEm7hizot6P18S5EP27lE\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 01 Apr 2024 00:03:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Post already upvoted\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Downvote",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE5Mjk3NjAsImV4cCI6NTAxNzExOTI5NzYwfQ.HhkOLOEMIuq6juKObFERY1tY4vrUUMF37eMI5ew-Wyc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"660878a72ffa8847797baf41\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/downvote",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"downvote"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lock Post",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOWRiODk3NmJkNjcxNjZjZGYxN2M0IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MDgyNjcsImV4cCI6NTAxNzExNDA4MjY3fQ.pschtAaQFGyESP4aVCz7tB8F1IW_tjgBqnz20GYzM8Y",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"66017f20bb054ca1678c22ae\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/lockPost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"lockPost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unlock Post",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOWRiODk3NmJkNjcxNjZjZGYxN2M0IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MDgyNjcsImV4cCI6NTAxNzExNDA4MjY3fQ.pschtAaQFGyESP4aVCz7tB8F1IW_tjgBqnz20GYzM8Y",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"66017f20bb054ca1678c22ae\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/unlockPost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"unlockPost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save Post",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTMyMzMsImV4cCI6NTAxNzExNDEzMjMzfQ.WwQ-cZ2eTxoZ4ujpd2ffOiQ9k5JqDKN2hQIStLQOsH0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"66017914d947243f70e9e90a\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/save",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsave Post",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmODljN2YxMGUyNDA5NzAwMTI2M2E5IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTM3MDQsImV4cCI6NTAxNzExNDEzNzA0fQ.uhrxOFNdOyiCTuX8e97JsGSLE-FqNcg8S53NIA2SfQo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"66017914d947243f70e9e90a\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/unsave",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"unsave"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hide Post",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNDE5MDQzLCJpYXQiOjE3MTE0MTkwNDN9.wDKiRvk35KbUefS1sCaB9fb0o5F7FCs9vM4wiHtNTBk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"66017774a46916045eefd332\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/hide",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"hide"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unhide Post",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzExNDE5MDQzLCJpYXQiOjE3MTE0MTkwNDN9.wDKiRvk35KbUefS1sCaB9fb0o5F7FCs9vM4wiHtNTBk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"66017774a46916045eefd332\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/unhide",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"unhide"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Report Post as Spam",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "bvcfghnjmvgfcdghbj",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/post/reportSpam",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"reportSpam"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Spam Reports",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subredditId\":\"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/getSpamReports",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"getSpamReports"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comment",
+			"item": [
+				{
+					"name": "Report Comment Spam",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "token",
+								"value": "asdfghjkl",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/comment/reportSpam?",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"comment",
+								"reportSpam"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MjU2MDgsImV4cCI6NTAxNzExNDI1NjA4fQ.XzpPqDhBt5CwotidtJNnfEe9pT-QgXTZHqSPqiPepJA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"66023d5d47878330c6f9ae40\",\n    \"text\":\"ana el moderator\",\n    \"parentCommentId\": \"660222f605f625dd5b7a421c\",\n    \"isHidden\": false\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/comment/addComment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"comment",
+								"addComment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Comment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"commentId\":\"123445\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/comment/editComment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"comment",
+								"editComment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Comment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"commentId\":\"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/comment/delete",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"comment",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Spam Report",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subredditId\":\"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/comment/getSpamReports",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"comment",
+								"getSpamReports"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notification",
+			"item": [
+				{
+					"name": "Get Notification",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "ddbdubehbeb",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/notification/getNotification",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"notification",
+								"getNotification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Notification",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "hvkbkcbdscjscb",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/notification/getUnreadNotification",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"notification",
+								"getUnreadNotification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hide Notification",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "token",
+								"value": "vschsvchsvchjs",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"notificationId\":\"82682362\",\n    \"hidden\":\"True\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/notification/hide",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"notification",
+								"hide"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Media",
+			"item": [
+				{
+					"name": "Add image",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTA1MTIsImV4cCI6NTAxNzExNDEwNTEyfQ.Shhggj-giwtsZBfnHsREUfHvwfqzl_1DEqNDN3sa1ic",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/marly/OneDrive/Pictures/Screenshots/Screenshot 2024-03-25 115656.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5000/upload/image",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"upload",
+								"image"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add video",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE0MTA1MTIsImV4cCI6NTAxNzExNDEwNTEyfQ.Shhggj-giwtsZBfnHsREUfHvwfqzl_1DEqNDN3sa1ic",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/marly/Videos/WhatsApp Video 2024-03-26 at 2.35.17 AM.mp4"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5000/upload/videos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"upload",
+								"videos"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Search Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "bsjvshvsjhvsjh",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/searchUsers?Hot=True&Top=False&New=False&Most Comments=False&Relevance=False",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"searchUsers"
+							],
+							"query": [
+								{
+									"key": "Hot",
+									"value": "True"
+								},
+								{
+									"key": "Top",
+									"value": "False"
+								},
+								{
+									"key": "New",
+									"value": "False"
+								},
+								{
+									"key": "Most Comments",
+									"value": "False"
+								},
+								{
+									"key": "Relevance",
+									"value": "False"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Posts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "bsjvshvsjhvsjh",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/searchPosts?Hot=True&Top=False&New=False&Most Comments=False&Relevance=False",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"searchPosts"
+							],
+							"query": [
+								{
+									"key": "Hot",
+									"value": "True"
+								},
+								{
+									"key": "Top",
+									"value": "False"
+								},
+								{
+									"key": "New",
+									"value": "False"
+								},
+								{
+									"key": "Most Comments",
+									"value": "False"
+								},
+								{
+									"key": "Relevance",
+									"value": "False"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Comments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "bsjvshvsjhvsjh",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/searchComments?Hot=True&Top=False&New=False&Most Comments=False&Relevance=False",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"searchComments"
+							],
+							"query": [
+								{
+									"key": "Hot",
+									"value": "True"
+								},
+								{
+									"key": "Top",
+									"value": "False"
+								},
+								{
+									"key": "New",
+									"value": "False"
+								},
+								{
+									"key": "Most Comments",
+									"value": "False"
+								},
+								{
+									"key": "Relevance",
+									"value": "False"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Communities",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "bsjvshvsjhvsjh",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/searchCommunities?Hot=True&Top=False&New=False&Most Comments=False&Relevance=False",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"searchCommunities"
+							],
+							"query": [
+								{
+									"key": "Hot",
+									"value": "True"
+								},
+								{
+									"key": "Top",
+									"value": "False"
+								},
+								{
+									"key": "New",
+									"value": "False"
+								},
+								{
+									"key": "Most Comments",
+									"value": "False"
+								},
+								{
+									"key": "Relevance",
+									"value": "False"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search HashTag",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "bsjvshvsjhvsjh",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/searchHashTag?Hot=True&Top=False&New=False&Most Comments=False&Relevance=False",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"searchHashTag"
+							],
+							"query": [
+								{
+									"key": "Hot",
+									"value": "True"
+								},
+								{
+									"key": "Top",
+									"value": "False"
+								},
+								{
+									"key": "New",
+									"value": "False"
+								},
+								{
+									"key": "Most Comments",
+									"value": "False"
+								},
+								{
+									"key": "Relevance",
+									"value": "False"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subreddit",
+			"item": [
+				{
+					"name": "Sorting",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer ya29.a0Ad52N3_tJJ59gzlHUVOJpW5cuhTN34o3bfdm6SYTkMtqiP-AS-eHQ4rhX0YUUr0WTxszUR6uSemZbGzYdYV11Kl-mx8svhRZspFqZieIn8Yzu_rScAJ-My9nME5_h9IO4OsFebxHMRXrf04hyQSbUxWlB9rY-pG1zMUaCgYKASASARISFQHGX2Miu6i86_0T2Z44wBlgg9IrMA0170",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/subreddit/sorting?Hot=True&New=False&Top=False&Random=False",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"sorting"
+							],
+							"query": [
+								{
+									"key": "Hot",
+									"value": "True"
+								},
+								{
+									"key": "New",
+									"value": "False"
+								},
+								{
+									"key": "Top",
+									"value": "False"
+								},
+								{
+									"key": "Random",
+									"value": "False"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ban User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\":\"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/subreddit/banUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"banUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unban User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\":\"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/subreddit/unbanUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"unbanUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edited",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/subreddit/edited",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"edited"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Banner",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/subreddit/deleteBanner",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"deleteBanner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Banner",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"Banner\":\"banner.jpeg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/subreddit/uploadBanner",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"uploadBanner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Icon",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Icon\":\"Icon.jpeg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/subreddit/uploadIcon",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"uploadIcon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Icon",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/subreddit/Delete Icon",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"Delete Icon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Join Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\":\"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/subreddit/approveJoin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"approveJoin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Join Request",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\":\"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/subreddit/rejectJoin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"rejectJoin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Subreddit Rule",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rule\":\"This is a rule\",\r\n    \"reason\":\"This is a reason\",\r\n    \"description\":\"This is a description\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/subreddit/addRule?Posts=True&Comments=True",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"addRule"
+							],
+							"query": [
+								{
+									"key": "Posts",
+									"value": "True"
+								},
+								{
+									"key": "Comments",
+									"value": "True"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subreddit Rules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/subreddit/getRules",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"getRules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Removal Reason",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Title\":\"Title\",\r\n    \"Message\":\"Message\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/subreddit/addRemovalReason",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"addRemovalReason"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Message",
+			"item": [
+				{
+					"name": "Compose",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "vhgchycycytcytrc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"to\":\"amrashraf\",\r\n    \"subject\":\"blabla\",\r\n    \"message\":\"AAAAAAAAAAAAAAAAAAAA333333333\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/message/compose",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"message",
+								"compose"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Inbox",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "dkdkdkdkkgkg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/message/getAllInbox",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"message",
+								"getAllInbox"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Inbox",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "dkdkdkdkkgkg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/message/getUnreadInbox",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"message",
+								"getUnreadInbox"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "dkdkdkdkkgkg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/message/getMessage",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"message",
+								"getMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Comments Replies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "dkdkdkdkkgkg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/message/getCommentsReplies",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"message",
+								"getCommentsReplies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Posts Replies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "dkdkdkdkkgkg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/message/getPostsReplies",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"message",
+								"getPostsReplies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Mentions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "dkdkdkdkkgkg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/message/getMentions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"message",
+								"getMentions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sent Messages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "dkdkdkdkkgkg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/message/getSentMessages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"message",
+								"getSentMessages"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Homepage",
+			"item": [
+				{
+					"name": "Sorting",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "dxfcgvhnjkbvfdcfvgbhnjkhbgvfcdxsdcfvgbh",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/post/sorting?best=False&hot=False&new=False&top=False",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"sorting"
+							],
+							"query": [
+								{
+									"key": "best",
+									"value": "False"
+								},
+								{
+									"key": "hot",
+									"value": "False"
+								},
+								{
+									"key": "new",
+									"value": "False"
+								},
+								{
+									"key": "top",
+									"value": "False"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "dctfvygbhujmbvcedcfvgbhjxsdcfvghj",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\":\"formula1\",\r\n    \"text\":\"vgbhnjfvcxwedrtgyhnbgvfr\",\r\n    \"media\":\"images.google.com\",\r\n    \"link\":\"www.google.com\",\r\n    \"NSFW\":\"False\",\r\n    \"replyNotificaitions\":\"False\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/createPost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"createPost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Top Communities",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "rtfygunhgsxwe5tyvfcdxsertyhnbvc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/subreddit/topCommunity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"topCommunity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Join Community",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "fdcgvrfytbgvfdxrwertuyhbgvfcd",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subRedditID\":\"1223\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/subreddit/joinCommunity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"joinCommunity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Community",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "dfgvhgfcdtyugfdcxtbgvfcdsargb",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/subreddit/viewCommunity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"viewCommunity"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -303,11 +303,12 @@ const unfollowUser = async (req, res, next) => {
 
     const user = await User.findById(userId);
     const userToUnfollow = await User.findOne({ userName: usernameToUnfollow });
-
     if (!userToUnfollow) {
       return res.status(500).json({ message: "User to unfollow not found" });
     }
-
+    if (userToUnfollow._id.equals(userId)) {
+      return res.status(400).json({ message: "You can't unfollow yourself" });
+    }
     if (!user.following.includes(userToUnfollow._id)) {
       return res.status(500).json({ message: "User not followed" });
     }
@@ -365,6 +366,9 @@ const blockUser = async (req, res, next) => {
     if (!userToBlock) {
       console.log("User not found for username:", blockedUserName);
       return res.status(404).json({ message: "User not found" });
+    }
+    if (userToBlock._id.equals(userId)) {
+      return res.status(400).json({ message: "User cannot block themselves" });
     }
     userToBlock.following.pull(userId);
     await userToBlock.save();
@@ -647,7 +651,11 @@ const muteCommunity = async (req, res, next) => {
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-
+    if (!user.communities.includes(communityId)) {
+      return res
+        .status(400)
+        .json({ message: "User is not a member of this community" });
+    }
     if (user.muteCommunities.includes(communityId)) {
       return res.status(400).json({ message: "Community already muted" });
     }
@@ -858,7 +866,7 @@ const addFavoriteCommunity = async (req, res) => {
         .status(400)
         .json({ message: "Community already favorited by user" });
     }
-    
+
     user.favoriteCommunities.push(communityId);
     await user.save();
     console.log("Community favorited: ", community);
@@ -866,8 +874,7 @@ const addFavoriteCommunity = async (req, res) => {
       message: "Community favorited successfully",
       community,
     });
-  }
-  catch (err) {
+  } catch (err) {
     console.log("Error favoriting community:", err);
     res.status(500).json({ message: "Error favoriting community", error: err });
   }
@@ -900,7 +907,7 @@ const removeFavoriteCommunity = async (req, res) => {
         .status(400)
         .json({ message: "Community not favorited by user" });
     }
-    
+
     user.favoriteCommunities.pull(communityId);
     await user.save();
     console.log("Community unfavorited: ", community);
@@ -908,13 +915,13 @@ const removeFavoriteCommunity = async (req, res) => {
       message: "Community unfavorited successfully",
       community,
     });
-  }
-  catch (err) {
+  } catch (err) {
     console.log("Error unfavoriting community:", err);
-    res.status(500).json({ message: "Error unfavoriting community", error: err });
+    res
+      .status(500)
+      .json({ message: "Error unfavoriting community", error: err });
   }
 };
-
 
 module.exports = {
   getAccountSettings,
