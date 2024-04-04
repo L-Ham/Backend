@@ -263,7 +263,7 @@ const downvote = async (req, res, next) => {
     }
     res.status(200).json({ message: "Post downvoted & added to user" });
   } catch (err) {
-    console.error("Error downvoting post:", err);
+    console.log("Error downvoting post:", err);
     res.status(500).json({ message: "Error downvoting post", error: err });
   }
 };
