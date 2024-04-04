@@ -109,7 +109,6 @@ const upvote = async (req, res, next) => {
     }
     res.status(200).json({ message: "Comment upvoted & added to user" });
   } catch (err) {
-    console.error("Error upvoting Comment:", err);
     res.status(500).json({ message: "Error upvoting Comment", error: err });
   }
 };
@@ -126,7 +125,6 @@ const downvote = async (req, res, next) => {
     if (comment.downvotedUsers.includes(userId)) {
       return res.status(400).json({ message: "Comment already downvoted" });
     }
-    console.log(comment.upvotedUsers);
     if (comment.upvotedUsers.includes(userId)) {
       comment.upvotes -= 1;
       comment.upvotedUsers.pull(userId);
@@ -141,7 +139,6 @@ const downvote = async (req, res, next) => {
     }
     res.status(200).json({ message: "Comment downvoted & added to user" });
   } catch (err) {
-    console.error("Error downvoting comment:", err);
     res.status(500).json({ message: "Error downvoting comment", error: err });
   }
 };
