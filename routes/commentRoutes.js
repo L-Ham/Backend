@@ -10,5 +10,17 @@ router.post(
   authenticateToken,
   commentController.createComment
 );
+router.patch(
+  "/upvote",
+  bodyParser.json(),
+  authenticateToken,
+  commentController.upvote
+);
+router.patch(
+  "/downvote",
+  bodyParser.json(),
+  authenticateToken,
+  commentController.downvote
+);
 
 module.exports = router;

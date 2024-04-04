@@ -30,10 +30,30 @@ const commentSchema = new Schema({
       required: false,
     },
   ],
-  votes: {
+  upvotes: {
     type: Number,
-    required: false,
+    required: true,
+    default: 0,
   },
+  downvotes: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  upvotedUsers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+  ],
+  downvotedUsers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+  ],
   isHidden: {
     type: Boolean,
     required: false,

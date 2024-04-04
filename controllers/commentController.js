@@ -83,7 +83,70 @@ const createComment = async (req, res, next) => {
     res.status(500).json({ message: "Error Creating Comment", error: err });
   }
 };
+const upvote = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const commentId = req.body.commentId;
+    const comment = await Comment.findById(commentId);
+    const user = await User.findById(userId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if (comment.upvotedUsers.includes(userId)) {
+      return res.status(400).json({ message: "Comment already upvoted" });
+    }
+    if (comment.downvotedUsers.includes(userId)) {
+      comment.downvotes -= 1;
+      comment.downvotedUsers.pull(userId);
+      user.downvotedComments.pull(commentId);
+    }
+    comment.upvotes += 1;
+    comment.upvotedUsers.push(userId);
+    await comment.save();
+    if (user) {
+      user.upvotedComments.push(commentId);
+      await user.save();
+    }
+    res.status(200).json({ message: "Comment upvoted & added to user" });
+  } catch (err) {
+    console.error("Error upvoting Comment:", err);
+    res.status(500).json({ message: "Error upvoting Comment", error: err });
+  }
+};
 
+const downvote = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const commentId = req.body.commentId;
+    const comment = await Comment.findById(commentId);
+    const user = await User.findById(userId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if (comment.downvotedUsers.includes(userId)) {
+      return res.status(400).json({ message: "Comment already downvoted" });
+    }
+    console.log(comment.upvotedUsers);
+    if (comment.upvotedUsers.includes(userId)) {
+      comment.upvotes -= 1;
+      comment.upvotedUsers.pull(userId);
+      user.upvotedComments.pull(commentId);
+    }
+    comment.downvotes += 1;
+    comment.downvotedUsers.push(userId);
+    await comment.save();
+    if (user) {
+      user.downvotedComments.push(commentId);
+      await user.save();
+    }
+    res.status(200).json({ message: "Comment downvoted & added to user" });
+  } catch (err) {
+    console.error("Error downvoting comment:", err);
+    res.status(500).json({ message: "Error downvoting comment", error: err });
+  }
+};
 module.exports = {
   createComment,
+  upvote,
+  downvote,
 };

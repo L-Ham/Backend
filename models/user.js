@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const SocialLinks = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
+const Comment = require("../models/comment");
 const Post = require("../models/post");
 const Schema = mongoose.Schema;
 /**
@@ -147,6 +148,20 @@ const userSchema = new Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
+      required: false,
+    },
+  ],
+  upvotedComments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "comment",
+      required: false,
+    },
+  ],
+  downvotedComments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "comment",
       required: false,
     },
   ],
