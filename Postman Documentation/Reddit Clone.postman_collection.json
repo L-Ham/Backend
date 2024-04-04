@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "767f3a40-0685-4c4c-9b5f-75a4e8513ea0",
+		"_postman_id": "44d8894a-fd93-4700-b7c8-f1a81ef7a54d",
 		"name": "Reddit Clone",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23392578",
-		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-767f3a40-0685-4c4c-9b5f-75a4e8513ea0?action=share&source=collection_link&creator=23392578"
+		"_exporter_id": "32040700"
 	},
 	"item": [
 		{
@@ -1466,7 +1465,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE5Mjk3NjAsImV4cCI6NTAxNzExOTI5NzYwfQ.HhkOLOEMIuq6juKObFERY1tY4vrUUMF37eMI5ew-Wyc",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIyNjg2MjUsImV4cCI6NTAxNzEyMjY4NjI1fQ.J96z0xr7RJECsG9FmlYSvHGHY8HA7JQMJAxZ7cd1pzM",
 								"type": "text"
 							}
 						],
@@ -1575,7 +1574,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE5Mjk3NjAsImV4cCI6NTAxNzExOTI5NzYwfQ.HhkOLOEMIuq6juKObFERY1tY4vrUUMF37eMI5ew-Wyc",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIyNjg2MjUsImV4cCI6NTAxNzEyMjY4NjI1fQ.J96z0xr7RJECsG9FmlYSvHGHY8HA7JQMJAxZ7cd1pzM",
 								"type": "text"
 							}
 						],
@@ -1598,6 +1597,76 @@
 							"path": [
 								"post",
 								"downvote"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Downvote",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIyNjg2MjUsImV4cCI6NTAxNzEyMjY4NjI1fQ.J96z0xr7RJECsG9FmlYSvHGHY8HA7JQMJAxZ7cd1pzM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"660878a72ffa8847797baf41\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/cancelDownvote",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"cancelDownvote"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Upvote",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIyNjg2MjUsImV4cCI6NTAxNzEyMjY4NjI1fQ.J96z0xr7RJECsG9FmlYSvHGHY8HA7JQMJAxZ7cd1pzM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"660878a72ffa8847797baf41\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/cancelUpvote",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"cancelUpvote"
 							]
 						}
 					},

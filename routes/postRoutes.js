@@ -90,4 +90,16 @@ router.patch(
   authenticateToken,
   postController.unmarkAsNSFW
 );
+router.patch(
+  "/cancelDownvote",
+  bodyParser.json(),
+  authenticateToken,
+  postController.cancelDownvote
+)
+router.patch(
+  "/cancelUpvote",
+  bodyParser.json(),
+  authenticateToken,
+  postController.cancelUpvote
+)
 module.exports = router;

@@ -546,6 +546,61 @@ const unmarkAsNSFW = async (req, res, next) => {
     res.status(500).json({ message: "Error Unmarking post as NSFW" });
   }
 };
+
+const cancelUpvote = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const postId = req.body.postId;
+    const post = await Post.findById(postId);
+    const user  = await User.findById(userId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (!post.upvotedUsers.includes(userId)) {
+      return res.status(400).json({ message: "Post not upvoted" });
+    }
+    post.upvotes -= 1;
+    post.upvotedUsers.pull(userId);
+    await post.save();
+    if (user) {
+      user.upvotedPosts.pull(postId);
+      await user.save();
+    }
+    res.status(200).json({ message: "Post upvote cancelled" });
+  }
+  catch (err) {
+    console.error("Error cancelling upvote:", err);
+    res.status(500).json({ message: "Error cancelling upvote", error: err });
+  }
+}
+
+const cancelDownvote = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const postId = req.body.postId;
+    const post = await Post.findById(postId);
+    const user = await User.findById(userId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (!post.downvotedUsers.includes(userId)) {
+      return res.status(400).json({ message: "Post not downvoted" });
+    }
+    post.downvotes -= 1;
+    post.downvotedUsers.pull(userId);
+    await post.save();
+    if (user) {
+      user.downvotedPosts.pull(postId);
+      await user.save();
+    }
+    res.status(200).json({ message: "Post downvote cancelled" });
+  }
+  catch (err) {
+    console.error("Error cancelling downvote:", err);
+    res.status(500).json({ message: "Error cancelling downvote", error: err });
+  }
+}
+
 module.exports = {
   savePost,
   unsavePost,
@@ -560,4 +615,6 @@ module.exports = {
   getAllPostComments,
   markAsNSFW,
   unmarkAsNSFW,
+  cancelUpvote,
+  cancelDownvote
 };
