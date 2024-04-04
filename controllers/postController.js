@@ -11,7 +11,7 @@ const createPost = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
+      console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -19,7 +19,7 @@ const createPost = async (req, res, next) => {
     if (subRedditId != "") {
       subReddit = await SubReddit.findById(subRedditId);
       if (!subReddit) {
-        console.log("Subreddit not found for subreddit ID:", subRedditId);
+        console.error("Subreddit not found for subreddit ID:", subRedditId);
       }
     }
 
@@ -36,13 +36,13 @@ const createPost = async (req, res, next) => {
           } else if (uploadedImageId && req.body.type === "video") {
             newPost.videos.push(uploadedImageId);
           } else {
-            console.log("Media upload failed:", media);
+            console.error("Media upload failed:", media);
             return res
               .status(400)
               .json({ message: "Failed to upload at least one media" });
           }
         } else {
-          console.log("Media data missing in form data:", media);
+          console.error("Media data missing in form data:", media);
         }
       }
     }
@@ -56,7 +56,7 @@ const createPost = async (req, res, next) => {
     await newPost.save();
     res.status(200).json({ message: "Post created successfully" });
   } catch (error) {
-    console.log("Error creating post:", error);
+    console.error("Error creating post:", error);
     res.status(500).json({ message: "Error creating post" });
   }
 };
@@ -104,12 +104,12 @@ const editPost = (req, res, next) => {
   Post.findById(postId)
     .then((post) => {
       if (!post) {
-        console.log("Post not found for post ID:", postId);
+        console.error("Post not found for post ID:", postId);
         return res.status(404).json({ message: "Post not found" });
       }
 
       if (post.user.toString() !== userId) {
-        console.log("User not authorized to edit post");
+        console.error("User not authorized to edit post");
         return res
           .status(401)
           .json({ message: "User not authorized to edit post" });
@@ -133,12 +133,12 @@ const editPost = (req, res, next) => {
           res.status(200).json({ message: "Post updated successfully" });
         })
         .catch((error) => {
-          console.log("Error updating post:", error);
+          console.error("Error updating post:", error);
           res.status(500).json({ message: "Error updating post" });
         });
     })
     .catch((error) => {
-      console.log("Error finding post:", error);
+      console.error("Error finding post:", error);
       res.status(500).json({ message: "Error finding post" });
     });
 };
@@ -224,7 +224,7 @@ const upvote = async (req, res, next) => {
     }
     res.status(200).json({ message: "Post upvoted & added to user" });
   } catch (err) {
-    console.log("Error upvoting post:", err);
+    console.error("Error upvoting post:", err);
     res.status(500).json({ message: "Error upvoting post", error: err });
   }
 };
@@ -263,7 +263,7 @@ const downvote = async (req, res, next) => {
     }
     res.status(200).json({ message: "Post downvoted & added to user" });
   } catch (err) {
-    console.log("Error downvoting post:", err);
+    console.error("Error downvoting post:", err);
     res.status(500).json({ message: "Error downvoting post", error: err });
   }
 };
@@ -306,7 +306,7 @@ const unhidePost = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
+      console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -315,7 +315,7 @@ const unhidePost = async (req, res, next) => {
     );
 
     if (unhideIndex === -1) {
-      console.log(
+      console.error(
         "This post is not hidden in your profile:",
         req.body.postId
       );
@@ -331,7 +331,7 @@ const unhidePost = async (req, res, next) => {
     console.log("Post unhidden successfully");
     res.status(200).json({ message: "Post unhidden successfully" });
   } catch (error) {
-    console.log("Error unhidding post:", error);
+    console.error("Error unhidding post:", error);
     res.status(500).json({ message: "Error unhidding post" });
   }
 };
@@ -343,25 +343,25 @@ const lockPost = async (req, res, next) => {
   try {
     const post = await Post.findById(postId);
     if (!post) {
-      console.log("Post not found for post ID:", postId);
+      console.error("Post not found for post ID:", postId);
       return res.status(404).json({ message: "Post not found" });
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
+      console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     const subReddit = await SubReddit.findById(post.subReddit);
     if (!subReddit) {
-      console.log("SubReddit not found for ID:", post.subReddit);
+      console.error("SubReddit not found for ID:", post.subReddit);
       return res.status(404).json({ message: "SubReddit not found" });
     }
 
     if (post.subReddit === null) {
       if (!post.user.equals(userId)) {
-        console.log("User not authorized to lock post");
+        console.error("User not authorized to lock post");
         return res
           .status(400)
           .json({ message: "User not authorized to lock post" });
@@ -369,7 +369,7 @@ const lockPost = async (req, res, next) => {
     }
     if (post.subReddit !== null) {
       if (!post.subReddit.moderators.includes(userId)) {
-        console.log(
+        console.error(
           "User not authorized to lock post in the subreddit",
           post.subReddit.name
         );
@@ -379,7 +379,7 @@ const lockPost = async (req, res, next) => {
       }
     }
     if (post.isLocked === true) {
-      console.log("Post is already locked");
+      console.error("Post is already locked");
       return res.status(400).json({ message: "Post is already locked" });
     }
     post.isLocked = true;
@@ -387,7 +387,7 @@ const lockPost = async (req, res, next) => {
 
     res.status(200).json({ message: "Post locked successfully" });
   } catch (error) {
-    console.log("Error locking post:", error);
+    console.error("Error locking post:", error);
     res.status(500).json({ message: "Error locking post" });
   }
 };
@@ -403,25 +403,25 @@ const unlockPost = async (req, res, next) => {
     }
     const post = await Post.findById(postId);
     if (!post) {
-      console.log("Post not found for post ID:", postId);
+      console.error("Post not found for post ID:", postId);
       return res.status(404).json({ message: "Post not found" });
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
+      console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     const subReddit = await SubReddit.findById(post.subReddit);
     if (!subReddit) {
-      console.log("SubReddit not found for ID:", post.subReddit);
+      console.error("SubReddit not found for ID:", post.subReddit);
       return res.status(404).json({ message: "SubReddit not found" });
     }
 
     if (post.subReddit === null) {
       if (!post.user.equals(userId)) {
-        console.log("User not authorized to lock post");
+        console.error("User not authorized to lock post");
         return res
           .status(400)
           .json({ message: "User not authorized to lock post" });
@@ -429,7 +429,7 @@ const unlockPost = async (req, res, next) => {
     }
     if (post.subReddit !== null) {
       if (!post.subReddit.moderators.includes(userId)) {
-        console.log(
+        console.error(
           "User not authorized to lock post in the subreddit",
           post.subReddit.name
         );
@@ -439,7 +439,7 @@ const unlockPost = async (req, res, next) => {
       }
     }
     if (post.isLocked === false) {
-      console.log("Post is already unlocked");
+      console.error("Post is already unlocked");
       return res.status(400).json({ message: "Post is already unlocked" });
     }
     post.isLocked = false;
@@ -448,7 +448,7 @@ const unlockPost = async (req, res, next) => {
 
     res.status(200).json({ message: "Post unlocked successfully" });
   } catch (error) {
-    console.log("Error unlocking post:", error);
+    console.error("Error unlocking post:", error);
     res.status(500).json({ message: "Error unlocking post" });
   }
 };
