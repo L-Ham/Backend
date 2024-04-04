@@ -5,7 +5,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "Fixing-Errors" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
