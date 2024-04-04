@@ -481,15 +481,32 @@ const markAsNSFW = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+    if (post.isNSFW) {
+      return res
+        .status(400)
+        .json({ message: "Post is already marked as NSFW" });
+    }
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
     if (post.user.toString() !== userId) {
       return res
         .status(401)
         .json({ message: "User not authorized to mark post as NSFW" });
     }
+    if (post.subReddit) {
+      const postSubreddit = await SubReddit.findById(post.subReddit);
+      if (!postSubreddit.moderators.includes(userId)) {
+        return res
+          .status(401)
+          .json({ message: "User not authorized to mark post as NSFW" });
+      }
+    }
+    post.isNSFW = true;
+    await post.save();
+    res.status(200).json({ message: "Post marked as NSFW" });
   } catch (error) {
     console.log("Error Marking post as NSFW:", error);
     res.status(500).json({ message: "Error Marking post as NSFW" });
@@ -503,18 +520,33 @@ const unmarkAsNSFW = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+    if (!post.isNSFW) {
+      return res.status(400).json({ message: "Post is not marked as NSFW" });
+    }
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
     if (post.user.toString() !== userId) {
       return res
         .status(401)
-        .json({ message: "User not authorized to mark post as NSFW" });
+        .json({ message: "User not authorized to unmark post as NSFW" });
     }
+    if (post.subReddit) {
+      const postSubreddit = await SubReddit.findById(post.subReddit);
+      if (!postSubreddit.moderators.includes(userId)) {
+        return res
+          .status(401)
+          .json({ message: "User not authorized to unmark post as NSFW" });
+      }
+    }
+    post.isNSFW = false;
+    await post.save();
+    res.status(200).json({ message: "Post unmarked as NSFW" });
   } catch (error) {
-    console.log("Error Marking post as NSFW:", error);
-    res.status(500).json({ message: "Error Marking post as NSFW" });
+    console.log("Error Unmarking post as NSFW:", error);
+    res.status(500).json({ message: "Error Unmarking post as NSFW" });
   }
 };
 module.exports = {
