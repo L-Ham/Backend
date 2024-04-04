@@ -601,6 +601,80 @@ const cancelDownvote = async (req, res, next) => {
   }
 }
 
+const approvePost = async (req, res, next) => {
+  const postId = req.body.postId;
+  const userId = req.userId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (post.approved) {
+      return res.status(400).json({ message: "Post already approved" });
+    }
+    if (post.disapproved) {
+      return res.status(400).json({ message: "Post already disapproved" });
+    }
+    const subReddit = await SubReddit.findById(post.subReddit);
+    if (!subReddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subReddit.moderators.includes(userId)) {
+      return res.status(401).json({ message: "User not authorized to approve post" });
+    }
+    post.approved = true;
+    post.approvedBy = userId;
+    await post.save();
+    res.status(200).json({ message: "Post approved successfully" });
+  } catch (error) {
+    console.log("Error approving post:", error);
+    res.status(500).json({ message: "Error approving post" });
+  }
+};
+
+
+
+const removePost = async (req, res, next) => {
+  const postId = req.body.postId;
+  const userId = req.userId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subReddit = await SubReddit.findById(post.subReddit);
+    if (!subReddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subReddit.moderators.includes(userId)) {
+      return res.status(401).json({ message: "User not authorized to remove post" });
+    }
+    if(post.approved==true){
+      return res.status(400).json({ message: "Post already approved" });
+    }
+    if(post.disapproved==true){
+      return res.status(400).json({ message: "Post already disapproved" });
+    }
+    post.disapproved = true;
+    post.disapprovedBy = userId;
+    await post.save();
+    subReddit.removedPosts.push(postId);
+    await subReddit.save();
+    res.status(200).json({ message: "Post removed successfully" });
+  } catch (error) {
+    console.log("Error removing post:", error);
+    res.status(500).json({ message: "Error removing post" });
+  }
+}
+
 module.exports = {
   savePost,
   unsavePost,
@@ -616,5 +690,7 @@ module.exports = {
   markAsNSFW,
   unmarkAsNSFW,
   cancelUpvote,
-  cancelDownvote
+  cancelDownvote,
+  approvePost,
+  removePost,
 };

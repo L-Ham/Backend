@@ -1673,6 +1673,76 @@
 					"response": []
 				},
 				{
+					"name": "Remove Post",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIyNjg2MjUsImV4cCI6NTAxNzEyMjY4NjI1fQ.J96z0xr7RJECsG9FmlYSvHGHY8HA7JQMJAxZ7cd1pzM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"660878a72ffa8847797baf41\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/removePost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"removePost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Post",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIyNjg2MjUsImV4cCI6NTAxNzEyMjY4NjI1fQ.J96z0xr7RJECsG9FmlYSvHGHY8HA7JQMJAxZ7cd1pzM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"660878a72ffa8847797baf41\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/approvePost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"approvePost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Lock Post",
 					"request": {
 						"method": "PATCH",
