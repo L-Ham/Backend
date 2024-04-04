@@ -165,7 +165,32 @@ const savePost = async (req, res, next) => {
     res.status(500).json({ message: "Error saving post" });
   }
 };
+const unsavePost = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const postId = req.body.postId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const savedPost = user.savedPosts.find((savedPost) =>
+      savedPost.equals(postId)
+    );
+    if (!savedPost) {
+      return res
+        .status(404)
+        .json({ message: "This post is not saved in your profile" });
+    }
+    console.log(user.savedPosts);
+    user.savedPosts.pull(postId);
+    console.log(user.savedPosts);
+    await user.save();
 
+    res.status(200).json({ message: "Post unsaved successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error unsaving post" });
+  }
+};
 /**
  * Upvotes a post and adds it to the user's upvoted posts list and adds the user to the Post's list of upvotes.
  * @param {Object} req - The request object.
@@ -240,34 +265,6 @@ const downvote = async (req, res, next) => {
   } catch (err) {
     console.error("Error downvoting post:", err);
     res.status(500).json({ message: "Error downvoting post", error: err });
-  }
-};
-
-const unsavePost = async (req, res, next) => {
-  try {
-    const userId = req.userId;
-    const postId = req.body.postId;
-    const user = await User.findById(userId);
-    if (!user) {
-      console.error("User not found for user ID:", userId);
-      return res.status(404).json({ message: "User not found" });
-    }
-    const savedPost = user.savedPosts.find((savedPost) =>
-      savedPost.equals(postId)
-    );
-    if (!savedPost) {
-      console.error("This post is not saved in your profile:", req.body.postId);
-      return res
-        .status(404)
-        .json({ message: "This post is not saved in your profile" });
-    }
-    user.savedPosts.pull(postId);
-    await user.save();
-
-    res.status(200).json({ message: "Post unsaved successfully" });
-  } catch (error) {
-    console.error("Error unsaving post:", error);
-    res.status(500).json({ message: "Error unsaving post" });
   }
 };
 
