@@ -123,11 +123,11 @@ const subRedditSchema = new Schema({
   },
   description: {
     type: String,
-    required: true,
+    required: false,
   },
   title: {
     type: String,
-    required: true,
+    required: false,
   },
   submissionText: {
     type: String,
