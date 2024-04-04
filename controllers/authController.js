@@ -101,6 +101,7 @@ const googleLogin = async (req, res, next) => {
     res.status(200).json({
       message: "User logged in successfully",
       token: jwtToken,
+      user: user,
     });
   } catch (error) {
     console.error("Google login failed:", error);
@@ -212,7 +213,7 @@ const login = async (req, res) => {
   const { userName, password } = req.body;
   try {
     const user = await User.findOne({ userName });
-    console.log("userrrr",user);
+    console.log("userrrr", user);
     if (!user) {
       return res.status(400).json({ message: "Invalid username or password" });
     }
@@ -237,7 +238,7 @@ const login = async (req, res) => {
     );
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({message:"Server error"});
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -287,7 +288,7 @@ const signUp = async (req, res) => {
     );
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({message:"Server error"});
+    res.status(500).json({ message: "Server error" });
   }
 };
 const generateUserName = async (req, res, next) => {

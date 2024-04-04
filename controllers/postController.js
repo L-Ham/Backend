@@ -166,21 +166,33 @@ const savePost = async (req, res, next) => {
   }
 };
 
+/**
+ * Upvotes a post and adds it to the user's upvoted posts list and adds the user to the Post's list of upvotes.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the post is upvoted.
+ */
 const upvote = async (req, res, next) => {
   try {
     const userId = req.userId;
     const postId = req.body.postId;
     const post = await Post.findById(postId);
+    const user = await User.findById(userId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
     if (post.upvotedUsers.includes(userId)) {
       return res.status(400).json({ message: "Post already upvoted" });
     }
+    if (post.downvotedUsers.includes(userId)) {
+      post.downvotes -= 1;
+      post.downvotedUsers.pull(userId);
+      user.downvotedPosts.pull(postId);
+    }
     post.upvotes += 1;
     post.upvotedUsers.push(userId);
     await post.save();
-    const user = await User.findById(userId);
     if (user) {
       user.upvotedPosts.push(postId);
       await user.save();
@@ -192,35 +204,43 @@ const upvote = async (req, res, next) => {
   }
 };
 
+/**
+ * Downvotes a post and updates the user's downvoted posts.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the post is downvoted.
+ */
 const downvote = async (req, res, next) => {
-  const userId = req.userId;
-  const postId = req.body.postId;
-  Post.findById(postId)
-    .then((post) => {
-      if (!post) {
-        return res.status(404).json({ message: "Post not found" });
-      }
-      if (post.downvotedUsers.includes(userId)) {
-        return res.status(400).json({ message: "Post already downvoted" });
-      }
-      post.downvotes += 1;
-      post.downvotedUsers.push(req.body.userId);
-      post.save();
-      User.findById(userId)
-        .then((user) => {
-          user.downvotedPosts.push(postId);
-          user.save();
-          res.status(200).json({ message: "Post downvoted & added to user" });
-        })
-        .catch((err) => {
-          return res
-            .status(500)
-            .json({ message: "Error finding user", error: err });
-        });
-    })
-    .catch((err) => {
-      res.status(400).json({ message: "Error finding post", error: err });
-    });
+  try {
+    const userId = req.userId;
+    const postId = req.body.postId;
+    const post = await Post.findById(postId);
+    const user = await User.findById(userId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (post.downvotedUsers.includes(userId)) {
+      return res.status(400).json({ message: "Post already downvoted" });
+    }
+    console.log(post.upvotedUsers);
+    if (post.upvotedUsers.includes(userId)) {
+      post.upvotes -= 1;
+      post.upvotedUsers.pull(userId);
+      user.upvotedPosts.pull(postId);
+    }
+    post.downvotes += 1;
+    post.downvotedUsers.push(userId);
+    await post.save();
+    if (user) {
+      user.downvotedPosts.push(postId);
+      await user.save();
+    }
+    res.status(200).json({ message: "Post downvoted & added to user" });
+  } catch (err) {
+    console.error("Error downvoting post:", err);
+    res.status(500).json({ message: "Error downvoting post", error: err });
+  }
 };
 
 const unsavePost = async (req, res, next) => {

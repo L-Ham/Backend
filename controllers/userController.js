@@ -713,7 +713,6 @@ const unmuteCommunity = async (req, res, next) => {
       user,
     });
   } catch (err) {
-    console.log("Error unmuting community:", err);
     res
       .status(500)
       .json({ message: "Error unmuting community for user", error: err });
@@ -729,12 +728,10 @@ const joinCommunity = async (req, res, next) => {
     const community = await SubReddit.findById(communityId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     if (!community) {
-      console.log("Community not found for community ID:", communityId);
       return res.status(404).json({ message: "Community not found" });
     }
 
@@ -756,29 +753,22 @@ const joinCommunity = async (req, res, next) => {
       community.members.push(userId);
       user.communities.push(communityId);
     }
-
-    // Save community and potentially user
     await community.save();
     if (community.privacy !== "private" && community.privacy !== "Private") {
       await user.save();
     }
-
-    // Respond based on privacy
     if (community.privacy === "private" || community.privacy === "Private") {
-      console.log("User requested to join community: ", community);
       res.json({
         message: "User requested to join community",
         community,
       });
     } else {
-      console.log("User joined community: ", community);
       res.json({
         message: "User joined community",
         community,
       });
     }
   } catch (err) {
-    console.log("Error joining community:", err);
     res.status(500).json({ message: "Error joining community", error: err });
   }
 };
@@ -786,18 +776,14 @@ const unjoinCommunity = async (req, res) => {
   try {
     const userId = req.userId;
     const communityId = req.body.subRedditId;
-
-    // Find user and community
     const user = await User.findById(userId);
     const community = await SubReddit.findById(communityId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     if (!community) {
-      console.log("Community not found for community ID:", communityId);
       return res.status(404).json({ message: "Community not found" });
     }
 
@@ -828,13 +814,11 @@ const unjoinCommunity = async (req, res) => {
     user.communities.pull(communityId);
     await user.save();
 
-    console.log("User unjoined community: ", community);
     res.json({
       message: "User unjoined community",
       community,
     });
   } catch (err) {
-    console.log("Error unjoining community:", err);
     res.status(500).json({ message: "Error unjoining community", error: err });
   }
 };
@@ -846,22 +830,18 @@ const addFavoriteCommunity = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
     const community = await SubReddit.findById(communityId);
     if (!community) {
-      console.log("Community not found for community ID:", communityId);
       return res.status(404).json({ message: "Community not found" });
     }
     if (!user.communities.includes(communityId)) {
-      console.log("User is not a member of this community");
       return res
         .status(400)
         .json({ message: "User is not a member of this community" });
     }
     if (user.favoriteCommunities.includes(communityId)) {
-      console.log("Community already favorited: ", community);
       return res
         .status(400)
         .json({ message: "Community already favorited by user" });
@@ -869,7 +849,6 @@ const addFavoriteCommunity = async (req, res) => {
 
     user.favoriteCommunities.push(communityId);
     await user.save();
-    console.log("Community favorited: ", community);
     res.json({
       message: "Community favorited successfully",
       community,
@@ -910,7 +889,6 @@ const removeFavoriteCommunity = async (req, res) => {
 
     user.favoriteCommunities.pull(communityId);
     await user.save();
-    console.log("Community unfavorited: ", community);
     res.json({
       message: "Community unfavorited successfully",
       community,
