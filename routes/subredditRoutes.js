@@ -17,11 +17,35 @@ router.get(
     subredditController.sorting
   );
   router.post(
-    "/addRule",
+    "/addRuleWidget",
     bodyParser.json(),
     authenticateToken,
-    subredditController.addRule
+    subredditController.addRuleWidget
   );
-
+  router.post(
+    "/addTextWidget",
+    bodyParser.json(),
+    authenticateToken,
+    subredditController.addTextWidget
+  );
+  router.patch(
+    "/editTextWidget",
+    bodyParser.json(),
+    authenticateToken,
+    subredditController.editTextWidget
+  );
+  router.delete(
+    "/deleteTextWidget",
+    bodyParser.json(),
+    authenticateToken,
+    subredditController.deleteTextWidget
+  );
+  router.patch(
+    "/reorderRules",
+    bodyParser.json(),
+    authenticateToken,
+    subredditController.reorderRules
+  );
+ 
 
 module.exports = router;

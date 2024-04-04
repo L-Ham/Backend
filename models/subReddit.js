@@ -1,3 +1,4 @@
+const { text } = require("body-parser");
 const mongoose = require("mongoose");
 const { boolean } = require("webidl-conversions");
 
@@ -57,8 +58,18 @@ const subRedditSchema = new Schema({
       ref: "post",
     },
   ],
-  rules: [
-    {
+  widgets: {
+    textWidgets: [{
+      widgetName: {
+        type: String,
+        required: true,
+      },
+      text: {
+        type: String,
+        required: true
+      }
+    }],
+    rulesWidgets: [{
       ruleText: {
         type: String,
         required: true,
@@ -66,7 +77,7 @@ const subRedditSchema = new Schema({
       },
       reportReason: {
         type: String,
-        required: true,
+        required: false,
       },
       appliesTo: {
         type: String,
@@ -76,20 +87,30 @@ const subRedditSchema = new Schema({
         type: String,
         required: false,
       },
-    },
-  ],
-  // widgets: [
+    }],
+  },
+  // rules: [
   //   {
-  //     textWidget: {
-  //       widgetName: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //       text: { type: String, required: true },
+  //     ruleText: {
+  //       type: String,
+  //       required: true,
+  //       unique: true,
   //     },
-  //     rulesWidget: {},
+  //     reportReason: {
+  //       type: String,
+  //       required: true,
+  //     },
+  //     appliesTo: {
+  //       type: String,
+  //       required: true,
+  //     },
+  //     fullDescription: {
+  //       type: String,
+  //       required: false,
+  //     },
   //   },
   // ],
+  
   ageRestriction: {
     type: Boolean,
     required: true,
