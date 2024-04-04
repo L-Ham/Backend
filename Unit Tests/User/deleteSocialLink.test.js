@@ -1,6 +1,6 @@
 const User = require("../../models/user");
 const userController = require("../../controllers/userController");
-jest.mock("../../models/user");
+jest.mock("../../models/User");
 
 describe("deleteSocialLink", () => {
   it("should delete the social link and return success message", async () => {
