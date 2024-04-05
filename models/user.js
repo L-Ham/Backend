@@ -1,8 +1,4 @@
 const mongoose = require("mongoose");
-const SocialLinks = require("../models/socialLink");
-const SubReddit = require("../models/subReddit");
-const Comment = require("../models/comment");
-const Post = require("../models/post");
 const Schema = mongoose.Schema;
 /**
  * Represents the schema for a user in the application.
@@ -99,7 +95,8 @@ const userSchema = new Schema({
     unique: true,
   },
   avatar: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "userUploads",
     required: false,
   },
   posts: [
@@ -187,7 +184,8 @@ const userSchema = new Schema({
     },
   ],
   bannerImage: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "userUploads",
     required: false,
   },
   notificationSettings: {
@@ -277,6 +275,13 @@ const userSchema = new Schema({
     {
       type: Schema.Types.ObjectId,
       ref: "subReddit",
+    },
+  ],
+  moderates: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "subReddit",
+      required: false,
     },
   ],
 });

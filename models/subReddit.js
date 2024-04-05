@@ -58,59 +58,97 @@ const subRedditSchema = new Schema({
       ref: "post",
     },
   ],
+
   widgets: {
-    textWidgets: [{
-      widgetName: {
-        type: String,
-        required: true,
+    textWidgets: [
+      {
+        widgetName: {
+          type: String,
+          required: true,
+        },
+        text: {
+          type: String,
+          required: true,
+        },
       },
-      text: {
-        type: String,
-        required: true
-      }
-    }],
-    rulesWidgets: [{
-      ruleText: {
-        type: String,
-        required: true,
-        unique: true,
+    ],
+    rulesWidgets: [
+      {
+        ruleText: {
+          type: String,
+          required: true,
+          unique: true,
+        },
+        reportReason: {
+          type: String,
+          required: false,
+        },
+        appliesTo: {
+          type: String,
+          required: true,
+        },
+        fullDescription: {
+          type: String,
+          required: false,
+        },
       },
-      reportReason: {
-        type: String,
-        required: false,
-      },
-      appliesTo: {
-        type: String,
-        required: true,
-      },
-      fullDescription: {
-        type: String,
-        required: false,
-      },
-    }],
+    ],
   },
-  // rules: [
-  //   {
-  //     ruleText: {
-  //       type: String,
-  //       required: true,
-  //       unique: true,
-  //     },
-  //     reportReason: {
-  //       type: String,
-  //       required: true,
-  //     },
-  //     appliesTo: {
-  //       type: String,
-  //       required: true,
-  //     },
-  //     fullDescription: {
-  //       type: String,
-  //       required: false,
-  //     },
-  //   },
-  // ],
-  
+  appearance: {
+    bannerImage: {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+    },
+    avatarImage: {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+    },
+    keyColor: {
+      hue: {
+        type: Number,
+        required: true,
+      },
+      saturation: {
+        type: Number,
+        required: true,
+      },
+      hexCode: {
+        type: String,
+        required: true,
+      },
+    },
+    baseColor: {
+      hue: {
+        type: Number,
+        required: true,
+      },
+      saturation: {
+        type: Number,
+        required: true,
+      },
+      hexCode: {
+        type: String,
+        required: true,
+      },
+    },
+    stickyPostColor: {
+      hue: {
+        type: Number,
+        required: true,
+      },
+      saturation: {
+        type: Number,
+        required: true,
+      },
+      hexCode: {
+        type: String,
+        required: true,
+      },
+    },
+  },
+
   ageRestriction: {
     type: Boolean,
     required: true,

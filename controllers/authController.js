@@ -172,6 +172,7 @@ const forgetPassword = async (req, res, next) => {
   if (!user) {
     return res.status(404).send("User not found");
   }
+  // let email = user.email;
   transporter.sendMail(
     {
       from: "r75118106@gmail.com",
@@ -181,7 +182,7 @@ const forgetPassword = async (req, res, next) => {
 
         You forgot it didn't you? Hey, it happens. Here you go:
         
-        Your password reset link is https://localhost:5000/user/resetPassword?token=${token}`,
+        Your password reset link is https://localhost:5000/user/resetPassword?email=${email}`,
     },
     (err) => {
       if (err) {
@@ -323,7 +324,15 @@ const updatePassword = async (req, res, next) => {
   await user.save();
   res.send("Password updated successfully");
 };
-
+const requestUpdateEmail = async (req, res, next) => {
+  const userId = req.userId;
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  if (user.signupGoogle) {
+  }
+};
 module.exports = {
   googleSignUp,
   googleLogin,

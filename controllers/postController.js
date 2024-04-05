@@ -263,7 +263,6 @@ const downvote = async (req, res, next) => {
     }
     res.status(200).json({ message: "Post downvoted & added to user" });
   } catch (err) {
-    console.error("Error downvoting post:", err);
     res.status(500).json({ message: "Error downvoting post", error: err });
   }
 };
@@ -274,15 +273,10 @@ const hidePost = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     if (user.hidePosts.includes(req.body.postId)) {
-      console.log(
-        "This post is already hidden in your profile:",
-        req.body.postId
-      );
       return res
         .status(500)
         .json({ message: "This post is already hidden in your profile" });

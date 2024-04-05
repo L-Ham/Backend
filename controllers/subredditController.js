@@ -12,7 +12,7 @@ const sorting = async (req, res, next) => {
   try {
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
-      return res.status(404).json({ message: 'Subreddit not found' });
+      return res.status(404).json({ message: "Subreddit not found" });
     }
 
     let sortedPosts;
@@ -21,7 +21,9 @@ const sorting = async (req, res, next) => {
     } else if (New) {
       sortedPosts = subreddit.posts.sort((a, b) => b.createdAt - a.createdAt);
     } else if (Top) {
-      sortedPosts = subreddit.posts.sort((a, b) => (b.votes + b.comments.length) - (a.votes + a.comments.length));
+      sortedPosts = subreddit.posts.sort(
+        (a, b) => b.votes + b.comments.length - (a.votes + a.comments.length)
+      );
     } else if (Random) {
       sortedPosts = subreddit.posts.sort(() => Math.random() - 0.5);
     }
@@ -68,6 +70,7 @@ const createCommunity = async (req, res, next) => {
     const savedCommunity = await newCommunity.save();
 
     user.communities.push(savedCommunity._id);
+    user.moderates.push(savedCommunity._id);
     const savedUser = await user.save();
 
     console.log("Subreddit attached to user: ", savedUser);
@@ -114,7 +117,7 @@ const addRuleWidget = async (req, res, next) => {
     console.log("Error adding rule:", error);
     res.status(500).json({ message: "Error adding rule" });
   }
-}
+};
 const addTextWidget = async (req, res, next) => {
   const subredditId = req.body.subredditId;
   const { widgetName, text } = req.body;
@@ -132,12 +135,12 @@ const addTextWidget = async (req, res, next) => {
     if (!subreddit.widgets.text) {
       subreddit.widgets.text = [];
     }
-  
+
     subreddit.widgets.textWidgets.push({
       widgetName,
       text,
     });
-    
+
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Text widget added successfully",
@@ -147,7 +150,7 @@ const addTextWidget = async (req, res, next) => {
     console.log("Error adding text widget:", error);
     res.status(500).json({ message: "Error adding text widget" });
   }
-}
+};
 const editTextWidget = async (req, res, next) => {
   const subredditId = req.body.subredditId;
   const textWidgetId = req.body.textWidgetId;
@@ -159,7 +162,7 @@ const editTextWidget = async (req, res, next) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    if(!textWidgetId) {
+    if (!textWidgetId) {
       return res.status(404).json({ message: "Text widget ID is required" });
     }
 
@@ -185,7 +188,7 @@ const editTextWidget = async (req, res, next) => {
     console.log("Error editing text widget:", error);
     res.status(500).json({ message: "Error editing text widget" });
   }
-}
+};
 const deleteTextWidget = async (req, res, next) => {
   const subredditId = req.body.subredditId;
   const textWidgetId = req.body.textWidgetId;
@@ -195,7 +198,7 @@ const deleteTextWidget = async (req, res, next) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    if(!textWidgetId) {
+    if (!textWidgetId) {
       return res.status(404).json({ message: "Text widget ID is required" });
     }
 
@@ -220,7 +223,7 @@ const deleteTextWidget = async (req, res, next) => {
     console.log("Error deleting text widget:", error);
     res.status(500).json({ message: "Error deleting text widget" });
   }
-}
+};
 const reorderRules = async (req, res, next) => {
   const subredditId = req.body.subredditId;
   const rulesOrder = req.body.rulesOrder;
@@ -254,9 +257,7 @@ const reorderRules = async (req, res, next) => {
     console.log("Error reordering rules:", error);
     res.status(500).json({ message: "Error reordering rules" });
   }
-}
-
-
+};
 
 module.exports = {
   sorting,
