@@ -11,41 +11,42 @@ router.post(
   subredditController.createCommunity
 );
 
-router.get(
-    "/sorting",
-    bodyParser.json(),
-    subredditController.sorting
-  );
-  router.post(
-    "/addRuleWidget",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.addRuleWidget
-  );
-  router.post(
-    "/addTextWidget",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.addTextWidget
-  );
-  router.patch(
-    "/editTextWidget",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.editTextWidget
-  );
-  router.delete(
-    "/deleteTextWidget",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.deleteTextWidget
-  );
-  router.patch(
-    "/reorderRules",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.reorderRules
-  );
- 
+router.get("/sorting", bodyParser.json(), subredditController.sorting);
+router.post(
+  "/addRuleWidget",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addRuleWidget
+);
+router.post(
+  "/addTextWidget",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addTextWidget
+);
+router.patch(
+  "/editTextWidget",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editTextWidget
+);
+router.delete(
+  "/deleteTextWidget",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteTextWidget
+);
+router.patch(
+  "/reorderRules",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.reorderRules
+);
+router.patch(
+  "/communityDetails",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editCommunityDetails
+);
 
 module.exports = router;

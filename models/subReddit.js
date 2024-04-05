@@ -58,7 +58,16 @@ const subRedditSchema = new Schema({
       ref: "post",
     },
   ],
-
+  communityDetails: {
+    type: Map,
+    of: String,
+    required: false,
+    default: {
+      membersNickname: "Members",
+      currentlyViewingNickname: "Online",
+      communityDescription: "",
+    },
+  },
   widgets: {
     textWidgets: [
       {
@@ -108,43 +117,43 @@ const subRedditSchema = new Schema({
     keyColor: {
       hue: {
         type: Number,
-        required: true,
+        required: false,
       },
       saturation: {
         type: Number,
-        required: true,
+        required: false,
       },
       hexCode: {
         type: String,
-        required: true,
+        required: false,
       },
     },
     baseColor: {
       hue: {
         type: Number,
-        required: true,
+        required: false,
       },
       saturation: {
         type: Number,
-        required: true,
+        required: false,
       },
       hexCode: {
         type: String,
-        required: true,
+        required: false,
       },
     },
     stickyPostColor: {
       hue: {
         type: Number,
-        required: true,
+        required: false,
       },
       saturation: {
         type: Number,
-        required: true,
+        required: false,
       },
       hexCode: {
         type: String,
-        required: true,
+        required: false,
       },
     },
   },
