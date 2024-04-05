@@ -157,5 +157,17 @@ router.delete(
   authenticateToken,
   userController.removeFavoriteCommunity
 );
+router.get(
+  "/upvotedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getUpvotedPosts
+);
+router.get(
+  "/downvotedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getDownvotedPosts
+);
 
 module.exports = router;

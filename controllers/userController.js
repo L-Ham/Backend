@@ -900,7 +900,36 @@ const removeFavoriteCommunity = async (req, res) => {
       .json({ message: "Error unfavoriting community", error: err });
   }
 };
-
+const getUpvotedPosts = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({
+      message: "Retrieved User's Upvoted Posts",
+      upvotedPosts: user.upvotedPosts,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Error Getting Posts Upvoted by User" });
+  }
+};
+const getDownvotedPosts = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({
+      message: "Retrieved User's Downvoted Posts",
+      upvotedPosts: user.downvotedPosts,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Error Getting Posts Downvoted by User" });
+  }
+};
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -926,4 +955,6 @@ module.exports = {
   unjoinCommunity,
   addFavoriteCommunity,
   removeFavoriteCommunity,
+  getUpvotedPosts,
+  getDownvotedPosts,
 };
