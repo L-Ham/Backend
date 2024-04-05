@@ -283,10 +283,7 @@ const editCommunityDetails = async (req, res, next) => {
       "communityDescription",
       communityDescription
     );
-    // subreddit.markModified("communityDetails");
-
     await subreddit.save();
-    console.log(subreddit);
     res.status(200).json({
       message: "Subreddit's Community Details Edited Successfully",
       subreddit: subreddit,
