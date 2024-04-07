@@ -169,5 +169,30 @@ router.get(
   authenticateToken,
   userController.getDownvotedPosts
 );
+router.get(
+  "/getAllBlockedUsers",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getAllBlockedUsers
+);
+router.patch(
+  "/editUserLocation",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editUserLocation
+);
+router.get(
+  "/searchUsernames",
+  bodyParser.json(),
+  authenticateToken,
+  userController.searchUsernames
+);
+
+router.get(
+  "/getUserLocation",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getUserLocation
+)
 
 module.exports = router;
