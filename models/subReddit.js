@@ -1,4 +1,6 @@
+const { text } = require("body-parser");
 const mongoose = require("mongoose");
+const { boolean } = require("webidl-conversions");
 
 const Schema = mongoose.Schema;
 const subRedditSchema = new Schema({
@@ -155,25 +157,7 @@ const subRedditSchema = new Schema({
       },
     },
   },
-  default: {
-    bannerImage: null,
-    avatarImage: null,
-    keyColor: {
-      hue: 0,
-      saturation: 0,
-      hexCode: "#000000",
-    },
-    baseColor: {
-      hue: 0,
-      saturation: 0,
-      hexCode: "#000000",
-    },
-    stickyPostColor: {
-      hue: 0,
-      saturation: 0,
-      hexCode: "#000000",
-    },
-  },
+
   ageRestriction: {
     type: Boolean,
     required: true,
