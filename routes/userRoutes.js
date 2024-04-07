@@ -182,17 +182,16 @@ router.patch(
   userController.editUserLocation
 );
 router.get(
+  "/getUserLocation",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getUserLocation
+);
+router.get(
   "/searchUsernames",
   bodyParser.json(),
   authenticateToken,
   userController.searchUsernames
 );
-
-router.get(
-  "/getUserLocation",
-  bodyParser.json(),
-  authenticateToken,
-  userController.getUserLocation
-)
 
 module.exports = router;

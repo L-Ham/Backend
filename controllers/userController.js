@@ -933,18 +933,29 @@ const getDownvotedPosts = async (req, res) => {
 const getAllBlockedUsers = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await User.findById(userId).populate("blockUsers", "_id userName avatarImage");
+    const user = await User.findById(userId).populate(
+      "blockUsers",
+      "_id userName avatarImage"
+    );
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const blockedUsers = user.blockUsers.map(user => ({ id: user._id, userName: user.userName, avatarImage: user.avatarImage}));
-    res.json({ message: "Blocked users list returned successfully", blockedUsers });
-  }
-  catch (err) {
+    const blockedUsers = user.blockUsers.map((user) => ({
+      id: user._id,
+      userName: user.userName,
+      avatarImage: user.avatarImage,
+    }));
+    res.json({
+      message: "Blocked users list returned successfully",
+      blockedUsers,
+    });
+  } catch (err) {
     console.log("Error retrieving blocked users:", err);
-    res.status(500).json({ message: "Error retrieving blocked users", error: err });
+    res
+      .status(500)
+      .json({ message: "Error retrieving blocked users", error: err });
   }
-}
+};
 const editUserLocation = async (req, res) => {
   try {
     const userId = req.userId;
@@ -952,20 +963,29 @@ const editUserLocation = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    if (user.location === req.body.location) {
+      return res
+        .status(400)
+        .json({ message: "Location is already set to this value" });
+    }
     user.location = req.body.location;
     await user.save();
     res.json({ message: "User location updated successfully", user });
-  }
-  catch (err) {
+  } catch (err) {
     console.log("Error updating user location:", err);
-    res.status(500).json({ message: "Error updating user location", error: err });
+    res
+      .status(500)
+      .json({ message: "Error updating user location", error: err });
   }
-}
+};
 const searchUsernames = async (req, res) => {
   try {
-    const { search } = req.body; 
-    const regex = new RegExp(`^${search}`, "i"); 
-    const matchingUsernames = await User.find({ userName: regex }, "_id userName avatarImage"); 
+    const { search } = req.body;
+    const regex = new RegExp(`^${search}`, "i");
+    const matchingUsernames = await User.find(
+      { userName: regex },
+      "_id userName avatarImage"
+    );
     res.json({ matchingUsernames });
   } catch (err) {
     console.log("Error searching usernames:", err);
@@ -980,15 +1000,17 @@ const getUserLocation = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.json({ message: "User location retrieved successfully", location: user.location });
-  }
-  catch (err) {
+    res.json({
+      message: "User location retrieved successfully",
+      location: user.location,
+    });
+  } catch (err) {
     console.log("Error retrieving user location:", err);
-    res.status(500).json({ message: "Error retrieving user location", error: err });
+    res
+      .status(500)
+      .json({ message: "Error retrieving user location", error: err });
   }
-}
-
-
+};
 
 module.exports = {
   getAccountSettings,
@@ -1020,5 +1042,5 @@ module.exports = {
   getAllBlockedUsers,
   editUserLocation,
   searchUsernames,
-  getUserLocation
+  getUserLocation,
 };
