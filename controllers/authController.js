@@ -278,6 +278,7 @@ const signUp = async (req, res) => {
     const payload = {
       user: {
         id: user._id,
+        userName: user.userName,
         type: "normal",
       },
     };
