@@ -211,27 +211,28 @@ const login = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { userName, password } = req.body;
+  const { userName, password, email } = req.body;
   try {
-    const user = await User.findOne({ userName });
+    const user = await User.findOne({ $or: [{ userName }, { email }] });
     console.log("userrrr", user);
     if (!user) {
-      return res.status(400).json({ message: "Invalid username or password" });
+      return res.status(400).json({ message: "Invalid username/email or password" });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid username or password" });
+      return res.status(400).json({ message: "Invalid username/email or password" });
     }
     const payload = {
       user: {
         id: user._id,
+        userName: user.userName,
         type: "normal",
       },
     };
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: 500000000000 },
+      { expiresIn: 10800 },
       (err, token) => {
         if (err) throw err;
         res.json({ token, message: "User logged in successfully" });

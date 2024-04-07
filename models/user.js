@@ -94,11 +94,6 @@ const userSchema = new Schema({
     required: true,
     unique: true,
   },
-  avatar: {
-    type: Schema.Types.ObjectId,
-    ref: "userUploads",
-    required: false,
-  },
   posts: [
     {
       type: Schema.Types.ObjectId,
@@ -183,10 +178,17 @@ const userSchema = new Schema({
       },
     },
   ],
+  avatarImage: {
+    type:  Schema.Types.ObjectId,
+    ref: "userUploads",
+    required: false,
+    default: null,
+  },
   bannerImage: {
     type: Schema.Types.ObjectId,
     ref: "userUploads",
     required: false,
+    default: null,
   },
   notificationSettings: {
     type: Map,
@@ -284,6 +286,11 @@ const userSchema = new Schema({
       required: false,
     },
   ],
+  location: {
+    type: String,
+    required: false,
+    default: 'Location is not specified'
+  }
 });
 
 module.exports = mongoose.model("user", userSchema);
