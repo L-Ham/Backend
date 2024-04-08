@@ -376,7 +376,7 @@ const editCommunityDetails = async (req, res, next) => {
       .json({ message: "Error Editing Community Details", err: err.message });
   }
 };
-const subRedditWidgets = async (req, res, next) => {
+const getSubRedditWidgets = async (req, res, next) => {
   const subredditId = req.body.subredditId;
   try {
     const subreddit = await SubReddit.findById(subredditId);
@@ -403,6 +403,6 @@ module.exports = {
   reorderRules,
   editCommunityDetails,
   getSubredditPosts,
-  subRedditWidgets,
+  getSubRedditWidgets,
   
 };

@@ -49,9 +49,9 @@ router.patch(
   subredditController.editCommunityDetails
 );
 router.get(
-  "/subRedditWidgets",
+  "/getSubRedditWidgets",
   bodyParser.json(),
-  subredditController.subRedditWidgets
+  subredditController.getSubRedditWidgets
 );
 
 module.exports = router;
