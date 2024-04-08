@@ -56,17 +56,15 @@ const createCommunity = async (req, res, next) => {
     const newCommunity = new SubReddit({
       name: req.body.name,
       privacy: req.body.privacy,
+      ageRestriction: req.body.ageRestriction,
       moderators: [user._id],
       members: [user._id],
-      ageRestriction: req.body.ageRestriction,
-      description: req.body.description,
-      title: req.body.title,
-      submissionText: req.body.submissionText,
-      contentOptions: req.body.contentOptions,
-      wiki: req.body.wiki,
-      spamFilter: req.body.spamFilter,
+      communityDetails: {
+        membersNickname: "Members",
+        currentlyViewingNickname: "Online",
+        communityDescription: "",
+      },
     });
-
     const savedCommunity = await newCommunity.save();
 
     user.communities.push(savedCommunity._id);
@@ -373,7 +371,7 @@ const getSubRedditWidgets = async (req, res, next) => {
     }
     res.json({
       message: "Subreddit widgets retrieved successfully",
-      widgets: subreddit.widgets
+      widgets: subreddit.widgets,
     });
   } catch (error) {
     console.error("Error getting subreddit widgets:", error);
@@ -392,5 +390,4 @@ module.exports = {
   editCommunityDetails,
   getSubredditPosts,
   getSubRedditWidgets,
-  
 };

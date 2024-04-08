@@ -72,12 +72,12 @@ const subRedditSchema = new Schema({
     {
       type: {
         type: String,
-        enum: ['textWidgets', 'rulesWidgets'], 
+        enum: ["textWidgets", "rulesWidgets"],
         required: true,
       },
       data: [
         {
-           // For textWidgets
+          // For textWidgets
           widgetName: {
             type: String,
             required: false,
@@ -118,6 +118,7 @@ const subRedditSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: "userUploads",
       required: false,
+      default: null,
     },
     keyColor: {
       hue: {
