@@ -179,10 +179,9 @@ const userSchema = new Schema({
     },
   ],
   avatarImage: {
-    type:  Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "userUploads",
     required: false,
-    default: null,
   },
   bannerImage: {
     type: Schema.Types.ObjectId,
@@ -289,8 +288,8 @@ const userSchema = new Schema({
   location: {
     type: String,
     required: false,
-    default: 'Location is not specified'
-  }
+    default: "Location is not specified",
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);

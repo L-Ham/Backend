@@ -43,7 +43,6 @@ const createCommunity = async (req, res, next) => {
       console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
-
     const existingCommunity = await checkCommunitynameExists(req.body.name);
     if (existingCommunity) {
       return res.status(400).json({ message: "Community name already exists" });
@@ -63,6 +62,26 @@ const createCommunity = async (req, res, next) => {
         membersNickname: "Members",
         currentlyViewingNickname: "Online",
         communityDescription: "",
+      },
+      widgets: [],
+      appearance: {
+        avatarImage: null,
+        bannerImage: null,
+        keyColor: {
+          hue: 0,
+          saturation: 0,
+          hexCode: "",
+        },
+        baseColor: {
+          hue: 0,
+          saturation: 0,
+          hexCode: "",
+        },
+        stickyPostColor: {
+          hue: 0,
+          saturation: 0,
+          hexCode: "",
+        },
       },
     });
     const savedCommunity = await newCommunity.save();
@@ -84,6 +103,51 @@ const createCommunity = async (req, res, next) => {
   }
 };
 
+// const addRuleWidget = async (req, res, next) => {
+//   const userId = req.userId;
+//   const subredditId = req.body.subredditId;
+//   const { rule, description, appliedTo, reportReasonDefault } = req.body;
+
+//   try {
+//     const subreddit = await SubReddit.findById(subredditId);
+//     if (!subreddit) {
+//       return res.status(404).json({ message: "Subreddit not found" });
+//     }
+//     if (!subreddit.moderators.includes(userId)) {
+//       return res.status(403).json({ message: "You are not a moderator" });
+//     }
+//     if (!subreddit.widgets) {
+//       subreddit.widgets = [];
+//     }
+//     let rulesWidgetsIndex = subreddit.widgets.findIndex(
+//       (widget) => widget.type === "rulesWidgets"
+//     );
+//     if (rulesWidgetsIndex === -1) {
+//       subreddit.widgets.push({ type: "rulesWidgets", data: [] });
+//       rulesWidgetsIndex = subreddit.widgets.length - 1;
+//     }
+//     if (subreddit.widgets.length >= 20) {
+//       return res.status(400).json({ message: "Maximum 20 widgets allowed" });
+//     }
+//     if (subreddit.widgets[rulesWidgetsIndex].data.length >= 15) {
+//       return res.status(400).json({ message: "Maximum 15 rules allowed" });
+//     }
+//     subreddit.widgets[rulesWidgetsIndex].data.push({
+//       ruleText: rule,
+//       fullDescription: description,
+//       appliesTo: appliedTo,
+//       reportReason: reportReasonDefault,
+//     });
+//     const savedSubreddit = await subreddit.save();
+//     res.json({
+//       message: "Rule added successfully",
+//       savedSubreddit,
+//     });
+//   } catch (error) {
+//     console.log("Error adding rule:", error);
+//     res.status(500).json({ message: "Error adding rule" });
+//   }
+// };
 const addRuleWidget = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -100,25 +164,23 @@ const addRuleWidget = async (req, res, next) => {
     if (!subreddit.widgets) {
       subreddit.widgets = [];
     }
-    let rulesWidgetsIndex = subreddit.widgets.findIndex(
-      (widget) => widget.type === "rulesWidgets"
-    );
-    if (rulesWidgetsIndex === -1) {
-      subreddit.widgets.push({ type: "rulesWidgets", data: [] });
-      rulesWidgetsIndex = subreddit.widgets.length - 1;
+    if (!subreddit.widgets.rulesWidgets) {
+      subreddit.widgets.rulesWidgets = [];
     }
     if (subreddit.widgets.length >= 20) {
-      return res.status(400).json({ message: "Maximum 20 widgets allowed" });
+      return res.status(400).json({ message: "Maximum 20 rules allowed" });
     }
-    if (subreddit.widgets[rulesWidgetsIndex].data.length >= 15) {
+    if (subreddit.widgets.rulesWidgets.length >= 15) {
       return res.status(400).json({ message: "Maximum 15 rules allowed" });
     }
-    subreddit.widgets[rulesWidgetsIndex].data.push({
+
+    subreddit.widgets.rulesWidgets.push({
       ruleText: rule,
       fullDescription: description,
       appliesTo: appliedTo,
       reportReason: reportReasonDefault,
     });
+
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Rule added successfully",
@@ -129,7 +191,7 @@ const addRuleWidget = async (req, res, next) => {
     res.status(500).json({ message: "Error adding rule" });
   }
 };
-
+//3rd VERSION
 const addTextWidget = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -143,29 +205,18 @@ const addTextWidget = async (req, res, next) => {
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
     }
-    if (!subreddit.widgets) {
-      subreddit.widgets = [];
+    console.log(subreddit.widgets);
+    if (subreddit.widgets.length >= 20) {
+      return res.status(400).json({ message: "Maximum 20 widgets allowed" });
     }
-    let textWidgetsIndex = subreddit.widgets.findIndex(
-      (widget) => widget.type === "textWidgets"
-    );
-    if (textWidgetsIndex === -1) {
-      subreddit.widgets.push({ type: "textWidgets", data: [] });
-      textWidgetsIndex = subreddit.widgets.length - 1;
-    }
-    if (subreddit.widgets[textWidgetsIndex].data.length >= 20) {
-      return res
-        .status(400)
-        .json({ message: "Maximum 20 text widgets allowed" });
-    }
-    subreddit.widgets[textWidgetsIndex].data.push({
-      widgetName,
-      text,
-    });
+    const textWidget = { widgetName: widgetName, text: text };
+    subreddit.widgets.push(textWidget);
+    subreddit.markModified("widgets");
 
-    // Save the subreddit with the updated widgets
+    console.log(subreddit.widgets);
+
     const savedSubreddit = await subreddit.save();
-    res.json({
+    res.status(200).json({
       message: "Text widget added successfully",
       savedSubreddit,
     });
@@ -174,6 +225,94 @@ const addTextWidget = async (req, res, next) => {
     res.status(500).json({ message: "Error adding text widget" });
   }
 };
+// const addTextWidget = async (req, res, next) => {
+//   const userId = req.userId;
+//   const subredditId = req.body.subredditId;
+//   const { widgetName, text } = req.body;
+
+//   try {
+//     const subreddit = await SubReddit.findById(subredditId);
+//     if (!subreddit) {
+//       return res.status(404).json({ message: "Subreddit not found" });
+//     }
+//     if (!subreddit.moderators.includes(userId)) {
+//       return res.status(403).json({ message: "You are not a moderator" });
+//     }
+//     if (!subreddit.widgets) {
+//       subreddit.widgets = [];
+//     }
+//     let textWidgetsIndex = subreddit.widgets.findIndex(
+//       (widget) => widget.type === "textWidgets"
+//     );
+//     if (textWidgetsIndex === -1) {
+//       subreddit.widgets.push({ type: "textWidgets", data: [] });
+//       textWidgetsIndex = subreddit.widgets.length - 1;
+//     }
+//     if (subreddit.widgets[textWidgetsIndex].data.length >= 20) {
+//       return res
+//         .status(400)
+//         .json({ message: "Maximum 20 text widgets allowed" });
+//     }
+//     subreddit.widgets[textWidgetsIndex].data.push({
+//       widgetName,
+//       text,
+//     });
+
+//     // Save the subreddit with the updated widgets
+//     const savedSubreddit = await subreddit.save();
+//     res.json({
+//       message: "Text widget added successfully",
+//       savedSubreddit,
+//     });
+//   } catch (error) {
+//     console.log("Error adding text widget:", error);
+//     res.status(500).json({ message: "Error adding text widget" });
+//   }
+// };
+// const addTextWidget = async (req, res, next) => {
+//   const userId = req.userId;
+//   const subredditId = req.body.subredditId;
+//   const { widgetName, text } = req.body;
+
+//   try {
+//     const subreddit = await SubReddit.findById(subredditId);
+//     if (!subreddit) {
+//       return res.status(404).json({ message: "Subreddit not found" });
+//     }
+//     if (!subreddit.moderators.includes(userId)) {
+//       return res.status(403).json({ message: "You are not a moderator" });
+//     }
+//     if (!subreddit.widgets) {
+//       subreddit.widgets = {};
+//     }
+
+//     if (!subreddit.widgets.text) {
+//       subreddit.widgets.text = [];
+//     }
+//     //    TODO: Check if the subreddit already has 20 widgets in total
+//     widgetsLength =
+//       subreddit.widgets.text.length + subreddit.widgets.rules.length;
+//     if (widgetsLength >= 20) {
+//       return res
+//         .status(400)
+//         .json({ message: "Maximum 20 text widgets allowed" });
+//     }
+
+//     subreddit.widgets.textWidgets.push({
+//       widgetName,
+//       text,
+//     });
+
+//     const savedSubreddit = await subreddit.save();
+//     res.json({
+//       message: "Text widget added successfully",
+//       savedSubreddit,
+//     });
+//   } catch (error) {
+//     console.log("Error adding text widget:", error);
+//     res.status(500).json({ message: "Error adding text widget" });
+//   }
+// };
 const editTextWidget = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
