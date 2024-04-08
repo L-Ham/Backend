@@ -106,9 +106,11 @@ const addRuleWidget = async (req, res, next) => {
     }
 
     // Find the rulesWidgets subarray or create it if it doesn't exist
-    let rulesWidgetsIndex = subreddit.widgets.findIndex(widget => widget.type === 'rulesWidgets');
+    let rulesWidgetsIndex = subreddit.widgets.findIndex(
+      (widget) => widget.type === "rulesWidgets"
+    );
     if (rulesWidgetsIndex === -1) {
-      subreddit.widgets.push({ type: 'rulesWidgets', data: [] });
+      subreddit.widgets.push({ type: "rulesWidgets", data: [] });
       rulesWidgetsIndex = subreddit.widgets.length - 1;
     }
 
@@ -160,15 +162,19 @@ const addTextWidget = async (req, res, next) => {
     }
 
     // Find the textWidgets subarray or create it if it doesn't exist
-    let textWidgetsIndex = subreddit.widgets.findIndex(widget => widget.type === 'textWidgets');
+    let textWidgetsIndex = subreddit.widgets.findIndex(
+      (widget) => widget.type === "textWidgets"
+    );
     if (textWidgetsIndex === -1) {
-      subreddit.widgets.push({ type: 'textWidgets', data: [] });
+      subreddit.widgets.push({ type: "textWidgets", data: [] });
       textWidgetsIndex = subreddit.widgets.length - 1;
     }
 
     // Check maximum limit of text widgets
     if (subreddit.widgets[textWidgetsIndex].data.length >= 20) {
-      return res.status(400).json({ message: "Maximum 20 text widgets allowed" });
+      return res
+        .status(400)
+        .json({ message: "Maximum 20 text widgets allowed" });
     }
 
     // Push the new text widget to the textWidgets subarray
@@ -193,7 +199,6 @@ const editTextWidget = async (req, res, next) => {
   const subredditId = req.body.subredditId;
   const textWidgetId = req.body.textWidgetId;
   const { widgetName, text } = req.body;
-  console.log(req.body);
 
   try {
     const subreddit = await SubReddit.findById(subredditId);
@@ -206,23 +211,26 @@ const editTextWidget = async (req, res, next) => {
     if (!textWidgetId) {
       return res.status(404).json({ message: "Text widget ID is required" });
     }
-
-    if (!subreddit.widgets || !subreddit.widgets.textWidgets) {
+    if (!subreddit.widgets) {
+      return res.status(404).json({ message: "No widgets found" });
+    }
+    const textWidgets = subreddit.widgets.find(
+      (widget) => widget.type === "textWidgets"
+    );
+    if (!textWidgets) {
       return res.status(404).json({ message: "No text widgets found" });
     }
-
-    const textWidget = subreddit.widgets.textWidgets.id(textWidgetId);
+    const textWidget = textWidgets.data.id(textWidgetId);
     if (!textWidget) {
+      console.log("Text widget with provided ID not found");
       return res.status(404).json({ message: "Text widget not found" });
     }
-
     textWidget.widgetName = widgetName;
     textWidget.text = text;
-
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Text widget edited successfully",
-      savedSubreddit,
+      widgets: textWidgets.data,
     });
   } catch (error) {
     console.log("Error editing text widget:", error);
@@ -245,29 +253,32 @@ const deleteTextWidget = async (req, res, next) => {
     if (!textWidgetId) {
       return res.status(404).json({ message: "Text widget ID is required" });
     }
-
-    if (!subreddit.widgets || !subreddit.widgets.textWidgets) {
+    if (!subreddit.widgets) {
+      return res.status(404).json({ message: "No widgets found" });
+    }
+    const textWidgets = subreddit.widgets.find(
+      (widget) => widget.type === "textWidgets"
+    );
+    if (!textWidgets) {
       return res.status(404).json({ message: "No text widgets found" });
     }
-
-    const textWidget = subreddit.widgets.textWidgets.id(textWidgetId);
+    const textWidget = textWidgets.data.id(textWidgetId);
     if (!textWidget) {
       console.log("Text widget with provided ID not found");
       return res.status(404).json({ message: "Text widget not found" });
     }
-
-    subreddit.widgets.textWidgets.pull(textWidgetId);
-
+    textWidgets.data.pull(textWidgetId);
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Text widget deleted successfully",
-      savedSubreddit,
+      widgets: textWidgets.data,
     });
   } catch (error) {
     console.log("Error deleting text widget:", error);
     res.status(500).json({ message: "Error deleting text widget" });
   }
 };
+
 const reorderRules = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -281,24 +292,30 @@ const reorderRules = async (req, res, next) => {
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
     }
-    if (!subreddit.widgets || !subreddit.widgets.rulesWidgets) {
+    if (!subreddit.widgets) {
+      return res.status(404).json({ message: "No widgets found" });
+    }
+    const rulesWidgets = subreddit.widgets.find(
+      (widget) => widget.type === "rulesWidgets"
+    );
+    if (!rulesWidgets) {
       return res.status(404).json({ message: "No rule widgets found" });
     }
 
     const reorderedRules = [];
     rulesOrder.forEach((ruleId) => {
-      const rule = subreddit.widgets.rulesWidgets.id(ruleId);
+      const rule = rulesWidgets.data.id(ruleId);
       if (rule) {
         reorderedRules.push(rule);
       }
     });
 
-    subreddit.widgets.rulesWidgets = reorderedRules;
+    rulesWidgets.data = reorderedRules;
 
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Rules reordered successfully",
-      savedSubreddit,
+      widgets: rulesWidgets.data,
     });
   } catch (error) {
     console.log("Error reordering rules:", error);
@@ -315,7 +332,7 @@ const getSubredditPosts = async (req, res, next) => {
   if (!subreddit) {
     return res.status(404).json({ message: "Subreddit not found" });
   }
-  
+
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 
@@ -385,7 +402,7 @@ const getSubRedditWidgets = async (req, res, next) => {
     }
     res.json({
       message: "Subreddit widgets retrieved successfully",
-      widgets: subreddit.widgets
+      widgets: subreddit.widgets,
     });
   } catch (error) {
     console.error("Error getting subreddit widgets:", error);
@@ -404,5 +421,4 @@ module.exports = {
   editCommunityDetails,
   getSubredditPosts,
   getSubRedditWidgets,
-  
 };
