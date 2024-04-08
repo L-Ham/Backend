@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "767f3a40-0685-4c4c-9b5f-75a4e8513ea0",
+		"_postman_id": "56a322cf-801a-4ebf-99cc-161d444e7fa4",
 		"name": "Reddit Clone",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23392578",
-		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-767f3a40-0685-4c4c-9b5f-75a4e8513ea0?action=share&source=collection_link&creator=23392578"
+		"_exporter_id": "32069311"
 	},
 	"item": [
 		{
@@ -257,7 +256,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"emailGet200403\":\"newss@gmail.com\",\n    \"password\":\"123456\"\n}",
+							"raw": "{\n    \"email\":\"Soso@gmail.com\",\n    \"password\":\"123456\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -265,13 +264,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5000/auth/login",
-							"protocol": "http",
+							"raw": "https://reddit-bylham.me/api/auth/login",
+							"protocol": "https",
 							"host": [
-								"localhost"
+								"reddit-bylham",
+								"me"
 							],
-							"port": "5000",
 							"path": [
+								"api",
 								"auth",
 								"login"
 							]
@@ -2035,15 +2035,6 @@
 												"type": "text"
 											}
 										],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
 										"url": {
 											"raw": "http://localhost:5000/user/notificationsSettings",
 											"protocol": "http",
@@ -2108,15 +2099,6 @@
 												"type": "text"
 											}
 										],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
 										"url": {
 											"raw": "http://localhost:5000/user/notificationsSettings",
 											"protocol": "http",
@@ -6427,41 +6409,6 @@
 					"response": []
 				},
 				{
-					"name": "Create Post",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNzE5MTQsImV4cCI6NTAxNzExMzcxOTE0fQ.VVJzpgBZ8pSNAYB__lMbH0kI_DzF3ujOAqVvWDqIq5c",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"user\": \"60d21b7067d0d7bb280b2740\",\r\n  \"subReddit\": \"60d21b7067d0d7bb280b2741\",\r\n  \"title\": \"bngrabbb ahwwwww222\",\r\n  \"text\": \"Post Text ntent\",\r\n  \"images\": [\"image1.jpg\", \"image2.png\"],\r\n  \"approved\": false,\r\n  \"approvedBy\": \"60d21b7067d0d7bb280b2742\",\r\n  \"disapproved\": false,\r\n  \"disapprovedBy\": \"60d21b7067d0d7bb280b2743\",\r\n  \"videos\": [\"video1.mp4\", \"video2.mov\"],\r\n  \"url\": \"https://example.com\",\r\n  \"poll\": {\r\n    \"options\": [\"Option 1\", \"Option 2\", \"Option 3\"],\r\n    \"votingLength\": 7,\r\n    \"voters\": [\"60d21b7067d0d7bb280b2744\"],\r\n    \"startTime\": \"2024-03-27T12:00:00Z\",\r\n    \"endTime\": \"2024-03-30T12:00:00Z\"\r\n  },\r\n  \"type\": \"text\",\r\n  \"isNSFW\": false,\r\n  \"isSpoiler\": false,\r\n  \"isLocked\": false,\r\n  \"isOc\": true,\r\n  \"upvotes\": 0,\r\n  \"downvotes\": 0,\r\n  \"upvotedUsers\": [],\r\n  \"downvotedUsers\": [],\r\n  \"views\": 0,\r\n  \"commentCount\": 0,\r\n  \"spamCount\": 0,\r\n  \"spammedBy\": [\"60d21b7067d0d7bb280b2747\"],\r\n  \"comments\": [\"60d21b7067d0d7bb280b2748\"]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/post/createPost",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"post",
-								"createPost"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Edit Post",
 					"request": {
 						"method": "PATCH",
@@ -6532,7 +6479,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidXNlck5hbWUiOiJTb3NvIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI1MzI5NjAsImV4cCI6MTcxMjU0Mzc2MH0.oooaWWa4IgI_XGCs28a49s8zKQ8yTkiwmr1pjl36z7c",
 								"type": "text"
 							}
 						],
@@ -6861,7 +6808,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidXNlck5hbWUiOiJTb3NvIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI1MzI5NjAsImV4cCI6MTcxMjU0Mzc2MH0.oooaWWa4IgI_XGCs28a49s8zKQ8yTkiwmr1pjl36z7c",
 								"type": "text"
 							}
 						],
@@ -7595,6 +7542,103 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Create Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNzE5MTQsImV4cCI6NTAxNzExMzcxOTE0fQ.VVJzpgBZ8pSNAYB__lMbH0kI_DzF3ujOAqVvWDqIq5c",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "videoooo posttttt",
+									"type": "text"
+								},
+								{
+									"key": "subRedditId",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "text",
+									"value": "post b swra please",
+									"type": "text"
+								},
+								{
+									"key": "approvedBy",
+									"value": "65f5f5c26c3fec25017c306d",
+									"type": "text"
+								},
+								{
+									"key": "disapprovedBy",
+									"value": "65f5f5c26c3fec25017c306d",
+									"type": "text"
+								},
+								{
+									"key": "url",
+									"value": "https://example.com",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "video",
+									"type": "text"
+								},
+								{
+									"key": "isNSFW",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "isSpoiler",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "isLocked",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "isOc",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "poll",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/marly/Videos/WhatsApp Video 2024-03-26 at 2.35.17 AM.mp4"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/createPost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"createPost"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -7733,7 +7777,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidXNlck5hbWUiOiJTb3NvIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI1MzI5NjAsImV4cCI6MTcxMjU0Mzc2MH0.oooaWWa4IgI_XGCs28a49s8zKQ8yTkiwmr1pjl36z7c",
 								"type": "text"
 							}
 						],
@@ -8062,7 +8106,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidXNlck5hbWUiOiJTb3NvIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI1MzI5NjAsImV4cCI6MTcxMjU0Mzc2MH0.oooaWWa4IgI_XGCs28a49s8zKQ8yTkiwmr1pjl36z7c",
 								"type": "text"
 							}
 						],
@@ -9266,7 +9310,10 @@
 					"name": "Create Community",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				},
