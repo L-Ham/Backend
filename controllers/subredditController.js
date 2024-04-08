@@ -154,16 +154,13 @@ const addTextWidget = async (req, res, next) => {
     );
     if (textWidgetsIndex === -1) {
       subreddit.widgets.push({ type: "textWidgets", data: [] });
-      subreddit.widgets.push({ type: "textWidgets", data: [] });
       textWidgetsIndex = subreddit.widgets.length - 1;
     }
     if (subreddit.widgets[textWidgetsIndex].data.length >= 20) {
       return res
         .status(400)
         .json({ message: "Maximum 20 text widgets allowed" });
-      return res
-        .status(400)
-        .json({ message: "Maximum 20 text widgets allowed" });
+     
     }
     subreddit.widgets[textWidgetsIndex].data.push({
       widgetName,
