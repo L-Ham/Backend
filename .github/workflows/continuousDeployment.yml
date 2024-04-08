@@ -36,4 +36,5 @@ jobs:
         script: |
           cd /home/mohzakaria/Devops
           sudo docker compose down
+          docker-compose pull backend
           sudo docker compose up -d
