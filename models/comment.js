@@ -58,5 +58,9 @@ const commentSchema = new Schema({
     type: Boolean,
     required: false,
   },
+  isLocked:{
+    type: Boolean,
+    required: false
+  }
 });
 module.exports = mongoose.model("comment", commentSchema);

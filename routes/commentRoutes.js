@@ -22,5 +22,17 @@ router.patch(
   authenticateToken,
   commentController.downvote
 );
+router.patch(
+  "/lockComment",
+  bodyParser.json(),
+  authenticateToken,
+  commentController.lockComment
+);
+router.patch(
+  "/unlockComment",
+  bodyParser.json(),
+  authenticateToken,
+  commentController.unlockComment
+); 
 
 module.exports = router;

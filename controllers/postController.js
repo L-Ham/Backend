@@ -569,7 +569,6 @@ const cancelUpvote = async (req, res, next) => {
     res.status(200).json({ message: "Post upvote cancelled" });
   }
   catch (err) {
-    console.error("Error cancelling upvote:", err);
     res.status(500).json({ message: "Error cancelling upvote", error: err });
   }
 }
@@ -596,8 +595,8 @@ const cancelDownvote = async (req, res, next) => {
     res.status(200).json({ message: "Post downvote cancelled" });
   }
   catch (err) {
-    console.error("Error cancelling downvote:", err);
     res.status(500).json({ message: "Error cancelling downvote", error: err });
+
   }
 }
 
