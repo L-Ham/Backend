@@ -907,9 +907,12 @@ const getUpvotedPosts = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    const upvotedPosts = await Post.find({
+      _id: { $in: user.upvotedPosts },
+    });
     return res.status(200).json({
       message: "Retrieved User's Upvoted Posts",
-      upvotedPosts: user.upvotedPosts,
+      upvotedPosts: upvotedPosts,
     });
   } catch (err) {
     res.status(500).json({ message: "Error Getting Posts Upvoted by User" });
