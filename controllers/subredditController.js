@@ -107,7 +107,6 @@ const addRuleWidget = async (req, res, next) => {
     );
     if (rulesWidgetsIndex === -1) {
       subreddit.widgets.push({ type: "rulesWidgets", data: [] });
-      subreddit.widgets.push({ type: "rulesWidgets", data: [] });
       rulesWidgetsIndex = subreddit.widgets.length - 1;
     }
     if (subreddit.widgets.length >= 20) {
@@ -154,20 +153,16 @@ const addTextWidget = async (req, res, next) => {
     );
     if (textWidgetsIndex === -1) {
       subreddit.widgets.push({ type: "textWidgets", data: [] });
-      subreddit.widgets.push({ type: "textWidgets", data: [] });
       textWidgetsIndex = subreddit.widgets.length - 1;
     }
-    if (subreddit.widgets[textWidgetsIndex].data.length >= 20) {
-      return res
-        .status(400)
-        .json({ message: "Maximum 20 text widgets allowed" });
+    if (subreddit.widgets.length >= 20) {
+      return res.status(400).json({ message: "Maximum 20 widgets allowed" });
     }
     subreddit.widgets[textWidgetsIndex].data.push({
       widgetName,
       text,
     });
 
-    // Save the subreddit with the updated widgets
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Text widget added successfully",
