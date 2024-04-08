@@ -48,5 +48,10 @@ router.patch(
   authenticateToken,
   subredditController.editCommunityDetails
 );
+router.get(
+  "/subRedditWidgets",
+  bodyParser.json(),
+  subredditController.subRedditWidgets
+);
 
 module.exports = router;

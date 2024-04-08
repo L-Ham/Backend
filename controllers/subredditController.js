@@ -342,6 +342,22 @@ const editCommunityDetails = async (req, res, next) => {
       .json({ message: "Error Editing Community Details", err: err.message });
   }
 };
+const subRedditWidgets = async (req, res, next) => {
+  const subredditId = req.body.subredditId;
+  try {
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    res.json({
+      message: "Subreddit widgets retrieved successfully",
+      widgets: subreddit.widgets
+    });
+  } catch (error) {
+    console.error("Error getting subreddit widgets:", error);
+    res.status(500).json({ message: "Error getting subreddit widgets" });
+  }
+};
 
 module.exports = {
   sorting,
@@ -352,4 +368,6 @@ module.exports = {
   deleteTextWidget,
   reorderRules,
   editCommunityDetails,
+  subRedditWidgets,
+  
 };
