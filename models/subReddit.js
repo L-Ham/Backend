@@ -68,41 +68,46 @@ const subRedditSchema = new Schema({
       communityDescription: "",
     },
   },
-  widgets: {
-    textWidgets: [
-      {
-        widgetName: {
-          type: String,
-          required: true,
-        },
-        text: {
-          type: String,
-          required: true,
-        },
+  widgets: [
+    {
+      type: {
+        type: String,
+        enum: ['textWidgets', 'rulesWidgets'], 
+        required: true,
       },
-    ],
-    rulesWidgets: [
-      {
-        ruleText: {
-          type: String,
-          required: true,
-          unique: true,
+      data: [
+        {
+           // For textWidgets
+          widgetName: {
+            type: String,
+            required: false,
+          },
+          text: {
+            type: String,
+            required: false,
+          },
+          // For rulesWidgets
+          ruleText: {
+            type: String,
+            required: false,
+            unique: true,
+          },
+          reportReason: {
+            type: String,
+            required: false,
+          },
+          appliesTo: {
+            type: String,
+            required: false,
+          },
+          fullDescription: {
+            type: String,
+            required: false,
+          },
         },
-        reportReason: {
-          type: String,
-          required: false,
-        },
-        appliesTo: {
-          type: String,
-          required: true,
-        },
-        fullDescription: {
-          type: String,
-          required: false,
-        },
-      },
-    ],
-  },
+      ],
+    },
+  ],
   appearance: {
     bannerImage: {
       type: Schema.Types.ObjectId,
