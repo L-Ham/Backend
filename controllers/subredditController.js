@@ -161,9 +161,6 @@ const addTextWidget = async (req, res, next) => {
       return res
         .status(400)
         .json({ message: "Maximum 20 text widgets allowed" });
-      return res
-        .status(400)
-        .json({ message: "Maximum 20 text widgets allowed" });
     }
     subreddit.widgets[textWidgetsIndex].data.push({
       widgetName,
