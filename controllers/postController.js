@@ -225,7 +225,6 @@ const upvote = async (req, res, next) => {
     }
     res.status(200).json({ message: "Post upvoted & added to user" });
   } catch (err) {
-    console.error("Error upvoting post:", err);
     res.status(500).json({ message: "Error upvoting post", error: err });
   }
 };

@@ -1,6 +1,6 @@
-const SubReddit = require("../../models/subreddit");
+const SubReddit = require("../../models/subReddit");
 const subredditController = require("../../controllers/subredditController");
-jest.mock("../../models/subreddit", () => ({
+jest.mock("../../models/subReddit", () => ({
   findById: jest.fn(),
 }));
 
