@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "56a322cf-801a-4ebf-99cc-161d444e7fa4",
+		"_postman_id": "5b31627a-f3e9-440f-a943-444cf0b333fa",
 		"name": "Reddit Clone",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "32069311"
+		"_exporter_id": "33377382"
 	},
 	"item": [
 		{
@@ -6473,6 +6473,41 @@
 					"response": []
 				},
 				{
+					"name": "Report Post",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwNTVlMzNiODAwNmRmMDQzODY5YjM2IiwidXNlck5hbWUiOiJhbXJhc2hyYWYiLCJlbWFpbCI6ImFtcmF0ZWlhNDZAZ21haWwuY29tIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI2Njk1MTYsImV4cCI6MTcxMjY4MDMxNn0.JFKOk42Ps94O7vE47Th8tdYr6L10f6Ht46GwrD71U_w",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"postId\": \"66018152dc8731ee24db2ca1\",\r\n  \"title\": \"ta7arosh\",\r\n  \"description\": \"elet adab\",\r\n  \"blockUser\": false\r\n\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/report",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Upvote",
 					"request": {
 						"method": "PATCH",
@@ -7346,6 +7381,78 @@
 					"response": []
 				},
 				{
+					"name": "Mark as Spoiler",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwNTVlMzNiODAwNmRmMDQzODY5YjM2IiwidXNlck5hbWUiOiJhbXJhc2hyYWYiLCJlbWFpbCI6ImFtcmF0ZWlhNDZAZ21haWwuY29tIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI2MjAzNjMsImV4cCI6MTcxMjYzMTE2M30.7hLi1ysDChPsl4KmArBhNuBAr4XYXoHZTWY4Mu-xlPg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"661406ff58b347752502bc62\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/markAsSpoiler",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"markAsSpoiler"
+							]
+						},
+						"description": "Responsible for unmarking a post as NSFW and it can only be done by the post owner or a moderator"
+					},
+					"response": []
+				},
+				{
+					"name": "Unmark as Spoiler",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwNTVlMzNiODAwNmRmMDQzODY5YjM2IiwidXNlck5hbWUiOiJhbXJhc2hyYWYiLCJlbWFpbCI6ImFtcmF0ZWlhNDZAZ21haWwuY29tIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI2MjAzNjMsImV4cCI6MTcxMjYzMTE2M30.7hLi1ysDChPsl4KmArBhNuBAr4XYXoHZTWY4Mu-xlPg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\":\"6614023cd63aa13858b61e4b\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/unmarkAsSpoiler",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"unmarkAsSpoiler"
+							]
+						},
+						"description": "Responsible for unmarking a post as NSFW and it can only be done by the post owner or a moderator"
+					},
+					"response": []
+				},
+				{
 					"name": "Save Post",
 					"request": {
 						"method": "PATCH",
@@ -7550,7 +7657,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNzE5MTQsImV4cCI6NTAxNzExMzcxOTE0fQ.VVJzpgBZ8pSNAYB__lMbH0kI_DzF3ujOAqVvWDqIq5c",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwNTVlMzNiODAwNmRmMDQzODY5YjM2IiwidXNlck5hbWUiOiJhbXJhc2hyYWYiLCJlbWFpbCI6ImFtcmF0ZWlhNDZAZ21haWwuY29tIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI1ODc4NjQsImV4cCI6MTcxMjU5ODY2NH0.fy6hzWcb3K6GIZtYukHh9syUpUZEsZOk7GPt0gl2--U",
 								"type": "text"
 							}
 						],
@@ -7559,14 +7666,13 @@
 							"formdata": [
 								{
 									"key": "title",
-									"value": "videoooo posttttt",
+									"value": "amrrrrrrr mark test",
 									"type": "text"
 								},
 								{
 									"key": "subRedditId",
-									"value": "",
-									"type": "text",
-									"disabled": true
+									"value": "6600763f0e1e9482675cf856",
+									"type": "text"
 								},
 								{
 									"key": "text",
@@ -7621,7 +7727,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/C:/Users/marly/Videos/WhatsApp Video 2024-03-26 at 2.35.17 AM.mp4"
+									"src": []
 								}
 							]
 						},
@@ -7645,38 +7751,6 @@
 		{
 			"name": "Comment",
 			"item": [
-				{
-					"name": "Report Comment Spam",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "token",
-								"value": "asdfghjkl",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:5000/comment/reportSpam?",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"comment",
-								"reportSpam"
-							],
-							"query": [
-								{
-									"key": "",
-									"value": null
-								}
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "Add Comment",
 					"request": {
@@ -7765,6 +7839,41 @@
 							"path": [
 								"comment",
 								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Report Comment",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwNTVlMzNiODAwNmRmMDQzODY5YjM2IiwidXNlck5hbWUiOiJhbXJhc2hyYWYiLCJlbWFpbCI6ImFtcmF0ZWlhNDZAZ21haWwuY29tIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI2NzI3OTUsImV4cCI6MTcxMjY4MzU5NX0.LBZAHzCppfOnnQmsbGmstWxPDnb0eUUtUUdbCOi-6Y0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"commentId\": \"66143288400059d6de59ee79\",\r\n  \"title\": \"ta7arosh comment\",\r\n  \"description\": \"elet adab\",\r\n  \"blockUser\": true\r\n\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/comment/report",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"comment",
+								"report"
 							]
 						}
 					},
@@ -8354,35 +8463,6 @@
 							"body": "{\n    \"message\": \"Comment already downvoted\"\n}"
 						}
 					]
-				},
-				{
-					"name": "Get Spam Report",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"subredditId\":\"1234\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/comment/getSpamReports",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"comment",
-								"getSpamReports"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},

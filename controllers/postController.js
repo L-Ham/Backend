@@ -792,7 +792,7 @@ const reportPost = async (req, res, next) => {
     console.error("Error reporting post:", err);
     res.status(500).json({ message: "Error reporting post", error: err });
   }
-}  
+} 
 
 
 module.exports = {

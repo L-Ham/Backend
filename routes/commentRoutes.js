@@ -23,4 +23,12 @@ router.patch(
   commentController.downvote
 );
 
+router.patch(
+  "/report",
+  bodyParser.json(),
+  authenticateToken,
+  commentController.reportComment
+);
+
+
 module.exports = router;
