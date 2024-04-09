@@ -16,7 +16,7 @@ router.post(
   "/rule",
   bodyParser.json(),
   authenticateToken,
-  subredditController.addRuleWidget
+  subredditController.addRule
 );
 router.post(
   "/addTextWidget",
@@ -49,9 +49,9 @@ router.patch(
   subredditController.editCommunityDetails
 );
 router.get(
-  "/getSubRedditWidgets",
+  "/getSubRedditRules",
   bodyParser.json(),
-  subredditController.getSubRedditWidgets
+  subredditController.getSubRedditRules
 );
 
 module.exports = router;
