@@ -16,22 +16,22 @@ router.post(
   "/rule",
   bodyParser.json(),
   authenticateToken,
-  subredditController.addRuleWidget
+  subredditController.addRule
 );
 router.post(
-  "/addTextWidget",
+  "/TextWidget",
   bodyParser.json(),
   authenticateToken,
   subredditController.addTextWidget
 );
 router.patch(
-  "/editTextWidget",
+  "/TextWidget",
   bodyParser.json(),
   authenticateToken,
   subredditController.editTextWidget
 );
 router.delete(
-  "/deleteTextWidget",
+  "/TextWidget",
   bodyParser.json(),
   authenticateToken,
   subredditController.deleteTextWidget
@@ -49,9 +49,9 @@ router.patch(
   subredditController.editCommunityDetails
 );
 router.get(
-  "/getSubRedditWidgets",
+  "/getSubRedditRules",
   bodyParser.json(),
-  subredditController.getSubRedditWidgets
+  subredditController.getSubRedditRules
 );
 
 module.exports = router;

@@ -147,41 +147,6 @@ const subRedditSchema = new Schema({
     },
   ],
   // widgets: {
-  //   textWidgets: [
-  //     {
-  //       widgetName: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //       text: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //     },
-  //   ],
-  //   rulesWidgets: [
-  //     {
-  //       ruleText: {
-  //         type: String,
-  //         required: true,
-  //         unique: true,
-  //       },
-  //       reportReason: {
-  //         type: String,
-  //         required: false,
-  //       },
-  //       appliesTo: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //       fullDescription: {
-  //         type: String,
-  //         required: false,
-  //       },
-  //     },
-  //   ],
-  // },
-  // widgets: {
   //   type: Schema.Types.Mixed,
   //   required: false,
   // },
