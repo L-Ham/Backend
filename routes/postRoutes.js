@@ -131,5 +131,11 @@ router.patch(
   postController.unmarkAsSpoiler
 )
 
+router.patch(
+  "/report",
+  bodyParser.json(),
+  authenticateToken,
+  postController.reportPost
+)
 
 module.exports = router;

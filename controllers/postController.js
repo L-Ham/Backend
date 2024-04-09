@@ -745,6 +745,53 @@ const unmarkAsSpoiler = async (req, res, next) => {
   }
 }
 
+const reportPost = async (req, res, next) => {
+  const userId = req.userId;
+  const postId = req.body.postId;
+  const title = req.body.title;
+  const description = req.body.description;
+  const subRedditId = req.body.subRedditId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const postOwner = await User.findById(post.user);
+    if (!postOwner) {
+      return res.status(404).json({ message: "Post owner not found" });
+    }
+
+    const report = new Report({
+      type: "post",
+      referenceId: postId,
+      reporterId: userId,
+      reportedId: postOwner._id,
+      subredditId: subRedditId || null,
+      title: title || "",
+      description: description,
+      blockUser: req.body.blockUser || false,
+    });
+
+    if (req.body.blockUser){
+      user.blockUsers.push(postOwner._id);
+      await user.save();
+    }
+
+    await report.save();
+    res.status(200).json({ message: "Post reported successfully" });
+
+  }
+  catch (err) {
+    console.error("Error reporting post:", err);
+    res.status(500).json({ message: "Error reporting post", error: err });
+  }
+}  
+
+
 module.exports = {
   savePost,
   unsavePost,
@@ -765,4 +812,5 @@ module.exports = {
   removePost,
   markAsSpoiler,
   unmarkAsSpoiler,
+  reportPost,
 };
