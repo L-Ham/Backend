@@ -68,51 +68,6 @@ const subRedditSchema = new Schema({
       communityDescription: "",
     },
   },
-  // widgets: {
-  //   type: [Object], // Define it as an array of objects
-  //   default: [], // Default value is an empty array
-  // },
-  // widgets: [
-  //   {
-  //     type: {
-  //       type: String,
-  //       enum: ["textWidgets", "rulesWidgets"],
-  //       required: true,
-  //     },
-  //     data: [
-  //       {
-  //         // For textWidgets
-  //         widgetName: {
-  //           type: String,
-  //           required: false,
-  //         },
-  //         text: {
-  //           type: String,
-  //           required: false,
-  //         },
-  //         // For rulesWidgets
-  //         ruleText: {
-  //           type: String,
-  //           required: false,
-  //           unique: true,
-  //         },
-  //         reportReason: {
-  //           type: String,
-  //           required: false,
-  //         },
-  //         appliesTo: {
-  //           type: String,
-  //           required: false,
-  //         },
-  //         fullDescription: {
-  //           type: String,
-  //           required: false,
-  //         },
-  //       },
-  //     ],
-  //   },
-  // ],
-  //1st VERSION
   textWidgets: [
     {
       widgetName: {
@@ -146,10 +101,7 @@ const subRedditSchema = new Schema({
       },
     },
   ],
-  // widgets: {
-  //   type: Schema.Types.Mixed,
-  //   required: false,
-  // },
+
   appearance: {
     bannerImage: {
       type: Schema.Types.ObjectId,
