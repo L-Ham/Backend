@@ -12,15 +12,15 @@ const reportSchema = new Schema({
     refPath: 'type', // Reference model is determined by the value of 'type' field
     required: true
   },
-  repoterId: {
+  reporterId: {
     type: Schema.Types.ObjectId,
     ref: "user",
-    required: true,
+    required: false,
   },
-  repotedId: {
+  reportedId: {
     type: Schema.Types.ObjectId,
     ref: "user",
-    required: true,
+    required: false,
   },
   subredditId: {
     type: Schema.Types.ObjectId,
@@ -47,4 +47,4 @@ const reportSchema = new Schema({
   },
 });
 
-module.exports = moon.model("report", reportSchema);
+module.exports = mongoose.model("report", reportSchema);

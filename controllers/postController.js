@@ -3,6 +3,7 @@ const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
 const Comment = require("../models/comment");
 const UserUpload = require("../controllers/userUploadsController");
+const Report = require("../models/report");
 
 const createPost = async (req, res, next) => {
   const userId = req.userId;
@@ -750,7 +751,6 @@ const reportPost = async (req, res, next) => {
   const postId = req.body.postId;
   const title = req.body.title;
   const description = req.body.description;
-  const subRedditId = req.body.subRedditId;
   try {
     const post = await Post.findById(postId);
     if (!post) {
@@ -764,7 +764,10 @@ const reportPost = async (req, res, next) => {
     if (!postOwner) {
       return res.status(404).json({ message: "Post owner not found" });
     }
-
+    if(user.blockUsers.includes(postOwner._id)){
+      return res.status(400).json({ message: "You have already blocked this user" });
+    }
+    const subRedditId = post.subReddit;
     const report = new Report({
       type: "post",
       referenceId: postId,
