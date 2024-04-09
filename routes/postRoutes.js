@@ -124,5 +124,12 @@ router.patch(
   postController.markAsSpoiler
 )
 
+router.patch(
+  "/unmarkAsSpoiler",
+  bodyParser.json(),
+  authenticateToken,
+  postController.unmarkAsSpoiler
+)
+
 
 module.exports = router;
