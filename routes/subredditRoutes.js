@@ -19,19 +19,19 @@ router.post(
   subredditController.addRule
 );
 router.post(
-  "/addTextWidget",
+  "/TextWidget",
   bodyParser.json(),
   authenticateToken,
   subredditController.addTextWidget
 );
 router.patch(
-  "/editTextWidget",
+  "/TextWidget",
   bodyParser.json(),
   authenticateToken,
   subredditController.editTextWidget
 );
 router.delete(
-  "/deleteTextWidget",
+  "/TextWidget",
   bodyParser.json(),
   authenticateToken,
   subredditController.deleteTextWidget
