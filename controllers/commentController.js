@@ -198,7 +198,7 @@ const reportComment = async (req, res, next) => {
 
   }
   catch (err) {
-    console.error("Error reporting Comment:", err);
+    console.log("Error reporting Comment:", err);
     res.status(500).json({ message: "Error reporting Comment", error: err });
   }
 } 
