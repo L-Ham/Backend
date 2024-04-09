@@ -69,8 +69,8 @@ const subRedditSchema = new Schema({
     },
   },
   widgets: {
-    type: [Object], // Define it as an array of objects
-    default: [], // Default value is an empty array
+    type: [Object], 
+    default: [],
   },
   // widgets: [
   //   {
@@ -148,10 +148,10 @@ const subRedditSchema = new Schema({
   //     },
   //   ],
   // },
-  widgets: {
-    type: Schema.Types.Mixed,
-    required: false,
-  },
+  // widgets: {
+  //   type: Schema.Types.Mixed,
+  //   required: false,
+  // },
   appearance: {
     bannerImage: {
       type: Schema.Types.ObjectId,
