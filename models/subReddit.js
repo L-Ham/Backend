@@ -68,10 +68,10 @@ const subRedditSchema = new Schema({
       communityDescription: "",
     },
   },
-  widgets: {
-    type: [Object], // Define it as an array of objects
-    default: [], // Default value is an empty array
-  },
+  // widgets: {
+  //   type: [Object], // Define it as an array of objects
+  //   default: [], // Default value is an empty array
+  // },
   // widgets: [
   //   {
   //     type: {
@@ -113,45 +113,43 @@ const subRedditSchema = new Schema({
   //   },
   // ],
   //1st VERSION
+  textWidgets: [
+    {
+      widgetName: {
+        type: String,
+        required: true,
+      },
+      text: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  rules: [
+    {
+      ruleText: {
+        type: String,
+        required: true,
+        unique: true,
+      },
+      reportReason: {
+        type: String,
+        required: false,
+      },
+      appliesTo: {
+        type: String,
+        required: true,
+      },
+      fullDescription: {
+        type: String,
+        required: false,
+      },
+    },
+  ],
   // widgets: {
-  //   textWidgets: [
-  //     {
-  //       widgetName: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //       text: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //     },
-  //   ],
-  //   rulesWidgets: [
-  //     {
-  //       ruleText: {
-  //         type: String,
-  //         required: true,
-  //         unique: true,
-  //       },
-  //       reportReason: {
-  //         type: String,
-  //         required: false,
-  //       },
-  //       appliesTo: {
-  //         type: String,
-  //         required: true,
-  //       },
-  //       fullDescription: {
-  //         type: String,
-  //         required: false,
-  //       },
-  //     },
-  //   ],
+  //   type: Schema.Types.Mixed,
+  //   required: false,
   // },
-  widgets: {
-    type: Schema.Types.Mixed,
-    required: false,
-  },
   appearance: {
     bannerImage: {
       type: Schema.Types.ObjectId,
@@ -259,14 +257,6 @@ const subRedditSchema = new Schema({
     required: true,
     default: "red",
   },
-  rules: [
-    {
-      rule: { type: String, required: true },
-      description: { type: String, required: true },
-      appliedTo: { type: String, required: true },
-      reportReasonDefault: { type: String, default: "Rule" },
-    },
-  ],
 });
 
 module.exports = mongoose.model("subreddits", subRedditSchema);

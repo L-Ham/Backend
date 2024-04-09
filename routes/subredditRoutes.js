@@ -13,7 +13,7 @@ router.post(
 
 router.get("/sorting", bodyParser.json(), subredditController.sorting);
 router.post(
-  "/addRuleWidget",
+  "/rule",
   bodyParser.json(),
   authenticateToken,
   subredditController.addRuleWidget
