@@ -359,7 +359,7 @@ const deleteTextWidget = async (req, res, next) => {
     subreddit.textWidgets.splice(textWidgetIndex, 1);
 
     await subreddit.save();
-    
+
     res.json({
       message: "Text widget deleted successfully",
       widgets: subreddit.textWidgets,
@@ -369,7 +369,6 @@ const deleteTextWidget = async (req, res, next) => {
     res.status(500).json({ message: "Error deleting text widget" });
   }
 };
-
 
 const reorderRules = async (req, res, next) => {
   const userId = req.userId;
@@ -388,25 +387,32 @@ const reorderRules = async (req, res, next) => {
     const rules = subreddit.rules;
 
     if (rulesOrder.length !== rules.length) {
-      return res.status(400).json({ message: "The number of rules provided does not match the number of existing rules" });
+      return res
+        .status(400)
+        .json({
+          message:
+            "The number of rules provided does not match the number of existing rules",
+        });
     }
 
     if (new Set(rulesOrder).size !== rulesOrder.length) {
       return res.status(400).json({ message: "Duplicate rule IDs provided" });
     }
 
-    const ruleMap = new Map(rules.map(rule => [rule._id.toString(), rule]));
+    const ruleMap = new Map(rules.map((rule) => [rule._id.toString(), rule]));
 
-    if (!rulesOrder.every(ruleId => ruleMap.has(ruleId))) {
-      return res.status(400).json({ message: "One or more rule IDs provided do not exist" });
+    if (!rulesOrder.every((ruleId) => ruleMap.has(ruleId))) {
+      return res
+        .status(400)
+        .json({ message: "One or more rule IDs provided do not exist" });
     }
 
-    const reorderedRules = rulesOrder.map(ruleId => ruleMap.get(ruleId));
+    const reorderedRules = rulesOrder.map((ruleId) => ruleMap.get(ruleId));
 
     subreddit.rules = reorderedRules;
 
     const savedSubreddit = await subreddit.save();
-    
+
     res.json({
       message: "Rules reordered successfully",
       rules: savedSubreddit.rules,
@@ -416,7 +422,6 @@ const reorderRules = async (req, res, next) => {
     res.status(500).json({ message: "Error reordering rules" });
   }
 };
-
 
 const getSubredditPosts = async (req, res, next) => {
   const userId = req.userId;
@@ -448,8 +453,10 @@ const getSubredditPosts = async (req, res, next) => {
   }
   try {
     results.results = await model.find().limit(limit).skip(startIndex).exec();
-  } catch (e) {
-    res.status(500).json({ message: e.message });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error Getting Subreddit Posts", error: err.message });
   }
 };
 const editCommunityDetails = async (req, res, next) => {
@@ -504,7 +511,6 @@ const getSubRedditRules = async (req, res, next) => {
     res.status(500).json({ message: "Error getting subreddit rules" });
   }
 };
-
 
 module.exports = {
   sorting,
