@@ -8,7 +8,6 @@ const UserUpload = require("../controllers/userUploadsController");
 const UserUploadModel = require("../models/userUploads");
 const { get } = require("http");
 
-
 const getNotificationSettings = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -621,14 +620,24 @@ const updateGender = async (req, res, next) => {
         .status(400)
         .json({ message: "Gender is already set to this value" });
     }
+    if (
+      req.body.gender === "Female" ||
+      req.body.gender === "Male" ||
+      req.body.gender === "I prefer not to say"
+    ) {
+      user.gender = req.body.gender;
+      const updatedUser = await user.save();
 
-    user.gender = req.body.gender;
-    const updatedUser = await user.save();
-
-    res.status(200).json({
-      message: "User gender updated successfully",
-      user: updatedUser,
-    });
+      res.status(200).json({
+        message: "User gender updated successfully",
+        user: updatedUser,
+      });
+    }
+    else {
+      res.status(400).json({
+        message:"Gender format should be Female/Male/I prefer not to say"
+      })
+    }
   } catch (err) {
     console.log("Error updating user gender:", err);
     res.status(500).json({
@@ -1030,10 +1039,12 @@ const uploadAvatarImage = async (req, res, next) => {
 
     if (!req.files || req.files.length === 0) {
       console.error("No file provided for avatar image");
-      return res.status(400).json({ message: "No file provided for avatar image" });
+      return res
+        .status(400)
+        .json({ message: "No file provided for avatar image" });
     }
 
-    const avatarImage = req.files[0]; 
+    const avatarImage = req.files[0];
     const uploadedImageId = await UserUpload.uploadMedia(avatarImage);
 
     if (!uploadedImageId) {
@@ -1075,16 +1086,13 @@ const getAvatarImage = async (req, res, next) => {
     res.status(200).send({
       _id: avatarImage._id,
       filename: avatarImage.filename,
-      originalname: avatarImage.originalname
+      originalname: avatarImage.originalname,
     });
   } catch (error) {
     console.error("Error getting avatar image:", error);
     res.status(500).json({ message: "Error getting avatar image" });
   }
 };
-
-
- 
 
 module.exports = {
   getAccountSettings,
@@ -1118,5 +1126,5 @@ module.exports = {
   searchUsernames,
   getUserLocation,
   uploadAvatarImage,
-  getAvatarImage
+  getAvatarImage,
 };
