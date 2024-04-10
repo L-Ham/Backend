@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "56a322cf-801a-4ebf-99cc-161d444e7fa4",
+		"_postman_id": "767f3a40-0685-4c4c-9b5f-75a4e8513ea0",
 		"name": "Reddit Clone",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "32069311"
+		"_exporter_id": "23392578",
+		"_collection_link": "https://solar-star-469904.postman.co/workspace/My-Workspace~aad214f1-101a-4935-81ee-0e31829c9e03/collection/23392578-767f3a40-0685-4c4c-9b5f-75a4e8513ea0?action=share&source=collection_link&creator=23392578"
 	},
 	"item": [
 		{
@@ -16,7 +17,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"userName\": \"test4\",\n    \"email\": \"test4@gmail.com\",\n    \"password\": \"12345678\",\n    \"gender\":\"Male\"\n}",
+							"raw": "{\n    \"userName\": \"mahmoud\",\n    \"email\": \"mahmoud@gmail.com\",\n    \"password\": \"12345678\",\n    \"gender\":\"Male\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -256,7 +257,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\":\"Soso@gmail.com\",\n    \"password\":\"123456\"\n}",
+							"raw": "{\n    \"emailGet200403\":\"newss@gmail.com\",\n    \"password\":\"123456\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -264,14 +265,13 @@
 							}
 						},
 						"url": {
-							"raw": "https://reddit-bylham.me/api/auth/login",
-							"protocol": "https",
+							"raw": "http://localhost:5000/auth/login",
+							"protocol": "http",
 							"host": [
-								"reddit-bylham",
-								"me"
+								"localhost"
 							],
+							"port": "5000",
 							"path": [
-								"api",
 								"auth",
 								"login"
 							]
@@ -609,7 +609,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjkzNGE1ODE2NDY4Yjk1NzAzOTUzZDE0ZTlmMTVkZjVkMDlhNDAxZTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTE4NjQ1OTYyMzc1MTk3NDM4NzEiLCJoZCI6ImVuZy1zdC5jdS5lZHUuZWciLCJlbWFpbCI6InppYWQuZGFib3VyMDFAZW5nLXN0LmN1LmVkdS5lZyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiTWIwVi0xXzk4WkRvWnUxcWp6NlRnQSIsIm5hbWUiOiJaaWFkIERhYm91ciIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMVDJiUlFYX2R4V0pmX1NYREZPMC1CM2hTTEFYRnhJNFpWQ3dBbDdlT3o9czk2LWMiLCJnaXZlbl9uYW1lIjoiWmlhZCIsImZhbWlseV9uYW1lIjoiRGFib3VyIiwiaWF0IjoxNzExOTM2NDY1LCJleHAiOjE3MTE5NDAwNjV9.nSGFljojDfD8TdT_ms-xij1ZllPr6AT-1qCcxc559D-kk63NEf6gkmh1v3QObDuVLAQ5p84IHHQ3vHZsP9uE-UjmXrwovh5jucZ3gmsj_eU_EVG2131lp0CA3o9ckGXLNmHOwm2wAIjcPRxVpmeLAWwKe0Iu3CMYjLWc9G83e2f5g13xrHRaY-2zzuIwMbsujINqBkZKMP1wNHRlQa2o5pRPb6Jty8z1CC3obsWZUMvoptaU7VQpHdF8HgOFkE6R7QBHHlFp14wkQ37Pm3w25KCb90a6JtPQa_0-0YTVJ9_YKuFUHvuI40qjIM-RTZOrLBlRvsxOcbFETP6sZo3A\"\r\n}",
+							"raw": "{\r\n    \"token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjkzYjQ5NTE2MmFmMGM4N2NjN2E1MTY4NjI5NDA5NzA0MGRhZjNiNDMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiNHJod0lXdzVqTE85X0tiVm56UGZwZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjYwNjU4NywiZXhwIjoxNzEyNjEwMTg3fQ.BEEIQz405WjqLHZUSmbQqwrINFOPGPf5IuE8cqNYgvqPIVJw7Ut3IhGWHrPWl3xx8w4MNIv9t6ZxmJzEJk_2iBgvCTasdQZ6D9dMS742ezospbGjpVjpr8Ck_Fy5cDA7W8HcMVsAKkemaPS9oHNzEt-Ti0wceccjMmSObOCLVrXX6LHc9rtJcR0prLPVIheL79WsEwWR74-AWS3Lbs6UpMfrMRJsU2-dpzOvodLjHOA9WYgik8ePKqZdC2swMiPF0U9Yqbij2HqvHeL9LOR5yDrEQDwCRWOwucv3lu982o5Dg3CIAGDnli0Ug0UHbFzsGvyStajq5aKF3u5aZpkd0A\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -890,7 +890,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjkzNGE1ODE2NDY4Yjk1NzAzOTUzZDE0ZTlmMTVkZjVkMDlhNDAxZTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiZ0M3di1PMUk3dWwyZzlnT0R0aWVtZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjE5OTgxMiwiZXhwIjoxNzEyMjAzNDEyfQ.WPdywTPc1urH2uHoeU7LF2HVeTjvSafjwdt0QbW69P3MyAe-zZ8E9S-jeBUtqDybhXxzUNkeTY0jvhjpK49BP38u0xFlG3dLsW5Vcx7SN0fwY3P-CFzgiQAFqZ2y4p4YLIf0A-ktX8O75DLcXc8uUB0GsYggB4yNTYdxKy97pchIjjnonalxNvucOKdDG9gUkuYGPRcdXoYUC5HLoNA4wuMCsT8MHOzn26gPV1GOxb97JDlD6eBTg17GpZyAJTRmFd2VRT8juPBHMx_ywDDNoKEQFV2NSBXKGLUUfMfGTgy46gNsDhQ2mxuOICJ1Gs9TdX8vdZ8Z7voTcTLJ2KyIQA\"\n}",
+							"raw": "{\n    \"token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjkzYjQ5NTE2MmFmMGM4N2NjN2E1MTY4NjI5NDA5NzA0MGRhZjNiNDMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiQVEzenU2QU13SThrQnphLUtlTWx4USIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjU5MjY5OSwiZXhwIjoxNzEyNTk2Mjk5fQ.eQAOTzs_VnBhPax1p2zATRmhbb_MOPadt_8T2KkATAOImOC4wirADyFT6ZiIud_47WnLKnlNeGa2GTfa84BOcOI1IVqd724xL_1rghVp4KrovvQqeQEA5OeQ4kJPRTGpig4l8vnZg_T6NxqeP5MCD4qJVHTtLYqhnrU63ybcX4PjUalThWDfbpaH9IagL4WYHAOS6tSFFU86auuiBQ0ZalXdHjfov_ttTFGvop8oJsuFixoqA2Ky594Ty1kQ-Z7DVuHjDQTmMy7JMSpzUVtE4_FspIjHvhRcbbu5YdkOJlVUKfUpis_6Bb9yLb-sLqF4OB22iEDCkP_CJ6_ao1M8tA\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2035,6 +2035,15 @@
 												"type": "text"
 											}
 										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
 										"url": {
 											"raw": "http://localhost:5000/user/notificationsSettings",
 											"protocol": "http",
@@ -2099,6 +2108,15 @@
 												"type": "text"
 											}
 										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
 										"url": {
 											"raw": "http://localhost:5000/user/notificationsSettings",
 											"protocol": "http",
@@ -5779,7 +5797,8 @@
 								"key": "Cache-Control",
 								"value": "no-cache",
 								"system": true,
-								"type": "text"
+								"type": "text",
+								"id": 0
 							},
 							{
 								"name": "postman-token",
@@ -5792,7 +5811,8 @@
 								"key": "Postman-Token",
 								"value": "<calculated when request is sent>",
 								"system": true,
-								"type": "text"
+								"type": "text",
+								"id": 1
 							},
 							{
 								"name": "content-type",
@@ -5803,9 +5823,11 @@
 								"disableEdit": true,
 								"previewSettingsLink": "Go to body",
 								"key": "Content-Type",
-								"value": "text/plain",
+								"value": "application/json",
 								"system": true,
-								"type": "text"
+								"type": "text",
+								"id": 2,
+								"disabled": true
 							},
 							{
 								"name": "content-length",
@@ -5818,7 +5840,9 @@
 								"key": "Content-Length",
 								"value": "<calculated when request is sent>",
 								"system": true,
-								"type": "text"
+								"type": "text",
+								"id": 3,
+								"disabled": true
 							},
 							{
 								"name": "host",
@@ -5830,7 +5854,9 @@
 								"key": "Host",
 								"value": "<calculated when request is sent>",
 								"system": true,
-								"type": "text"
+								"type": "text",
+								"id": 4,
+								"disabled": true
 							},
 							{
 								"name": "user-agent",
@@ -5842,7 +5868,9 @@
 								"key": "User-Agent",
 								"value": "PostmanRuntime/7.32.1",
 								"system": true,
-								"type": "text"
+								"type": "text",
+								"id": 5,
+								"disabled": true
 							},
 							{
 								"name": "accept",
@@ -5854,7 +5882,9 @@
 								"key": "Accept",
 								"value": "*/*",
 								"system": true,
-								"type": "text"
+								"type": "text",
+								"id": 6,
+								"disabled": true
 							},
 							{
 								"name": "accept-encoding",
@@ -5866,7 +5896,9 @@
 								"key": "Accept-Encoding",
 								"value": "gzip, deflate, br",
 								"system": true,
-								"type": "text"
+								"type": "text",
+								"id": 7,
+								"disabled": true
 							},
 							{
 								"name": "connection",
@@ -5878,13 +5910,15 @@
 								"key": "Connection",
 								"value": "keep-alive",
 								"system": true,
-								"type": "text"
+								"type": "text",
+								"id": 8,
+								"disabled": true
 							},
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYxMzFiODNlZTgxM2M0NGM4ZTg1OGRmIiwidXNlck5hbWUiOiJuZXduZXciLCJ0eXBlIjoibm9ybWFsIn0sImlhdCI6MTcxMjUyOTcwMiwiZXhwIjoxNzEyNTQwNTAyfQ.qrgqd4jdJrdhNAefBrwuadPINnMhu-7Ua_ppVqcUiU8",
 								"type": "text",
-								"id": 0
+								"id": 9
 							}
 						],
 						"body": {
@@ -6409,6 +6443,41 @@
 					"response": []
 				},
 				{
+					"name": "Create Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNzE5MTQsImV4cCI6NTAxNzExMzcxOTE0fQ.VVJzpgBZ8pSNAYB__lMbH0kI_DzF3ujOAqVvWDqIq5c",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"user\": \"60d21b7067d0d7bb280b2740\",\r\n  \"subReddit\": \"60d21b7067d0d7bb280b2741\",\r\n  \"title\": \"bngrabbb ahwwwww222\",\r\n  \"text\": \"Post Text ntent\",\r\n  \"images\": [\"image1.jpg\", \"image2.png\"],\r\n  \"approved\": false,\r\n  \"approvedBy\": \"60d21b7067d0d7bb280b2742\",\r\n  \"disapproved\": false,\r\n  \"disapprovedBy\": \"60d21b7067d0d7bb280b2743\",\r\n  \"videos\": [\"video1.mp4\", \"video2.mov\"],\r\n  \"url\": \"https://example.com\",\r\n  \"poll\": {\r\n    \"options\": [\"Option 1\", \"Option 2\", \"Option 3\"],\r\n    \"votingLength\": 7,\r\n    \"voters\": [\"60d21b7067d0d7bb280b2744\"],\r\n    \"startTime\": \"2024-03-27T12:00:00Z\",\r\n    \"endTime\": \"2024-03-30T12:00:00Z\"\r\n  },\r\n  \"type\": \"text\",\r\n  \"isNSFW\": false,\r\n  \"isSpoiler\": false,\r\n  \"isLocked\": false,\r\n  \"isOc\": true,\r\n  \"upvotes\": 0,\r\n  \"downvotes\": 0,\r\n  \"upvotedUsers\": [],\r\n  \"downvotedUsers\": [],\r\n  \"views\": 0,\r\n  \"commentCount\": 0,\r\n  \"spamCount\": 0,\r\n  \"spammedBy\": [\"60d21b7067d0d7bb280b2747\"],\r\n  \"comments\": [\"60d21b7067d0d7bb280b2748\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/post/createPost",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"post",
+								"createPost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Edit Post",
 					"request": {
 						"method": "PATCH",
@@ -6479,7 +6548,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidXNlck5hbWUiOiJTb3NvIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI1MzI5NjAsImV4cCI6MTcxMjU0Mzc2MH0.oooaWWa4IgI_XGCs28a49s8zKQ8yTkiwmr1pjl36z7c",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
 								"type": "text"
 							}
 						],
@@ -6808,7 +6877,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidXNlck5hbWUiOiJTb3NvIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI1MzI5NjAsImV4cCI6MTcxMjU0Mzc2MH0.oooaWWa4IgI_XGCs28a49s8zKQ8yTkiwmr1pjl36z7c",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
 								"type": "text"
 							}
 						],
@@ -7542,103 +7611,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Create Post",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTEzNzE5MTQsImV4cCI6NTAxNzExMzcxOTE0fQ.VVJzpgBZ8pSNAYB__lMbH0kI_DzF3ujOAqVvWDqIq5c",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "videoooo posttttt",
-									"type": "text"
-								},
-								{
-									"key": "subRedditId",
-									"value": "",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "text",
-									"value": "post b swra please",
-									"type": "text"
-								},
-								{
-									"key": "approvedBy",
-									"value": "65f5f5c26c3fec25017c306d",
-									"type": "text"
-								},
-								{
-									"key": "disapprovedBy",
-									"value": "65f5f5c26c3fec25017c306d",
-									"type": "text"
-								},
-								{
-									"key": "url",
-									"value": "https://example.com",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "video",
-									"type": "text"
-								},
-								{
-									"key": "isNSFW",
-									"value": "false",
-									"type": "text"
-								},
-								{
-									"key": "isSpoiler",
-									"value": "false",
-									"type": "text"
-								},
-								{
-									"key": "isLocked",
-									"value": "false",
-									"type": "text"
-								},
-								{
-									"key": "isOc",
-									"value": "true",
-									"type": "text"
-								},
-								{
-									"key": "poll",
-									"value": "",
-									"type": "text"
-								},
-								{
-									"key": "file",
-									"type": "file",
-									"src": "/C:/Users/marly/Videos/WhatsApp Video 2024-03-26 at 2.35.17 AM.mp4"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:5000/post/createPost",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"post",
-								"createPost"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -7777,7 +7749,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidXNlck5hbWUiOiJTb3NvIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI1MzI5NjAsImV4cCI6MTcxMjU0Mzc2MH0.oooaWWa4IgI_XGCs28a49s8zKQ8yTkiwmr1pjl36z7c",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
 								"type": "text"
 							}
 						],
@@ -8106,7 +8078,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYwMDczMTU4NzBiMmY5OWQzZDNlZmFjIiwidXNlck5hbWUiOiJTb3NvIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI1MzI5NjAsImV4cCI6MTcxMjU0Mzc2MH0.oooaWWa4IgI_XGCs28a49s8zKQ8yTkiwmr1pjl36z7c",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
 								"type": "text"
 							}
 						],
@@ -8802,6 +8774,768 @@
 					"name": "Community Widgets",
 					"item": [
 						{
+							"name": "Reorder Rules",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIxNzUzNzcsImV4cCI6NTAxNzEyMTc1Mzc3fQ.rFqa6RAaYnePQDka1Kg7cE4_3pIl3_e8Fhy8g68PD8s",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"subredditId\": \"6600763f0e1e9482675cf856\",\r\n  \"rulesOrder\": [\"660d63b3fd927993b544c233\", \"660d6325a0582277b4c5ddca\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/subreddit/reorderRules",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"subreddit",
+										"reorderRules"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Text Widget",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE2Mzc3NjIsImV4cCI6NTAxNzExNjM3NzYyfQ.U0QaXfHirJV3WncGdUFzSZlWnR0iJYXNSa9Cir8PLGQ",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"subredditId\": \"6600763f0e1e9482675cf856\",\r\n  \"textWidgetId\":\"660d622ed9352b51a7923563\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/subreddit/deleteTextWidget",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"subreddit",
+										"deleteTextWidget"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Text Widget",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE2Mzc3NjIsImV4cCI6NTAxNzExNjM3NzYyfQ.U0QaXfHirJV3WncGdUFzSZlWnR0iJYXNSa9Cir8PLGQ",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"subredditId\": \"6600763f0e1e9482675cf856\",\r\n  \"textWidgetId\":\"660d624ed9352b51a7923568\",\r\n  \"widgetName\": \"editing widgetttt\",\r\n  \"text\": \"This is the updated text for the widget\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/subreddit/editTextWidget",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"subreddit",
+										"editTextWidget"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add text Widget",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiNHJod0lXdzVqTE85X0tiVm56UGZwZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjYwNjU4NywiZXhwIjo1MTcxMjYwNjYwNSwidXNlciI6eyJpZCI6IjY2MTQ0ZDhkMzU1N2E0NjQzZWQ0ODdlZSIsInR5cGUiOiJnb29nbGUifX0.fxJA8nJgEd3apbXK1g1wrHbu0-Yd8POQ1oaZbFJuJFg",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"subredditId\":\"66153f200f42af7adc99de9f\",\r\n    \"widgetName\":\"Text widget 1\",\r\n    \"text\":\"Text  Widget 1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/subreddit/addTextWidget",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"subreddit",
+										"addTextWidget"
+									]
+								},
+								"description": "This API is rsponsible for adding a TEXT widget within the list of widgets of the subreddit:\n\n- Make sure that the total number of widgets didn't exceed 20 Widgets in total\n    \n- All the Elements in the body are MANDATORY"
+							},
+							"response": [
+								{
+									"name": "403 Not a Moderator",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIxNTEwNjAsImV4cCI6NTAxNzEyMTUxMDYwfQ.FvIEUWBGv7DLntgNg8aLNaT7XpIxWGY2xkql8kzIBbA",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"subredditId\":\"660eee525ce3076f5a5bf21f\",\r\n    \"widgetName\":\"Text widget 1\",\r\n    \"text\":\"Text  Widget 1\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5000/subreddit/addTextWidget",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5000",
+											"path": [
+												"subreddit",
+												"addTextWidget"
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "37"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"25-ut9MQy1KpXLMOB4r7Wh/wtWFRVs\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 08 Apr 2024 16:08:35 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"You are not a moderator\"\n}"
+								},
+								{
+									"name": "404 Subreddit Not Found",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiNHJod0lXdzVqTE85X0tiVm56UGZwZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjYwNjU4NywiZXhwIjo1MTcxMjYwNjYwNSwidXNlciI6eyJpZCI6IjY2MTQ0ZDhkMzU1N2E0NjQzZWQ0ODdlZSIsInR5cGUiOiJnb29nbGUifX0.fxJA8nJgEd3apbXK1g1wrHbu0-Yd8POQ1oaZbFJuJFg",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"subredditId\":\"660eee525ce3076f5a5bf21f\",\r\n    \"widgetName\":\"Text widget 1\",\r\n    \"text\":\"Text  Widget 1\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5000/subreddit/addTextWidget",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5000",
+											"path": [
+												"subreddit",
+												"addTextWidget"
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "33"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"21-ckFRR9nYqDvFxfNEes6qtrvIlBs\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 08 Apr 2024 20:06:16 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Subreddit not found\"\n}"
+								},
+								{
+									"name": "200 Added Successfully",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiNHJod0lXdzVqTE85X0tiVm56UGZwZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjYwNjU4NywiZXhwIjo1MTcxMjYwNjYwNSwidXNlciI6eyJpZCI6IjY2MTQ0ZDhkMzU1N2E0NjQzZWQ0ODdlZSIsInR5cGUiOiJnb29nbGUifX0.fxJA8nJgEd3apbXK1g1wrHbu0-Yd8POQ1oaZbFJuJFg",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"subredditId\":\"66144db13557a4643ed487f2\",\r\n    \"widgetName\":\"Text widget 1\",\r\n    \"text\":\"Text  Widget 1\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5000/subreddit/addTextWidget",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5000",
+											"path": [
+												"subreddit",
+												"addTextWidget"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1013"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"3f5-3BmxTRHG0BuG8FCJksDWTKfOFYo\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 08 Apr 2024 20:07:11 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Text widget added successfully\",\n    \"savedSubreddit\": {\n        \"appearance\": {\n            \"keyColor\": {\n                \"hue\": 0,\n                \"saturation\": 0,\n                \"hexCode\": \"\"\n            },\n            \"baseColor\": {\n                \"hue\": 0,\n                \"saturation\": 0,\n                \"hexCode\": \"\"\n            },\n            \"stickyPostColor\": {\n                \"hue\": 0,\n                \"saturation\": 0,\n                \"hexCode\": \"\"\n            },\n            \"bannerImage\": null,\n            \"avatarImage\": null\n        },\n        \"_id\": \"66144db13557a4643ed487f2\",\n        \"posts\": [],\n        \"privacy\": \"public\",\n        \"name\": \"Ziad's Community\",\n        \"moderators\": [\n            \"66144d8d3557a4643ed487ee\"\n        ],\n        \"members\": [\n            \"66144d8d3557a4643ed487ee\"\n        ],\n        \"pendingMembers\": [],\n        \"pendingPosts\": [],\n        \"removedPosts\": [],\n        \"reportedPosts\": [],\n        \"pendingComments\": [],\n        \"communityDetails\": {\n            \"membersNickname\": \"Members\",\n            \"currentlyViewingNickname\": \"Online\",\n            \"communityDescription\": \"\"\n        },\n        \"ageRestriction\": true,\n        \"numberOfMembers\": 0,\n        \"spamFilter\": [\n            \"low\",\n            \"low\",\n            \"low\"\n        ],\n        \"discoverabilityOptions\": [\n            false,\n            false,\n            false\n        ],\n        \"otherOptions\": [\n            \"low\",\n            \"low\",\n            \"low\"\n        ],\n        \"mobileLookAndFeel\": \"red\",\n        \"widgets\": [\n            {\n                \"type\": \"textWidgets\",\n                \"data\": [\n                    {\n                        \"widgetName\": \"Text widget 1\",\n                        \"text\": \"Text  Widget 1\",\n                        \"_id\": \"66144e6e3557a4643ed487fe\"\n                    }\n                ],\n                \"_id\": \"66144e6e3557a4643ed487fd\"\n            }\n        ],\n        \"rules\": [],\n        \"__v\": 1\n    }\n}"
+								},
+								{
+									"name": "400 Widgets Number Limit",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiNHJod0lXdzVqTE85X0tiVm56UGZwZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjYwNjU4NywiZXhwIjo1MTcxMjYwNjYwNSwidXNlciI6eyJpZCI6IjY2MTQ0ZDhkMzU1N2E0NjQzZWQ0ODdlZSIsInR5cGUiOiJnb29nbGUifX0.fxJA8nJgEd3apbXK1g1wrHbu0-Yd8POQ1oaZbFJuJFg",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"subredditId\":\"661537c7201c9e6894035c5c\",\r\n    \"widgetName\":\"Text widget 21\",\r\n    \"text\":\"Text  Widget 21\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5000/subreddit/addTextWidget",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5000",
+											"path": [
+												"subreddit",
+												"addTextWidget"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "40"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"28-Uap91naCatSl/fS3QO6cx+fZIPY\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 09 Apr 2024 12:50:34 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Maximum 20 widgets allowed\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Add Rule",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiNHJod0lXdzVqTE85X0tiVm56UGZwZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjYwNjU4NywiZXhwIjo1MTcxMjYwNjYwNSwidXNlciI6eyJpZCI6IjY2MTQ0ZDhkMzU1N2E0NjQzZWQ0ODdlZSIsInR5cGUiOiJnb29nbGUifX0.fxJA8nJgEd3apbXK1g1wrHbu0-Yd8POQ1oaZbFJuJFg",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"subredditId\": \"66153f200f42af7adc99de9f\", \r\n  \"rule\": \"Rule \",\r\n  \"description\": \"changed description.\",\r\n  \"appliedTo\": \"Posts\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/subreddit/rule",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"subreddit",
+										"rule"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "403 Not the Moderator",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"subredditId\": \"66144db13557a4643ed487f2\", \r\n  \"rule\": \"changed route\",\r\n  \"description\": \"changed description.\",\r\n  \"appliedTo\": \"Posts\"\r\n}\r\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5000/subreddit/addRuleWidget",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5000",
+											"path": [
+												"subreddit",
+												"addRuleWidget"
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "37"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"25-ut9MQy1KpXLMOB4r7Wh/wtWFRVs\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 08 Apr 2024 20:06:55 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"You are not a moderator\"\n}"
+								},
+								{
+									"name": "404 Subreddit Not Found",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"subredditId\": \"661537c6201c9e6894035c5c\", \r\n  \"rule\": \"changed route\",\r\n  \"description\": \"changed description.\",\r\n  \"appliedTo\": \"Posts\"\r\n}\r\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5000/subreddit/addRuleWidget",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5000",
+											"path": [
+												"subreddit",
+												"addRuleWidget"
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "33"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"21-ckFRR9nYqDvFxfNEes6qtrvIlBs\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 09 Apr 2024 12:53:30 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Subreddit not found\"\n}"
+								},
+								{
+									"name": "400 Maximum Widgets Number Reached",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiNHJod0lXdzVqTE85X0tiVm56UGZwZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjYwNjU4NywiZXhwIjo1MTcxMjYwNjYwNSwidXNlciI6eyJpZCI6IjY2MTQ0ZDhkMzU1N2E0NjQzZWQ0ODdlZSIsInR5cGUiOiJnb29nbGUifX0.fxJA8nJgEd3apbXK1g1wrHbu0-Yd8POQ1oaZbFJuJFg",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"subredditId\": \"661537c7201c9e6894035c5c\", \r\n  \"rule\": \"changed route\",\r\n  \"description\": \"changed description.\",\r\n  \"appliedTo\": \"Posts\"\r\n}\r\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5000/subreddit/addRuleWidget",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5000",
+											"path": [
+												"subreddit",
+												"addRuleWidget"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "40"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"28-Uap91naCatSl/fS3QO6cx+fZIPY\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 09 Apr 2024 12:54:21 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Maximum 20 widgets allowed\"\n}"
+								},
+								{
+									"name": "400 Maximum Rules Size",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiNHJod0lXdzVqTE85X0tiVm56UGZwZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjYwNjU4NywiZXhwIjo1MTcxMjYwNjYwNSwidXNlciI6eyJpZCI6IjY2MTQ0ZDhkMzU1N2E0NjQzZWQ0ODdlZSIsInR5cGUiOiJnb29nbGUifX0.fxJA8nJgEd3apbXK1g1wrHbu0-Yd8POQ1oaZbFJuJFg",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"subredditId\": \"66153f200f42af7adc99de9f\", \r\n  \"rule\": \"Rule \",\r\n  \"description\": \"changed description.\",\r\n  \"appliedTo\": \"Posts\"\r\n}\r\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5000/subreddit/addRuleWidget",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5000",
+											"path": [
+												"subreddit",
+												"addRuleWidget"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "38"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"26-zqehhGva9oNtEGnYt3kasFoki7g\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 09 Apr 2024 13:32:33 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Maximum 15 rules allowed\"\n}"
+								}
+							]
+						},
+						{
 							"name": "Edit Community Details",
 							"request": {
 								"method": "PATCH",
@@ -9128,194 +9862,190 @@
 									"body": "{\n    \"message\": \"Forbidden: Invalid token\"\n}"
 								}
 							]
-						},
-						{
-							"name": "Add Rule",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyMTk5OTA3LCJpYXQiOjE3MTIxOTk5MDd9.5N7Foqmn1zbpuGwFefS4b7V6ZtHsWjeWEOHmUx0IZwU",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"subredditId\": \"6600763f0e1e9482675cf856\", \r\n  \"rule\": \"changed route\",\r\n  \"description\": \"changed description.\",\r\n  \"appliedTo\": \"Posts\"\r\n}\r\n",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:5000/subreddit/addRuleWidget",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "5000",
-									"path": [
-										"subreddit",
-										"addRuleWidget"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Add text Widget",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIxNTEwNjAsImV4cCI6NTAxNzEyMTUxMDYwfQ.FvIEUWBGv7DLntgNg8aLNaT7XpIxWGY2xkql8kzIBbA",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"subredditId\":\"6600763f0e1e9482675cf856\",\r\n    \"widgetName\":\"Text widget 1\",\r\n    \"text\":\"Text  Widget 1\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:5000/subreddit/addTextWidget",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "5000",
-									"path": [
-										"subreddit",
-										"addTextWidget"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Edit Text Widget",
-							"request": {
-								"method": "PATCH",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE2Mzc3NjIsImV4cCI6NTAxNzExNjM3NzYyfQ.U0QaXfHirJV3WncGdUFzSZlWnR0iJYXNSa9Cir8PLGQ",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"subredditId\": \"6600763f0e1e9482675cf856\",\r\n  \"textWidgetId\":\"660d624ed9352b51a7923568\",\r\n  \"widgetName\": \"editing widgetttt\",\r\n  \"text\": \"This is the updated text for the widget\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:5000/subreddit/editTextWidget",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "5000",
-									"path": [
-										"subreddit",
-										"editTextWidget"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Delete Text Widget",
-							"request": {
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTE2Mzc3NjIsImV4cCI6NTAxNzExNjM3NzYyfQ.U0QaXfHirJV3WncGdUFzSZlWnR0iJYXNSa9Cir8PLGQ",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"subredditId\": \"6600763f0e1e9482675cf856\",\r\n  \"textWidgetId\":\"660d622ed9352b51a7923563\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:5000/subreddit/deleteTextWidget",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "5000",
-									"path": [
-										"subreddit",
-										"deleteTextWidget"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Reorder Rules",
-							"request": {
-								"method": "PATCH",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNWY1YzI2YzNmZWMyNTAxN2MzMDZkIiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTIxNzUzNzcsImV4cCI6NTAxNzEyMTc1Mzc3fQ.rFqa6RAaYnePQDka1Kg7cE4_3pIl3_e8Fhy8g68PD8s",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"subredditId\": \"6600763f0e1e9482675cf856\",\r\n  \"rulesOrder\": [\"660d63b3fd927993b544c233\", \"660d6325a0582277b4c5ddca\"]\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:5000/subreddit/reorderRules",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "5000",
-									"path": [
-										"subreddit",
-										"reorderRules"
-									]
-								}
-							},
-							"response": []
 						}
 					]
 				},
 				{
 					"name": "Create Community",
 					"request": {
-						"method": "GET",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzMzIzOTk5MTE0MzItdmpsMzc2YTA1dWtmMGhocGo2a3EwaG51aWJpajI2ZGguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTMwNjE2OTAyMTc0NzY5OTk0NDQiLCJlbWFpbCI6InppYWQud2FyZXRoQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiNHJod0lXdzVqTE85X0tiVm56UGZwZyIsIm5hbWUiOiJaaWFkIEEuV2FyZXRoIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tQQ2xmOG0zcWIyLWlpZDR4VlFpaDRna1hSSTdRMjk2QlRvQTRKM1I5dGdscmx0dz1zOTYtYyIsImdpdmVuX25hbWUiOiJaaWFkIiwiZmFtaWx5X25hbWUiOiJBLldhcmV0aCIsImlhdCI6MTcxMjYwNjU4NywiZXhwIjo1MTcxMjYwNjYwNSwidXNlciI6eyJpZCI6IjY2MTQ0ZDhkMzU1N2E0NjQzZWQ0ODdlZSIsInR5cGUiOiJnb29nbGUifX0.fxJA8nJgEd3apbXK1g1wrHbu0-Yd8POQ1oaZbFJuJFg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Final's Community\",\n  \"privacy\": \"public\",\n  \"ageRestriction\":true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": ""
+							"raw": "http://localhost:5000/subreddit/createCommunity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"subreddit",
+								"createCommunity"
+							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "400 Name already Exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmNzNlMjY5OGZlZWIyZmRjNWVjYzhkIiwidHlwZSI6Imdvb2dsZSJ9LCJleHAiOjUxNzEyNTkyNzE5LCJpYXQiOjE3MTI1OTI3MTl9.k3H5XD6Fm2iBwsXuoV7O7tZlZRKNUajtLBBaFjvywTo",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"EL AMARAT\",\n  \"privacy\": \"public\",\n  \"ageRestriction\":true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/subreddit/createCommunity",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"subreddit",
+										"createCommunity"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2b-biQmqnI74mT3KAg3QtlrX3WzbrI\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 08 Apr 2024 17:38:58 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Community name already exists\"\n}"
+						},
+						{
+							"name": "200 Created Successfully",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYxNDM4NWM1NGY5ZTFmOWZkYWJiMjU2IiwidHlwZSI6Im5vcm1hbCJ9LCJpYXQiOjE3MTI2MDExODEsImV4cCI6NTAxNzEyNjAxMTgxfQ.ry2b8ACJalJiDUHjPrpm7txuDX2xLGCxSTUgVkCb2Mw",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"EL AMARAT\",\n  \"privacy\": \"public\",\n  \"ageRestriction\":true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/subreddit/createCommunity",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"subreddit",
+										"createCommunity"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "699"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2bb-YyNQoaYo6ydulPwS7PXgMZxaW1M\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 08 Apr 2024 18:33:34 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Created community successfully\",\n    \"savedCommunity\": {\n        \"posts\": [],\n        \"privacy\": \"public\",\n        \"name\": \"EL AMARAT\",\n        \"moderators\": [\n            \"6614385c54f9e1f9fdabb256\"\n        ],\n        \"members\": [\n            \"6614385c54f9e1f9fdabb256\"\n        ],\n        \"pendingMembers\": [],\n        \"pendingPosts\": [],\n        \"removedPosts\": [],\n        \"reportedPosts\": [],\n        \"pendingComments\": [],\n        \"communityDetails\": {\n            \"membersNickname\": \"Members\",\n            \"currentlyViewingNickname\": \"Online\",\n            \"communityDescription\": \"\"\n        },\n        \"appearance\": {\n            \"bannerImage\": null,\n            \"avatarImage\": null\n        },\n        \"ageRestriction\": true,\n        \"numberOfMembers\": 0,\n        \"spamFilter\": [\n            \"low\",\n            \"low\",\n            \"low\"\n        ],\n        \"discoverabilityOptions\": [\n            false,\n            false,\n            false\n        ],\n        \"otherOptions\": [\n            \"low\",\n            \"low\",\n            \"low\"\n        ],\n        \"mobileLookAndFeel\": \"red\",\n        \"_id\": \"6614387a54f9e1f9fdabb25c\",\n        \"widgets\": [],\n        \"rules\": [],\n        \"__v\": 0\n    }\n}"
+						}
+					]
 				},
 				{
 					"name": "Sorting",
