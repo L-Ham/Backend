@@ -622,14 +622,24 @@ const updateGender = async (req, res, next) => {
         .status(400)
         .json({ message: "Gender is already set to this value" });
     }
+    if (
+      req.body.gender === "Female" ||
+      req.body.gender === "Male" ||
+      req.body.gender === "I prefer not to say"
+    ) {
+      user.gender = req.body.gender;
+      const updatedUser = await user.save();
 
-    user.gender = req.body.gender;
-    const updatedUser = await user.save();
-
-    res.status(200).json({
-      message: "User gender updated successfully",
-      user: updatedUser,
-    });
+      res.status(200).json({
+        message: "User gender updated successfully",
+        user: updatedUser,
+      });
+    }
+    else {
+      res.status(400).json({
+        message:"Gender format should be Female/Male/I prefer not to say"
+      })
+    }
   } catch (err) {
     console.log("Error updating user gender:", err);
     res.status(500).json({
