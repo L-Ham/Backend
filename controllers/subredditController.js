@@ -148,7 +148,7 @@ const createCommunity = async (req, res, next) => {
 //     res.status(500).json({ message: "Error adding rule" });
 //   }
 // };
-const addRuleWidget = async (req, res, next) => {
+const addRule = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
   const { rule, description, appliedTo, reportReasonDefault } = req.body;
@@ -312,16 +312,8 @@ const editTextWidget = async (req, res, next) => {
     if (!textWidgetId) {
       return res.status(404).json({ message: "Text widget ID is required" });
     }
-    if (!subreddit.widgets) {
-      return res.status(404).json({ message: "No widgets found" });
-    }
-    const textWidgets = subreddit.widgets.find(
-      (widget) => widget.type === "textWidgets"
-    );
-    if (!textWidgets) {
-      return res.status(404).json({ message: "No text widgets found" });
-    }
-    const textWidget = textWidgets.data.id(textWidgetId);
+
+    const textWidget = subreddit.textWidgets.id(textWidgetId);
     if (!textWidget) {
       console.log("Text widget with provided ID not found");
       return res.status(404).json({ message: "Text widget not found" });
@@ -331,13 +323,14 @@ const editTextWidget = async (req, res, next) => {
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Text widget edited successfully",
-      widgets: textWidgets.data,
+      widgets: subreddit.textWidgets,
     });
   } catch (error) {
     console.log("Error editing text widget:", error);
     res.status(500).json({ message: "Error editing text widget" });
   }
 };
+
 const deleteTextWidget = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -354,31 +347,29 @@ const deleteTextWidget = async (req, res, next) => {
     if (!textWidgetId) {
       return res.status(404).json({ message: "Text widget ID is required" });
     }
-    if (!subreddit.widgets) {
-      return res.status(404).json({ message: "No widgets found" });
-    }
-    const textWidgets = subreddit.widgets.find(
-      (widget) => widget.type === "textWidgets"
+
+    const textWidgetIndex = subreddit.textWidgets.findIndex(
+      (widget) => widget._id.toString() === textWidgetId
     );
-    if (!textWidgets) {
-      return res.status(404).json({ message: "No text widgets found" });
-    }
-    const textWidget = textWidgets.data.id(textWidgetId);
-    if (!textWidget) {
-      console.log("Text widget with provided ID not found");
+
+    if (textWidgetIndex === -1) {
       return res.status(404).json({ message: "Text widget not found" });
     }
-    textWidgets.data.pull(textWidgetId);
-    const savedSubreddit = await subreddit.save();
+
+    subreddit.textWidgets.splice(textWidgetIndex, 1);
+
+    await subreddit.save();
+    
     res.json({
       message: "Text widget deleted successfully",
-      widgets: textWidgets.data,
+      widgets: subreddit.textWidgets,
     });
   } catch (error) {
     console.log("Error deleting text widget:", error);
     res.status(500).json({ message: "Error deleting text widget" });
   }
 };
+
 
 const reorderRules = async (req, res, next) => {
   const userId = req.userId;
@@ -393,36 +384,39 @@ const reorderRules = async (req, res, next) => {
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
     }
-    if (!subreddit.widgets) {
-      return res.status(404).json({ message: "No widgets found" });
-    }
-    const rulesWidgets = subreddit.widgets.find(
-      (widget) => widget.type === "rulesWidgets"
-    );
-    if (!rulesWidgets) {
-      return res.status(404).json({ message: "No rule widgets found" });
+
+    const rules = subreddit.rules;
+
+    if (rulesOrder.length !== rules.length) {
+      return res.status(400).json({ message: "The number of rules provided does not match the number of existing rules" });
     }
 
-    const reorderedRules = [];
-    rulesOrder.forEach((ruleId) => {
-      const rule = rulesWidgets.data.id(ruleId);
-      if (rule) {
-        reorderedRules.push(rule);
-      }
-    });
+    if (new Set(rulesOrder).size !== rulesOrder.length) {
+      return res.status(400).json({ message: "Duplicate rule IDs provided" });
+    }
 
-    rulesWidgets.data = reorderedRules;
+    const ruleMap = new Map(rules.map(rule => [rule._id.toString(), rule]));
+
+    if (!rulesOrder.every(ruleId => ruleMap.has(ruleId))) {
+      return res.status(400).json({ message: "One or more rule IDs provided do not exist" });
+    }
+
+    const reorderedRules = rulesOrder.map(ruleId => ruleMap.get(ruleId));
+
+    subreddit.rules = reorderedRules;
 
     const savedSubreddit = await subreddit.save();
+    
     res.json({
       message: "Rules reordered successfully",
-      widgets: rulesWidgets.data,
+      rules: savedSubreddit.rules,
     });
   } catch (error) {
     console.log("Error reordering rules:", error);
     res.status(500).json({ message: "Error reordering rules" });
   }
 };
+
 
 const getSubredditPosts = async (req, res, next) => {
   const userId = req.userId;
@@ -494,7 +488,7 @@ const editCommunityDetails = async (req, res, next) => {
       .json({ message: "Error Editing Community Details", err: err.message });
   }
 };
-const getSubRedditWidgets = async (req, res, next) => {
+const getSubRedditRules = async (req, res, next) => {
   const subredditId = req.body.subredditId;
   try {
     const subreddit = await SubReddit.findById(subredditId);
@@ -502,25 +496,25 @@ const getSubRedditWidgets = async (req, res, next) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     res.json({
-      message: "Subreddit widgets retrieved successfully",
-      widgets: subreddit.widgets,
-      widgets: subreddit.widgets,
+      message: "Subreddit rules retrieved successfully",
+      rules: subreddit.rules,
     });
   } catch (error) {
-    console.error("Error getting subreddit widgets:", error);
-    res.status(500).json({ message: "Error getting subreddit widgets" });
+    console.error("Error getting subreddit rules:", error);
+    res.status(500).json({ message: "Error getting subreddit rules" });
   }
 };
+
 
 module.exports = {
   sorting,
   createCommunity,
-  addRuleWidget,
+  addRule,
   addTextWidget,
   editTextWidget,
   deleteTextWidget,
   reorderRules,
   editCommunityDetails,
   getSubredditPosts,
-  getSubRedditWidgets,
+  getSubRedditRules,
 };
