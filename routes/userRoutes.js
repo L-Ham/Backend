@@ -196,11 +196,17 @@ router.get(
   userController.searchUsernames
 );
 router.post(
-  "/uploadAvatarImage",
+  "/avatarImage",
   bodyParser.json(),
   authenticateToken,
   uploadImage.array('file'),
   userController.uploadAvatarImage
+);
+router.get(
+  "/avatarImage",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getAvatarImage
 );
 
 module.exports = router;
