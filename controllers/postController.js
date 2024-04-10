@@ -3,6 +3,7 @@ const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
 const Comment = require("../models/comment");
 const UserUpload = require("../controllers/userUploadsController");
+const Report = require("../models/report");
 
 const createPost = async (req, res, next) => {
   const userId = req.userId;
@@ -668,6 +669,131 @@ const removePost = async (req, res, next) => {
   }
 }
 
+const markAsSpoiler = async (req, res, next) => {
+  const userId = req.userId;
+  const postId = req.body.postId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (post.isSpoiler) {
+      return res.status(400).json({ message: "Post is already marked as spoiler" });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (post.user.toString() !== userId) {
+      return res
+        .status(401)
+        .json({ message: "User not authorized to mark post as spoiler" });
+    }
+    if (post.subReddit) {
+      const postSubreddit = await SubReddit.findById(post.subReddit);
+      if (!postSubreddit.moderators.includes(userId)) {
+        return res
+          .status(401)
+          .json({ message: "User not authorized to mark post as spoiler" });
+      }
+    }
+    post.isSpoiler = true;
+    await post.save();
+    res.status(200).json({ message: "Post marked as spoiler" });
+  } catch (error) {
+    console.log("Error Marking post as spoiler:", error);
+    res.status(500).json({ message: "Error Marking post as spoiler" });
+  }
+}
+
+const unmarkAsSpoiler = async (req, res, next) => {
+  const userId = req.userId;
+  const postId = req.body.postId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (!post.isSpoiler) {
+      return res.status(400).json({ message: "Post is not marked as spoiler" });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (post.user.toString() !== userId) {
+      return res
+        .status(401)
+        .json({ message: "User not authorized to unmark post as spoiler" });
+    }
+    if (post.subReddit) {
+      const postSubreddit = await SubReddit.findById(post.subReddit);
+      if (!postSubreddit.moderators.includes(userId)) {
+        return res
+          .status(401)
+          .json({ message: "User not authorized to unmark post as spoiler" });
+      }
+    }
+    post.isSpoiler = false;
+    await post.save();
+    res.status(200).json({ message: "Post unmarked as spoiler" });
+  } catch (error) {
+    console.log("Error Unmarking post as spoiler:", error);
+    res.status(500).json({ message: "Error Unmarking post as spoiler" });
+  }
+}
+
+const reportPost = async (req, res, next) => {
+  const userId = req.userId;
+  const postId = req.body.postId;
+  const title = req.body.title;
+  const description = req.body.description;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const postOwner = await User.findById(post.user);
+    if (!postOwner) {
+      return res.status(404).json({ message: "Post owner not found" });
+    }
+    if(user.blockUsers.includes(postOwner._id)){
+      return res.status(400).json({ message: "You have already blocked this user" });
+    }
+    const subRedditId = post.subReddit;
+    const report = new Report({
+      type: "post",
+      referenceId: postId,
+      reporterId: userId,
+      reportedId: postOwner._id,
+      subredditId: subRedditId || null,
+      title: title || "",
+      description: description,
+      blockUser: req.body.blockUser || false,
+    });
+
+    if (req.body.blockUser){
+      user.blockUsers.push(postOwner._id);
+      await user.save();
+    }
+
+    await report.save();
+    res.status(200).json({ message: "Post reported successfully" });
+
+  }
+  catch (err) {
+    console.error("Error reporting post:", err);
+    res.status(500).json({ message: "Error reporting post", error: err });
+  }
+} 
+
+
 module.exports = {
   savePost,
   unsavePost,
@@ -686,4 +812,7 @@ module.exports = {
   cancelDownvote,
   approvePost,
   removePost,
+  markAsSpoiler,
+  unmarkAsSpoiler,
+  reportPost,
 };

@@ -35,4 +35,12 @@ router.patch(
   commentController.unlockComment
 ); 
 
+router.patch(
+  "/report",
+  bodyParser.json(),
+  authenticateToken,
+  commentController.reportComment
+);
+
+
 module.exports = router;
