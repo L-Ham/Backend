@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
 const subReddit = require("../models/subReddit");
+const UserUpload = require("../controllers/userUploadsController");
+const UserUploadModel = require("../models/userUploads");
+const { get } = require("http");
 
 const getNotificationSettings = async (req, res, next) => {
   try {
@@ -617,14 +620,24 @@ const updateGender = async (req, res, next) => {
         .status(400)
         .json({ message: "Gender is already set to this value" });
     }
+    if (
+      req.body.gender === "Female" ||
+      req.body.gender === "Male" ||
+      req.body.gender === "I prefer not to say"
+    ) {
+      user.gender = req.body.gender;
+      const updatedUser = await user.save();
 
-    user.gender = req.body.gender;
-    const updatedUser = await user.save();
-
-    res.status(200).json({
-      message: "User gender updated successfully",
-      user: updatedUser,
-    });
+      res.status(200).json({
+        message: "User gender updated successfully",
+        user: updatedUser,
+      });
+    }
+    else {
+      res.status(400).json({
+        message:"Gender format should be Female/Male/I prefer not to say"
+      })
+    }
   } catch (err) {
     console.log("Error updating user gender:", err);
     res.status(500).json({
@@ -1014,6 +1027,72 @@ const getUserLocation = async (req, res) => {
       .json({ message: "Error retrieving user location", error: err });
   }
 };
+const uploadAvatarImage = async (req, res, next) => {
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      console.error("No file provided for avatar image");
+      return res
+        .status(400)
+        .json({ message: "No file provided for avatar image" });
+    }
+
+    const avatarImage = req.files[0];
+    const uploadedImageId = await UserUpload.uploadMedia(avatarImage);
+
+    if (!uploadedImageId) {
+      console.error("Media upload failed:", avatarImage);
+      return res.status(400).json({ message: "Failed to upload avatar image" });
+    }
+
+    user.avatarImage = uploadedImageId;
+    await user.save();
+
+    res.status(200).json({ message: "Avatar image uploaded successfully" });
+  } catch (error) {
+    console.error("Error uploading avatar image:", error);
+    res.status(500).json({ message: "Error uploading avatar image" });
+  }
+};
+
+const getAvatarImage = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const avatarImageId = user.avatarImage;
+    if (!avatarImageId) {
+      console.error("Avatar image not found for user:", userId);
+      return res.status(404).json({ message: "Avatar image not found" });
+    }
+
+    const avatarImage = await UserUploadModel.findById(avatarImageId);
+    if (!avatarImage) {
+      console.error("Avatar image not found with ID:", avatarImageId);
+      return res.status(404).json({ message: "Avatar image not found" });
+    }
+
+    res.status(200).send({
+      _id: avatarImage._id,
+      filename: avatarImage.filename,
+      originalname: avatarImage.originalname,
+    });
+  } catch (error) {
+    console.error("Error getting avatar image:", error);
+    res.status(500).json({ message: "Error getting avatar image" });
+  }
+};
 
 module.exports = {
   getAccountSettings,
@@ -1046,4 +1125,6 @@ module.exports = {
   editUserLocation,
   searchUsernames,
   getUserLocation,
+  uploadAvatarImage,
+  getAvatarImage,
 };

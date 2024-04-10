@@ -3,6 +3,8 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const bodyParser = require("body-parser");
 const authenticateToken = require("../middleware/authenticateToken");
+const { uploadImage  } = require("../middleware/multerConfig");
+
 
 router.get(
   "/accountSettings",
@@ -192,6 +194,19 @@ router.get(
   bodyParser.json(),
   authenticateToken,
   userController.searchUsernames
+);
+router.post(
+  "/avatarImage",
+  bodyParser.json(),
+  authenticateToken,
+  uploadImage.array('file'),
+  userController.uploadAvatarImage
+);
+router.get(
+  "/avatarImage",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getAvatarImage
 );
 
 module.exports = router;
