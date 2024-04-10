@@ -31,7 +31,7 @@ const commentSchema = new Schema({
     },
   ],
   url: {
-    type: String,
+    type: [String],
     required: false,
   },
   replies: [
