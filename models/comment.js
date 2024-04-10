@@ -16,6 +16,24 @@ const commentSchema = new Schema({
     type: String,
     required: true,
   },
+  images: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+    },
+  ],
+  videos: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+    },
+  ],
+  url: {
+    type: String,
+    required: false,
+  },
   replies: [
     {
       type: Schema.Types.ObjectId,
@@ -58,5 +76,9 @@ const commentSchema = new Schema({
     type: Boolean,
     required: false,
   },
+  isLocked:{
+    type: Boolean,
+    required: false
+  }
 });
 module.exports = mongoose.model("comment", commentSchema);

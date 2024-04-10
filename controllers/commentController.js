@@ -2,6 +2,7 @@ const Comment = require("../models/comment");
 const Post = require("../models/post");
 const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
+const Report = require("../models/report");
 
 const createComment = async (req, res, next) => {
   const userId = req.userId;
@@ -142,8 +143,143 @@ const downvote = async (req, res, next) => {
     res.status(500).json({ message: "Error downvoting comment", error: err });
   }
 };
+
+const reportComment = async (req, res, next) => {
+  const userId = req.userId;
+  const commentId = req.body.commentId;
+  const title = req.body.title;
+  const description = req.body.description;
+  
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      console.log("Comment not found for comment ID:", commentId);
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    const commentOwner = await User.findById(comment.userId);
+    if (!commentOwner) {
+      return res.status(404).json({ message: "Comment owner not found" });
+    }
+    if(user.blockUsers.includes(commentOwner._id)){
+      return res.status(400).json({ message: "You have already blocked this user" });
+    }
+
+    const post = await Post.findById(comment.postId);
+    if (!post) {
+      console.log("Post not found for post ID:", comment.postId);
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const subRedditId = post.subReddit;
+    //const subRedditId = comment.post.subReddit;
+    const report = new Report({
+      type: "comment",
+      referenceId: commentId,
+      reporterId: userId,
+      reportedId: commentOwner._id,
+      subredditId: subRedditId || null,
+      title: title || "",
+      description: description,
+      blockUser: req.body.blockUser || false,
+    });
+
+    if (req.body.blockUser){
+      user.blockUsers.push(commentOwner._id);
+      await user.save();
+    }
+    await report.save();
+    res.status(200).json({ message: "Comment reported successfully" });
+
+  }
+  catch (err) {
+    console.log("Error reporting Comment:", err);
+    res.status(500).json({ message: "Error reporting Comment", error: err });
+  }
+} 
+
+
+
+const lockComment = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const commentId = req.body.commentId;
+    const comment = await Comment.findById(commentId);
+    const user = await User.findById(userId);
+    
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if(comment.isLocked==true)
+    {
+      return res.status(400).json({ message: "Comment is already locked" });
+    }
+    const post = await Post.findById(comment.postId);
+    if (post.subReddit === null) {
+      return res.status(400).json({
+        message: "This feature is only available for subreddit moderators",
+      });
+    }
+    const subReddit = await SubReddit.findById(post.subReddit);
+    if (!subReddit.moderators.includes(userId)) {
+      return res.status(400).json({
+        message: "This feature is only available for subreddit moderators",
+      });
+    }
+    
+    comment.isLocked = true;
+    await comment.save();
+    res.status(200).json({ message: "Comment locked" });
+  } catch (err) {
+    console.error("Error locking comment:", err);
+    res.status(500).json({ message: "Error locking comment", error: err });
+  }
+};
+
+const unlockComment = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const commentId = req.body.commentId;
+    const comment = await Comment.findById(commentId);
+    const user = await User.findById(userId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if(comment.isLocked==false)
+    {
+      return res.status(400).json({ message: "Comment is already unlocked" });
+    }
+    const post = await Post.findById(comment.postId);
+    if (post.subReddit === null) {
+      return res.status(400).json({
+        message: "This feature is only available for subreddit moderators",
+      });
+    }
+    const subReddit = await SubReddit.findById(post.subReddit);
+    if (!subReddit.moderators.includes(userId)) {
+      return res.status(400).json({
+        message: "This feature is only available for subreddit moderators",
+      });
+    }
+   
+    comment.isLocked = false;
+    await comment.save();
+    res.status(200).json({ message: "Comment unlocked" });
+  } catch (err) {
+    console.error("Error unlocking comment:", err);
+    res.status(500).json({ message: "Error unlocking comment", error: err });
+  }
+};
 module.exports = {
   createComment,
   upvote,
   downvote,
+  reportComment,
+  lockComment,
+  unlockComment,
 };
