@@ -18,6 +18,18 @@ router.post(
   authenticateToken,
   subredditController.addRule
 );
+router.patch(
+  "/rule",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editRule
+);
+router.delete(
+  "/rule",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteRule
+);
 router.post(
   "/TextWidget",
   bodyParser.json(),

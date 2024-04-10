@@ -1053,12 +1053,10 @@ const uploadAvatarImage = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     if (!req.files || req.files.length === 0) {
-      console.error("No file provided for avatar image");
       return res
         .status(400)
         .json({ message: "No file provided for avatar image" });
@@ -1068,7 +1066,6 @@ const uploadAvatarImage = async (req, res, next) => {
     const uploadedImageId = await UserUpload.uploadMedia(avatarImage);
 
     if (!uploadedImageId) {
-      console.error("Media upload failed:", avatarImage);
       return res.status(400).json({ message: "Failed to upload avatar image" });
     }
 
@@ -1077,7 +1074,6 @@ const uploadAvatarImage = async (req, res, next) => {
 
     res.status(200).json({ message: "Avatar image uploaded successfully" });
   } catch (error) {
-    console.error("Error uploading avatar image:", error);
     res.status(500).json({ message: "Error uploading avatar image" });
   }
 };
@@ -1087,19 +1083,16 @@ const getAvatarImage = async (req, res, next) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     const avatarImageId = user.avatarImage;
     if (!avatarImageId) {
-      console.error("Avatar image not found for user:", userId);
       return res.status(404).json({ message: "Avatar image not found" });
     }
 
     const avatarImage = await UserUploadModel.findById(avatarImageId);
     if (!avatarImage) {
-      console.error("Avatar image not found with ID:", avatarImageId);
       return res.status(404).json({ message: "Avatar image not found" });
     }
 
@@ -1109,10 +1102,69 @@ const getAvatarImage = async (req, res, next) => {
       originalname: avatarImage.originalname,
     });
   } catch (error) {
-    console.error("Error getting avatar image:", error);
     res.status(500).json({ message: "Error getting avatar image" });
   }
 };
+const uploadBannerImage = async (req, res, next) => {
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No file provided for banner image" });
+    }
+
+    const bannerImage = req.files[0];
+    const uploadedImageId = await UserUpload.uploadMedia(bannerImage);
+
+    if (!uploadedImageId) {
+      return res.status(400).json({ message: "Failed to upload banner image" });
+    }
+
+    user.bannerImage = uploadedImageId;
+    await user.save();
+
+    res.status(200).json({ message: "Banner image uploaded successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error uploading banner image" });
+  }
+};
+
+const getBannerImage = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const bannerImageId = user.bannerImage;
+    if (!bannerImageId) {
+      return res.status(404).json({ message: "Banner image not found" });
+    }
+
+    const bannerImage = await UserUploadModel.findById(bannerImageId);
+    if (!bannerImage) {
+      return res.status(404).json({ message: "Banner image not found" });
+    }
+
+    res.status(200).send({
+      _id: bannerImage._id,
+      filename: bannerImage.filename,
+      originalname: bannerImage.originalname,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting banner image" });
+  }
+};
+
+
 
 module.exports = {
   getAccountSettings,
@@ -1147,4 +1199,7 @@ module.exports = {
   getUserLocation,
   uploadAvatarImage,
   getAvatarImage,
+  uploadBannerImage,
+  getBannerImage
+
 };
