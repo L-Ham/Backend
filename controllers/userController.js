@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
 const subReddit = require("../models/subReddit");
+const UserUpload = require("../controllers/userUploadsController");
+
 
 const getNotificationSettings = async (req, res, next) => {
   try {
@@ -1014,6 +1016,43 @@ const getUserLocation = async (req, res) => {
       .json({ message: "Error retrieving user location", error: err });
   }
 };
+const uploadAvatarImage = async (req, res, next) => {
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+    console.log("files", req.files);
+
+    if (req.files) {
+      const media = req.files;
+      if (media.filename && media.originalname) {
+        const uploadedImageId = await UserUpload.uploadMedia(media);
+        if (uploadedImageId) {
+          user.avatar = uploadedImageId;
+        } else {
+          console.error("Media upload failed:", media);
+          return res.status(400).json({ message: "Failed to upload avatar image" });
+        }
+      } else {
+        console.error("Media data missing in form data:", media);
+      }
+    } else {
+      console.error("No file provided for avatar image");
+      return res.status(400).json({ message: "No file provided for avatar image" });
+    }
+
+    await user.save();
+    res.status(200).json({ message: "Avatar image uploaded successfully" });
+  } catch (error) {
+    console.error("Error uploading avatar image:", error);
+    res.status(500).json({ message: "Error uploading avatar image" });
+  }
+};
+ 
 
 module.exports = {
   getAccountSettings,
@@ -1046,4 +1085,5 @@ module.exports = {
   editUserLocation,
   searchUsernames,
   getUserLocation,
+  uploadAvatarImage
 };
