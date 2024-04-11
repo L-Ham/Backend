@@ -536,7 +536,7 @@ async function addSocialLink(req, res, next) {
 
 const editSocialLink = async (req, res, next) => {
   const userId = req.userId;
-  const { linkId, linkOrUsername, appName, logo, displayText } = req.body;
+  const { linkId, linkOrUsername, appName, displayText } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -548,7 +548,7 @@ const editSocialLink = async (req, res, next) => {
 
     const socialLinkToUpdate = user.socialLinks.find(
       (link) => link._id.toString() === linkId
-    ); // Ensure proper comparison
+    );
 
     if (!socialLinkToUpdate) {
       console.log("Social link not found for link ID:", linkId);
@@ -557,7 +557,6 @@ const editSocialLink = async (req, res, next) => {
 
     socialLinkToUpdate.linkOrUsername = linkOrUsername;
     socialLinkToUpdate.appName = appName;
-    socialLinkToUpdate.logo = logo;
     socialLinkToUpdate.displayText = displayText;
 
     const updatedUser = await user.save();
