@@ -168,10 +168,6 @@ const userSchema = new Schema({
         type: String,
         required: true,
       },
-      logo: {
-        type: String,
-        required: true,
-      },
       displayText: {
         type: String,
         required: false,
