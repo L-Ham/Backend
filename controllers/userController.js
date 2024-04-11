@@ -148,20 +148,30 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
   }
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId)
+      .select("blockUsers muteCommunities");
+
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     const safetyAndPrivacySettings = {
-      blockUsers: user.blockUsers,
-      muteCommunities: user.muteCommunities,
+      blockUsers: user.blockUsers.map(blockedUser => ({
+        blockedUserName: blockedUser.blockedUserName,
+        blockedUserAvatar: blockedUser.blockedUserAvatar,
+        blockedAt: blockedUser.blockedAt
+      })),
+      muteCommunities: user.muteCommunities.map(mutedCommunity => ({
+        mutedCommunityName: mutedCommunity.mutedCommunityName,
+        mutedCommunityAvatar: mutedCommunity.mutedCommunityAvatar,
+        mutedAt: mutedCommunity.mutedAt
+      })),
     };
-    res.json({ safetyAndPrivacySettings });
-  } catch (err) {
-    console.log("Error retrieving safety and privacy settings:", err);
-    res.status(500).json({ message: "Server error" });
+
+    return res.json(safetyAndPrivacySettings);
+  } catch (error) {
+    console.log("Error fetching user settings:", error);
+    res.status(500).json({ message: "Error fetching user settings" });
   }
 };
 
@@ -379,11 +389,16 @@ const blockUser = async (req, res, next) => {
     await userToBlock.save();
     const user = await User.findById(userId);
 
-    if (user.blockUsers.includes(userToBlock._id)) {
+    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToBlock._id))) {
       console.log("User already blocked:", userToBlock.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
-    user.blockUsers.push(userToBlock._id);
+    user.blockUsers.push({
+      blockedUserId: userToBlock._id,
+      blockedUserName: userToBlock.userName,
+      blockedUserAvatar: userToBlock.avatarImage,
+      blockedAt: new Date()
+    });
     user.followers.pull(userToBlock._id);
     const updatedUser = await user.save();
 
@@ -624,6 +639,7 @@ const updateGender = async (req, res, next) => {
     if (
       req.body.gender === "Female" ||
       req.body.gender === "Male" ||
+      req.body.gender ===""||
       req.body.gender === "I prefer not to say"
     ) {
       user.gender = req.body.gender;
@@ -635,7 +651,7 @@ const updateGender = async (req, res, next) => {
       });
     } else {
       res.status(400).json({
-        message: "Gender format should be Female/Male/I prefer not to say",
+        message: "Gender format should be Female/Male/I prefer not to say/Empty String",
       });
     }
   } catch (err) {
@@ -673,7 +689,7 @@ const muteCommunity = async (req, res, next) => {
       return res.status(400).json({ message: "Community already muted" });
     }
 
-    user.muteCommunities.push(communityId);
+    user.muteCommunities.push({ mutedCommunityId:communityId,mutedCommunityName:community.name ,mutedCommunityAvatar:community.appearance.avatarImage, mutedAt: new Date() });
     await user.save();
 
     console.log("Community muted: ", user);
@@ -1105,12 +1121,10 @@ const uploadAvatarImage = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     if (!req.files || req.files.length === 0) {
-      console.error("No file provided for avatar image");
       return res
         .status(400)
         .json({ message: "No file provided for avatar image" });
@@ -1120,7 +1134,6 @@ const uploadAvatarImage = async (req, res, next) => {
     const uploadedImageId = await UserUpload.uploadMedia(avatarImage);
 
     if (!uploadedImageId) {
-      console.error("Media upload failed:", avatarImage);
       return res.status(400).json({ message: "Failed to upload avatar image" });
     }
 
@@ -1129,7 +1142,6 @@ const uploadAvatarImage = async (req, res, next) => {
 
     res.status(200).json({ message: "Avatar image uploaded successfully" });
   } catch (error) {
-    console.error("Error uploading avatar image:", error);
     res.status(500).json({ message: "Error uploading avatar image" });
   }
 };
@@ -1139,32 +1151,88 @@ const getAvatarImage = async (req, res, next) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     const avatarImageId = user.avatarImage;
     if (!avatarImageId) {
-      console.error("Avatar image not found for user:", userId);
       return res.status(404).json({ message: "Avatar image not found" });
     }
 
     const avatarImage = await UserUploadModel.findById(avatarImageId);
     if (!avatarImage) {
-      console.error("Avatar image not found with ID:", avatarImageId);
       return res.status(404).json({ message: "Avatar image not found" });
     }
 
     res.status(200).send({
       _id: avatarImage._id,
-      filename: avatarImage.filename,
+      url: avatarImage.url,
       originalname: avatarImage.originalname,
     });
   } catch (error) {
-    console.error("Error getting avatar image:", error);
     res.status(500).json({ message: "Error getting avatar image" });
   }
 };
+const uploadBannerImage = async (req, res, next) => {
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No file provided for banner image" });
+    }
+
+    const bannerImage = req.files[0];
+    const uploadedImageId = await UserUpload.uploadMedia(bannerImage);
+
+    if (!uploadedImageId) {
+      return res.status(400).json({ message: "Failed to upload banner image" });
+    }
+
+    user.bannerImage = uploadedImageId;
+    await user.save();
+
+    res.status(200).json({ message: "Banner image uploaded successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error uploading banner image" });
+  }
+};
+
+const getBannerImage = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const bannerImageId = user.bannerImage;
+    if (!bannerImageId) {
+      return res.status(404).json({ message: "Banner image not found" });
+    }
+
+    const bannerImage = await UserUploadModel.findById(bannerImageId);
+    if (!bannerImage) {
+      return res.status(404).json({ message: "Banner image not found" });
+    }
+
+    res.status(200).send({
+      _id: bannerImage._id,
+      url: bannerImage.url,
+      originalname: bannerImage.originalname,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting banner image" });
+  }
+};
+
+
 
 module.exports = {
   getAccountSettings,
@@ -1201,4 +1269,7 @@ module.exports = {
   getUserLocation,
   uploadAvatarImage,
   getAvatarImage,
+  uploadBannerImage,
+  getBannerImage
+
 };

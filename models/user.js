@@ -178,6 +178,7 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "userUploads",
     required: false,
+    default: null,
   },
   bannerImage: {
     type: Schema.Types.ObjectId,
@@ -228,16 +229,46 @@ const userSchema = new Schema({
   },
   blockUsers: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-      required: false,
+      blockedUserId: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+        required: false,
+      },
+      blockedUserName: {
+        type: String,
+        required: false,
+      },
+      blockedUserAvatar: {
+        type: Schema.Types.ObjectId,
+        ref: "userUploads",
+        required: false,
+      },
+      blockedAt: {
+        type: Date,
+        required: false,
+      },
     },
   ],
   muteCommunities: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "subReddit",
-      required: false,
+     mutedCommunityId: {
+        type: Schema.Types.ObjectId,
+        ref: "subReddit",
+        required: false,
+      },
+      mutedCommunityName: {
+        type: String,
+        required: false,
+      },
+      mutedCommunityAvatar: {
+        type: Schema.Types.ObjectId,
+        ref: "userUploads",
+        required: false,
+      },
+      mutedAt: {
+        type: Date,
+        required: false,
+      },
     },
   ],
   feedSettings: {

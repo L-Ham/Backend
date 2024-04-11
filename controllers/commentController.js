@@ -2,10 +2,12 @@ const Comment = require("../models/comment");
 const Post = require("../models/post");
 const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
+const UserUpload = require("../controllers/userUploadsController");
 const Report = require("../models/report");
 
 const createComment = async (req, res, next) => {
   const userId = req.userId;
+  const postId = req.body.postId;
 
   try {
     const user = await User.findById(userId);
@@ -14,26 +16,19 @@ const createComment = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const post = await Post.findById(req.body.postId);
+    const post = await Post.findById(postId);
     if (!post) {
-      console.log("Post not found for post ID:", req.body.postId);
+      console.log("Post not found for post ID:", postId);
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (post.subReddit === null) {
-      if (post.isLocked && !post.user.equals(userId)) {
-        console.log("Post is locked");
-        return res.status(400).json({ message: "Post is locked" });
-      }
-    } else {
-      const subReddit = await SubReddit.findById(post.subReddit);
-      if (post.isLocked && !subReddit.moderators.includes(userId)) {
-        console.log("Post is locked");
-        return res.status(400).json({ message: "Post is locked" });
-      }
+    // Check post lock
+    if (post.isLocked && !user.isAdmin && post.user.toString() !== userId && !post.moderators.includes(userId)) {
+      console.log("Post is locked");
+      return res.status(400).json({ message: "Post is locked" });
     }
 
-    if (req.body.text == null || req.body.text === "") {
+    if (!req.body.text || req.body.text.trim() === "") {
       console.log("Comment text is required");
       return res.status(400).json({ message: "Comment text is required" });
     }
@@ -41,30 +36,42 @@ const createComment = async (req, res, next) => {
     const comment = new Comment({
       postId: req.body.postId,
       userId: userId,
-      text: req.body.text,
-      parentCommentId: req.body.parentCommentId,
+      text: req.body.text.trim(),
+      parentCommentId: req.body.parentCommentId || null,
       replies: [],
       votes: 0,
-      isHidden: req.body.isHidden,
+      isHidden: req.body.isHidden || false,
     });
+
+    if (req.files && req.files.length > 0) {
+      // Multer changed, use req.file now
+      const commentfile = req.files[0];
+      if (req.body.type === "image") {
+        const uploadedImageId = await UserUpload.uploadMedia(commentfile);
+        comment.images.push(uploadedImageId);
+      } else if (req.body.type === "video") {
+        const uploadedVideoId = await UserUpload.uploadMedia(commentfile);
+        comment.videos.push(uploadedVideoId);
+      } else {
+        console.error("Media upload failed:", commentfile);
+        return res.status(400).json({ message: "Failed to upload media" });
+      }
+    }
+
+    if (req.body.url) {
+      comment.url = req.body.url;
+    }
 
     const savedComment = await comment.save();
 
-    if (req.body.parentCommentId !== null) {
+    if (req.body.parentCommentId) {
       const parentComment = await Comment.findById(req.body.parentCommentId);
       if (!parentComment) {
-        console.error(
-          "Parent Comment not found for comment ID:",
-          req.body.parentCommentId
-        );
+        console.error("Parent Comment not found for comment ID:", req.body.parentCommentId);
         return res.status(404).json({ message: "Parent Comment not found" });
       }
 
-      if (!parentComment.replies) {
-        parentComment.replies = [];
-      }
-
-      parentComment.replies.push(savedComment);
+      parentComment.replies.push(savedComment._id);
       await parentComment.save();
     }
 
@@ -84,6 +91,8 @@ const createComment = async (req, res, next) => {
     res.status(500).json({ message: "Error Creating Comment", error: err });
   }
 };
+
+
 const upvote = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -149,7 +158,7 @@ const reportComment = async (req, res, next) => {
   const commentId = req.body.commentId;
   const title = req.body.title;
   const description = req.body.description;
-  
+
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -167,7 +176,7 @@ const reportComment = async (req, res, next) => {
     if (!commentOwner) {
       return res.status(404).json({ message: "Comment owner not found" });
     }
-    if(user.blockUsers.includes(commentOwner._id)){
+    if (user.blockUsers.includes(commentOwner._id)) {
       return res.status(400).json({ message: "You have already blocked this user" });
     }
 
@@ -189,7 +198,7 @@ const reportComment = async (req, res, next) => {
       blockUser: req.body.blockUser || false,
     });
 
-    if (req.body.blockUser){
+    if (req.body.blockUser) {
       user.blockUsers.push(commentOwner._id);
       await user.save();
     }
@@ -201,7 +210,7 @@ const reportComment = async (req, res, next) => {
     console.log("Error reporting Comment:", err);
     res.status(500).json({ message: "Error reporting Comment", error: err });
   }
-} 
+}
 
 
 
@@ -211,12 +220,11 @@ const lockComment = async (req, res, next) => {
     const commentId = req.body.commentId;
     const comment = await Comment.findById(commentId);
     const user = await User.findById(userId);
-    
+
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
-    if(comment.isLocked==true)
-    {
+    if (comment.isLocked == true) {
       return res.status(400).json({ message: "Comment is already locked" });
     }
     const post = await Post.findById(comment.postId);
@@ -231,7 +239,7 @@ const lockComment = async (req, res, next) => {
         message: "This feature is only available for subreddit moderators",
       });
     }
-    
+
     comment.isLocked = true;
     await comment.save();
     res.status(200).json({ message: "Comment locked" });
@@ -250,8 +258,7 @@ const unlockComment = async (req, res, next) => {
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
-    if(comment.isLocked==false)
-    {
+    if (comment.isLocked == false) {
       return res.status(400).json({ message: "Comment is already unlocked" });
     }
     const post = await Post.findById(comment.postId);
@@ -266,7 +273,7 @@ const unlockComment = async (req, res, next) => {
         message: "This feature is only available for subreddit moderators",
       });
     }
-   
+
     comment.isLocked = false;
     await comment.save();
     res.status(200).json({ message: "Comment unlocked" });

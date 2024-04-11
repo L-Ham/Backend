@@ -219,5 +219,18 @@ router.get(
   authenticateToken,
   userController.getAvatarImage
 );
+router.post(
+  "/banner",
+  bodyParser.json(),
+  authenticateToken,
+  uploadImage.array('file'),
+  userController.uploadBannerImage
+);
+router.get(
+  "/banner",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getBannerImage
+);
 
 module.exports = router;

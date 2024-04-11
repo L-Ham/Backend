@@ -4,33 +4,104 @@ const SubReddit = require("../models/subReddit");
 const Comment = require("../models/comment");
 const UserUpload = require("../controllers/userUploadsController");
 const Report = require("../models/report");
+const mongoose = require("mongoose");
 
 const createPost = async (req, res, next) => {
   const userId = req.userId;
-  const subRedditId = req.body.subreddit;
+  const subRedditId = req.body.subRedditId;
 
+  const user = await User.findById(userId);
+  if (!user) {
+    console.error("User not found for user ID:", userId);
+    return res.status(404).json({ message: "User not found" });
+  }
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      console.error("User not found for user ID:", userId);
-      return res.status(404).json({ message: "User not found" });
+    // Check if title is provided in the request body
+    if (!req.body.title) {
+      return res.status(400).json({ message: "Title is required" });
     }
-
+    // Check type of post
+    switch (req.body.type) {
+      case "text":
+        // For text posts, ensure no images, videos, or polls are provided
+        if (
+          req.files ||
+          req.body["poll.options"] ||
+          req.body["poll.votingLength"] ||
+          req.body["poll.startTime"] ||
+          req.body["poll.endTime"] ||
+          req.body.url
+        ) {
+          return res.status(400).json({
+            message:
+              "Text posts cannot include images, videos, links, or polls",
+          });
+        }
+        break;
+      case "image":
+      case "video":
+        if (
+          req.body["poll.options"] ||
+          req.body["poll.votingLength"] ||
+          req.body["poll.startTime"] ||
+          req.body.url
+        ) {
+          return res.status(400).json({
+            message: "Image posts cannot include links or polls",
+          });
+        }
+        // For image or video posts, ensure media is provided
+        if (!req.files || req.files.length === 0) {
+          return res
+            .status(400)
+            .json({
+              message: "Media file is required for image or video post",
+            });
+        }
+        break;
+      case "poll":
+        // For poll posts, ensure poll object is provided with at least two options
+        if (req.body["poll.options"].length < 2) {
+          console.log("henaaaaaaaaaaaaaaaaaaaaaa poll");
+          return res.status(400).json({
+            message:
+              "Poll post must include a poll object with at least two options",
+          });
+        }
+        break;
+      case "link":
+        // For link posts, ensure URL is provided
+        if (
+          req.body["poll.options"] ||
+          req.body["poll.votingLength"] ||
+          req.body["poll.startTime"] ||
+          req.files
+        ) {
+          return res.status(400).json({
+            message: "Link posts cannot include media or polls",
+          });
+        }
+        if (!req.body.url) {
+          return res
+            .status(400)
+            .json({ message: "URL is required for link post" });
+        }
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid post type" });
+    }
     let subReddit = null;
     if (subRedditId != "") {
       subReddit = await SubReddit.findById(subRedditId);
+      console.log("subReddit", subReddit);
       if (!subReddit) {
         console.error("Subreddit not found for subreddit ID:", subRedditId);
       }
     }
-
     const newPost = createNewPost(req, userId, subRedditId);
-    console.log("newPost", newPost);
-    console.log("files", req.files);
-
     if (req.files) {
       for (const media of req.files) {
-        if (media.filename && media.originalname) {
+        if (media.originalname) {
           const uploadedImageId = await UserUpload.uploadMedia(media);
           if (uploadedImageId && req.body.type === "image") {
             newPost.images.push(uploadedImageId);
@@ -61,39 +132,36 @@ const createPost = async (req, res, next) => {
     res.status(500).json({ message: "Error creating post" });
   }
 };
-
 function createNewPost(req, userId, subRedditId) {
+  const pollOptions = req.body["poll.options"] || [];
+  const votingLength = req.body["poll.votingLength"] || 0;
+  const startTime = req.body["poll.startTime"] || null;
+  const endTime = req.body["poll.endTime"] || null;
+
   return new Post({
     user: userId,
     subReddit: subRedditId == "" ? null : subRedditId,
     title: req.body.title,
     text: req.body.text,
     images: req.body.images || [],
-    approved: req.body.approved || false,
-    approvedBy: req.body.approvedBy || null,
-    disapproved: req.body.disapproved || false,
-    disapprovedBy: req.body.disapprovedBy || null,
     videos: req.body.videos || [],
     url: req.body.url || "",
     type: req.body.type,
     isNSFW: req.body.isNSFW || false,
     isSpoiler: req.body.isSpoiler || false,
     isLocked: req.body.isLocked || false,
-    isOc: req.body.isOc || false,
     upvotes: 1,
     downvotes: 0,
     views: 0,
     commentCount: 0,
     spamCount: 0,
-    poll: req.body.poll
-      ? {
-          options: req.body.poll.options || [],
-          votingLength: req.body.poll.votingLength || 0,
-          voters: [],
-          startTime: req.body.poll.startTime || null,
-          endTime: req.body.poll.endTime || null,
-        }
-      : {},
+    poll: {
+      options: pollOptions,
+      votingLength: votingLength,
+      voters: [],
+      startTime: startTime,
+      endTime: endTime,
+    },
   });
 }
 
