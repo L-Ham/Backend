@@ -232,16 +232,28 @@ const userSchema = new Schema({
   },
   blockUsers: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-      required: false,
+      blockedUserId: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+        required: false,
+      },
+      blockedAt: {
+        type: Date,
+        required: false,
+      },
     },
   ],
   muteCommunities: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "subReddit",
-      required: false,
+     mutedCommunityId: {
+        type: Schema.Types.ObjectId,
+        ref: "subReddit",
+        required: false,
+      },
+      mutedAt: {
+        type: Date,
+        required: false,
+      },
     },
   ],
   feedSettings: {
