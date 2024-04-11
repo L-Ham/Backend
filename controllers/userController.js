@@ -387,7 +387,10 @@ const blockUser = async (req, res, next) => {
       console.log("User already blocked:", userToBlock.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
-    user.blockUsers.push(userToBlock._id);
+    user.blockUsers.push({
+      blockedUserId: userToBlock._id,
+      blockedAt: new Date()
+    });
     user.followers.pull(userToBlock._id);
     const updatedUser = await user.save();
 
@@ -679,7 +682,7 @@ const muteCommunity = async (req, res, next) => {
       return res.status(400).json({ message: "Community already muted" });
     }
 
-    user.muteCommunities.push(communityId);
+    user.muteCommunities.push({ mutedCommunityId, mutedAt: new Date() });
     await user.save();
 
     console.log("Community muted: ", user);
