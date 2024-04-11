@@ -379,10 +379,13 @@ const blockUser = async (req, res, next) => {
     await userToBlock.save();
     const user = await User.findById(userId);
 
-    if (user.blockUsers.includes(userToBlock._id)) {
+    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToBlock._id))) {
       console.log("User already blocked:", userToBlock.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
+
+    
+
     user.blockUsers.push({
       blockedUserId: userToBlock._id,
       blockedUserName: userToBlock.userName,
@@ -678,7 +681,7 @@ const muteCommunity = async (req, res, next) => {
       return res.status(400).json({ message: "Community already muted" });
     }
 
-    user.muteCommunities.push({ mutedCommunityId, mutedAt: new Date() });
+    user.muteCommunities.push({ mutedCommunityId:communityId,mutedCommunityName:community.name ,mutedCommunityAvatar:community.appearance.avatarImage, mutedAt: new Date() });
     await user.save();
 
     console.log("Community muted: ", user);

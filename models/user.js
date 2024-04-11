@@ -238,7 +238,8 @@ const userSchema = new Schema({
         required: false,
       },
       blockedUserAvatar: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "userUploads",
         required: false,
       },
       blockedAt: {
@@ -252,6 +253,15 @@ const userSchema = new Schema({
      mutedCommunityId: {
         type: Schema.Types.ObjectId,
         ref: "subReddit",
+        required: false,
+      },
+      mutedCommunityName: {
+        type: String,
+        required: false,
+      },
+      mutedCommunityAvatar: {
+        type: Schema.Types.ObjectId,
+        ref: "userUploads",
         required: false,
       },
       mutedAt: {
