@@ -149,20 +149,32 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
 
   try {
     const user = await User.findById(userId)
-    .populate({
-      path: 'blockUsers',
-      select: 'userName  avatarImage  _id'
-    })
-    .populate({
-      path: 'muteCommunities',
-      select: 'name appearance.avatarImage _id'
-    });
+      .populate({
+        path: 'blockUsers.blockedUserId',
+        select: 'userName avatarImage _id'
+      })
+      .populate({
+        path: 'muteCommunities.mutedCommunityId',
+        select: 'name appearance.avatarImage mutedAt _id'
+      });
 
     const safetyAndPrivacySettings = {
-      blockUsers: user.blockUsers,
-      muteCommunities: user.muteCommunities,
+      blockUsers: user.blockUsers.map(blockedUser => ({
+        blockedUserId: {
+          avatarImage: blockedUser.blockedUserId.avatarImage,
+          _id: blockedUser.blockedUserId._id,
+          userName: blockedUser.blockedUserId.userName
+        },
+        blockedAt: blockedUser.blockedAt
+      })),
+      muteCommunities: user.muteCommunities.map(mutedCommunity => ({
+        name: mutedCommunity.mutedCommunityId.name,
+        avatarImage: mutedCommunity.mutedCommunityId.appearance.avatarImage,
+        mutedAt: mutedCommunity.mutedAt
+      })),
     };
-    res.json({ safetyAndPrivacySettings });
+
+    res.json(safetyAndPrivacySettings);
   } catch (err) {
     console.log("Error retrieving safety and privacy settings:", err);
     res.status(500).json({ message: "Server error" });
@@ -682,7 +694,7 @@ const muteCommunity = async (req, res, next) => {
       return res.status(400).json({ message: "Community already muted" });
     }
 
-    user.muteCommunities.push({ mutedCommunityId, mutedAt: new Date() });
+    user.muteCommunities.push({ mutedCommunityId:communityId, mutedAt: new Date() });
     await user.save();
 
     console.log("Community muted: ", user);
