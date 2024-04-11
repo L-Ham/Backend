@@ -59,132 +59,6 @@ const googleSignUp = async (req, res) => {
       .json({ message: "Google Sign Up Failed", error: err.message });
   }
 };
-// const googleSignUp = async (req, res, next) => {
-//   let token = req.body.token;
-//   let payload = {};
-
-//   const checkUsernameExists = async (username) => {
-//     return await User.findOne({ userName: username });
-//   };
-
-//   // async function verify() {
-//   //   // const ticket = await client.verifyIdToken({
-//   //   //   idToken: token,
-//   //   //   audience: process.env.CLIENT_ID,
-//   //   // });
-//   //   // const tempPayload = ticket.getPayload();
-//   //   // payload = tempPayload;
-//   //   async function verify(token) {
-//   //     const response = await axios.get(
-//   //       "https://www.googleapis.com/oauth2/v3/certs"
-//   //     );
-//   //     const keys = response.data;
-
-//   //     const decodedToken = jwt.decode(token, { complete: true });
-//   //     const kid = decodedToken.header.kid;
-//   //     const key = keys[kid];
-
-//   //     console.log("Token kid:", kid);
-//   //     console.log("Keys:", keys);
-
-//   //     if (!key) {
-//   //       throw new Error("No key found for this token");
-//   //     }
-
-//   //     jwt.verify(token, key);
-//   //     return decodedToken.payload;
-//   //   }
-//   // const verify = async (token) => {
-//   //   const response = await axios.get(
-//   //     "https://www.googleapis.com/oauth2/v3/certs"
-//   //   );
-//   //   const keys = response.data;
-
-//   //   const decodedToken = jwt.decode(token, { complete: true });
-//   //   const kid = decodedToken.header.kid;
-//   //   const key = keys[kid];
-
-//   //   console.log("Token kid:", kid);
-//   //   console.log("Keys:", keys);
-
-//   //   if (!key) {
-//   //     throw new Error("No key found for this token");
-//   //   }
-
-//   //   jwt.verify(token, key);
-//   //   return decodedToken.payload;
-//   // };
-//   async function verify(token) {
-//     try {
-//       const response = await axios.get(
-//         "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com"
-//       );
-//       const keys = response.data;
-
-//       const decodedToken = jwt.decode(token, { complete: true });
-//       const kid = decodedToken.header.kid;
-//       console.log(decodedToken.signature);
-//       console.log("Token kid:", kid);
-//       console.log("Keys kids:", Object.keys(keys));
-
-//       const pem = keys[kid];
-
-//       if (!pem) {
-//         throw new Error("No key found for this token");
-//       }
-
-//       // Verify the JWT with the public key
-//       const verifiedPayload = jwt.verify(token, pem, { algorithms: ["RS256"] });
-
-//       console.log("JWT verified successfully:", verifiedPayload);
-//       return verifiedPayload;
-//     } catch (error) {
-//       console.log("Error:", error.message);
-//       throw new Error("Token verification failed: " + error.message);
-//     }
-//   }
-//   try {
-//     const payload = await verify(req.body.token);
-//     console.log("YASTAAA");
-//     console.log(payload);
-//     const existingUser = await User.findOne({ email: payload["email"] });
-//     if (existingUser) {
-//       return res.status(500).json({ message: "Email already Exists" });
-//     }
-//     let randomUsername = authService.generateRandomUsername();
-//     let user = await checkUsernameExists(randomUsername[0]);
-//     while (user) {
-//       randomUsername = authService.generateRandomUsername();
-//       user = await checkUsernameExists(randomUsername[0]);
-//     }
-
-//     const randomPassword = Math.random().toString(36).slice(-8);
-//     user = new User({
-//       userName: randomUsername[0],
-//       email: payload["email"],
-//       password: randomPassword,
-//       signupGoogle: true,
-//     });
-
-//     user = await user.save();
-//     console.log(user);
-//     payload.user = { id: user._id, type: "google" };
-//     const expirationTime = Math.floor(Date.now() / 1000) + 50000000000;
-//     payload.exp = expirationTime;
-//     const newToken = jwt.sign(payload, process.env.JWT_SECRET);
-
-//     res.cookie("session-token", newToken);
-//     res.status(200).json({
-//       message: "User Signup Successfully",
-//       user: user,
-//       token: newToken,
-//     });
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ message: "Google Sign Up Failed", error: err.message });
-//   }
-// };
 
 const logout = (req, res, next) => {
   res.clearCookie("token");
@@ -288,29 +162,22 @@ const forgetPassword = async (req, res, next) => {
     },
   });
   const email = req.body.email;
-  const username=req.body.username;
+  const username = req.body.username;
   let user;
-  if(!username){
+  if (!username) {
     user = await User.findOne({ email: email });
-
-  }
-  else if(!email){
+  } else if (!email) {
     user = await User.findOne({ userName: username });
+  } else {
+    user = await User.findOne({ email: email, userName: username });
   }
-  else{
-    
-    user =  await User.findOne({ email: email,userName: username });
-
-  }
-  if(!user){
+  if (!user) {
     return res.status(404).send("User not found");
   }
 
-
-  
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
- 
+
   transporter.sendMail(
     {
       from: "r75118106@gmail.com",
