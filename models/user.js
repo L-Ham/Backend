@@ -317,6 +317,23 @@ const userSchema = new Schema({
     required: false,
     default: "Location is not specified",
   },
+  emailSettings: {
+    type: Map,
+    of: Boolean,
+    required: true,
+    default: {
+      privateMessages: true,
+      chatRequests: true,
+      newUserWelcome: true,
+      commentOnPost: true,
+      repliesToComments: true,
+      upvotesOnPosts: true,
+      upvotesOnComments: true,
+      usernameMentions: true,
+      newFollowers: true,
+      unsubscribeFromEmail: false,
+    },
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);
