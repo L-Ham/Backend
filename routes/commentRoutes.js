@@ -3,11 +3,13 @@ const router = express.Router();
 const commentController = require("../controllers/commentController");
 const authenticateToken = require("../middleware/authenticateToken");
 const bodyParser = require("body-parser");
+const { uploadImage  } = require("../middleware/multerConfig");
 
 router.post(
   "/addComment",
   bodyParser.json(),
   authenticateToken,
+  uploadImage.array('file'),
   commentController.createComment
 );
 router.patch(
@@ -34,5 +36,13 @@ router.patch(
   authenticateToken,
   commentController.unlockComment
 ); 
+
+router.patch(
+  "/report",
+  bodyParser.json(),
+  authenticateToken,
+  commentController.reportComment
+);
+
 
 module.exports = router;

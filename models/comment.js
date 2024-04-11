@@ -16,6 +16,24 @@ const commentSchema = new Schema({
     type: String,
     required: true,
   },
+  images: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+    },
+  ],
+  videos: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+    },
+  ],
+  url: {
+    type: [String],
+    required: false,
+  },
   replies: [
     {
       type: Schema.Types.ObjectId,

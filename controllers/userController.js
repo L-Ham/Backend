@@ -4,6 +4,11 @@ const jwt = require("jsonwebtoken");
 const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
 const subReddit = require("../models/subReddit");
+const Post = require("../models/post");
+const UserUpload = require("../controllers/userUploadsController");
+const UserServices = require("../services/userServices");
+const UserUploadModel = require("../models/userUploads");
+const { get } = require("http");
 
 const getNotificationSettings = async (req, res, next) => {
   try {
@@ -502,7 +507,7 @@ async function viewFeedSettings(req, res, next) {
 async function addSocialLink(req, res, next) {
   try {
     const userId = req.userId;
-    const { linkOrUsername, appName, logo, displayText } = req.body;
+    const { linkOrUsername, appName, displayText } = req.body;
 
     const user = await User.findById(userId);
 
@@ -518,7 +523,7 @@ async function addSocialLink(req, res, next) {
         .json({ message: "Maximum number of social links reached" });
     }
 
-    user.socialLinks.push({ linkOrUsername, appName, logo, displayText });
+    user.socialLinks.push({ linkOrUsername, appName, displayText });
 
     const updatedUser = await user.save();
     console.log("Social link added: ", updatedUser);
@@ -533,7 +538,7 @@ async function addSocialLink(req, res, next) {
 
 const editSocialLink = async (req, res, next) => {
   const userId = req.userId;
-  const { linkId, linkOrUsername, appName, logo, displayText } = req.body;
+  const { linkId, linkOrUsername, appName, displayText } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -545,7 +550,7 @@ const editSocialLink = async (req, res, next) => {
 
     const socialLinkToUpdate = user.socialLinks.find(
       (link) => link._id.toString() === linkId
-    ); // Ensure proper comparison
+    );
 
     if (!socialLinkToUpdate) {
       console.log("Social link not found for link ID:", linkId);
@@ -554,7 +559,6 @@ const editSocialLink = async (req, res, next) => {
 
     socialLinkToUpdate.linkOrUsername = linkOrUsername;
     socialLinkToUpdate.appName = appName;
-    socialLinkToUpdate.logo = logo;
     socialLinkToUpdate.displayText = displayText;
 
     const updatedUser = await user.save();
@@ -622,14 +626,23 @@ const updateGender = async (req, res, next) => {
         .status(400)
         .json({ message: "Gender is already set to this value" });
     }
+    if (
+      req.body.gender === "Female" ||
+      req.body.gender === "Male" ||
+      req.body.gender === "I prefer not to say"
+    ) {
+      user.gender = req.body.gender;
+      const updatedUser = await user.save();
 
-    user.gender = req.body.gender;
-    const updatedUser = await user.save();
-
-    res.status(200).json({
-      message: "User gender updated successfully",
-      user: updatedUser,
-    });
+      res.status(200).json({
+        message: "User gender updated successfully",
+        user: updatedUser,
+      });
+    } else {
+      res.status(400).json({
+        message: "Gender format should be Female/Male/I prefer not to say",
+      });
+    }
   } catch (err) {
     console.log("Error updating user gender:", err);
     res.status(500).json({
@@ -860,7 +873,9 @@ const addFavoriteCommunity = async (req, res) => {
     });
   } catch (err) {
     console.log("Error favoriting community:", err);
-    res.status(500).json({ message: "Error favoriting community", error: err });
+    res
+      .status(500)
+      .json({ message: "Error favoriting community", error: err.message });
   }
 };
 
@@ -905,6 +920,308 @@ const removeFavoriteCommunity = async (req, res) => {
       .json({ message: "Error unfavoriting community", error: err });
   }
 };
+const getUpvotedPosts = async (req, res) => {
+  const userId = req.userId;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const query = Post.find({ _id: { $in: user.upvotedPosts } });
+
+    const result = await UserServices.paginateResults(query, page, limit);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    return res.status(200).json({
+      message: "Retrieved User's Upvoted Posts",
+      upvotedPosts: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting Posts Upvoted by User",
+      error: err.message,
+    });
+  }
+};
+const getDownvotedPosts = async (req, res) => {
+  const userId = req.userId;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const query = Post.find({ _id: { $in: user.downvotedPosts } });
+    const result = await UserServices.paginateResults(query, page, limit);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    return res.status(200).json({
+      message: "Retrieved User's Downvoted Posts",
+      upvotedPosts: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting Posts Downvoted by User",
+      error: err.message,
+    });
+  }
+};
+
+const getSavedPosts = async (req, res) => {
+  const userId = req.userId;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const query = Post.find({ _id: { $in: user.savedPosts } });
+    const result = await UserServices.paginateResults(query, page, limit);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    return res.status(200).json({
+      message: "Retrieved User's Saved Posts",
+      upvotedPosts: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting Posts Saved by User",
+      error: err.message,
+    });
+  }
+};
+
+const getHiddenPosts = async (req, res) => {
+  const userId = req.userId;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const query = Post.find({ _id: { $in: user.hidePosts } });
+    const result = await UserServices.paginateResults(query, page, limit);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    return res.status(200).json({
+      message: "Retrieved User's Hidden Posts",
+      upvotedPosts: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting Posts Hidden by User",
+      error: err.message,
+    });
+  }
+};
+const getAllBlockedUsers = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId).populate(
+      "blockUsers",
+      "_id userName avatarImage"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const blockedUsers = user.blockUsers.map((user) => ({
+      id: user._id,
+      userName: user.userName,
+      avatarImage: user.avatarImage,
+    }));
+    res.json({
+      message: "Blocked users list returned successfully",
+      blockedUsers,
+    });
+  } catch (err) {
+    console.log("Error retrieving blocked users:", err);
+    res
+      .status(500)
+      .json({ message: "Error retrieving blocked users", error: err });
+  }
+};
+const editUserLocation = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.location === req.body.location) {
+      return res
+        .status(400)
+        .json({ message: "Location is already set to this value" });
+    }
+    user.location = req.body.location;
+    await user.save();
+    res.json({ message: "User location updated successfully", user });
+  } catch (err) {
+    console.log("Error updating user location:", err);
+    res
+      .status(500)
+      .json({ message: "Error updating user location", error: err });
+  }
+};
+const searchUsernames = async (req, res) => {
+  try {
+    const { search } = req.body;
+    const regex = new RegExp(`^${search}`, "i");
+    const matchingUsernames = await User.find(
+      { userName: regex },
+      "_id userName avatarImage"
+    );
+    res.json({ matchingUsernames });
+  } catch (err) {
+    console.log("Error searching usernames:", err);
+    res.status(500).json({ message: "Error searching usernames", error: err });
+  }
+};
+
+const getUserLocation = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({
+      message: "User location retrieved successfully",
+      location: user.location,
+    });
+  } catch (err) {
+    console.log("Error retrieving user location:", err);
+    res
+      .status(500)
+      .json({ message: "Error retrieving user location", error: err });
+  }
+};
+const uploadAvatarImage = async (req, res, next) => {
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No file provided for avatar image" });
+    }
+
+    const avatarImage = req.files[0];
+    const uploadedImageId = await UserUpload.uploadMedia(avatarImage);
+
+    if (!uploadedImageId) {
+      return res.status(400).json({ message: "Failed to upload avatar image" });
+    }
+
+    user.avatarImage = uploadedImageId;
+    await user.save();
+
+    res.status(200).json({ message: "Avatar image uploaded successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error uploading avatar image" });
+  }
+};
+
+const getAvatarImage = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const avatarImageId = user.avatarImage;
+    if (!avatarImageId) {
+      return res.status(404).json({ message: "Avatar image not found" });
+    }
+
+    const avatarImage = await UserUploadModel.findById(avatarImageId);
+    if (!avatarImage) {
+      return res.status(404).json({ message: "Avatar image not found" });
+    }
+
+    res.status(200).send({
+      _id: avatarImage._id,
+      filename: avatarImage.filename,
+      originalname: avatarImage.originalname,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting avatar image" });
+  }
+};
+const uploadBannerImage = async (req, res, next) => {
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No file provided for banner image" });
+    }
+
+    const bannerImage = req.files[0];
+    const uploadedImageId = await UserUpload.uploadMedia(bannerImage);
+
+    if (!uploadedImageId) {
+      return res.status(400).json({ message: "Failed to upload banner image" });
+    }
+
+    user.bannerImage = uploadedImageId;
+    await user.save();
+
+    res.status(200).json({ message: "Banner image uploaded successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error uploading banner image" });
+  }
+};
+
+const getBannerImage = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const bannerImageId = user.bannerImage;
+    if (!bannerImageId) {
+      return res.status(404).json({ message: "Banner image not found" });
+    }
+
+    const bannerImage = await UserUploadModel.findById(bannerImageId);
+    if (!bannerImage) {
+      return res.status(404).json({ message: "Banner image not found" });
+    }
+
+    res.status(200).send({
+      _id: bannerImage._id,
+      filename: bannerImage.filename,
+      originalname: bannerImage.originalname,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting banner image" });
+  }
+};
+
+
 
 module.exports = {
   getAccountSettings,
@@ -931,4 +1248,17 @@ module.exports = {
   unjoinCommunity,
   addFavoriteCommunity,
   removeFavoriteCommunity,
+  getUpvotedPosts,
+  getDownvotedPosts,
+  getSavedPosts,
+  getHiddenPosts,
+  getAllBlockedUsers,
+  editUserLocation,
+  searchUsernames,
+  getUserLocation,
+  uploadAvatarImage,
+  getAvatarImage,
+  uploadBannerImage,
+  getBannerImage
+
 };

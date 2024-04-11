@@ -3,6 +3,7 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const bodyParser = require("body-parser");
 const authenticateToken = require("../middleware/authenticateToken");
+const { uploadImage } = require("../middleware/multerConfig");
 
 router.get(
   "/accountSettings",
@@ -151,11 +152,85 @@ router.patch(
   userController.addFavoriteCommunity
 );
 
-router.delete(
+router.patch(
   "/unfavouriteSubreddit",
   bodyParser.json(),
   authenticateToken,
   userController.removeFavoriteCommunity
+);
+router.get(
+  "/upvotedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getUpvotedPosts
+);
+router.get(
+  "/downvotedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getDownvotedPosts
+);
+router.get(
+  "/savedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getSavedPosts
+);
+router.get(
+  "/hiddenPosts",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getHiddenPosts
+);
+router.get(
+  "/getAllBlockedUsers",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getAllBlockedUsers
+);
+router.patch(
+  "/editUserLocation",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editUserLocation
+);
+router.get(
+  "/getUserLocation",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getUserLocation
+);
+router.get(
+  "/searchUsernames",
+  bodyParser.json(),
+  authenticateToken,
+  userController.searchUsernames
+);
+router.post(
+  "/avatarImage",
+  bodyParser.json(),
+  authenticateToken,
+  uploadImage.array("file"),
+  userController.uploadAvatarImage
+);
+router.get(
+  "/avatarImage",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getAvatarImage
+);
+router.post(
+  "/banner",
+  bodyParser.json(),
+  authenticateToken,
+  uploadImage.array('file'),
+  userController.uploadBannerImage
+);
+router.get(
+  "/banner",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getBannerImage
 );
 
 module.exports = router;

@@ -229,27 +229,29 @@ const login = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { userName, password } = req.body;
+  const { userName, password, email } = req.body;
   try {
-    const user = await User.findOne({ userName });
+    const user = await User.findOne({ $or: [{ userName }, { email }] });
     console.log("userrrr", user);
     if (!user) {
-      return res.status(400).json({ message: "Invalid username or password" });
+      return res.status(400).json({ message: "Invalid username/email or password" });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid username or password" });
+      return res.status(400).json({ message: "Invalid username/email or password" });
     }
     const payload = {
       user: {
         id: user._id,
+        userName: user.userName,
+        email: user.email,
         type: "normal",
       },
     };
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: 500000000000 },
+      { expiresIn: 10800 },
       (err, token) => {
         if (err) throw err;
         res.json({ token, message: "User logged in successfully" });
@@ -274,6 +276,9 @@ const signUp = async (req, res) => {
 
     if (user) {
       return res.status(400).json({ message: "User already exists" });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
     }
 
     user = new User({
@@ -342,7 +347,15 @@ const updatePassword = async (req, res, next) => {
   await user.save();
   res.send("Password updated successfully");
 };
-
+const requestUpdateEmail = async (req, res, next) => {
+  const userId = req.userId;
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  if (user.signupGoogle) {
+  }
+};
 module.exports = {
   googleSignUp,
   googleLogin,

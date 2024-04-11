@@ -58,18 +58,20 @@ const subRedditSchema = new Schema({
       ref: "post",
     },
   ],
-  widgets: {
-    textWidgets: [{
+  textWidgets: [
+    {
       widgetName: {
         type: String,
         required: true,
       },
       text: {
         type: String,
-        required: true
-      }
-    }],
-    rulesWidgets: [{
+        required: true,
+      },
+    },
+  ],
+  rules: [
+    {
       ruleText: {
         type: String,
         required: true,
@@ -87,30 +89,66 @@ const subRedditSchema = new Schema({
         type: String,
         required: false,
       },
-    }],
+    },
+  ],
+
+  appearance: {
+    bannerImage: {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+      default: null,
+    },
+    avatarImage: {
+      type: Schema.Types.ObjectId,
+      ref: "userUploads",
+      required: false,
+      default: null,
+    },
+    keyColor: {
+      hue: {
+        type: Number,
+        required: false,
+      },
+      saturation: {
+        type: Number,
+        required: false,
+      },
+      hexCode: {
+        type: String,
+        required: false,
+      },
+    },
+    baseColor: {
+      hue: {
+        type: Number,
+        required: false,
+      },
+      saturation: {
+        type: Number,
+        required: false,
+      },
+      hexCode: {
+        type: String,
+        required: false,
+      },
+    },
+    stickyPostColor: {
+      hue: {
+        type: Number,
+        required: false,
+      },
+      saturation: {
+        type: Number,
+        required: false,
+      },
+      hexCode: {
+        type: String,
+        required: false,
+      },
+    },
   },
-  // rules: [
-  //   {
-  //     ruleText: {
-  //       type: String,
-  //       required: true,
-  //       unique: true,
-  //     },
-  //     reportReason: {
-  //       type: String,
-  //       required: true,
-  //     },
-  //     appliesTo: {
-  //       type: String,
-  //       required: true,
-  //     },
-  //     fullDescription: {
-  //       type: String,
-  //       required: false,
-  //     },
-  //   },
-  // ],
-  
+
   ageRestriction: {
     type: Boolean,
     required: true,
@@ -121,9 +159,20 @@ const subRedditSchema = new Schema({
     required: true,
     default: 0,
   },
+  membersNickname: {
+    type: String,
+    requiired: false,
+    default: "Members",
+  },
+  currentlyViewingNickname: {
+    type: String,
+    requiired: false,
+    default: "Online",
+  },
   description: {
     type: String,
     required: false,
+    default: "",
   },
   title: {
     type: String,
@@ -161,14 +210,6 @@ const subRedditSchema = new Schema({
     required: true,
     default: "red",
   },
-  rules: [
-    {
-      rule: { type: String, required: true },
-      description: { type: String, required: true },
-      appliedTo: { type: String, required: true },
-      reportReasonDefault: { type: String, default: "Rule" },
-    },
-  ],
 });
 
 module.exports = mongoose.model("subreddits", subRedditSchema);

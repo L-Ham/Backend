@@ -11,41 +11,65 @@ router.post(
   subredditController.createCommunity
 );
 
+router.get("/sorting", bodyParser.json(), subredditController.sorting);
+router.post(
+  "/rule",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addRule
+);
+router.patch(
+  "/rule",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editRule
+);
+router.delete(
+  "/rule",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteRule
+);
+router.post(
+  "/TextWidget",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addTextWidget
+);
+router.patch(
+  "/TextWidget",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editTextWidget
+);
+router.delete(
+  "/TextWidget",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteTextWidget
+);
+router.patch(
+  "/reorderRules",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.reorderRules
+);
+router.patch(
+  "/communityDetails",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editCommunityDetails
+);
 router.get(
-    "/sorting",
-    bodyParser.json(),
-    subredditController.sorting
-  );
-  router.post(
-    "/addRuleWidget",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.addRuleWidget
-  );
-  router.post(
-    "/addTextWidget",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.addTextWidget
-  );
-  router.patch(
-    "/editTextWidget",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.editTextWidget
-  );
-  router.delete(
-    "/deleteTextWidget",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.deleteTextWidget
-  );
-  router.patch(
-    "/reorderRules",
-    bodyParser.json(),
-    authenticateToken,
-    subredditController.reorderRules
-  );
- 
+  "/communityDetails",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getCommunityDetails
+);
+router.get(
+  "/getSubRedditRules",
+  bodyParser.json(),
+  subredditController.getSubRedditRules
+);
 
 module.exports = router;
