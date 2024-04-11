@@ -233,4 +233,18 @@ router.get(
   userController.getBannerImage
 );
 
+router.get(
+  "/emailSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getEmailSettings
+);
+
+router.patch(
+  "/emailSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editEmailSettings
+);
+
 module.exports = router;
