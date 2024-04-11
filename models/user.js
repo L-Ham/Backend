@@ -182,6 +182,7 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "userUploads",
     required: false,
+    default: null,
   },
   bannerImage: {
     type: Schema.Types.ObjectId,
@@ -240,7 +241,7 @@ const userSchema = new Schema({
   muteCommunities: [
     {
       type: Schema.Types.ObjectId,
-      ref: "subReddit",
+      ref: "subreddits",
       required: false,
     },
   ],

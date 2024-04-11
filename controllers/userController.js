@@ -148,11 +148,15 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
   }
 
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      console.log("User not found for user ID:", userId);
-      return res.status(404).json({ message: "User not found" });
-    }
+    const user = await User.findById(userId)
+    .populate({
+      path: 'blockUsers',
+      select: 'userName  avatarImage  _id'
+    })
+    .populate({
+      path: 'muteCommunities',
+      select: 'name appearance.avatarImage _id'
+    });
 
     const safetyAndPrivacySettings = {
       blockUsers: user.blockUsers,
