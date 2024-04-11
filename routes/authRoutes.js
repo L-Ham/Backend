@@ -42,4 +42,10 @@ router.patch(
   authenticateToken,
   authController.updatePassword
 );
+router.patch(
+  "/email",
+  bodyParser.json(),
+  authenticateToken,
+  authController.updateEmail
+);
 module.exports = router;
