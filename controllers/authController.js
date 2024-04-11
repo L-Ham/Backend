@@ -7,16 +7,10 @@ const { validationResult } = require("express-validator");
 require("dotenv").config();
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.CLIENT_ID);
-// const jwkToPem = require("jwk-to-pem");
-// const { initializeApp } = require("firebase-admin/app");
-// const admin = require("firebase-admin");
 
 const googleSignUp = async (req, res) => {
   try {
-    // const payload = await verify(req.body.token);
     const data = req.decoded;
-    console.log(data.email);
-    console.log("YASTAAA");
     const existingUser = await User.findOne({ email: data.email });
     if (existingUser) {
       return res.status(500).json({ message: "Email already Exists" });
@@ -65,16 +59,9 @@ const logout = (req, res, next) => {
 };
 
 const googleLogin = async (req, res, next) => {
-  const { token } = req.body;
+  const data = req.decoded;
   try {
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.CLIENT_ID,
-    });
-
-    const payload = ticket.getPayload();
-    const email = payload.email;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: data.email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -344,14 +331,19 @@ const updatePassword = async (req, res, next) => {
   await user.save();
   res.send("Password updated successfully");
 };
-const requestUpdateEmail = async (req, res, next) => {
+
+const updateEmail = async (req, res, next) => {
+  const password = req.body.password;
+  const email = req.body.newEmail;
   const userId = req.userId;
   const user = await User.findById(userId);
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-  if (user.signupGoogle) {
-  }
+
+  user.email = email;
+  await user.save();
+  res.json({ message: "Email updated successfully" });
 };
 module.exports = {
   googleSignUp,
@@ -364,4 +356,5 @@ module.exports = {
   generateUserName,
   resetPassword,
   updatePassword,
+  updateEmail,
 };
