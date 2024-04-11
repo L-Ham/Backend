@@ -4,29 +4,36 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
-const { OAuth2Client } = require("google-auth-library");
 require("dotenv").config();
-
+const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.CLIENT_ID);
+const axios = require("axios");
+const jwkToPem = require("jwk-to-pem");
+const { initializeApp } = require("firebase-admin/app");
+const admin = require("firebase-admin");
 
-const googleSignUp = async (req, res, next) => {
-  let token = req.body.token;
-  let payload = {};
+const googleSignUp = async (req, res) => {
+  // const idToken = req.body.token;
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+    projectId: "reddit-bylham",
+  });
 
-  const checkUsernameExists = async (username) => {
-    return await User.findOne({ userName: username });
-  };
-
-  async function verify() {
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.CLIENT_ID,
-    });
-    const tempPayload = ticket.getPayload();
-    payload = tempPayload;
+  async function verify(idToken) {
+    try {
+      // console.log(idToken);
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+      console.log("Token is valid");
+      console.log(decodedToken);
+      return decodedToken;
+    } catch (error) {
+      console.error("Error while verifying token", error);
+    }
   }
   try {
-    await verify();
+    const payload = await verify(req.body.token);
+    console.log("YASTAAA");
+    console.log(payload);
     const existingUser = await User.findOne({ email: payload["email"] });
     if (existingUser) {
       return res.status(500).json({ message: "Email already Exists" });
@@ -60,9 +67,137 @@ const googleSignUp = async (req, res, next) => {
       token: newToken,
     });
   } catch (err) {
-    res.status(500).json({ message: "Google Sign Up Failed", error: err });
+    res
+      .status(500)
+      .json({ message: "Google Sign Up Failed", error: err.message });
   }
 };
+// const googleSignUp = async (req, res, next) => {
+//   let token = req.body.token;
+//   let payload = {};
+
+//   const checkUsernameExists = async (username) => {
+//     return await User.findOne({ userName: username });
+//   };
+
+//   // async function verify() {
+//   //   // const ticket = await client.verifyIdToken({
+//   //   //   idToken: token,
+//   //   //   audience: process.env.CLIENT_ID,
+//   //   // });
+//   //   // const tempPayload = ticket.getPayload();
+//   //   // payload = tempPayload;
+//   //   async function verify(token) {
+//   //     const response = await axios.get(
+//   //       "https://www.googleapis.com/oauth2/v3/certs"
+//   //     );
+//   //     const keys = response.data;
+
+//   //     const decodedToken = jwt.decode(token, { complete: true });
+//   //     const kid = decodedToken.header.kid;
+//   //     const key = keys[kid];
+
+//   //     console.log("Token kid:", kid);
+//   //     console.log("Keys:", keys);
+
+//   //     if (!key) {
+//   //       throw new Error("No key found for this token");
+//   //     }
+
+//   //     jwt.verify(token, key);
+//   //     return decodedToken.payload;
+//   //   }
+//   // const verify = async (token) => {
+//   //   const response = await axios.get(
+//   //     "https://www.googleapis.com/oauth2/v3/certs"
+//   //   );
+//   //   const keys = response.data;
+
+//   //   const decodedToken = jwt.decode(token, { complete: true });
+//   //   const kid = decodedToken.header.kid;
+//   //   const key = keys[kid];
+
+//   //   console.log("Token kid:", kid);
+//   //   console.log("Keys:", keys);
+
+//   //   if (!key) {
+//   //     throw new Error("No key found for this token");
+//   //   }
+
+//   //   jwt.verify(token, key);
+//   //   return decodedToken.payload;
+//   // };
+//   async function verify(token) {
+//     try {
+//       const response = await axios.get(
+//         "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com"
+//       );
+//       const keys = response.data;
+
+//       const decodedToken = jwt.decode(token, { complete: true });
+//       const kid = decodedToken.header.kid;
+//       console.log(decodedToken.signature);
+//       console.log("Token kid:", kid);
+//       console.log("Keys kids:", Object.keys(keys));
+
+//       const pem = keys[kid];
+
+//       if (!pem) {
+//         throw new Error("No key found for this token");
+//       }
+
+//       // Verify the JWT with the public key
+//       const verifiedPayload = jwt.verify(token, pem, { algorithms: ["RS256"] });
+
+//       console.log("JWT verified successfully:", verifiedPayload);
+//       return verifiedPayload;
+//     } catch (error) {
+//       console.log("Error:", error.message);
+//       throw new Error("Token verification failed: " + error.message);
+//     }
+//   }
+//   try {
+//     const payload = await verify(req.body.token);
+//     console.log("YASTAAA");
+//     console.log(payload);
+//     const existingUser = await User.findOne({ email: payload["email"] });
+//     if (existingUser) {
+//       return res.status(500).json({ message: "Email already Exists" });
+//     }
+//     let randomUsername = authService.generateRandomUsername();
+//     let user = await checkUsernameExists(randomUsername[0]);
+//     while (user) {
+//       randomUsername = authService.generateRandomUsername();
+//       user = await checkUsernameExists(randomUsername[0]);
+//     }
+
+//     const randomPassword = Math.random().toString(36).slice(-8);
+//     user = new User({
+//       userName: randomUsername[0],
+//       email: payload["email"],
+//       password: randomPassword,
+//       signupGoogle: true,
+//     });
+
+//     user = await user.save();
+//     console.log(user);
+//     payload.user = { id: user._id, type: "google" };
+//     const expirationTime = Math.floor(Date.now() / 1000) + 50000000000;
+//     payload.exp = expirationTime;
+//     const newToken = jwt.sign(payload, process.env.JWT_SECRET);
+
+//     res.cookie("session-token", newToken);
+//     res.status(200).json({
+//       message: "User Signup Successfully",
+//       user: user,
+//       token: newToken,
+//     });
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ message: "Google Sign Up Failed", error: err.message });
+//   }
+// };
 
 const logout = (req, res, next) => {
   res.clearCookie("token");
@@ -216,11 +351,15 @@ const login = async (req, res) => {
     const user = await User.findOne({ $or: [{ userName }, { email }] });
     console.log("userrrr", user);
     if (!user) {
-      return res.status(400).json({ message: "Invalid username/email or password" });
+      return res
+        .status(400)
+        .json({ message: "Invalid username/email or password" });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid username/email or password" });
+      return res
+        .status(400)
+        .json({ message: "Invalid username/email or password" });
     }
     const payload = {
       user: {
@@ -260,7 +399,9 @@ const signUp = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
     if (password.length < 8) {
-      return res.status(400).json({ message: "Password must be at least 8 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 8 characters" });
     }
 
     user = new User({
