@@ -32,7 +32,6 @@ const googleSignUp = async (req, res) => {
       password: randomPassword,
       signupGoogle: true,
     });
-    console.log("A&AAAAA");
     user = await user.save();
     console.log(user);
     const payload = {};
