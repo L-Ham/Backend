@@ -459,6 +459,7 @@ const getSubredditPosts = async (req, res, next) => {
       .json({ message: "Error Getting Subreddit Posts", error: err.message });
   }
 };
+const getCommunityDetails = async (req, res) => {};
 const editCommunityDetails = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -512,6 +513,7 @@ module.exports = {
   editTextWidget,
   deleteTextWidget,
   reorderRules,
+  getCommunityDetails,
   editCommunityDetails,
   getSubredditPosts,
   getSubRedditRules,
