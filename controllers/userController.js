@@ -346,11 +346,11 @@ const checkUserNameAvailability = async (req, res, next) => {
 
     if (user) {
       console.log("Username already taken:", userName);
-      return res.status(409).json( false );
+      return res.status(409).json({ message: "Username already taken" });
     }
 
     console.log("Username available:", userName);
-    res.json( true );
+    res.json({ message: "Username available" });
   } catch (err) {
     console.log("Error checking username availability:", err);
     if (res.status) {
