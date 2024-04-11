@@ -16,57 +16,80 @@ const createPost = async (req, res, next) => {
     return res.status(404).json({ message: "User not found" });
   }
   try {
-        // Check if title is provided in the request body
-        if (!req.body.title) {
-          return res.status(400).json({ message: "Title is required" });
+    // Check if title is provided in the request body
+    if (!req.body.title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
+    // Check type of post
+    switch (req.body.type) {
+      case "text":
+        // For text posts, ensure no images, videos, or polls are provided
+        if (
+          req.files ||
+          req.body["poll.options"] ||
+          req.body["poll.votingLength"] ||
+          req.body["poll.startTime"] ||
+          req.body["poll.endTime"] ||
+          req.body.url
+        ) {
+          return res.status(400).json({
+            message:
+              "Text posts cannot include images, videos, links, or polls",
+          });
         }
-        // Check type of post
-        switch (req.body.type) {
-          case "text":
-            // For text posts, ensure no images, videos, or polls are provided
-            if (req.files || req.body["poll.options"] || req.body["poll.votingLength"] ||req.body["poll.startTime"] ||req.body["poll.endTime"] || req.body.url) {
-              return res.status(400).json({
-                message: "Text posts cannot include images, videos, links, or polls",
-              });
-            }
-            break;
-          case "image":
-          case "video":
-            if (req.body["poll.options"] || req.body["poll.votingLength"] ||req.body["poll.startTime"] || req.body.url) {
-              return res.status(400).json({
-                message: "Image posts cannot include links or polls",
-              });
-            }
-            // For image or video posts, ensure media is provided
-            if (!req.files || req.files.length === 0) {
-              return res
-                .status(400)
-                .json({ message: "Media file is required for image or video post" });
-            }
-            break;
-          case "poll":
-            // For poll posts, ensure poll object is provided with at least two options
-            if ( req.body["poll.options"].length < 2) {
-              console.log("henaaaaaaaaaaaaaaaaaaaaaa poll");
-              return res.status(400).json({
-                message: "Poll post must include a poll object with at least two options",
-              });
-            }
-            break;
-          case "link":
-            // For link posts, ensure URL is provided
-            if(req.body["poll.options"] || req.body["poll.votingLength"] ||req.body["poll.startTime"] || req.files){
-              return res.status(400).json({
-                message: "Link posts cannot include media or polls",
-              });
-            }
-            if (!req.body.url) {
-              return res.status(400).json({ message: "URL is required for link post" });
-            }
-            break;
-          default:
-            return res.status(400).json({ message: "Invalid post type" });
+        break;
+      case "image":
+      case "video":
+        if (
+          req.body["poll.options"] ||
+          req.body["poll.votingLength"] ||
+          req.body["poll.startTime"] ||
+          req.body.url
+        ) {
+          return res.status(400).json({
+            message: "Image posts cannot include links or polls",
+          });
         }
+        // For image or video posts, ensure media is provided
+        if (!req.files || req.files.length === 0) {
+          return res
+            .status(400)
+            .json({
+              message: "Media file is required for image or video post",
+            });
+        }
+        break;
+      case "poll":
+        // For poll posts, ensure poll object is provided with at least two options
+        if (req.body["poll.options"].length < 2) {
+          console.log("henaaaaaaaaaaaaaaaaaaaaaa poll");
+          return res.status(400).json({
+            message:
+              "Poll post must include a poll object with at least two options",
+          });
+        }
+        break;
+      case "link":
+        // For link posts, ensure URL is provided
+        if (
+          req.body["poll.options"] ||
+          req.body["poll.votingLength"] ||
+          req.body["poll.startTime"] ||
+          req.files
+        ) {
+          return res.status(400).json({
+            message: "Link posts cannot include media or polls",
+          });
+        }
+        if (!req.body.url) {
+          return res
+            .status(400)
+            .json({ message: "URL is required for link post" });
+        }
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid post type" });
+    }
     let subReddit = null;
     if (subRedditId != "") {
       subReddit = await SubReddit.findById(subRedditId);
