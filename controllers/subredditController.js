@@ -261,13 +261,14 @@ const editTextWidget = async (req, res, next) => {
 
     const textWidget = subreddit.textWidgets.id(textWidgetId);
     if (!textWidget) {
-      console.log("Text widget with provided ID not found");
-      return res.status(404).json({ message: "Text widget not found" });
+      return res
+        .status(404)
+        .json({ message: "Text widget with provided ID not found" });
     }
     textWidget.widgetName = widgetName;
     textWidget.text = text;
     const savedSubreddit = await subreddit.save();
-    res.json({
+    res.status(200).json({
       message: "Text widget edited successfully",
       widgets: subreddit.textWidgets,
     });
@@ -311,8 +312,9 @@ const deleteTextWidget = async (req, res, next) => {
       widgets: subreddit.textWidgets,
     });
   } catch (error) {
-    console.log("Error deleting text widget:", error);
-    res.status(500).json({ message: "Error deleting text widget" });
+    res
+      .status(500)
+      .json({ message: "Error deleting text widget", error: error.message });
   }
 };
 
@@ -333,12 +335,10 @@ const reorderRules = async (req, res, next) => {
     const rules = subreddit.rules;
 
     if (rulesOrder.length !== rules.length) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "The number of rules provided does not match the number of existing rules",
-        });
+      return res.status(400).json({
+        message:
+          "The number of rules provided does not match the number of existing rules",
+      });
     }
 
     if (new Set(rulesOrder).size !== rulesOrder.length) {
@@ -405,6 +405,7 @@ const getSubredditPosts = async (req, res, next) => {
       .json({ message: "Error Getting Subreddit Posts", error: err.message });
   }
 };
+const getCommunityDetails = async (req, res) => {};
 const editCommunityDetails = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -418,18 +419,10 @@ const editCommunityDetails = async (req, res, next) => {
         .status(500)
         .json({ message: "User is not a moderator to this subreddit" });
     }
-    const membersNickname = req.body.membersNickname;
-    const currentlyViewingNickname = req.body.currentlyViewingNickname;
-    const communityDescription = req.body.communityDescription;
-    subreddit.communityDetails.set("membersNickname", membersNickname);
-    subreddit.communityDetails.set(
-      "currentlyViewingNickname",
-      currentlyViewingNickname
-    );
-    subreddit.communityDetails.set(
-      "communityDescription",
-      communityDescription
-    );
+    subreddit.description = req.body.communityDescription;
+    subreddit.currentlyViewingNickname = req.body.currentlyViewingNickname;
+    subreddit.membersNickname = req.body.membersNickname;
+
     await subreddit.save();
     res.status(200).json({
       message: "Subreddit's Community Details Edited Successfully",
@@ -466,6 +459,7 @@ module.exports = {
   editTextWidget,
   deleteTextWidget,
   reorderRules,
+  getCommunityDetails,
   editCommunityDetails,
   getSubredditPosts,
   getSubRedditRules,

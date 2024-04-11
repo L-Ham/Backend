@@ -3,8 +3,7 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const bodyParser = require("body-parser");
 const authenticateToken = require("../middleware/authenticateToken");
-const { uploadImage  } = require("../middleware/multerConfig");
-
+const { uploadImage } = require("../middleware/multerConfig");
 
 router.get(
   "/accountSettings",
@@ -153,7 +152,7 @@ router.patch(
   userController.addFavoriteCommunity
 );
 
-router.delete(
+router.patch(
   "/unfavouriteSubreddit",
   bodyParser.json(),
   authenticateToken,
@@ -170,6 +169,18 @@ router.get(
   bodyParser.json(),
   authenticateToken,
   userController.getDownvotedPosts
+);
+router.get(
+  "/savedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getSavedPosts
+);
+router.get(
+  "/hiddenPosts",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getHiddenPosts
 );
 router.get(
   "/getAllBlockedUsers",
@@ -199,7 +210,7 @@ router.post(
   "/avatarImage",
   bodyParser.json(),
   authenticateToken,
-  uploadImage.array('file'),
+  uploadImage.array("file"),
   userController.uploadAvatarImage
 );
 router.get(

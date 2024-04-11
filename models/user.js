@@ -168,10 +168,6 @@ const userSchema = new Schema({
         type: String,
         required: true,
       },
-      logo: {
-        type: String,
-        required: true,
-      },
       displayText: {
         type: String,
         required: false,
@@ -238,6 +234,15 @@ const userSchema = new Schema({
         ref: "user",
         required: false,
       },
+      blockedUserName: {
+        type: String,
+        required: false,
+      },
+      blockedUserAvatar: {
+        type: Schema.Types.ObjectId,
+        ref: "userUploads",
+        required: false,
+      },
       blockedAt: {
         type: Date,
         required: false,
@@ -249,6 +254,15 @@ const userSchema = new Schema({
      mutedCommunityId: {
         type: Schema.Types.ObjectId,
         ref: "subReddit",
+        required: false,
+      },
+      mutedCommunityName: {
+        type: String,
+        required: false,
+      },
+      mutedCommunityAvatar: {
+        type: Schema.Types.ObjectId,
+        ref: "userUploads",
         required: false,
       },
       mutedAt: {

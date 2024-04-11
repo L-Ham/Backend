@@ -395,12 +395,17 @@ const blockUser = async (req, res, next) => {
     await userToBlock.save();
     const user = await User.findById(userId);
 
-    if (user.blockUsers.includes(userToBlock._id)) {
+    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToBlock._id))) {
       console.log("User already blocked:", userToBlock.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
+
+    
+
     user.blockUsers.push({
       blockedUserId: userToBlock._id,
+      blockedUserName: userToBlock.userName,
+      blockedUserAvatar: userToBlock.avatarImage,
       blockedAt: new Date()
     });
     user.followers.pull(userToBlock._id);
@@ -521,7 +526,7 @@ async function viewFeedSettings(req, res, next) {
 async function addSocialLink(req, res, next) {
   try {
     const userId = req.userId;
-    const { linkOrUsername, appName, logo, displayText } = req.body;
+    const { linkOrUsername, appName, displayText } = req.body;
 
     const user = await User.findById(userId);
 
@@ -537,7 +542,7 @@ async function addSocialLink(req, res, next) {
         .json({ message: "Maximum number of social links reached" });
     }
 
-    user.socialLinks.push({ linkOrUsername, appName, logo, displayText });
+    user.socialLinks.push({ linkOrUsername, appName, displayText });
 
     const updatedUser = await user.save();
     console.log("Social link added: ", updatedUser);
@@ -552,7 +557,7 @@ async function addSocialLink(req, res, next) {
 
 const editSocialLink = async (req, res, next) => {
   const userId = req.userId;
-  const { linkId, linkOrUsername, appName, logo, displayText } = req.body;
+  const { linkId, linkOrUsername, appName, displayText } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -564,7 +569,7 @@ const editSocialLink = async (req, res, next) => {
 
     const socialLinkToUpdate = user.socialLinks.find(
       (link) => link._id.toString() === linkId
-    ); // Ensure proper comparison
+    );
 
     if (!socialLinkToUpdate) {
       console.log("Social link not found for link ID:", linkId);
@@ -573,7 +578,6 @@ const editSocialLink = async (req, res, next) => {
 
     socialLinkToUpdate.linkOrUsername = linkOrUsername;
     socialLinkToUpdate.appName = appName;
-    socialLinkToUpdate.logo = logo;
     socialLinkToUpdate.displayText = displayText;
 
     const updatedUser = await user.save();
@@ -653,11 +657,10 @@ const updateGender = async (req, res, next) => {
         message: "User gender updated successfully",
         user: updatedUser,
       });
-    }
-    else {
+    } else {
       res.status(400).json({
-        message:"Gender format should be Female/Male/I prefer not to say"
-      })
+        message: "Gender format should be Female/Male/I prefer not to say",
+      });
     }
   } catch (err) {
     console.log("Error updating user gender:", err);
@@ -694,7 +697,11 @@ const muteCommunity = async (req, res, next) => {
       return res.status(400).json({ message: "Community already muted" });
     }
 
+<<<<<<< HEAD
     user.muteCommunities.push({ mutedCommunityId:communityId, mutedAt: new Date() });
+=======
+    user.muteCommunities.push({ mutedCommunityId:communityId,mutedCommunityName:community.name ,mutedCommunityAvatar:community.appearance.avatarImage, mutedAt: new Date() });
+>>>>>>> origin/Rana
     await user.save();
 
     console.log("Community muted: ", user);
@@ -889,7 +896,9 @@ const addFavoriteCommunity = async (req, res) => {
     });
   } catch (err) {
     console.log("Error favoriting community:", err);
-    res.status(500).json({ message: "Error favoriting community", error: err });
+    res
+      .status(500)
+      .json({ message: "Error favoriting community", error: err.message });
   }
 };
 
@@ -981,6 +990,58 @@ const getDownvotedPosts = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Error Getting Posts Downvoted by User",
+      error: err.message,
+    });
+  }
+};
+
+const getSavedPosts = async (req, res) => {
+  const userId = req.userId;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const query = Post.find({ _id: { $in: user.savedPosts } });
+    const result = await UserServices.paginateResults(query, page, limit);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    return res.status(200).json({
+      message: "Retrieved User's Saved Posts",
+      upvotedPosts: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting Posts Saved by User",
+      error: err.message,
+    });
+  }
+};
+
+const getHiddenPosts = async (req, res) => {
+  const userId = req.userId;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const query = Post.find({ _id: { $in: user.hidePosts } });
+    const result = await UserServices.paginateResults(query, page, limit);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    return res.status(200).json({
+      message: "Retrieved User's Hidden Posts",
+      upvotedPosts: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting Posts Hidden by User",
       error: err.message,
     });
   }
@@ -1212,6 +1273,8 @@ module.exports = {
   removeFavoriteCommunity,
   getUpvotedPosts,
   getDownvotedPosts,
+  getSavedPosts,
+  getHiddenPosts,
   getAllBlockedUsers,
   editUserLocation,
   searchUsernames,

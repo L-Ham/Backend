@@ -61,6 +61,12 @@ router.patch(
   subredditController.editCommunityDetails
 );
 router.get(
+  "/communityDetails",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getCommunityDetails
+);
+router.get(
   "/getSubRedditRules",
   bodyParser.json(),
   subredditController.getSubRedditRules

@@ -58,16 +58,6 @@ const subRedditSchema = new Schema({
       ref: "post",
     },
   ],
-  communityDetails: {
-    type: Map,
-    of: String,
-    required: false,
-    default: {
-      membersNickname: "Members",
-      currentlyViewingNickname: "Online",
-      communityDescription: "",
-    },
-  },
   textWidgets: [
     {
       widgetName: {
@@ -169,9 +159,20 @@ const subRedditSchema = new Schema({
     required: true,
     default: 0,
   },
+  membersNickname: {
+    type: String,
+    requiired: false,
+    default: "Members",
+  },
+  currentlyViewingNickname: {
+    type: String,
+    requiired: false,
+    default: "Online",
+  },
   description: {
     type: String,
     required: false,
+    default: "",
   },
   title: {
     type: String,

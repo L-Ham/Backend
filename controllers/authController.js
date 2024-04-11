@@ -166,13 +166,29 @@ const forgetPassword = async (req, res, next) => {
     },
   });
   const email = req.body.email;
-  const user = await User.findOne({ email });
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (!user) {
+  const username=req.body.username;
+  let user;
+  if(!username){
+    user = await User.findOne({ email: email });
+
+  }
+  else if(!email){
+    user = await User.findOne({ userName: username });
+  }
+  else{
+    
+    user =  await User.findOne({ email: email,userName: username });
+
+  }
+  if(!user){
     return res.status(404).send("User not found");
   }
-  // let email = user.email;
+
+
+  
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+ 
   transporter.sendMail(
     {
       from: "r75118106@gmail.com",
