@@ -149,35 +149,29 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
 
   try {
     const user = await User.findById(userId)
-      .populate({
-        path: 'blockUsers.blockedUserId',
-        select: 'userName avatarImage _id'
-      })
-      .populate({
-        path: 'muteCommunities.mutedCommunityId',
-        select: 'name appearance.avatarImage mutedAt _id'
-      });
+      .select("blockUsers muteCommunities");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const safetyAndPrivacySettings = {
       blockUsers: user.blockUsers.map(blockedUser => ({
-        blockedUserId: {
-          avatarImage: blockedUser.blockedUserId.avatarImage,
-          _id: blockedUser.blockedUserId._id,
-          userName: blockedUser.blockedUserId.userName
-        },
+        blockedUserName: blockedUser.blockedUserName,
+        blockedUserAvatar: blockedUser.blockedUserAvatar,
         blockedAt: blockedUser.blockedAt
       })),
       muteCommunities: user.muteCommunities.map(mutedCommunity => ({
-        name: mutedCommunity.mutedCommunityId.name,
-        avatarImage: mutedCommunity.mutedCommunityId.appearance.avatarImage,
+        mutedCommunityName: mutedCommunity.mutedCommunityName,
+        mutedCommunityAvatar: mutedCommunity.mutedCommunityAvatar,
         mutedAt: mutedCommunity.mutedAt
       })),
     };
 
-    res.json(safetyAndPrivacySettings);
-  } catch (err) {
-    console.log("Error retrieving safety and privacy settings:", err);
-    res.status(500).json({ message: "Server error" });
+    return res.json(safetyAndPrivacySettings);
+  } catch (error) {
+    console.log("Error fetching user settings:", error);
+    res.status(500).json({ message: "Error fetching user settings" });
   }
 };
 
@@ -399,9 +393,6 @@ const blockUser = async (req, res, next) => {
       console.log("User already blocked:", userToBlock.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
-
-    
-
     user.blockUsers.push({
       blockedUserId: userToBlock._id,
       blockedUserName: userToBlock.userName,
@@ -697,11 +688,7 @@ const muteCommunity = async (req, res, next) => {
       return res.status(400).json({ message: "Community already muted" });
     }
 
-<<<<<<< HEAD
-    user.muteCommunities.push({ mutedCommunityId:communityId, mutedAt: new Date() });
-=======
     user.muteCommunities.push({ mutedCommunityId:communityId,mutedCommunityName:community.name ,mutedCommunityAvatar:community.appearance.avatarImage, mutedAt: new Date() });
->>>>>>> origin/Rana
     await user.save();
 
     console.log("Community muted: ", user);
