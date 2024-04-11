@@ -155,6 +155,10 @@ const savePost = async (req, res, next) => {
     const savedPost = user.savedPosts.find((savedPost) =>
       savedPost.equals(postId)
     );
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post Not Found" });
+    }
     if (savedPost) {
       return res
         .status(400)
@@ -264,19 +268,24 @@ const downvote = async (req, res, next) => {
     }
     res.status(200).json({ message: "Post downvoted & added to user" });
   } catch (err) {
-    res.status(500).json({ message: "Error downvoting post", error: err });
+    res
+      .status(500)
+      .json({ message: "Error downvoting post", error: err.message });
   }
 };
 
 const hidePost = async (req, res, next) => {
   const userId = req.userId;
-
+  const postId = req.body.postId;
   try {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post Not Found" });
+    }
     if (user.hidePosts.includes(req.body.postId)) {
       return res
         .status(500)
@@ -289,7 +298,9 @@ const hidePost = async (req, res, next) => {
     res.status(200).json({ message: "Post hidden successfully" });
   } catch (error) {
     console.log("Error hidding post:", error);
-    res.status(500).json({ message: "Error hidding post" });
+    res
+      .status(500)
+      .json({ message: "Error hidding post", error: error.message });
   }
 };
 
@@ -304,7 +315,10 @@ const unhidePost = async (req, res, next) => {
       console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
-
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post Not Found" });
+    }
     const unhideIndex = user.hidePosts.findIndex((hidePost) =>
       hidePost._id.equals(postId)
     );
@@ -547,7 +561,7 @@ const cancelUpvote = async (req, res, next) => {
     const userId = req.userId;
     const postId = req.body.postId;
     const post = await Post.findById(postId);
-    const user  = await User.findById(userId);
+    const user = await User.findById(userId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -562,11 +576,10 @@ const cancelUpvote = async (req, res, next) => {
       await user.save();
     }
     res.status(200).json({ message: "Post upvote cancelled" });
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({ message: "Error cancelling upvote", error: err });
   }
-}
+};
 
 const cancelDownvote = async (req, res, next) => {
   try {
@@ -588,12 +601,10 @@ const cancelDownvote = async (req, res, next) => {
       await user.save();
     }
     res.status(200).json({ message: "Post downvote cancelled" });
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({ message: "Error cancelling downvote", error: err });
-
   }
-}
+};
 
 const approvePost = async (req, res, next) => {
   const postId = req.body.postId;
@@ -618,7 +629,9 @@ const approvePost = async (req, res, next) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subReddit.moderators.includes(userId)) {
-      return res.status(401).json({ message: "User not authorized to approve post" });
+      return res
+        .status(401)
+        .json({ message: "User not authorized to approve post" });
     }
     post.approved = true;
     post.approvedBy = userId;
@@ -629,8 +642,6 @@ const approvePost = async (req, res, next) => {
     res.status(500).json({ message: "Error approving post" });
   }
 };
-
-
 
 const removePost = async (req, res, next) => {
   const postId = req.body.postId;
@@ -649,12 +660,14 @@ const removePost = async (req, res, next) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subReddit.moderators.includes(userId)) {
-      return res.status(401).json({ message: "User not authorized to remove post" });
+      return res
+        .status(401)
+        .json({ message: "User not authorized to remove post" });
     }
-    if(post.approved==true){
+    if (post.approved == true) {
       return res.status(400).json({ message: "Post already approved" });
     }
-    if(post.disapproved==true){
+    if (post.disapproved == true) {
       return res.status(400).json({ message: "Post already disapproved" });
     }
     post.disapproved = true;
@@ -667,7 +680,7 @@ const removePost = async (req, res, next) => {
     console.log("Error removing post:", error);
     res.status(500).json({ message: "Error removing post" });
   }
-}
+};
 
 const markAsSpoiler = async (req, res, next) => {
   const userId = req.userId;
@@ -678,7 +691,9 @@ const markAsSpoiler = async (req, res, next) => {
       return res.status(404).json({ message: "Post not found" });
     }
     if (post.isSpoiler) {
-      return res.status(400).json({ message: "Post is already marked as spoiler" });
+      return res
+        .status(400)
+        .json({ message: "Post is already marked as spoiler" });
     }
     const user = await User.findById(userId);
     if (!user) {
@@ -705,7 +720,7 @@ const markAsSpoiler = async (req, res, next) => {
     console.log("Error Marking post as spoiler:", error);
     res.status(500).json({ message: "Error Marking post as spoiler" });
   }
-}
+};
 
 const unmarkAsSpoiler = async (req, res, next) => {
   const userId = req.userId;
@@ -743,7 +758,7 @@ const unmarkAsSpoiler = async (req, res, next) => {
     console.log("Error Unmarking post as spoiler:", error);
     res.status(500).json({ message: "Error Unmarking post as spoiler" });
   }
-}
+};
 
 const reportPost = async (req, res, next) => {
   const userId = req.userId;
@@ -763,8 +778,10 @@ const reportPost = async (req, res, next) => {
     if (!postOwner) {
       return res.status(404).json({ message: "Post owner not found" });
     }
-    if(user.blockUsers.includes(postOwner._id)){
-      return res.status(400).json({ message: "You have already blocked this user" });
+    if (user.blockUsers.includes(postOwner._id)) {
+      return res
+        .status(400)
+        .json({ message: "You have already blocked this user" });
     }
     const subRedditId = post.subReddit;
     const report = new Report({
@@ -778,21 +795,18 @@ const reportPost = async (req, res, next) => {
       blockUser: req.body.blockUser || false,
     });
 
-    if (req.body.blockUser){
+    if (req.body.blockUser) {
       user.blockUsers.push(postOwner._id);
       await user.save();
     }
 
     await report.save();
     res.status(200).json({ message: "Post reported successfully" });
-
-  }
-  catch (err) {
+  } catch (err) {
     console.error("Error reporting post:", err);
     res.status(500).json({ message: "Error reporting post", error: err });
   }
-} 
-
+};
 
 module.exports = {
   savePost,
