@@ -7,37 +7,23 @@ const { validationResult } = require("express-validator");
 require("dotenv").config();
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.CLIENT_ID);
-const axios = require("axios");
-const jwkToPem = require("jwk-to-pem");
-const { initializeApp } = require("firebase-admin/app");
-const admin = require("firebase-admin");
+// const jwkToPem = require("jwk-to-pem");
+// const { initializeApp } = require("firebase-admin/app");
+// const admin = require("firebase-admin");
 
 const googleSignUp = async (req, res) => {
-  // const idToken = req.body.token;
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    projectId: "reddit-bylham",
-  });
-
-  async function verify(idToken) {
-    try {
-      // console.log(idToken);
-      const decodedToken = await admin.auth().verifyIdToken(idToken);
-      console.log("Token is valid");
-      console.log(decodedToken);
-      return decodedToken;
-    } catch (error) {
-      console.error("Error while verifying token", error);
-    }
-  }
   try {
-    const payload = await verify(req.body.token);
+    // const payload = await verify(req.body.token);
+    const data = req.decoded;
+    console.log(data.email);
     console.log("YASTAAA");
-    console.log(payload);
-    const existingUser = await User.findOne({ email: payload["email"] });
+    const existingUser = await User.findOne({ email: data.email });
     if (existingUser) {
       return res.status(500).json({ message: "Email already Exists" });
     }
+    const checkUsernameExists = async (username) => {
+      return await User.findOne({ userName: username });
+    };
     let randomUsername = authService.generateRandomUsername();
     let user = await checkUsernameExists(randomUsername[0]);
     while (user) {
@@ -48,13 +34,14 @@ const googleSignUp = async (req, res) => {
     const randomPassword = Math.random().toString(36).slice(-8);
     user = new User({
       userName: randomUsername[0],
-      email: payload["email"],
+      email: data.email,
       password: randomPassword,
       signupGoogle: true,
     });
-
+    console.log("A&AAAAA");
     user = await user.save();
     console.log(user);
+    const payload = {};
     payload.user = { id: user._id, type: "google" };
     const expirationTime = Math.floor(Date.now() / 1000) + 50000000000;
     payload.exp = expirationTime;
