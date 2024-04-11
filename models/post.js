@@ -36,7 +36,7 @@ const postSchema = new Schema({
   approvedBy: {
     type: Schema.Types.ObjectId,
     ref: "user",
-    required: true,
+    required: false,
   },
   disapproved: {
     type: Boolean,
@@ -46,7 +46,7 @@ const postSchema = new Schema({
   disapprovedBy: {
     type: Schema.Types.ObjectId,
     ref: "user",
-    required: true,
+    required: false,
   },
   videos: [
     {
@@ -100,11 +100,6 @@ const postSchema = new Schema({
     default: false,
   },
   isLocked: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  isOc: {
     type: Boolean,
     required: true,
     default: false,
