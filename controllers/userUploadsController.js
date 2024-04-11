@@ -15,7 +15,6 @@ async function uploadMedia(file) {
 console.log("secure_url",secure_url)
   try {
     const newUserUpload = await UserUpload.create({
-      filename: file.filename,
       originalname: file.originalname,
       mimetype: file.mimetype,
       url: secure_url,

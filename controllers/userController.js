@@ -1166,7 +1166,7 @@ const getAvatarImage = async (req, res, next) => {
 
     res.status(200).send({
       _id: avatarImage._id,
-      filename: avatarImage.filename,
+      url: avatarImage.url,
       originalname: avatarImage.originalname,
     });
   } catch (error) {
@@ -1224,7 +1224,7 @@ const getBannerImage = async (req, res, next) => {
 
     res.status(200).send({
       _id: bannerImage._id,
-      filename: bannerImage.filename,
+      url: bannerImage.url,
       originalname: bannerImage.originalname,
     });
   } catch (error) {
