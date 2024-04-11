@@ -238,6 +238,14 @@ const userSchema = new Schema({
         ref: "user",
         required: false,
       },
+      blockedUserName: {
+        type: String,
+        required: false,
+      },
+      blockedUserAvatar: {
+        type: String,
+        required: false,
+      },
       blockedAt: {
         type: Date,
         required: false,

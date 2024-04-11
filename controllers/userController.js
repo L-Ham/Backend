@@ -380,6 +380,8 @@ const blockUser = async (req, res, next) => {
     }
     user.blockUsers.push({
       blockedUserId: userToBlock._id,
+      blockedUserName: userToBlock.userName,
+      blockedUserAvatar: userToBlock.avatarImage,
       blockedAt: new Date()
     });
     user.followers.pull(userToBlock._id);
