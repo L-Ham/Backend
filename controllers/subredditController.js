@@ -472,18 +472,10 @@ const editCommunityDetails = async (req, res, next) => {
         .status(500)
         .json({ message: "User is not a moderator to this subreddit" });
     }
-    const membersNickname = req.body.membersNickname;
-    const currentlyViewingNickname = req.body.currentlyViewingNickname;
-    const communityDescription = req.body.communityDescription;
-    subreddit.communityDetails.set("membersNickname", membersNickname);
-    subreddit.communityDetails.set(
-      "currentlyViewingNickname",
-      currentlyViewingNickname
-    );
-    subreddit.communityDetails.set(
-      "communityDescription",
-      communityDescription
-    );
+    subreddit.description = req.body.communityDescription;
+    subreddit.currentlyViewingNickname = req.body.currentlyViewingNickname;
+    subreddit.membersNickname = req.body.membersNickname;
+
     await subreddit.save();
     res.status(200).json({
       message: "Subreddit's Community Details Edited Successfully",
