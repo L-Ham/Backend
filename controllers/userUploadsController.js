@@ -9,7 +9,8 @@ async function uploadMedia(file) {
   const dataURI = 'data:' + file.mimetype + ';base64,' + b64
   console.log("dataURI",dataURI)
   const {secure_url} = await cloudinary.uploader.upload(
-    dataURI
+    dataURI,
+    {resource_type: "auto"}
   );
 console.log("secure_url",secure_url)
   try {
