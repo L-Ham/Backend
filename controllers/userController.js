@@ -639,6 +639,7 @@ const updateGender = async (req, res, next) => {
     if (
       req.body.gender === "Female" ||
       req.body.gender === "Male" ||
+      req.body.gender ===""||
       req.body.gender === "I prefer not to say"
     ) {
       user.gender = req.body.gender;
@@ -650,7 +651,7 @@ const updateGender = async (req, res, next) => {
       });
     } else {
       res.status(400).json({
-        message: "Gender format should be Female/Male/I prefer not to say",
+        message: "Gender format should be Female/Male/I prefer not to say/Empty String",
       });
     }
   } catch (err) {
