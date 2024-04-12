@@ -1,6 +1,5 @@
 const SubReddit = require("../models/subReddit");
 const User = require("../models/user");
-const UserUpload = require("../models/userUploads");
 const subredditServices = require("../services/subredditServices");
 const UserUploadModel = require("../models/userUploads");
 const UserUpload = require("../controllers/userUploadsController");
@@ -417,10 +416,10 @@ const getCommunityDetails = async (req, res) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    const avatarImage = await UserUpload.findById(
+    const avatarImage = await UserUploadModel.findById(
       subreddit.appearance.avatarImage
     );
-    const bannerImage = await UserUpload.findById(
+    const bannerImage = await UserUploadModel.findById(
       subreddit.appearance.bannerImage
     );
 
