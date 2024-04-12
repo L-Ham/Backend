@@ -1,5 +1,6 @@
 const SubReddit = require("../models/subReddit");
 const User = require("../models/user");
+const UserUpload = require("../models/userUploads");
 const subredditServices = require("../services/subredditServices");
 const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
@@ -405,7 +406,43 @@ const getSubredditPosts = async (req, res, next) => {
       .json({ message: "Error Getting Subreddit Posts", error: err.message });
   }
 };
-const getCommunityDetails = async (req, res) => {};
+const getCommunityDetails = async (req, res) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  try {
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const avatarImage = await UserUpload.findById(
+      subreddit.appearance.avatarImage
+    );
+    const bannerImage = await UserUpload.findById(
+      subreddit.appearance.bannerImage
+    );
+
+    const randomIndex = Math.floor(Math.random() * subreddit.members.length);
+    const details = {
+      name: subreddit.name,
+      avatarImage: avatarImage ? avatarImage.url : null,
+      bannerImage: bannerImage ? bannerImage.url : null,
+      description: subreddit.description,
+      membersNickname: subreddit.membersNickname,
+      membersCount: subreddit.members.length,
+      currentlyViewingNickname: subreddit.currentlyViewingNickname,
+      currentlyViewingCount: randomIndex,
+    };
+
+    res.status(200).json({
+      message: "Subreddit's Community Details Retrieved Successfully",
+      communityDetails: details,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Error Getting Community Details", error: err.message });
+  }
+};
 const editCommunityDetails = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;

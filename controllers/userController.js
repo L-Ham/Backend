@@ -148,23 +148,24 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
   }
 
   try {
-    const user = await User.findById(userId)
-      .select("blockUsers muteCommunities");
+    const user = await User.findById(userId).select(
+      "blockUsers muteCommunities"
+    );
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     const safetyAndPrivacySettings = {
-      blockUsers: user.blockUsers.map(blockedUser => ({
+      blockUsers: user.blockUsers.map((blockedUser) => ({
         blockedUserName: blockedUser.blockedUserName,
         blockedUserAvatar: blockedUser.blockedUserAvatar,
-        blockedAt: blockedUser.blockedAt
+        blockedAt: blockedUser.blockedAt,
       })),
-      muteCommunities: user.muteCommunities.map(mutedCommunity => ({
+      muteCommunities: user.muteCommunities.map((mutedCommunity) => ({
         mutedCommunityName: mutedCommunity.mutedCommunityName,
         mutedCommunityAvatar: mutedCommunity.mutedCommunityAvatar,
-        mutedAt: mutedCommunity.mutedAt
+        mutedAt: mutedCommunity.mutedAt,
       })),
     };
 
@@ -389,7 +390,11 @@ const blockUser = async (req, res, next) => {
     await userToBlock.save();
     const user = await User.findById(userId);
 
-    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToBlock._id))) {
+    if (
+      user.blockUsers.some((blockedUser) =>
+        blockedUser.blockedUserId.equals(userToBlock._id)
+      )
+    ) {
       console.log("User already blocked:", userToBlock.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
@@ -397,7 +402,7 @@ const blockUser = async (req, res, next) => {
       blockedUserId: userToBlock._id,
       blockedUserName: userToBlock.userName,
       blockedUserAvatar: userToBlock.avatarImage,
-      blockedAt: new Date()
+      blockedAt: new Date(),
     });
     user.followers.pull(userToBlock._id);
     const updatedUser = await user.save();
@@ -639,7 +644,7 @@ const updateGender = async (req, res, next) => {
     if (
       req.body.gender === "Female" ||
       req.body.gender === "Male" ||
-      req.body.gender ===""||
+      req.body.gender === "" ||
       req.body.gender === "I prefer not to say"
     ) {
       user.gender = req.body.gender;
@@ -651,7 +656,8 @@ const updateGender = async (req, res, next) => {
       });
     } else {
       res.status(400).json({
-        message: "Gender format should be Female/Male/I prefer not to say/Empty String",
+        message:
+          "Gender format should be Female/Male/I prefer not to say/Empty String",
       });
     }
   } catch (err) {
@@ -689,7 +695,12 @@ const muteCommunity = async (req, res, next) => {
       return res.status(400).json({ message: "Community already muted" });
     }
 
-    user.muteCommunities.push({ mutedCommunityId:communityId,mutedCommunityName:community.name ,mutedCommunityAvatar:community.appearance.avatarImage, mutedAt: new Date() });
+    user.muteCommunities.push({
+      mutedCommunityId: communityId,
+      mutedCommunityName: community.name,
+      mutedCommunityAvatar: community.appearance.avatarImage,
+      mutedAt: new Date(),
+    });
     await user.save();
 
     console.log("Community muted: ", user);
@@ -1140,7 +1151,9 @@ const uploadAvatarImage = async (req, res, next) => {
     user.avatarImage = uploadedImageId;
     await user.save();
 
-    res.status(200).json({ message: "Avatar image uploaded successfully" });
+    res
+      .status(200)
+      .json({ message: "Avatar image uploaded successfully", user: user });
   } catch (error) {
     res.status(500).json({ message: "Error uploading avatar image" });
   }
@@ -1198,7 +1211,9 @@ const uploadBannerImage = async (req, res, next) => {
     user.bannerImage = uploadedImageId;
     await user.save();
 
-    res.status(200).json({ message: "Banner image uploaded successfully" });
+    res
+      .status(200)
+      .json({ message: "Banner image uploaded successfully", user: user });
   } catch (error) {
     res.status(500).json({ message: "Error uploading banner image" });
   }
@@ -1266,10 +1281,13 @@ const editEmailSettings = async (req, res, next) => {
     user.emailSettings.set("commentOnPost", req.body.commentOnPost);
     user.emailSettings.set("repliesToComments", req.body.repliesToComments);
     user.emailSettings.set("upvotesOnPosts", req.body.upvotesOnPosts);
-    user.emailSettings.set("upvotesOnComments",req.body.upvotesOnComments);
-    user.emailSettings.set("usernameMentions",req.body.usernameMentions);
+    user.emailSettings.set("upvotesOnComments", req.body.upvotesOnComments);
+    user.emailSettings.set("usernameMentions", req.body.usernameMentions);
     user.emailSettings.set("newFollowers", req.body.newFollowers);
-    user.emailSettings.set("unsubscribeFromEmail",req.body.unsubscribeFromEmail);
+    user.emailSettings.set(
+      "unsubscribeFromEmail",
+      req.body.unsubscribeFromEmail
+    );
     await user.save();
     res.status(200).json({
       message: "User Email settings updated successfully",
@@ -1320,5 +1338,4 @@ module.exports = {
   getBannerImage,
   getEmailSettings,
   editEmailSettings,
-
 };
