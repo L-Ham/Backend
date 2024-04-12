@@ -240,6 +240,12 @@ const reportComment = async (req, res, next) => {
       console.log("Post not found for post ID:", comment.postId);
       return res.status(404).json({ message: "Post not found" });
     }
+    if (title === ""){
+      return res.status(400).json({ message: "Title is required" });
+    }
+    if (description === ""){
+      return res.status(400).json({ message: "Description is required" });
+    }
     const subRedditId = post.subReddit;
     //const subRedditId = comment.post.subReddit;
     const report = new Report({
