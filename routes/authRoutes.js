@@ -48,4 +48,18 @@ router.patch(
   authenticateToken,
   authController.updateEmail
 );
+router.patch(
+  "/googleDisconnect",
+  bodyParser.json(),
+  authenticateToken,
+  authController.googleDisconnect
+);
+router.patch(
+  "/googleConnect",
+  bodyParser.json(),
+  authenticateToken,
+  googleAuth,
+  authController.googleConnect
+);
+
 module.exports = router;
