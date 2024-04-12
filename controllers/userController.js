@@ -687,10 +687,9 @@ const muteCommunity = async (req, res, next) => {
         .status(400)
         .json({ message: "User is not a member of this community" });
     }
-    if (user.muteCommunities.includes(communityId)) {
+    if (user.muteCommunities.some(muteCommunity => muteCommunity.mutedCommunityId.equals(communityId))) {
       return res.status(400).json({ message: "Community already muted" });
     }
-
     user.muteCommunities.push({ mutedCommunityId:communityId,mutedCommunityName:community.name ,mutedCommunityAvatar:community.appearance.avatarImage, mutedAt: new Date() });
     await user.save();
 
@@ -725,9 +724,7 @@ const unmuteCommunity = async (req, res, next) => {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const isMuted = user.muteCommunities.find((muteCommunity) =>
-      muteCommunity.equals(communityId)
-    );
+    const isMuted = user.muteCommunities.some(muteCommunity => muteCommunity.mutedCommunityId.equals(communityId))
     if (!isMuted) {
       console.log("This subReddit is not muted for you:", communityId);
       return res
