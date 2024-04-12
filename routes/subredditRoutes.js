@@ -85,4 +85,17 @@ router.get(
   authenticateToken,
   subredditController.getAvatarImage
 );
+router.post(
+  "/banner",
+  bodyParser.json(),
+  authenticateToken,
+  uploadImage.array("file"),
+  subredditController.uploadBannerImage
+);
+router.get(
+  "/banner",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getBannerImage
+);
 module.exports = router;
