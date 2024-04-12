@@ -421,8 +421,6 @@ const unblockUser = async(req, res, next) => {
     if (userToUnblock._id.equals(userId)) {
       return res.status(400).json({ message: "User cannot unblock themselves" });
     }
-    userToUnblock.following.push(userId);
-    await userToUnblock.save();
     const user = await User.findById(userId);
 
     if (!user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToUnblock._id))) {
@@ -430,7 +428,6 @@ const unblockUser = async(req, res, next) => {
       return res.status(409).json({ message: "User is not blocked" });
     }
     user.blockUsers = user.blockUsers.filter(blockedUser => !blockedUser.blockedUserId.equals(userToUnblock._id));
-    user.followers.push(userToUnblock._id);
     const updatedUser = await user.save();
 
     console.log("User unblocked:", userToUnblock.userName);

@@ -247,13 +247,13 @@ router.patch(
   userController.editEmailSettings
 );
 router.patch(
-  "/chatSettings",
+  "/messagingSettings",
   bodyParser.json(),
   authenticateToken,
   userController.editChatSettings
 );
 router.get(
-  "/chatSettings",
+  "/messagingSettings",
   bodyParser.json(),
   authenticateToken,
   userController.getChatSettings
