@@ -1289,6 +1289,8 @@ const getUserSelfInfo = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
     const createdSeconds = Math.floor(user.createdAt.getTime() / 1000);
+    const avatarImageId = user.avatarImage;
+    const avatarImage = await UserUploadModel.findById(avatarImageId);
     const response = {
       userId: user._id,
       displayName: user.profileSettings.displayName || user.userName,
@@ -1296,6 +1298,7 @@ const getUserSelfInfo = async (req, res, next) => {
       commentKarma: (user.upvotedComments.length) - (user.downvotedComments.length),
       created: createdSeconds,
       postKarma: user.upvotedPosts.length - user.downvotedPosts.length,
+      avatar: avatarImage? avatarImage.url : null,
     };
     res.status(200).json({ user: response });
   } catch (err) {
@@ -1319,6 +1322,8 @@ const getUserInfo = async (req, res, next) => {
     const isFollowed = user.following.includes(otherUser._id);
     const isBlocked = user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(otherUser._id));
     const createdSeconds = Math.floor(otherUser.createdAt.getTime() / 1000);
+    const avatarImageId = otherUser.avatarImage;
+    const avatarImage = await UserUploadModel.findById(avatarImageId);
     const response = {
       userId: otherUser._id,
       displayName: otherUser.profileSettings.displayName || otherUser.userName,
@@ -1328,6 +1333,7 @@ const getUserInfo = async (req, res, next) => {
       postKarma: otherUser.upvotedPosts.length - otherUser.downvotedPosts.length,
       isFriend: isFollowed,
       isBlocked: isBlocked,
+      avatar: avatarImage? avatarImage.url : null,
     };
     res.status(200).json({ user: response });
   } catch (err) {
