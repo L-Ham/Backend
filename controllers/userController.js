@@ -1283,6 +1283,60 @@ const editEmailSettings = async (req, res, next) => {
   }
 };
 
+const editChatSettings = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+  
+    if (
+      req.body.chatRequests !== "Everyone" &&
+      req.body.chatRequests !== "Nobody" &&
+      req.body.chatRequests !== "Accounts Older Than 30 Days"
+    ) {
+      return res.status(400).json({ message: "Invalid chat request setting" });
+    }
+
+    if (
+      req.body.privateMessages !== "Everyone" &&
+      req.body.privateMessages !== "Nobody" &&
+      req.body.privateMessages !== "Accounts Older Than 30 Days"
+    ) {
+      return res.status(400).json({ message: "Invalid private messages setting" });
+    }
+
+    user.chatSettings.set("chatRequests", req.body.chatRequests);
+    user.chatSettings.set("privateMessages", req.body.privateMessages);
+    await user.save();
+    res.status(200).json({
+      message: "User Chat settings updated successfully",
+      user,
+    });
+  
+  } catch (err) {
+    res.status(500).json({ message: "Error updating chat settings" });
+  }
+};
+
+const getChatSettings = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log("User not found for user ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json(user.chatSettings);
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error retrieving chat settings" });
+  }
+}
+
+
 const getUserSelfInfo = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -1384,7 +1438,8 @@ module.exports = {
   getBannerImage,
   getEmailSettings,
   editEmailSettings,
-  getUserSelfInfo,
+  editChatSettings,
+  getChatSettings,  getUserSelfInfo,
   getUserInfo,
 
 };
