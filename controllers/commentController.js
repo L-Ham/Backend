@@ -231,7 +231,7 @@ const reportComment = async (req, res, next) => {
     if (!commentOwner) {
       return res.status(404).json({ message: "Comment owner not found" });
     }
-    if (user.blockUsers.includes(commentOwner._id)) {
+    if (user.blockUsers.some((blockedUser) => blockedUser.blockedUserId.equals(commentOwner._id))) {
       return res.status(400).json({ message: "You have already blocked this user" });
     }
 
@@ -239,6 +239,12 @@ const reportComment = async (req, res, next) => {
     if (!post) {
       console.log("Post not found for post ID:", comment.postId);
       return res.status(404).json({ message: "Post not found" });
+    }
+    if (title === ""){
+      return res.status(400).json({ message: "Title is required" });
+    }
+    if (description === ""){
+      return res.status(400).json({ message: "Description is required" });
     }
     const subRedditId = post.subReddit;
     //const subRedditId = comment.post.subReddit;
