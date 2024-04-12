@@ -284,17 +284,15 @@ const followUser = async (req, res, next) => {
     if (userToFollow._id.equals(userId)) {
       return res.status(400).json({ message: "You can't follow yourself" });
     }
-    if (user.blockUsers.includes(userToFollow._id)) {
+    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToFollow._id))) {
       return res.status(400).json({ message: "You have blocked this user" });
     }
-    if (userToFollow.blockUsers.includes(user._id)) {
-      return res
-        .status(400)
-        .json({ message: "You have been blocked by this user" });
+    console.log(userToFollow.blockUsers);
+    console.log(user._id);
+    console.log(userToFollow.blockUsers.some((blockUser) => blockUser.blockedUserId == user._id));
+    if (userToFollow.blockUsers.some((blockUser) => blockUser.blockedUserId.equals(user._id))) {
+      return res.status(400).json({ message: "You have been blocked by this user" });
     }
-    console.log(user.following.includes(userToFollow._id));
-    console.log(user.following);
-    console.log(userToFollow._id);
     if (user.following.includes(userToFollow._id)) {
       return res.status(400).json({ message: "User already followed" });
     }
@@ -410,33 +408,37 @@ const blockUser = async (req, res, next) => {
   }
 };
 
-const unblockUser = (req, res, next) => {
-  const userId = req.userId;
-  const blockedUserName = req.body.UserNameToUnblock;
-  User.findOne({ userName: blockedUserName })
-    .then((user) => {
-      if (!user) {
-        console.log("User not found for username:", blockedUserName);
-        return res.status(404).json({ message: "User not found" });
-      }
-      User.findByIdAndUpdate(
-        userId,
-        { $pull: { blockUsers: user._id } },
-        { new: true }
-      )
-        .then((updatedUser) => {
-          console.log("User unblocked:", user.userName);
-          res.json({ message: "User unblocked", user: updatedUser });
-        })
-        .catch((err) => {
-          console.log("Error unblocking user:", err);
-          res.status(500).json({ message: "Server error" });
-        });
-    })
-    .catch((err) => {
-      console.log("Error retrieving user:", err);
-      res.status(500).json({ message: "Server error" });
-    });
+const unblockUser = async(req, res, next) => {
+  try {
+    const blockedUserName = req.body.UserNameToUnblock;
+    const userId = req.userId;
+    const userToUnblock = await User.findOne({ userName: blockedUserName });
+
+    if (!userToUnblock) {
+      console.log("User not found for username:", blockedUserName);
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (userToUnblock._id.equals(userId)) {
+      return res.status(400).json({ message: "User cannot unblock themselves" });
+    }
+    userToUnblock.following.push(userId);
+    await userToUnblock.save();
+    const user = await User.findById(userId);
+
+    if (!user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToUnblock._id))) {
+      console.log("User is not blocked:", userToUnblock.userName);
+      return res.status(409).json({ message: "User is not blocked" });
+    }
+    user.blockUsers = user.blockUsers.filter(blockedUser => !blockedUser.blockedUserId.equals(userToUnblock._id));
+    user.followers.push(userToUnblock._id);
+    const updatedUser = await user.save();
+
+    console.log("User unblocked:", userToUnblock.userName);
+    res.json({ message: "User unblocked", user: updatedUser });
+  } catch (err) {
+    console.log("Error unblocking user:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 async function editFeedSettings(req, res, next) {
