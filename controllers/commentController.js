@@ -199,7 +199,13 @@ const reportComment = async (req, res, next) => {
     });
 
     if (req.body.blockUser) {
-      user.blockUsers.push(commentOwner._id);
+      user.blockUsers.push({
+        blockedUserId: commentOwner._id,
+        blockedUserName: commentOwner.userName,
+        blockedUserAvatar: commentOwner.avatarImage,
+        blockedAt: new Date()
+      });
+      //user.blockUsers.push(commentOwner._id);
       await user.save();
     }
     await report.save();

@@ -864,7 +864,13 @@ const reportPost = async (req, res, next) => {
     });
 
     if (req.body.blockUser) {
-      user.blockUsers.push(postOwner._id);
+      user.blockUsers.push({
+        blockedUserId: postOwner._id,
+        blockedUserName: postOwner.userName,
+        blockedUserAvatar: postOwner.avatarImage,
+        blockedAt: new Date()
+      });
+      //user.blockUsers.push(postOwner._id);
       await user.save();
     }
 

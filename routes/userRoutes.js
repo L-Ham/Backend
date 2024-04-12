@@ -247,4 +247,21 @@ router.patch(
   userController.editEmailSettings
 );
 
+
+router.get(
+  "/selfInfo",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getUserSelfInfo
+);
+
+router.get(
+  "/info",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getUserInfo
+);
+
+
+
 module.exports = router;
