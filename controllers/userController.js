@@ -1281,6 +1281,53 @@ const editEmailSettings = async (req, res, next) => {
   }
 };
 
+const getUserSelfInfo = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ user });
+  } catch (err) {
+    console.log("Error retrieving user:", err);
+    res.status(500).json({ message: "Error retrieving user" });
+  
+  }
+}
+
+const getUserInfo = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const otherUser = await User.findById(req.body.userId);
+    if (!otherUser) {
+      return res.status(404).json({ message: "User Displayed not found" });
+    }
+    const isFollowed = user.following.includes(otherUser._id);
+    const isBlocked = user.blockUsers.includes(otherUser._id);
+    const createdSeconds = Math.floor(otherUser.createdAt.getTime() / 1000);
+    const response = {
+      userId: otherUser._id,
+      displayName: otherUser.profileSettings.displayName || otherUser.userName,
+      publicDescription: otherUser.publicDescription,
+      commentKarma: (otherUser.upvotedComments.length) - (otherUser.downvotedComments.length),
+      created: createdSeconds,
+      postKarma: otherUser.upvotedPosts.length - otherUser.downvotedPosts.length,
+      isFriend: isFollowed,
+      isBlocked: isBlocked,
+    };
+    res.status(200).json({ user: response });
+  } catch (err) {
+    console.log("Error retrieving user:", err);
+    res.status(500).json({ message: "Error retrieving user" });
+  }
+}
+
+
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -1320,5 +1367,7 @@ module.exports = {
   getBannerImage,
   getEmailSettings,
   editEmailSettings,
+  getUserSelfInfo,
+  getUserInfo,
 
 };
