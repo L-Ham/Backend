@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
 require("dotenv").config();
 const { OAuth2Client } = require("google-auth-library");
+const { error } = require("console");
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 const googleSignUp = async (req, res) => {
@@ -139,66 +140,56 @@ const forgetUsername = async (req, res, next) => {
 };
 
 const forgetPassword = async (req, res, next) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: "r75118106@gmail.com",
-      pass: "bcmiawurnnoaxoeg",
-    },
-  });
-  const email = req.body.email;
-  const username = req.body.username;
-  let user;
-  if (!username) {
-    user = await User.findOne({ email: email });
-  } else if (!email) {
-    user = await User.findOne({ userName: username });
-  } else {
-    user = await User.findOne({ email: email, userName: username });
-  }
-  if (!user) {
-    return res.status(404).send("User not found");
-  }
-
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  transporter.sendMail(
-    {
-      from: "r75118106@gmail.com",
-      to: email,
-      subject: "Reddit password reset",
-      text: `Hi ${user.userName},
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "r75118106@gmail.com",
+        pass: "bcmiawurnnoaxoeg",
+      },
+    });
+    const email = req.body.email;
+    const username = req.body.username;
+    let user;
+    if (!username) {
+      user = await User.findOne({ email: email });
+    } else if (!email) {
+      user = await User.findOne({ userName: username });
+    } else {
+      user = await User.findOne({ email: email, userName: username });
+    }
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    transporter.sendMail(
+      {
+        from: "r75118106@gmail.com",
+        to: email,
+        subject: "Reddit password reset",
+        text: `Hi ${user.userName},
 
       Thanks for requesting a password reset. To create a new password, just use the link below
         
-         https://reddit-bylham.me/resetpassword?token=${token}
+         https://reddit-bylham.me/resetpassword?email=${email}
          If you didn’t make this request, you can ignore this email and carry on as usual.
          `,
-    },
-    (err) => {
-      if (err) {
-        console.error("Error sending email:", err);
-        return res.status(500).send("Failed to send email");
+      },
+      (err) => {
+        if (err) {
+          console.error("Error sending email:", err);
+          return res.status(500).json({ message: "Failed to send email" });
+        }
+        res.status(200).json({ message: "Email sent" });
       }
-      res.send("Email sent");
-    }
-  );
-};
-
-const resetPassword = async (req, res, next) => {
-  const { password } = req.body;
-  const userId = req.userId;
-  const user = User.findById(userId);
-  if (!user) {
-    return res.status(404).send("User not found");
+    );
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ message: "Failed to send email", error: err.message });
   }
-  const salt = await bcrypt.genSalt(10);
-  user.password = await bcrypt.hash(password, salt);
-  res.send("Password reset successfully");
 };
 
 const login = async (req, res) => {
@@ -313,24 +304,29 @@ const generateUserName = async (req, res, next) => {
   }
 };
 const updatePassword = async (req, res, next) => {
+  const email = req.body.email;
   const password = req.body.password;
   const passwordConfirm = req.body.passwordConfirm;
   if (password !== passwordConfirm) {
-    return res.status(400).send("Passwords do not match");
+    return res.status(400).json({ message: "Passwords do not match" });
+  }
+  if (password.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 8 characters" });
   }
   if (password.length == 0 || passwordConfirm.length == 0) {
-    return res.status(400).send("Password cannot be empty");
+    return res.status(400).json({ message: "Password cannot be empty" });
   }
 
-  const userId = req.userId;
-  const user = await User.findById(userId);
+  const user = await User.findOne({ email });
   if (!user) {
-    return res.status(404).send("User not found");
+    return res.status(404).json({ message: "User not found" });
   }
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(password, salt);
   await user.save();
-  res.send("Password updated successfully");
+  res.json({ message: "Password updated successfully" });
 };
 
 const updateEmail = async (req, res, next) => {
@@ -413,7 +409,6 @@ module.exports = {
   logout,
   forgetPassword,
   generateUserName,
-  resetPassword,
   updatePassword,
   updateEmail,
   googleDisconnect,
