@@ -846,10 +846,14 @@ const reportPost = async (req, res, next) => {
     if (!postOwner) {
       return res.status(404).json({ message: "Post owner not found" });
     }
-    if (user.blockUsers.includes(postOwner._id)) {
-      return res
-        .status(400)
-        .json({ message: "You have already blocked this user" });
+    // if (user.blockUsers.includes(postOwner._id)) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "You have already blocked this user" });
+    // }
+    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(postOwner._id))) {
+      console.log("User already blocked:", postOwner.userName);
+      return res.status(409).json({ message: "User already blocked" });
     }
     const subRedditId = post.subReddit;
     const report = new Report({
