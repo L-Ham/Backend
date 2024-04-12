@@ -1075,18 +1075,19 @@ const getHiddenPosts = async (req, res) => {
 const getAllBlockedUsers = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await User.findById(userId).populate(
-      "blockUsers",
-      "_id userName avatarImage"
-    );
+    const user = await User.findById(userId).populate({
+      path: "blockUsers",
+      select: "_id blockedUserName blockedUserAvatar",
+    });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const blockedUsers = user.blockUsers.map((user) => ({
-      id: user._id,
-      userName: user.userName,
-      avatarImage: user.avatarImage,
+    const blockedUsers = user.blockUsers.map((blockedUser) => ({
+      id: blockedUser._id,
+      userName: blockedUser.blockedUserName,
+      avatarImage: blockedUser.blockedUserAvatar,
     }));
+    console.log("Blocked users:", blockedUsers);
     res.json({
       message: "Blocked users list returned successfully",
       blockedUsers,
@@ -1098,6 +1099,7 @@ const getAllBlockedUsers = async (req, res) => {
       .json({ message: "Error retrieving blocked users", error: err });
   }
 };
+
 const editUserLocation = async (req, res) => {
   try {
     const userId = req.userId;
@@ -1123,12 +1125,19 @@ const editUserLocation = async (req, res) => {
 const searchUsernames = async (req, res) => {
   try {
     const { search } = req.body;
+    const userId = req.userId;
+    const user = await User.findById(userId);
     const regex = new RegExp(`^${search}`, "i");
     const matchingUsernames = await User.find(
       { userName: regex },
       "_id userName avatarImage"
     );
-    res.json({ matchingUsernames });
+    const blockedUserIds = user.blockUsers.map(blockedUser => blockedUser.blockedUserId.toString());
+    const matchingUsernamesWithBlockStatus = matchingUsernames.map((matchingUser) => ({
+      ...matchingUser._doc,
+      isBlocked: blockedUserIds.includes(matchingUser._id.toString())
+    }));
+    res.json({ matchingUsernames: matchingUsernamesWithBlockStatus });
   } catch (err) {
     console.log("Error searching usernames:", err);
     res.status(500).json({ message: "Error searching usernames", error: err });

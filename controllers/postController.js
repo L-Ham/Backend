@@ -74,8 +74,7 @@ const createPost = async (req, res, next) => {
         if (
           req.body["poll.options"] ||
           req.body["poll.votingLength"] ||
-          req.body["poll.startTime"] ||
-          req.files
+          req.body["poll.startTime"] 
         ) {
           return res.status(400).json({
             message: "Link posts cannot include media or polls",
@@ -168,8 +167,6 @@ function createNewPost(req, userId, subRedditId) {
 const editPost = (req, res, next) => {
   const postId = req.body.postId;
   const userId = req.userId;
-  console.log("postId", postId);
-  console.log("userId", userId);
 
   Post.findById(postId)
     .then((post) => {
@@ -184,19 +181,18 @@ const editPost = (req, res, next) => {
           .status(401)
           .json({ message: "User not authorized to edit post" });
       }
-
-      post.title = req.body.title || post.title;
-      post.text = req.body.text || post.text;
-      post.images = req.body.images || post.images;
-      post.videos = req.body.videos || post.videos;
-      post.url = req.body.url || post.url;
-      post.type = req.body.type || post.type;
-      post.isNSFW = req.body.isNSFW || post.isNSFW;
-      post.isSpoiler = req.body.isSpoiler || post.isSpoiler;
-      post.isLocked = req.body.isLocked || post.isLocked;
-      post.isOc = req.body.isOc || post.isOc;
-      post.poll = req.body.poll || post.poll;
-
+      if(post.type ==="link")
+      {
+        return res.status(400).json({ message: "Url posts can't be edited" });
+      }
+      if(!post.text)
+      {
+        return res.status(400).json({ message: "Text posts can't be edited" });
+      }
+      if (!req.body.text) {
+        return res.status(400).json({ message: "Text field is required for editing" });
+      }
+      post.text = req.body.text;
       post
         .save()
         .then(() => {
@@ -212,6 +208,7 @@ const editPost = (req, res, next) => {
       res.status(500).json({ message: "Error finding post" });
     });
 };
+
 const savePost = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -851,10 +848,19 @@ const reportPost = async (req, res, next) => {
     //     .status(400)
     //     .json({ message: "You have already blocked this user" });
     // }
-    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(postOwner._id))) {
+
+    // user.blockUsers.some((blockedUser) => blockedUser.blockedUserId.equals(postOwner._id))
+    if(title == ""){
+      return res.status(400).json({ message: "Title is required" });
+    }
+    if(description == ""){
+      return res.status(400).json({ message: "Description is required" });
+    }
+    if (user.blockUsers.some((blockedUser) => blockedUser.blockedUserId.equals(postOwner._id))) {
       console.log("User already blocked:", postOwner.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
+
     const subRedditId = post.subReddit;
     const report = new Report({
       type: "post",
