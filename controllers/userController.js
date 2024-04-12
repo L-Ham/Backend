@@ -1034,18 +1034,19 @@ const getHiddenPosts = async (req, res) => {
 const getAllBlockedUsers = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await User.findById(userId).populate(
-      "blockUsers",
-      "_id userName avatarImage"
-    );
+    const user = await User.findById(userId).populate({
+      path: "blockUsers",
+      select: "_id blockedUserName blockedUserAvatar",
+    });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const blockedUsers = user.blockUsers.map((user) => ({
-      id: user._id,
-      userName: user.userName,
-      avatarImage: user.avatarImage,
+    const blockedUsers = user.blockUsers.map((blockedUser) => ({
+      id: blockedUser._id,
+      userName: blockedUser.blockedUserName,
+      avatarImage: blockedUser.blockedUserAvatar,
     }));
+    console.log("Blocked users:", blockedUsers);
     res.json({
       message: "Blocked users list returned successfully",
       blockedUsers,
@@ -1057,6 +1058,7 @@ const getAllBlockedUsers = async (req, res) => {
       .json({ message: "Error retrieving blocked users", error: err });
   }
 };
+
 const editUserLocation = async (req, res) => {
   try {
     const userId = req.userId;
