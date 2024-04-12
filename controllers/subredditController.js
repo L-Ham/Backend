@@ -458,10 +458,6 @@ const getSubRedditRules = async (req, res, next) => {
 const uploadAvatarImage = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
-
-  
-
-
   try {
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
