@@ -3,7 +3,6 @@ const authenticateToken = require("../middleware/authenticateToken");
 const jwt = require("jsonwebtoken");
 const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
-const subReddit = require("../models/subReddit");
 const Post = require("../models/post");
 const UserUpload = require("../controllers/userUploadsController");
 const UserServices = require("../services/userServices");
@@ -148,23 +147,24 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
   }
 
   try {
-    const user = await User.findById(userId)
-      .select("blockUsers muteCommunities");
+    const user = await User.findById(userId).select(
+      "blockUsers muteCommunities"
+    );
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     const safetyAndPrivacySettings = {
-      blockUsers: user.blockUsers.map(blockedUser => ({
+      blockUsers: user.blockUsers.map((blockedUser) => ({
         blockedUserName: blockedUser.blockedUserName,
         blockedUserAvatar: blockedUser.blockedUserAvatar,
-        blockedAt: blockedUser.blockedAt
+        blockedAt: blockedUser.blockedAt,
       })),
-      muteCommunities: user.muteCommunities.map(mutedCommunity => ({
+      muteCommunities: user.muteCommunities.map((mutedCommunity) => ({
         mutedCommunityName: mutedCommunity.mutedCommunityName,
         mutedCommunityAvatar: mutedCommunity.mutedCommunityAvatar,
-        mutedAt: mutedCommunity.mutedAt
+        mutedAt: mutedCommunity.mutedAt,
       })),
     };
 
@@ -284,14 +284,28 @@ const followUser = async (req, res, next) => {
     if (userToFollow._id.equals(userId)) {
       return res.status(400).json({ message: "You can't follow yourself" });
     }
-    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToFollow._id))) {
+    if (
+      user.blockUsers.some((blockedUser) =>
+        blockedUser.blockedUserId.equals(userToFollow._id)
+      )
+    ) {
       return res.status(400).json({ message: "You have blocked this user" });
     }
     console.log(userToFollow.blockUsers);
     console.log(user._id);
-    console.log(userToFollow.blockUsers.some((blockUser) => blockUser.blockedUserId == user._id));
-    if (userToFollow.blockUsers.some((blockUser) => blockUser.blockedUserId.equals(user._id))) {
-      return res.status(400).json({ message: "You have been blocked by this user" });
+    console.log(
+      userToFollow.blockUsers.some(
+        (blockUser) => blockUser.blockedUserId == user._id
+      )
+    );
+    if (
+      userToFollow.blockUsers.some((blockUser) =>
+        blockUser.blockedUserId.equals(user._id)
+      )
+    ) {
+      return res
+        .status(400)
+        .json({ message: "You have been blocked by this user" });
     }
     if (user.following.includes(userToFollow._id)) {
       return res.status(400).json({ message: "User already followed" });
@@ -387,7 +401,11 @@ const blockUser = async (req, res, next) => {
     await userToBlock.save();
     const user = await User.findById(userId);
 
-    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToBlock._id))) {
+    if (
+      user.blockUsers.some((blockedUser) =>
+        blockedUser.blockedUserId.equals(userToBlock._id)
+      )
+    ) {
       console.log("User already blocked:", userToBlock.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
@@ -395,7 +413,7 @@ const blockUser = async (req, res, next) => {
       blockedUserId: userToBlock._id,
       blockedUserName: userToBlock.userName,
       blockedUserAvatar: userToBlock.avatarImage,
-      blockedAt: new Date()
+      blockedAt: new Date(),
     });
     user.followers.pull(userToBlock._id);
     const updatedUser = await user.save();
@@ -408,7 +426,7 @@ const blockUser = async (req, res, next) => {
   }
 };
 
-const unblockUser = async(req, res, next) => {
+const unblockUser = async (req, res, next) => {
   try {
     const blockedUserName = req.body.UserNameToUnblock;
     const userId = req.userId;
@@ -419,15 +437,23 @@ const unblockUser = async(req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
     if (userToUnblock._id.equals(userId)) {
-      return res.status(400).json({ message: "User cannot unblock themselves" });
+      return res
+        .status(400)
+        .json({ message: "User cannot unblock themselves" });
     }
     const user = await User.findById(userId);
 
-    if (!user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToUnblock._id))) {
+    if (
+      !user.blockUsers.some((blockedUser) =>
+        blockedUser.blockedUserId.equals(userToUnblock._id)
+      )
+    ) {
       console.log("User is not blocked:", userToUnblock.userName);
       return res.status(409).json({ message: "User is not blocked" });
     }
-    user.blockUsers = user.blockUsers.filter(blockedUser => !blockedUser.blockedUserId.equals(userToUnblock._id));
+    user.blockUsers = user.blockUsers.filter(
+      (blockedUser) => !blockedUser.blockedUserId.equals(userToUnblock._id)
+    );
     const updatedUser = await user.save();
 
     console.log("User unblocked:", userToUnblock.userName);
@@ -638,7 +664,7 @@ const updateGender = async (req, res, next) => {
     if (
       req.body.gender === "Female" ||
       req.body.gender === "Male" ||
-      req.body.gender ===""||
+      req.body.gender === "" ||
       req.body.gender === "I prefer not to say"
     ) {
       user.gender = req.body.gender;
@@ -650,7 +676,8 @@ const updateGender = async (req, res, next) => {
       });
     } else {
       res.status(400).json({
-        message: "Gender format should be Female/Male/I prefer not to say/Empty String",
+        message:
+          "Gender format should be Female/Male/I prefer not to say/Empty String",
       });
     }
   } catch (err) {
@@ -684,10 +711,20 @@ const muteCommunity = async (req, res, next) => {
         .status(400)
         .json({ message: "User is not a member of this community" });
     }
-    if (user.muteCommunities.some(muteCommunity => muteCommunity.mutedCommunityId.equals(communityId))) {
+    if (
+      user.muteCommunities.some((muteCommunity) =>
+        muteCommunity.mutedCommunityId.equals(communityId)
+      )
+    ) {
       return res.status(400).json({ message: "Community already muted" });
     }
-    user.muteCommunities.push({ mutedCommunityId:communityId,mutedCommunityName:community.name ,mutedCommunityAvatar:community.appearance.avatarImage, mutedAt: new Date() });
+
+    user.muteCommunities.push({
+      mutedCommunityId: communityId,
+      mutedCommunityName: community.name,
+      mutedCommunityAvatar: community.appearance.avatarImage,
+      mutedAt: new Date(),
+    });
     await user.save();
 
     console.log("Community muted: ", user);
@@ -721,7 +758,9 @@ const unmuteCommunity = async (req, res, next) => {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const isMuted = user.muteCommunities.some(muteCommunity => muteCommunity.mutedCommunityId.equals(communityId))
+    const isMuted = user.muteCommunities.some((muteCommunity) =>
+      muteCommunity.mutedCommunityId.equals(communityId)
+    );
     if (!isMuted) {
       console.log("This subReddit is not muted for you:", communityId);
       return res
@@ -730,7 +769,9 @@ const unmuteCommunity = async (req, res, next) => {
     }
 
     //user.muteCommunities.pull(communityId);
-    user.muteCommunities = user.muteCommunities.filter(muteCommunity => !muteCommunity.mutedCommunityId.equals(communityId));
+    user.muteCommunities = user.muteCommunities.filter(
+      (muteCommunity) => !muteCommunity.mutedCommunityId.equals(communityId)
+    );
     await user.save();
 
     console.log("Community unmuted: ", user);
@@ -1146,7 +1187,9 @@ const uploadAvatarImage = async (req, res, next) => {
     user.avatarImage = uploadedImageId;
     await user.save();
 
-    res.status(200).json({ message: "Avatar image uploaded successfully" });
+    res
+      .status(200)
+      .json({ message: "Avatar image uploaded successfully", user: user });
   } catch (error) {
     res.status(500).json({ message: "Error uploading avatar image" });
   }
@@ -1204,7 +1247,9 @@ const uploadBannerImage = async (req, res, next) => {
     user.bannerImage = uploadedImageId;
     await user.save();
 
-    res.status(200).json({ message: "Banner image uploaded successfully" });
+    res
+      .status(200)
+      .json({ message: "Banner image uploaded successfully", user: user });
   } catch (error) {
     res.status(500).json({ message: "Error uploading banner image" });
   }
@@ -1272,10 +1317,13 @@ const editEmailSettings = async (req, res, next) => {
     user.emailSettings.set("commentOnPost", req.body.commentOnPost);
     user.emailSettings.set("repliesToComments", req.body.repliesToComments);
     user.emailSettings.set("upvotesOnPosts", req.body.upvotesOnPosts);
-    user.emailSettings.set("upvotesOnComments",req.body.upvotesOnComments);
-    user.emailSettings.set("usernameMentions",req.body.usernameMentions);
+    user.emailSettings.set("upvotesOnComments", req.body.upvotesOnComments);
+    user.emailSettings.set("usernameMentions", req.body.usernameMentions);
     user.emailSettings.set("newFollowers", req.body.newFollowers);
-    user.emailSettings.set("unsubscribeFromEmail",req.body.unsubscribeFromEmail);
+    user.emailSettings.set(
+      "unsubscribeFromEmail",
+      req.body.unsubscribeFromEmail
+    );
     await user.save();
     res.status(200).json({
       message: "User Email settings updated successfully",
@@ -1295,7 +1343,7 @@ const editChatSettings = async (req, res, next) => {
       console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
-  
+
     if (
       req.body.chatRequests !== "Everyone" &&
       req.body.chatRequests !== "Nobody" &&
@@ -1309,7 +1357,9 @@ const editChatSettings = async (req, res, next) => {
       req.body.privateMessages !== "Nobody" &&
       req.body.privateMessages !== "Accounts Older Than 30 Days"
     ) {
-      return res.status(400).json({ message: "Invalid private messages setting" });
+      return res
+        .status(400)
+        .json({ message: "Invalid private messages setting" });
     }
 
     user.chatSettings.set("chatRequests", req.body.chatRequests);
@@ -1319,7 +1369,6 @@ const editChatSettings = async (req, res, next) => {
       message: "User Chat settings updated successfully",
       user,
     });
-  
   } catch (err) {
     res.status(500).json({ message: "Error updating chat settings" });
   }
@@ -1334,12 +1383,10 @@ const getChatSettings = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
     return res.status(200).json(user.chatSettings);
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({ message: "Error retrieving chat settings" });
   }
-}
-
+};
 
 const getUserSelfInfo = async (req, res, next) => {
   try {
@@ -1355,18 +1402,17 @@ const getUserSelfInfo = async (req, res, next) => {
       userId: user._id,
       displayName: user.profileSettings.displayName || user.userName,
       publicDescription: user.publicDescription,
-      commentKarma: (user.upvotedComments.length) - (user.downvotedComments.length),
+      commentKarma: user.upvotedComments.length - user.downvotedComments.length,
       created: createdSeconds,
       postKarma: user.upvotedPosts.length - user.downvotedPosts.length,
-      avatar: avatarImage? avatarImage.url : null,
+      avatar: avatarImage ? avatarImage.url : null,
     };
     res.status(200).json({ user: response });
   } catch (err) {
     console.log("Error retrieving user:", err);
     res.status(500).json({ message: "Error retrieving user" });
-  
   }
-}
+};
 
 const getUserInfo = async (req, res, next) => {
   try {
@@ -1380,7 +1426,9 @@ const getUserInfo = async (req, res, next) => {
       return res.status(404).json({ message: "User Displayed not found" });
     }
     const isFollowed = user.following.includes(otherUser._id);
-    const isBlocked = user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(otherUser._id));
+    const isBlocked = user.blockUsers.some((blockedUser) =>
+      blockedUser.blockedUserId.equals(otherUser._id)
+    );
     const createdSeconds = Math.floor(otherUser.createdAt.getTime() / 1000);
     const avatarImageId = otherUser.avatarImage;
     const avatarImage = await UserUploadModel.findById(avatarImageId);
@@ -1388,20 +1436,21 @@ const getUserInfo = async (req, res, next) => {
       userId: otherUser._id,
       displayName: otherUser.profileSettings.displayName || otherUser.userName,
       publicDescription: otherUser.publicDescription,
-      commentKarma: (otherUser.upvotedComments.length) - (otherUser.downvotedComments.length),
+      commentKarma:
+        otherUser.upvotedComments.length - otherUser.downvotedComments.length,
       created: createdSeconds,
-      postKarma: otherUser.upvotedPosts.length - otherUser.downvotedPosts.length,
+      postKarma:
+        otherUser.upvotedPosts.length - otherUser.downvotedPosts.length,
       isFriend: isFollowed,
       isBlocked: isBlocked,
-      avatar: avatarImage? avatarImage.url : null,
+      avatar: avatarImage ? avatarImage.url : null,
     };
     res.status(200).json({ user: response });
   } catch (err) {
     console.log("Error retrieving user:", err);
     res.status(500).json({ message: "Error retrieving user" });
   }
-}
-
+};
 
 module.exports = {
   getAccountSettings,
@@ -1443,8 +1492,7 @@ module.exports = {
   getEmailSettings,
   editEmailSettings,
   editChatSettings,
-  getChatSettings,  
+  getChatSettings,
   getUserSelfInfo,
   getUserInfo,
-
 };
