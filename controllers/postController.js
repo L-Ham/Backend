@@ -15,6 +15,12 @@ const createPost = async (req, res, next) => {
     console.error("User not found for user ID:", userId);
     return res.status(404).json({ message: "User not found" });
   }
+  console.log("filesss", req.files);
+  console.log("poll.options", req.body["poll.options"]);
+  console.log("poll.votingLength", req.body["poll.votingLength"]);
+  console.log("poll.startTime", req.body["poll.startTime"]);
+  console.log("poll.endTime", req.body["poll.endTime"]);
+  console.log("url", req.body.url);
   try {
     // Check if title is provided in the request body
     if (!req.body.title) {
@@ -25,7 +31,7 @@ const createPost = async (req, res, next) => {
       case "text":
         // For text posts, ensure no images, videos, or polls are provided
         if (
-          req.files ||
+          (req.files && req.files.length > 0) ||
           req.body["poll.options"] ||
           req.body["poll.votingLength"] ||
           req.body["poll.startTime"] ||
@@ -72,9 +78,11 @@ const createPost = async (req, res, next) => {
       case "link":
         // For link posts, ensure URL is provided
         if (
+          (req.files && req.files.length > 0) ||
           req.body["poll.options"] ||
           req.body["poll.votingLength"] ||
-          req.body["poll.startTime"] 
+          req.body["poll.startTime"] ||
+          req.body["poll.endTime"] 
         ) {
           return res.status(400).json({
             message: "Link posts cannot include media or polls",
@@ -154,6 +162,7 @@ function createNewPost(req, userId, subRedditId) {
     views: 0,
     commentCount: 0,
     spamCount: 0,
+    createdAt: new Date(),
     poll: {
       options: pollOptions,
       votingLength: votingLength,
