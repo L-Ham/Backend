@@ -490,7 +490,6 @@ const getSubRedditRules = async (req, res, next) => {
   }
 };
 
-
 const uploadAvatarImage = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -512,15 +511,14 @@ const uploadAvatarImage = async (req, res, next) => {
 
     const avatarImage = req.files[0];
     const uploadedImageId = await UserUpload.uploadMedia(avatarImage);
-    
+
     if (!uploadedImageId) {
       return res.status(400).json({ message: "Failed to upload avatar image" });
     }
 
     subreddit.appearance.avatarImage = uploadedImageId;
-  
+
     await subreddit.save();
-    
 
     res.status(200).json({ message: "Avatar image uploaded successfully" });
   } catch (error) {
@@ -616,6 +614,30 @@ const getBannerImage = async (req, res, next) => {
   }
 };
 
+const getSubredditByNames = async (req, res) => {
+  try {
+    const { search } = req.body;
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    const regex = new RegExp(`^${search}`, "i");
+    const matchingNames = await SubReddit.find(
+      { name: regex },
+      "_id name appearance.avatarImage members"
+    );
+
+    const resultsWithRandomNumber = matchingNames.map((subreddit) => {
+      const currentlyViewingCount =
+        Math.floor(Math.random() * subreddit.members.length) + 1;
+      return { ...subreddit._doc, currentlyViewingCount };
+    });
+
+    res.json({ matchingNames: resultsWithRandomNumber });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error searching Subreddit Names", error: err.message });
+  }
+};
 module.exports = {
   sorting,
   createCommunity,
@@ -633,5 +655,6 @@ module.exports = {
   uploadAvatarImage,
   getAvatarImage,
   uploadBannerImage,
-  getBannerImage
+  getBannerImage,
+  getSubredditByNames,
 };

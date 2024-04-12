@@ -98,4 +98,10 @@ router.get(
   authenticateToken,
   subredditController.getBannerImage
 );
+router.get(
+  "/nameSearch",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getSubredditByNames
+);
 module.exports = router;
