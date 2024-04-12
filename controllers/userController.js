@@ -1439,7 +1439,8 @@ module.exports = {
   getEmailSettings,
   editEmailSettings,
   editChatSettings,
-  getChatSettings,  getUserSelfInfo,
+  getChatSettings,  
+  getUserSelfInfo,
   getUserInfo,
 
 };
