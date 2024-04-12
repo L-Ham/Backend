@@ -153,6 +153,61 @@ const downvote = async (req, res, next) => {
   }
 };
 
+const cancelDownvote = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const commentId = req.body.commentId;
+    const comment = await Comment.findById(commentId);
+    const user= await User.findById(userId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if (!comment.downvotedUsers.includes(userId)) {
+      return res.status(400).json({ message: "Comment not downvoted" });
+    }
+    comment.downvotes -= 1;
+    comment.downvotedUsers.pull(userId);
+    await comment.save();
+    if (user) {
+      user.downvotedComments.pull(commentId);
+      await user.save();
+    }
+    res.status(200).json({ message: "Downvote cancelled" });
+  } catch (err) {
+    res.status(500).json({ message: "Error cancelling downvote", error: err });
+  }
+};
+
+const cancelUpvote = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const commentId = req.body.commentId;
+    const comment = await Comment.findById(commentId);
+    const user= await User.findById(userId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if (!comment.upvotedUsers.includes(userId)) {
+      return res.status(400).json({ message: "Comment not upvoted" });
+    }
+    comment.upvotes -= 1;
+    comment.upvotedUsers.pull(userId);
+    await comment.save();
+    if (user) {
+      user.upvotedComments.pull(commentId);
+ 
+      await user.save();
+      
+    }
+    res.status(200).json({ message: "Upvote cancelled" });
+  } catch (err) {
+    res.status(500).json({ message: "Error cancelling upvote", error: err });
+
+  }
+};
+
+
+
 const reportComment = async (req, res, next) => {
   const userId = req.userId;
   const commentId = req.body.commentId;
@@ -295,4 +350,6 @@ module.exports = {
   reportComment,
   lockComment,
   unlockComment,
+  cancelDownvote,
+  cancelUpvote,
 };

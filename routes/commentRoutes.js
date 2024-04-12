@@ -43,6 +43,18 @@ router.patch(
   authenticateToken,
   commentController.reportComment
 );
+router.patch(
+  "/cancelUpvote",
+  bodyParser.json(),
+  authenticateToken,
+  commentController.cancelUpvote
+)
+router.patch(
+  "/cancelDownvote",
+  bodyParser.json(),
+  authenticateToken,
+  commentController.cancelDownvote
+)
 
 
 module.exports = router;
