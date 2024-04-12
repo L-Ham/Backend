@@ -1296,6 +1296,7 @@ const getUserSelfInfo = async (req, res, next) => {
       commentKarma: (user.upvotedComments.length) - (user.downvotedComments.length),
       created: createdSeconds,
       postKarma: user.upvotedPosts.length - user.downvotedPosts.length,
+      avatar: user.avatarImage.url,
     };
     res.status(200).json({ user: response });
   } catch (err) {
@@ -1328,6 +1329,7 @@ const getUserInfo = async (req, res, next) => {
       postKarma: otherUser.upvotedPosts.length - otherUser.downvotedPosts.length,
       isFriend: isFollowed,
       isBlocked: isBlocked,
+      avatar: otherUser.avatarImage.url,
     };
     res.status(200).json({ user: response });
   } catch (err) {
