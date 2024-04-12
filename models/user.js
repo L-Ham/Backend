@@ -334,6 +334,10 @@ const userSchema = new Schema({
       unsubscribeFromEmail: false,
     },
   },
+  publicDescription: {
+    type: String,
+    required: false,
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);
