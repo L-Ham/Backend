@@ -79,6 +79,10 @@ const commentSchema = new Schema({
   isLocked:{
     type: Boolean,
     required: false
-  }
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 module.exports = mongoose.model("comment", commentSchema);
