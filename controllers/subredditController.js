@@ -410,9 +410,13 @@ const getSubredditPosts = async (req, res, next) => {
 };
 const getCommunityDetails = async (req, res) => {
   const userId = req.userId;
-  const subredditId = req.body.subredditId;
+  const subRedditName = req.body.subRedditName;
   try {
-    const subreddit = await SubReddit.findById(subredditId);
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findOne({ name: subRedditName });
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
@@ -426,6 +430,7 @@ const getCommunityDetails = async (req, res) => {
     const randomIndex = Math.floor(Math.random() * subreddit.members.length);
     const details = {
       name: subreddit.name,
+      subredditId: subreddit._id,
       avatarImage: avatarImage ? avatarImage.url : null,
       bannerImage: bannerImage ? bannerImage.url : null,
       description: subreddit.description,
@@ -433,6 +438,7 @@ const getCommunityDetails = async (req, res) => {
       membersCount: subreddit.members.length,
       currentlyViewingNickname: subreddit.currentlyViewingNickname,
       currentlyViewingCount: randomIndex,
+      isMember: subreddit.members.includes(userId),
     };
 
     res.status(200).json({
