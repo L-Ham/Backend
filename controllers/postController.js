@@ -180,12 +180,10 @@ const editPost = (req, res, next) => {
   Post.findById(postId)
     .then((post) => {
       if (!post) {
-        console.error("Post not found for post ID:", postId);
         return res.status(404).json({ message: "Post not found" });
       }
 
       if (post.user.toString() !== userId) {
-        console.error("User not authorized to edit post");
         return res
           .status(401)
           .json({ message: "User not authorized to edit post" });
