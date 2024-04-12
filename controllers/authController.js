@@ -26,13 +26,14 @@ const googleSignUp = async (req, res) => {
     }
 
     const randomPassword = Math.random().toString(36).slice(-8);
+    const salt = await bcrypt.genSalt(10);
+    generatedPassword = await bcrypt.hash(randomPassword, salt);
     user = new User({
       userName: randomUsername[0],
       email: data.email,
-      password: randomPassword,
+      password: generatedPassword,
       signupGoogle: true,
     });
-    console.log("A&AAAAA");
     user = await user.save();
     console.log(user);
     const payload = {};
@@ -345,6 +346,64 @@ const updateEmail = async (req, res, next) => {
   await user.save();
   res.json({ message: "Email updated successfully" });
 };
+const googleDisconnect = async (req, res, next) => {
+  const userId = req.userId;
+  const password = req.body.password;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.signupGoogle === false) {
+      return res
+        .status(400)
+        .json({ message: "User didn't signup using google signup" });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+    user.signupGoogle = false;
+    await user.save();
+    return res
+      .status(200)
+      .json({ message: "Google disconnected successfully" });
+  } catch (err) {
+    console.error("Error disconnecting google:", err.message);
+    res.status(500).json({ message: "Error disconnecting google" });
+  }
+};
+
+const googleConnect = async (req, res, next) => {
+  const userId = req.userId;
+  const password = req.body.password;
+  const data = req.decoded;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.signupGoogle === true) {
+      return res
+        .status(400)
+        .json({ message: "User already connected to google" });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+    user.signupGoogle = true;
+    user.email = data.email;
+    await user.save();
+    return res
+      .status(200)
+      .json({ message: "Google connected successfully", user: user });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error Connecting google", error: err.message });
+  }
+};
 module.exports = {
   googleSignUp,
   googleLogin,
@@ -357,4 +416,6 @@ module.exports = {
   resetPassword,
   updatePassword,
   updateEmail,
+  googleDisconnect,
+  googleConnect,
 };
