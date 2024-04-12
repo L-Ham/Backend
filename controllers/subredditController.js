@@ -465,7 +465,7 @@ const uploadAvatarImage = async (req, res, next) => {
     }
 
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "User not authorized" });
+      return res.status(403).json({ message: "User not a moderator" });
     }
 
     if (!req.files || req.files.length === 0) {
@@ -520,6 +520,65 @@ const getAvatarImage = async (req, res, next) => {
     res.status(500).json({ message: "Error getting subreddit avatar image" });
   }
 };
+const uploadBannerImage = async (req, res, next) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  try {
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "subreddit not found" });
+    }
+
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "User not a moderator" });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No file provided for banner image" });
+    }
+
+    const bannerImage = req.files[0];
+    const uploadedImageId = await UserUpload.uploadMedia(bannerImage);
+    if (!uploadedImageId) {
+      return res.status(400).json({ message: "Failed to upload banner image" });
+    }
+
+    subreddit.appearance.bannerImage = uploadedImageId;
+    await subreddit.save();
+    res.status(200).json({ message: "Banner image uploaded successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error uploading banner image" });
+  }
+};
+const getBannerImage = async (req, res, next) => {
+  try {
+    const subredditId = req.body.subredditId;
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    const bannerImageId = subreddit.appearance.bannerImage;
+    if (!bannerImageId) {
+      return res.status(404).json({ message: "Banner image not found" });
+    }
+
+    const bannerImage = await UserUploadModel.findById(bannerImageId);
+    if (!bannerImage) {
+      return res.status(404).json({ message: "Banner image not found" });
+    }
+
+    res.status(200).send({
+      _id: bannerImage._id,
+      url: bannerImage.url,
+      originalname: bannerImage.originalname,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting subreddit banner image" });
+  }
+};
 
 module.exports = {
   sorting,
@@ -537,4 +596,6 @@ module.exports = {
   deleteRule,
   uploadAvatarImage,
   getAvatarImage,
+  uploadBannerImage,
+  getBannerImage
 };
