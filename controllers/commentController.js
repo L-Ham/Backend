@@ -231,7 +231,7 @@ const reportComment = async (req, res, next) => {
     if (!commentOwner) {
       return res.status(404).json({ message: "Comment owner not found" });
     }
-    if (user.blockUsers.includes(commentOwner._id)) {
+    if (user.blockUsers.some((blockedUser) => blockedUser.blockedUserId.equals(commentOwner._id))) {
       return res.status(400).json({ message: "You have already blocked this user" });
     }
 
