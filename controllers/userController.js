@@ -3,7 +3,6 @@ const authenticateToken = require("../middleware/authenticateToken");
 const jwt = require("jsonwebtoken");
 const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
-const subReddit = require("../models/subReddit");
 const Post = require("../models/post");
 const UserUpload = require("../controllers/userUploadsController");
 const UserServices = require("../services/userServices");
