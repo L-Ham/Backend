@@ -732,7 +732,8 @@ const unmuteCommunity = async (req, res, next) => {
         .json({ message: "This subReddit is not muted for you" });
     }
 
-    user.muteCommunities.pull(communityId);
+    //user.muteCommunities.pull(communityId);
+    user.muteCommunities = user.muteCommunities.filter(muteCommunity => !muteCommunity.mutedCommunityId.equals(communityId));
     await user.save();
 
     console.log("Community unmuted: ", user);
