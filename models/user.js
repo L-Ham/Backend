@@ -334,6 +334,15 @@ const userSchema = new Schema({
       unsubscribeFromEmail: false,
     },
   },
+  chatSettings: {
+    type: Map,
+    of: mongoose.Schema.Types.String ,
+    required: true,
+    default: {
+      chatRequests: "Everyone",
+      privateMessages: "Everyone",
+    },
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);

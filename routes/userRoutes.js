@@ -246,5 +246,16 @@ router.patch(
   authenticateToken,
   userController.editEmailSettings
 );
-
+router.patch(
+  "/chatSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.editChatSettings
+);
+router.get(
+  "/chatSettings",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getChatSettings
+);
 module.exports = router;
