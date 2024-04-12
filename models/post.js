@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { boolean } = require("webidl-conversions");
+const { create } = require("./user");
 
 const Schema = mongoose.Schema;
 const postSchema = new Schema({
@@ -7,6 +8,11 @@ const postSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "user",
     required: true,
+  },
+  createdAt: {
+    type: Date,
+    required: false,
+    default: Date.now,
   },
   subReddit: {
     type: Schema.Types.ObjectId,
