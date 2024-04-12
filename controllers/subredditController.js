@@ -1,6 +1,9 @@
 const SubReddit = require("../models/subReddit");
 const User = require("../models/user");
 const subredditServices = require("../services/subredditServices");
+const UserUploadModel = require("../models/userUploads");
+const UserUpload = require("../controllers/userUploadsController");
+
 const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
 };
@@ -451,6 +454,77 @@ const getSubRedditRules = async (req, res, next) => {
   }
 };
 
+
+const uploadAvatarImage = async (req, res, next) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+
+  
+
+
+  try {
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "subreddit not found" });
+    }
+
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "User not authorized" });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No file provided for avatar image" });
+    }
+
+    const avatarImage = req.files[0];
+    const uploadedImageId = await UserUpload.uploadMedia(avatarImage);
+    
+    if (!uploadedImageId) {
+      return res.status(400).json({ message: "Failed to upload avatar image" });
+    }
+
+    subreddit.appearance.avatarImage = uploadedImageId;
+  
+    await subreddit.save();
+    
+
+    res.status(200).json({ message: "Avatar image uploaded successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error uploading avatar image" });
+  }
+};
+
+const getAvatarImage = async (req, res, next) => {
+  try {
+    const subredditId = req.body.subredditId;
+    console.log(subredditId);
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    const avatarImageId = subreddit.appearance.avatarImage;
+    if (!avatarImageId) {
+      return res.status(404).json({ message: "Avatar image not found" });
+    }
+
+    const avatarImage = await UserUploadModel.findById(avatarImageId);
+    if (!avatarImage) {
+      return res.status(404).json({ message: "Avatar image not found" });
+    }
+
+    res.status(200).send({
+      _id: avatarImage._id,
+      url: avatarImage.url,
+      originalname: avatarImage.originalname,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting subreddit avatar image" });
+  }
+};
+
 module.exports = {
   sorting,
   createCommunity,
@@ -465,4 +539,6 @@ module.exports = {
   getSubRedditRules,
   editRule,
   deleteRule,
+  uploadAvatarImage,
+  getAvatarImage,
 };

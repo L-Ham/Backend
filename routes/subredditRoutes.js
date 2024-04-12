@@ -3,6 +3,7 @@ const router = express.Router();
 const subredditController = require("../controllers/subredditController");
 const bodyParser = require("body-parser");
 const authenticateToken = require("../middleware/authenticateToken");
+const { uploadImage } = require("../middleware/multerConfig");
 
 router.post(
   "/createCommunity",
@@ -71,5 +72,17 @@ router.get(
   bodyParser.json(),
   subredditController.getSubRedditRules
 );
-
+router.post(
+  "/avatarImage",
+  bodyParser.json(),
+  authenticateToken,
+  uploadImage.array("file"),
+  subredditController.uploadAvatarImage
+);
+router.get(
+  "/avatarImage",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getAvatarImage
+);
 module.exports = router;
