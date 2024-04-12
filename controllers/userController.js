@@ -284,17 +284,15 @@ const followUser = async (req, res, next) => {
     if (userToFollow._id.equals(userId)) {
       return res.status(400).json({ message: "You can't follow yourself" });
     }
-    if (user.blockUsers.includes(userToFollow._id)) {
+    if (user.blockUsers.some(blockedUser => blockedUser.blockedUserId.equals(userToFollow._id))) {
       return res.status(400).json({ message: "You have blocked this user" });
     }
-    if (userToFollow.blockUsers.includes(user._id)) {
-      return res
-        .status(400)
-        .json({ message: "You have been blocked by this user" });
+    console.log(userToFollow.blockUsers);
+    console.log(user._id);
+    console.log(userToFollow.blockUsers.some((blockUser) => blockUser.blockedUserId == user._id));
+    if (userToFollow.blockUsers.some((blockUser) => blockUser.blockedUserId.equals(user._id))) {
+      return res.status(400).json({ message: "You have been blocked by this user" });
     }
-    console.log(user.following.includes(userToFollow._id));
-    console.log(user.following);
-    console.log(userToFollow._id);
     if (user.following.includes(userToFollow._id)) {
       return res.status(400).json({ message: "User already followed" });
     }
