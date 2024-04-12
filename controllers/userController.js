@@ -1084,12 +1084,19 @@ const editUserLocation = async (req, res) => {
 const searchUsernames = async (req, res) => {
   try {
     const { search } = req.body;
+    const userId = req.userId;
+    const user = await User.findById(userId);
     const regex = new RegExp(`^${search}`, "i");
     const matchingUsernames = await User.find(
       { userName: regex },
       "_id userName avatarImage"
     );
-    res.json({ matchingUsernames });
+    const blockedUserIds = user.blockUsers.map(blockedUser => blockedUser.blockedUserId.toString());
+    const matchingUsernamesWithBlockStatus = matchingUsernames.map((matchingUser) => ({
+      ...matchingUser._doc,
+      isBlocked: blockedUserIds.includes(matchingUser._id.toString())
+    }));
+    res.json({ matchingUsernames: matchingUsernamesWithBlockStatus });
   } catch (err) {
     console.log("Error searching usernames:", err);
     res.status(500).json({ message: "Error searching usernames", error: err });
