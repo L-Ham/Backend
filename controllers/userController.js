@@ -692,12 +692,10 @@ const updateGender = async (req, res, next) => {
 const muteCommunity = async (req, res, next) => {
   try {
     const userId = req.userId;
-    const communityId = req.body.subRedditId;
+    const communityName = req.body.subRedditName;
 
-    const [user, community] = await Promise.all([
-      User.findById(userId),
-      subReddit.findById(communityId),
-    ]);
+    const user = await User.findById(userId);
+    const community = await SubReddit.findOne({ name: communityName });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -706,21 +704,21 @@ const muteCommunity = async (req, res, next) => {
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-    if (!user.communities.includes(communityId)) {
+    if (!user.communities.includes(community._id)) {
       return res
         .status(400)
         .json({ message: "User is not a member of this community" });
     }
     if (
       user.muteCommunities.some((muteCommunity) =>
-        muteCommunity.mutedCommunityId.equals(communityId)
+        muteCommunity.mutedCommunityId.equals(community._id)
       )
     ) {
       return res.status(400).json({ message: "Community already muted" });
     }
 
     user.muteCommunities.push({
-      mutedCommunityId: communityId,
+      mutedCommunityId: community._id,
       mutedCommunityName: community.name,
       mutedCommunityAvatar: community.appearance.avatarImage,
       mutedAt: new Date(),
@@ -744,7 +742,7 @@ const muteCommunity = async (req, res, next) => {
 const unmuteCommunity = async (req, res, next) => {
   try {
     const userId = req.userId;
-    const communityId = req.body.subRedditId;
+    const communityName = req.body.subRedditName;
 
     const user = await User.findById(userId);
     if (!user) {
@@ -752,17 +750,17 @@ const unmuteCommunity = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const community = await subReddit.findById(communityId);
+    const community = await SubReddit.findOne({ name: communityName });
     if (!community) {
-      console.log("Community not found for community ID:", communityId);
+      console.log("Community not found for community ID:", community._id);
       return res.status(404).json({ message: "Community not found" });
     }
 
     const isMuted = user.muteCommunities.some((muteCommunity) =>
-      muteCommunity.mutedCommunityId.equals(communityId)
+      muteCommunity.mutedCommunityId.equals(community._id)
     );
     if (!isMuted) {
-      console.log("This subReddit is not muted for you:", communityId);
+      console.log("This subReddit is not muted for you:", community._id);
       return res
         .status(404)
         .json({ message: "This subReddit is not muted for you" });
@@ -770,7 +768,7 @@ const unmuteCommunity = async (req, res, next) => {
 
     //user.muteCommunities.pull(communityId);
     user.muteCommunities = user.muteCommunities.filter(
-      (muteCommunity) => !muteCommunity.mutedCommunityId.equals(communityId)
+      (muteCommunity) => !muteCommunity.mutedCommunityId.equals(community._id)
     );
     await user.save();
 
