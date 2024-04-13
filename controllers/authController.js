@@ -151,13 +151,14 @@ const forgetPassword = async (req, res, next) => {
         pass: "bcmiawurnnoaxoeg",
       },
     });
-    const email = req.body.email;
+    let email = req.body.email;
     const username = req.body.username;
     let user;
     if (!username) {
       user = await User.findOne({ email: email });
     } else if (!email) {
       user = await User.findOne({ userName: username });
+      email = user.email;
     } else {
       user = await User.findOne({ email: email, userName: username });
     }
