@@ -1602,6 +1602,7 @@ const getCommunitiesInfo = async (req, res, next) => {
         $in: communities.map((community) => community.appearance.avatarImage),
       },
     });
+    
 
     const response = communities.map((community) => {
       const isFavorite = user.favoriteCommunities.includes(community._id);
