@@ -111,5 +111,11 @@ router.get(
   authenticateToken,
   subredditController.getSubredditRules
 );
+router.get(
+  "/widget",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getWidget
+);
 
 module.exports = router;
