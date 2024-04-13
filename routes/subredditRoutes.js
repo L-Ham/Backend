@@ -104,4 +104,12 @@ router.get(
   authenticateToken,
   subredditController.getSubredditByNames
 );
+
+router.get(
+  "/rule",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getSubredditRules
+);
+
 module.exports = router;

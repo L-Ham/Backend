@@ -644,6 +644,29 @@ const getSubredditByNames = async (req, res) => {
       .json({ message: "Error searching Subreddit Names", error: err.message });
   }
 };
+
+const getSubredditRules = async (req, res, next) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    res.json({
+      message: "Subreddit rules retrieved successfully",
+      rules: subreddit.rules,
+    });
+  } catch (error) {
+    console.error("Error getting subreddit rules:", error);
+    res.status(500).json({ message: "Error getting subreddit rules" });
+  }
+};
+
 module.exports = {
   sorting,
   createCommunity,
@@ -663,4 +686,6 @@ module.exports = {
   uploadBannerImage,
   getBannerImage,
   getSubredditByNames,
+  getSubredditRules,
+  
 };
