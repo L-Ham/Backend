@@ -1,12 +1,12 @@
 const User = require("../models/user");
-const authenticateToken = require("../middleware/authenticateToken");
-const jwt = require("jsonwebtoken");
 const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
 const Post = require("../models/post");
+const UserUploadModel = require("../models/userUploads");
+const jwt = require("jsonwebtoken");
 const UserUpload = require("../controllers/userUploadsController");
 const UserServices = require("../services/userServices");
-const UserUploadModel = require("../models/userUploads");
+const PostServices = require("../services/postServices");
 const { get } = require("http");
 
 const getNotificationSettings = async (req, res, next) => {
@@ -1033,9 +1033,40 @@ const getSavedPosts = async (req, res) => {
     if (result.slicedArray.length == 0) {
       return res.status(500).json({ message: "The retrieved array is empty" });
     }
+    const postsWithVoteStatus = await Promise.all(
+      result.slicedArray.map(async (post) => {
+        const isUpvoted = post.upvotedUsers.includes(userId);
+        const isDownvoted = post.downvotedUsers.includes(userId);
+        const subreddit = await SubReddit.findById(post.subReddit);
+        let imageUrls, videoUrls;
+        if (post.type === "image") {
+          imageUrls = await PostServices.getImagesUrls(post.images);
+          console.log("imageUrls", imageUrls);
+        }
+        if (post.type === "video") {
+          videoUrls = await PostServices.getVideosUrls(post.videos);
+        }
+        const postObj = {
+          ...post._doc,
+          subredditName: subreddit ? subreddit.name : null,
+          isUpvoted,
+          isDownvoted,
+          imageUrls,
+          videoUrls,
+        };
+        delete postObj.images;
+        delete postObj.videos;
+        delete postObj.upvotedUsers;
+        delete postObj.downvotedUsers;
+        delete postObj.comments;
+        delete postObj.spamCount;
+        delete postObj.spammedBy;
+        return postObj;
+      })
+    );
     return res.status(200).json({
       message: "Retrieved User's Saved Posts",
-      upvotedPosts: result,
+      savedPosts: postsWithVoteStatus,
     });
   } catch (err) {
     res.status(500).json({
@@ -1125,7 +1156,7 @@ const searchUsernames = async (req, res) => {
     const { search } = req.body;
     const userId = req.userId;
     const user = await User.findById(userId);
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -1136,11 +1167,15 @@ const searchUsernames = async (req, res) => {
       "_id userName avatarImage"
     );
 
-    const blockedUserIds = user.blockUsers.map(blockedUser => blockedUser.blockedUserId.toString());
-    const matchingUsernamesWithBlockStatus = matchingUsernames.map((matchingUser) => ({
-      ...matchingUser._doc,
-      isBlocked: blockedUserIds.includes(matchingUser._id.toString())
-    }));
+    const blockedUserIds = user.blockUsers.map((blockedUser) =>
+      blockedUser.blockedUserId.toString()
+    );
+    const matchingUsernamesWithBlockStatus = matchingUsernames.map(
+      (matchingUser) => ({
+        ...matchingUser._doc,
+        isBlocked: blockedUserIds.includes(matchingUser._id.toString()),
+      })
+    );
 
     res.json({ matchingUsernames: matchingUsernamesWithBlockStatus });
   } catch (err) {
@@ -1148,7 +1183,6 @@ const searchUsernames = async (req, res) => {
     res.status(500).json({ message: "Error searching usernames", error: err });
   }
 };
-
 
 const getUserLocation = async (req, res) => {
   try {
@@ -1469,29 +1503,33 @@ const getCommunitiesInfo = async (req, res, next) => {
       _id: { $in: user.communities },
     });
 
-    const avatarImages = await UserUploadModel.find({ _id: { $in: communities.map((community) => community.appearance.avatarImage) } });
+    const avatarImages = await UserUploadModel.find({
+      _id: {
+        $in: communities.map((community) => community.appearance.avatarImage),
+      },
+    });
 
     const response = communities.map((community) => {
       const isFavorite = user.favoriteCommunities.includes(community._id);
       const memberCount = community.members.length;
-      const avatarImage = avatarImages.find((image) => image._id.equals(community.appearance.avatarImage));
-      
+      const avatarImage = avatarImages.find((image) =>
+        image._id.equals(community.appearance.avatarImage)
+      );
+
       return {
         communityId: community._id,
         communityName: community.name,
-        communityAvatar: avatarImage? avatarImage.url : null,
+        communityAvatar: avatarImage ? avatarImage.url : null,
         memberCount: memberCount,
         isFavorite: isFavorite,
       };
     });
     res.status(200).json({ communities: response });
-  }
-  catch (err) {
+  } catch (err) {
     console.log("Error retrieving user:", err);
     res.status(500).json({ message: "Error retrieving user" });
   }
 };
-
 
 module.exports = {
   getAccountSettings,

@@ -39,7 +39,6 @@ router.get(
 router.patch(
   "/updatePassword",
   bodyParser.json(),
-  authenticateToken,
   authController.updatePassword
 );
 router.patch(
