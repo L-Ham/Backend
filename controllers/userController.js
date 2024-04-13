@@ -977,14 +977,44 @@ const getUpvotedPosts = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     const query = Post.find({ _id: { $in: user.upvotedPosts } });
-
     const result = await UserServices.paginateResults(query, page, limit);
     if (result.slicedArray.length == 0) {
       return res.status(500).json({ message: "The retrieved array is empty" });
     }
+    const postsWithVoteStatus = await Promise.all(
+      result.slicedArray.map(async (post) => {
+        const isUpvoted = post.upvotedUsers.includes(userId);
+        const isDownvoted = post.downvotedUsers.includes(userId);
+        const subreddit = await SubReddit.findById(post.subReddit);
+        let imageUrls, videoUrls;
+        if (post.type === "image") {
+          imageUrls = await PostServices.getImagesUrls(post.images);
+          console.log("imageUrls", imageUrls);
+        }
+        if (post.type === "video") {
+          videoUrls = await PostServices.getVideosUrls(post.videos);
+        }
+        const postObj = {
+          ...post._doc,
+          subredditName: subreddit ? subreddit.name : null,
+          isUpvoted,
+          isDownvoted,
+          imageUrls,
+          videoUrls,
+        };
+        delete postObj.images;
+        delete postObj.videos;
+        delete postObj.upvotedUsers;
+        delete postObj.downvotedUsers;
+        delete postObj.comments;
+        delete postObj.spamCount;
+        delete postObj.spammedBy;
+        return postObj;
+      })
+    );
     return res.status(200).json({
       message: "Retrieved User's Upvoted Posts",
-      upvotedPosts: result,
+      upvotedPosts: postsWithVoteStatus,
     });
   } catch (err) {
     res.status(500).json({
@@ -1007,9 +1037,40 @@ const getDownvotedPosts = async (req, res) => {
     if (result.slicedArray.length == 0) {
       return res.status(500).json({ message: "The retrieved array is empty" });
     }
+    const postsWithVoteStatus = await Promise.all(
+      result.slicedArray.map(async (post) => {
+        const isUpvoted = post.upvotedUsers.includes(userId);
+        const isDownvoted = post.downvotedUsers.includes(userId);
+        const subreddit = await SubReddit.findById(post.subReddit);
+        let imageUrls, videoUrls;
+        if (post.type === "image") {
+          imageUrls = await PostServices.getImagesUrls(post.images);
+          console.log("imageUrls", imageUrls);
+        }
+        if (post.type === "video") {
+          videoUrls = await PostServices.getVideosUrls(post.videos);
+        }
+        const postObj = {
+          ...post._doc,
+          subredditName: subreddit ? subreddit.name : null,
+          isUpvoted,
+          isDownvoted,
+          imageUrls,
+          videoUrls,
+        };
+        delete postObj.images;
+        delete postObj.videos;
+        delete postObj.upvotedUsers;
+        delete postObj.downvotedUsers;
+        delete postObj.comments;
+        delete postObj.spamCount;
+        delete postObj.spammedBy;
+        return postObj;
+      })
+    );
     return res.status(200).json({
       message: "Retrieved User's Downvoted Posts",
-      upvotedPosts: result,
+      downvotedPosts: postsWithVoteStatus,
     });
   } catch (err) {
     res.status(500).json({
@@ -1090,9 +1151,40 @@ const getHiddenPosts = async (req, res) => {
     if (result.slicedArray.length == 0) {
       return res.status(500).json({ message: "The retrieved array is empty" });
     }
+    const postsWithVoteStatus = await Promise.all(
+      result.slicedArray.map(async (post) => {
+        const isUpvoted = post.upvotedUsers.includes(userId);
+        const isDownvoted = post.downvotedUsers.includes(userId);
+        const subreddit = await SubReddit.findById(post.subReddit);
+        let imageUrls, videoUrls;
+        if (post.type === "image") {
+          imageUrls = await PostServices.getImagesUrls(post.images);
+          console.log("imageUrls", imageUrls);
+        }
+        if (post.type === "video") {
+          videoUrls = await PostServices.getVideosUrls(post.videos);
+        }
+        const postObj = {
+          ...post._doc,
+          subredditName: subreddit ? subreddit.name : null,
+          isUpvoted,
+          isDownvoted,
+          imageUrls,
+          videoUrls,
+        };
+        delete postObj.images;
+        delete postObj.videos;
+        delete postObj.upvotedUsers;
+        delete postObj.downvotedUsers;
+        delete postObj.comments;
+        delete postObj.spamCount;
+        delete postObj.spammedBy;
+        return postObj;
+      })
+    );
     return res.status(200).json({
       message: "Retrieved User's Hidden Posts",
-      upvotedPosts: result,
+      hiddenPosts: postsWithVoteStatus,
     });
   } catch (err) {
     res.status(500).json({

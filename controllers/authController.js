@@ -37,8 +37,16 @@ const googleSignUp = async (req, res) => {
     });
     user = await user.save();
     console.log(user);
-    const payload = {};
-    payload.user = { id: user._id, type: "google" };
+    const payload = {
+      user: {
+        id: user._id,
+        userName: user.userName,
+        email: user.email,
+        type: "google",
+      },
+    };
+    // const payload = {};
+    // payload.user = { id: user._id, type: "google" };
     const expirationTime = Math.floor(Date.now() / 1000) + 50000000000;
     payload.exp = expirationTime;
     const newToken = jwt.sign(payload, process.env.JWT_SECRET);
@@ -72,16 +80,18 @@ const googleLogin = async (req, res, next) => {
         .status(404)
         .json({ message: "User didn't signup using google signup" });
     }
-    const jwtPayload = {
+    const payload = {
       user: {
         id: user._id,
+        userName: user.userName,
+        email: user.email,
         type: "google",
       },
     };
     const expirationTime = Math.floor(Date.now() / 1000) + 50000000000;
-    jwtPayload.exp = expirationTime;
+    payload.exp = expirationTime;
 
-    const jwtToken = jwt.sign(jwtPayload, process.env.JWT_SECRET);
+    const jwtToken = jwt.sign(payload, process.env.JWT_SECRET);
 
     res.status(200).json({
       message: "User logged in successfully",
@@ -360,13 +370,21 @@ const updatePassword = async (req, res, next) => {
 
 const updateEmail = async (req, res, next) => {
   const password = req.body.password;
-  const email = req.body.newEmail;
+  const email = req.body.email;
   const userId = req.userId;
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ message: "Email & Password cannot be empty" });
+  }
   const user = await User.findById(userId);
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid password" });
+  }
   user.email = email;
   await user.save();
   res.json({ message: "Email updated successfully" });
