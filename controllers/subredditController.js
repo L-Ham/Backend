@@ -713,6 +713,7 @@ const getWidget = async (req, res, next) => {
     const bannerImage = await UserUploadModel.findById(
       subreddit.appearance.bannerImage
     );
+    const createdSeconds = Math.floor(subreddit.createdAt.getTime() / 1000);
     const randomIndex = Math.floor(Math.random() * subreddit.members.length);
     const communityDetails = {
       name: subreddit.name,
@@ -725,6 +726,7 @@ const getWidget = async (req, res, next) => {
       currentlyViewingNickname: subreddit.currentlyViewingNickname,
       currentlyViewingCount: randomIndex,
       isMember: subreddit.members.includes(userId),
+      createdAt: createdSeconds,
     };
     const textWidgetsById = subreddit.textWidgets.reduce((acc, widget) => {
       acc[widget._id] = widget;
