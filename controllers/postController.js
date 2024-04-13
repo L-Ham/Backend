@@ -15,12 +15,6 @@ const createPost = async (req, res, next) => {
     console.error("User not found for user ID:", userId);
     return res.status(404).json({ message: "User not found" });
   }
-  console.log("filesss", req.files);
-  console.log("poll.options", req.body["poll.options"]);
-  console.log("poll.votingLength", req.body["poll.votingLength"]);
-  console.log("poll.startTime", req.body["poll.startTime"]);
-  console.log("poll.endTime", req.body["poll.endTime"]);
-  console.log("url", req.body.url);
   try {
     // Check if title is provided in the request body
     if (!req.body.title) {
