@@ -107,7 +107,7 @@ const createCommunity = async (req, res, next) => {
 const addRule = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
-  const { rule, description, appliedTo, reportReasonDefault, descriptionHtml } =
+  const { rule, description, appliedTo, reportReason, descriptionHtml } =
     req.body;
 
   try {
@@ -125,14 +125,16 @@ const addRule = async (req, res, next) => {
       return res.status(400).json({ message: "Maximum 15 rules allowed" });
     }
 
-    subreddit.rules.push({
+    subreddit.rules.ruleList.push({
       ruleText: rule,
       fullDescription: description,
       appliesTo: appliedTo,
-      reportReason: reportReasonDefault,
+      reportReason: reportReason,
       descriptionHtml: descriptionHtml,
     });
-
+    if (subreddit.rules.ruleList.length == 1) {
+      subreddit.orderWidget.push(subreddit.rules._id);
+    }
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Rule added successfully",
@@ -143,11 +145,12 @@ const addRule = async (req, res, next) => {
     res.status(500).json({ message: "Error adding rule" });
   }
 };
+
 const editRule = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
   const ruleId = req.body.ruleId;
-  const { rule, description, appliedTo, reportReasonDefault, descriptionHtml } =
+  const { rule, description, appliedTo, reportReason, descriptionHtml } =
     req.body;
   try {
     const subreddit = await SubReddit.findById(subredditId);
@@ -160,17 +163,17 @@ const editRule = async (req, res, next) => {
     if (!ruleId) {
       return res.status(404).json({ message: "Rule ID is required" });
     }
-    const ruleIndex = subreddit.rules.findIndex(
+    const ruleIndex = subreddit.rules.ruleList.findIndex(
       (rule) => rule._id.toString() === ruleId
     );
     if (ruleIndex === -1) {
       return res.status(404).json({ message: "Rule not found" });
     }
-    subreddit.rules[ruleIndex].ruleText = rule;
-    subreddit.rules[ruleIndex].fullDescription = description;
-    subreddit.rules[ruleIndex].appliesTo = appliedTo;
-    subreddit.rules[ruleIndex].reportReason = reportReasonDefault;
-    subreddit.rules[ruleIndex].descriptionHtml = descriptionHtml;
+    subreddit.rules.ruleList[ruleIndex].ruleText = rule;
+    subreddit.rules.ruleList[ruleIndex].fullDescription = description;
+    subreddit.rules.ruleList[ruleIndex].appliesTo = appliedTo;
+    subreddit.rules.ruleList[ruleIndex].reportReason = reportReason;
+    subreddit.rules.ruleList[ruleIndex].descriptionHtml = descriptionHtml;
 
     const savedSubreddit = await subreddit.save();
     res.json({
@@ -197,13 +200,13 @@ const deleteRule = async (req, res, next) => {
     if (!ruleId) {
       return res.status(404).json({ message: "Rule ID is required" });
     }
-    const ruleIndex = subreddit.rules.findIndex(
+    const ruleIndex = subreddit.rules.ruleList.findIndex(
       (rule) => rule._id.toString() === ruleId
     );
     if (ruleIndex === -1) {
       return res.status(404).json({ message: "Rule not found" });
     }
-    subreddit.rules.splice(ruleIndex, 1);
+    subreddit.rules.ruleList.splice(ruleIndex, 1);
     await subreddit.save();
     res.json({
       message: "Rule deleted successfully",
@@ -218,7 +221,7 @@ const deleteRule = async (req, res, next) => {
 const addTextWidget = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
-  const { widgetName, text } = req.body;
+  const { widgetName, text, textHtml, shortName } = req.body;
 
   try {
     const subreddit = await SubReddit.findById(subredditId);
@@ -235,9 +238,15 @@ const addTextWidget = async (req, res, next) => {
     subreddit.textWidgets.push({
       widgetName,
       text,
+      textHtml,
+      shortName,
     });
 
+    subreddit.orderWidget.push(
+      subreddit.textWidgets[subreddit.textWidgets.length - 1]._id
+    );
     const savedSubreddit = await subreddit.save();
+
     res.json({
       message: "Text widget added successfully",
       savedSubreddit,
@@ -251,7 +260,7 @@ const editTextWidget = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
   const textWidgetId = req.body.textWidgetId;
-  const { widgetName, text } = req.body;
+  const { widgetName, text, textHtml, shortName } = req.body;
 
   try {
     const subreddit = await SubReddit.findById(subredditId);
@@ -273,6 +282,8 @@ const editTextWidget = async (req, res, next) => {
     }
     textWidget.widgetName = widgetName;
     textWidget.text = text;
+    textWidget.textHtml = textHtml;
+    textWidget.shortName = shortName;
     const savedSubreddit = await subreddit.save();
     res.status(200).json({
       message: "Text widget edited successfully",
@@ -283,7 +294,6 @@ const editTextWidget = async (req, res, next) => {
     res.status(500).json({ message: "Error editing text widget" });
   }
 };
-
 const deleteTextWidget = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -323,7 +333,6 @@ const deleteTextWidget = async (req, res, next) => {
       .json({ message: "Error deleting text widget", error: error.message });
   }
 };
-
 const reorderRules = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -338,7 +347,7 @@ const reorderRules = async (req, res, next) => {
       return res.status(403).json({ message: "You are not a moderator" });
     }
 
-    const rules = subreddit.rules;
+    const rules = subreddit.rules.ruleList;
 
     if (rulesOrder.length !== rules.length) {
       return res.status(400).json({
@@ -361,13 +370,13 @@ const reorderRules = async (req, res, next) => {
 
     const reorderedRules = rulesOrder.map((ruleId) => ruleMap.get(ruleId));
 
-    subreddit.rules = reorderedRules;
+    subreddit.rules.ruleList = reorderedRules;
 
     const savedSubreddit = await subreddit.save();
 
     res.json({
       message: "Rules reordered successfully",
-      rules: savedSubreddit.rules,
+      rules: savedSubreddit.rules.ruleList,
     });
   } catch (error) {
     console.log("Error reordering rules:", error);
@@ -655,7 +664,6 @@ const getSubredditByNames = async (req, res) => {
       .json({ message: "Error searching Subreddit Names", error: err.message });
   }
 };
-
 const getSubredditRules = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -677,7 +685,67 @@ const getSubredditRules = async (req, res, next) => {
     res.status(500).json({ message: "Error getting subreddit rules" });
   }
 };
+const getWidget = async (req, res, next) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const moderators = await Promise.all(
+      subreddit.moderators.map(async (moderatorId) => {
+        const moderator = await User.findById(moderatorId);
+        return {
+          username: moderator.userName,
+          avatarImage: moderator.avatarImage,
+        };
+      })
+    );
+    const avatarImage = await UserUploadModel.findById(
+      subreddit.appearance.avatarImage
+    );
+    const bannerImage = await UserUploadModel.findById(
+      subreddit.appearance.bannerImage
+    );
+    const randomIndex = Math.floor(Math.random() * subreddit.members.length);
+    const communityDetails = {
+      name: subreddit.name,
+      subredditId: subreddit._id,
+      avatarImage: avatarImage ? avatarImage.url : null,
+      bannerImage: bannerImage ? bannerImage.url : null,
+      description: subreddit.description,
+      membersNickname: subreddit.membersNickname,
+      membersCount: subreddit.members.length,
+      currentlyViewingNickname: subreddit.currentlyViewingNickname,
+      currentlyViewingCount: randomIndex,
+      isMember: subreddit.members.includes(userId),
+    };
+    const textWidgetsById = subreddit.textWidgets.reduce((acc, widget) => {
+      acc[widget._id] = widget;
+      return acc;
+    }, {});
 
+    let response = {
+      message: "Subreddit widgets retrieved successfully",
+      communityDetails,
+      textWidgets: textWidgetsById,
+      moderators,
+      orderWidget: subreddit.orderWidget,
+    };
+
+    response[subreddit.rules._id] = subreddit.rules;
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error getting subreddit widgets:", error);
+    res.status(500).json({ message: "Error getting subreddit widgets" });
+  }
+};
 const getPopularCommunities = async (req, res) => {
   try {
     const popularCommunities = await SubReddit.find()
@@ -735,5 +803,6 @@ module.exports = {
   getBannerImage,
   getSubredditByNames,
   getSubredditRules,
+  getWidget,
   getPopularCommunities,
 };
