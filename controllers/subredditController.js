@@ -747,6 +747,42 @@ const getWidget = async (req, res, next) => {
     res.status(500).json({ message: "Error getting subreddit widgets" });
   }
 };
+const getPopularCommunities = async (req, res) => {
+  try {
+    const popularCommunities = await SubReddit.find()
+      .sort({ "members.length": -1 })
+      .limit(20);
+
+    const avatarImages = await UserUploadModel.find({
+      _id: {
+        $in: popularCommunities.map(
+          (community) => community.appearance.avatarImage
+        ),
+      },
+    });
+
+    const formattedCommunities = popularCommunities.map((community) => {
+      const memberCount = community.members.length;
+      const avatarImage = avatarImages.find((image) =>
+        image._id.equals(community.appearance.avatarImage)
+      );
+      return {
+        name: community.name,
+        communityId: community._id,
+        avatarImageUrl: avatarImage ? avatarImage.url : null,
+        memberCount: memberCount,
+      };
+    });
+
+    const sortedCommunities = formattedCommunities.sort(
+      (a, b) => b.memberCount - a.memberCount
+    );
+
+    res.json({ popularCommunities: sortedCommunities });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting popular communities" });
+  }
+};
 
 module.exports = {
   sorting,
