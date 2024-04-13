@@ -111,6 +111,12 @@ router.get(
   authenticateToken,
   subredditController.getSubredditRules
 );
+router.get(
+  "/widget",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getWidget
+);
 
 router.get(
   "/popularCommunity",
