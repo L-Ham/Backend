@@ -28,15 +28,15 @@ const createComment = async (req, res, next) => {
       return res.status(400).json({ message: "Post is locked" });
     }
 
-    if (!req.body.text || req.body.text.trim() === "") {
-      console.log("Comment text is required");
-      return res.status(400).json({ message: "Comment text is required" });
+    if ((!req.body.text || req.body.text.trim() === "") && (!req.files || req.files.length === 0) && !req.body.url) {
+      console.log("Comment text, file, or url is required");
+      return res.status(400).json({ message: "Comment text, file, or url is required" });
     }
 
     const comment = new Comment({
       postId: req.body.postId,
       userId: userId,
-      text: req.body.text.trim(),
+      text: req.body.text.trim() || " ",
       parentCommentId: req.body.parentCommentId || null,
       replies: [],
       votes: 0,
