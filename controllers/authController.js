@@ -485,6 +485,11 @@ const changePassword = async (req, res, next) => {
     if (newPassword !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }
+    if (newPassword === oldPassword) {
+      return res
+        .status(400)
+        .json({ message: "New password cannot be the same as old password" });
+    }
     if (newPassword.length < 8) {
       return res
         .status(400)
