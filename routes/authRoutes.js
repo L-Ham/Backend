@@ -66,5 +66,11 @@ router.delete(
   authenticateToken,
   authController.deleteAccount
 );
+router.patch(
+  "/changePassword",
+  bodyParser.json(),
+  authenticateToken,
+  authController.changePassword
+);
 
 module.exports = router;
