@@ -804,5 +804,6 @@ module.exports = {
   getBannerImage,
   getSubredditByNames,
   getSubredditRules,
-  getWidget,getPopularCommunities,
+  getWidget,
+  getPopularCommunities,
 };
