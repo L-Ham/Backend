@@ -61,5 +61,11 @@ router.patch(
   googleAuth,
   authController.googleConnect
 );
+router.delete(
+  "/deleteAccount",
+  bodyParser.json(),
+  authenticateToken,
+  authController.deleteAccount
+);
 
 module.exports = router;

@@ -283,6 +283,11 @@ const generateRandomUsername = () => {
     const noun = nouns[Math.floor(Math.random() * nouns.length)];
     const randomNumber = Math.floor(Math.random() * 3000);
     const username = `${adjective}-${noun}-${randomNumber}`;
+    if (username.length>20 || username.length<3)
+    {
+      i--;
+      continue;
+    }
     usernames.push(username);
   }
   return usernames;
