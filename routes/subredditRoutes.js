@@ -112,4 +112,11 @@ router.get(
   subredditController.getSubredditRules
 );
 
+router.get(
+  "/popularCommunity",
+  bodyParser.json(),
+  subredditController.getPopularCommunities
+);
+
+
 module.exports = router;
