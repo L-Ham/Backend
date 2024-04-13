@@ -58,11 +58,9 @@ const createPost = async (req, res, next) => {
         }
         // For image or video posts, ensure media is provided
         if (!req.files || req.files.length === 0) {
-          return res
-            .status(400)
-            .json({
-              message: "Media file is required for image or video post",
-            });
+          return res.status(400).json({
+            message: "Media file is required for image or video post",
+          });
         }
         break;
       case "poll":
@@ -82,7 +80,7 @@ const createPost = async (req, res, next) => {
           req.body["poll.options"] ||
           req.body["poll.votingLength"] ||
           req.body["poll.startTime"] ||
-          req.body["poll.endTime"] 
+          req.body["poll.endTime"]
         ) {
           return res.status(400).json({
             message: "Link posts cannot include media or polls",
@@ -188,16 +186,16 @@ const editPost = (req, res, next) => {
           .status(401)
           .json({ message: "User not authorized to edit post" });
       }
-      if(post.type ==="link")
-      {
+      if (post.type === "link") {
         return res.status(400).json({ message: "Url posts can't be edited" });
       }
-      if(!post.text)
-      {
+      if (!post.text) {
         return res.status(400).json({ message: "Text posts can't be edited" });
       }
       if (!req.body.text) {
-        return res.status(400).json({ message: "Text field is required for editing" });
+        return res
+          .status(400)
+          .json({ message: "Text field is required for editing" });
       }
       post.text = req.body.text;
       post
@@ -857,13 +855,17 @@ const reportPost = async (req, res, next) => {
     // }
 
     // user.blockUsers.some((blockedUser) => blockedUser.blockedUserId.equals(postOwner._id))
-    if(title == ""){
+    if (title == "") {
       return res.status(400).json({ message: "Title is required" });
     }
-    if(description == ""){
+    if (description == "") {
       return res.status(400).json({ message: "Description is required" });
     }
-    if (user.blockUsers.some((blockedUser) => blockedUser.blockedUserId.equals(postOwner._id))) {
+    if (
+      user.blockUsers.some((blockedUser) =>
+        blockedUser.blockedUserId.equals(postOwner._id)
+      )
+    ) {
       console.log("User already blocked:", postOwner.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
@@ -885,7 +887,7 @@ const reportPost = async (req, res, next) => {
         blockedUserId: postOwner._id,
         blockedUserName: postOwner.userName,
         blockedUserAvatar: postOwner.avatarImage,
-        blockedAt: new Date()
+        blockedAt: new Date(),
       });
       //user.blockUsers.push(postOwner._id);
       await user.save();
@@ -898,7 +900,24 @@ const reportPost = async (req, res, next) => {
     res.status(500).json({ message: "Error reporting post", error: err });
   }
 };
-
+const getTrendingPosts = async (req, res, next) => {
+  const userId = req.userId;
+  try {
+    const trendingPosts = await Post.find()
+      .sort({ upvotes: -1, downvotes: 1 })
+      .select("-comments")
+      .populate("user", "username")
+      .limit(6);
+    res.status(200).json({
+      message: "Retrieved Top Trending Posts Successfully",
+      trendingPosts: trendingPosts,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error getting trending posts", error: error.message });
+  }
+};
 module.exports = {
   savePost,
   unsavePost,
@@ -920,4 +939,5 @@ module.exports = {
   markAsSpoiler,
   unmarkAsSpoiler,
   reportPost,
+  getTrendingPosts,
 };

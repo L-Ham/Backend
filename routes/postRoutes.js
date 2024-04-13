@@ -4,14 +4,13 @@ const postController = require("../controllers/postController");
 const bodyParser = require("body-parser");
 const authenticateToken = require("../middleware/authenticateToken");
 const { auth } = require("google-auth-library");
-const { uploadImage  } = require("../middleware/multerConfig");
-
+const { uploadImage } = require("../middleware/multerConfig");
 
 router.post(
   "/createPost",
   bodyParser.json(),
   authenticateToken,
-  uploadImage.array('file'),
+  uploadImage.array("file"),
   postController.createPost
 );
 router.patch(
@@ -95,47 +94,53 @@ router.patch(
   bodyParser.json(),
   authenticateToken,
   postController.cancelDownvote
-)
+);
 router.patch(
   "/cancelUpvote",
   bodyParser.json(),
   authenticateToken,
   postController.cancelUpvote
-)
+);
 
 router.patch(
   "/approvePost",
   bodyParser.json(),
   authenticateToken,
   postController.approvePost
-)
+);
 
 router.patch(
   "/removePost",
   bodyParser.json(),
   authenticateToken,
   postController.removePost
-)
+);
 
 router.patch(
   "/markAsSpoiler",
   bodyParser.json(),
   authenticateToken,
   postController.markAsSpoiler
-)
+);
 
 router.patch(
   "/unmarkAsSpoiler",
   bodyParser.json(),
   authenticateToken,
   postController.unmarkAsSpoiler
-)
+);
 
 router.patch(
   "/report",
   bodyParser.json(),
   authenticateToken,
   postController.reportPost
-)
+);
+router.get(
+  "/trending",
+  bodyParser.json(),
+  authenticateToken,
+  postController.getTrendingPosts
+);
 
 module.exports = router;
