@@ -664,7 +664,6 @@ const getSubredditByNames = async (req, res) => {
       .json({ message: "Error searching Subreddit Names", error: err.message });
   }
 };
-
 const getSubredditRules = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
