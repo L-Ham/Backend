@@ -45,6 +45,10 @@ const reportSchema = new Schema({
     required: false,
     default: false,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("report", reportSchema);

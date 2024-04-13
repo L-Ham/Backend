@@ -438,7 +438,7 @@ const getCommunityDetails = async (req, res) => {
     const bannerImage = await UserUploadModel.findById(
       subreddit.appearance.bannerImage
     );
-
+    
     const randomIndex = Math.floor(Math.random() * subreddit.members.length);
     const details = {
       name: subreddit.name,

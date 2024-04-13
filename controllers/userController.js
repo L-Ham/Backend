@@ -1538,6 +1538,7 @@ const getUserSelfInfo = async (req, res, next) => {
       created: createdSeconds,
       postKarma: user.upvotedPosts.length - user.downvotedPosts.length,
       avatar: avatarImage ? avatarImage.url : null,
+      publicDescription: user.publicDescription || null,
     };
     res.status(200).json({ user: response });
   } catch (err) {
@@ -1576,6 +1577,7 @@ const getUserInfo = async (req, res, next) => {
       isFriend: isFollowed,
       isBlocked: isBlocked,
       avatar: avatarImage ? avatarImage.url : null,
+      publicDescription: otherUser.publicDescription || null,
     };
     res.status(200).json({ user: response });
   } catch (err) {
@@ -1600,6 +1602,7 @@ const getCommunitiesInfo = async (req, res, next) => {
         $in: communities.map((community) => community.appearance.avatarImage),
       },
     });
+    
 
     const response = communities.map((community) => {
       const isFavorite = user.favoriteCommunities.includes(community._id);

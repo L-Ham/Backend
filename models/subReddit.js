@@ -234,6 +234,10 @@ const subRedditSchema = new Schema({
       required: false,
     },
   ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("subreddits", subRedditSchema);
