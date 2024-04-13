@@ -109,7 +109,7 @@ const createCommunity = async (req, res, next) => {
 const addRule = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
-  const { rule, description, appliedTo, reportReasonDefault } = req.body;
+  const { rule, description, appliedTo, reportReasonDefault, descriptionHtml } = req.body;
 
   try {
     const subreddit = await SubReddit.findById(subredditId);
@@ -131,6 +131,7 @@ const addRule = async (req, res, next) => {
       fullDescription: description,
       appliesTo: appliedTo,
       reportReason: reportReasonDefault,
+      descriptionHtml: descriptionHtml,
     });
 
     const savedSubreddit = await subreddit.save();
@@ -147,7 +148,7 @@ const editRule = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
   const ruleId = req.body.ruleId;
-  const { rule, description, appliedTo, reportReasonDefault } = req.body;
+  const { rule, description, appliedTo, reportReasonDefault, descriptionHtml} = req.body;
   try {
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
@@ -169,6 +170,8 @@ const editRule = async (req, res, next) => {
     subreddit.rules[ruleIndex].fullDescription = description;
     subreddit.rules[ruleIndex].appliesTo = appliedTo;
     subreddit.rules[ruleIndex].reportReason = reportReasonDefault;
+    subreddit.rules[ruleIndex].descriptionHtml = descriptionHtml;
+    
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Rule edited successfully",

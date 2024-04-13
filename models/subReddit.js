@@ -89,6 +89,10 @@ const subRedditSchema = new Schema({
         type: String,
         required: false,
       },
+      descriptionHtml: {
+        type: String,
+        required: false,
+      },
     },
   ],
 
