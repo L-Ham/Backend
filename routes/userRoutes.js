@@ -274,5 +274,12 @@ router.get(
 );
 
 
+router.get(
+  "/community",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getCommunitiesInfo
+);
+
 
 module.exports = router;

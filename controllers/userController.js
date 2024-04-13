@@ -1458,6 +1458,41 @@ const getUserInfo = async (req, res, next) => {
   }
 };
 
+const getCommunitiesInfo = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const communities = await SubReddit.find({
+      _id: { $in: user.communities },
+    });
+
+    const avatarImages = await UserUploadModel.find({ _id: { $in: communities.map((community) => community.appearance.avatarImage) } });
+
+    const response = communities.map((community) => {
+      const isFavorite = user.favoriteCommunities.includes(community._id);
+      const memberCount = community.members.length;
+      const avatarImage = avatarImages.find((image) => image._id.equals(community.appearance.avatarImage));
+      
+      return {
+        communityId: community._id,
+        communityName: community.name,
+        communityAvatar: avatarImage? avatarImage.url : null,
+        memberCount: memberCount,
+        isFavorite: isFavorite,
+      };
+    });
+    res.status(200).json({ communities: response });
+  }
+  catch (err) {
+    console.log("Error retrieving user:", err);
+    res.status(500).json({ message: "Error retrieving user" });
+  }
+};
+
+
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -1501,4 +1536,5 @@ module.exports = {
   getChatSettings,
   getUserSelfInfo,
   getUserInfo,
+  getCommunitiesInfo,
 };
