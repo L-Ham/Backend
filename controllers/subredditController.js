@@ -61,11 +61,9 @@ const createCommunity = async (req, res, next) => {
       ageRestriction: req.body.ageRestriction,
       moderators: [user._id],
       members: [user._id],
-      communityDetails: {
-        membersNickname: "Members",
-        currentlyViewingNickname: "Online",
-        communityDescription: "",
-      },
+      membersNickname: "Members",
+      currentlyViewingNickname: "Online",
+      communityDescription: "",
       widgets: [],
       appearance: {
         avatarImage: null,
