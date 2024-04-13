@@ -164,6 +164,23 @@ const forgetPassword = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    const payload = {
+      user: {
+        id: user._id,
+        userName: user.userName,
+        email: user.email,
+        type: "normal",
+      },
+    };
+    let token = "";
+    try {
+      token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: 500000000000,
+      });
+    } catch (err) {
+      console.log(err.message);
+    }
+    console.log(token);
     transporter.sendMail(
       {
         from: "r75118106@gmail.com",
@@ -173,7 +190,7 @@ const forgetPassword = async (req, res, next) => {
 
       Thanks for requesting a password reset. To create a new password, just use the link below
         
-         https://reddit-bylham.me/resetpassword?email=${email}
+         https://reddit-bylham.me/resetpassword?token=${token}
          If you didn’t make this request, you can ignore this email and carry on as usual.
          `,
       },
@@ -270,7 +287,6 @@ const signUp = async (req, res) => {
 
     const payload = {
       user: {
-        id: user._id,
         userName: user.userName,
         email: user.email,
         type: "normal",
@@ -304,7 +320,20 @@ const generateUserName = async (req, res, next) => {
   }
 };
 const updatePassword = async (req, res, next) => {
-  const email = req.body.email;
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  // console.log(req.headers["authorization"]);
+  console.log(token);
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
+  }
+  let email = "";
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: "Forbidden: Invalid token" });
+    }
+    email = decoded.user.email;
+  });
   const password = req.body.password;
   const passwordConfirm = req.body.passwordConfirm;
   if (password !== passwordConfirm) {
