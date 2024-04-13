@@ -12,7 +12,6 @@ async function uploadMedia(file) {
     dataURI,
     {resource_type: "auto"}
   );
-console.log("secure_url",secure_url)
   try {
     const newUserUpload = await UserUpload.create({
       originalname: file.originalname,
