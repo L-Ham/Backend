@@ -668,7 +668,7 @@ const getSubredditRules = async (req, res, next) => {
     console.error("Error getting subreddit rules:", error);
     res.status(500).json({ message: "Error getting subreddit rules" });
   }
-  //res
+  
 };
 
 module.exports = {
