@@ -107,7 +107,8 @@ const createCommunity = async (req, res, next) => {
 const addRule = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
-  const { rule, description, appliedTo, reportReasonDefault, descriptionHtml } = req.body;
+  const { rule, description, appliedTo, reportReasonDefault, descriptionHtml } =
+    req.body;
 
   try {
     const subreddit = await SubReddit.findById(subredditId);
@@ -146,7 +147,8 @@ const editRule = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
   const ruleId = req.body.ruleId;
-  const { rule, description, appliedTo, reportReasonDefault, descriptionHtml} = req.body;
+  const { rule, description, appliedTo, reportReasonDefault, descriptionHtml } =
+    req.body;
   try {
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
@@ -169,7 +171,7 @@ const editRule = async (req, res, next) => {
     subreddit.rules[ruleIndex].appliesTo = appliedTo;
     subreddit.rules[ruleIndex].reportReason = reportReasonDefault;
     subreddit.rules[ruleIndex].descriptionHtml = descriptionHtml;
-    
+
     const savedSubreddit = await subreddit.save();
     res.json({
       message: "Rule edited successfully",
@@ -635,7 +637,15 @@ const getSubredditByNames = async (req, res) => {
     const resultsWithRandomNumber = matchingNames.map((subreddit) => {
       const currentlyViewingCount =
         Math.floor(Math.random() * subreddit.members.length) + 1;
-      return { ...subreddit._doc, currentlyViewingCount };
+      const membersCount = subreddit.members.length;
+      const searchResults = {
+        ...subreddit._doc,
+        currentlyViewingCount,
+        membersCount,
+      };
+      delete searchResults.members;
+
+      return searchResults;
     });
 
     res.json({ matchingNames: resultsWithRandomNumber });
@@ -666,7 +676,6 @@ const getSubredditRules = async (req, res, next) => {
     console.error("Error getting subreddit rules:", error);
     res.status(500).json({ message: "Error getting subreddit rules" });
   }
-  
 };
 
 const getPopularCommunities = async (req, res) => {
@@ -675,11 +684,19 @@ const getPopularCommunities = async (req, res) => {
       .sort({ "members.length": -1 })
       .limit(20);
 
-    const avatarImages = await UserUploadModel.find({ _id: { $in: popularCommunities.map((community) => community.appearance.avatarImage) } });
+    const avatarImages = await UserUploadModel.find({
+      _id: {
+        $in: popularCommunities.map(
+          (community) => community.appearance.avatarImage
+        ),
+      },
+    });
 
     const formattedCommunities = popularCommunities.map((community) => {
       const memberCount = community.members.length;
-      const avatarImage = avatarImages.find((image) => image._id.equals(community.appearance.avatarImage));
+      const avatarImage = avatarImages.find((image) =>
+        image._id.equals(community.appearance.avatarImage)
+      );
       return {
         name: community.name,
         communityId: community._id,
@@ -688,14 +705,15 @@ const getPopularCommunities = async (req, res) => {
       };
     });
 
-    const sortedCommunities = formattedCommunities.sort((a, b) => b.memberCount - a.memberCount);
+    const sortedCommunities = formattedCommunities.sort(
+      (a, b) => b.memberCount - a.memberCount
+    );
 
     res.json({ popularCommunities: sortedCommunities });
   } catch (error) {
     res.status(500).json({ message: "Error getting popular communities" });
   }
 };
-
 
 module.exports = {
   sorting,
@@ -718,5 +736,4 @@ module.exports = {
   getSubredditByNames,
   getSubredditRules,
   getPopularCommunities,
-  
 };
