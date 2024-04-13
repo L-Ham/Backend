@@ -68,33 +68,47 @@ const subRedditSchema = new Schema({
         type: String,
         required: true,
       },
-    },
-  ],
-  rules: [
-    {
-      ruleText: {
-        type: String,
-        required: true,
-        unique: true,
-      },
-      reportReason: {
-        type: String,
-        required: false,
-      },
-      appliesTo: {
+      textHtml: {
         type: String,
         required: true,
       },
-      fullDescription: {
+      shortName: {
         type: String,
-        required: false,
-      },
-      descriptionHtml: {
-        type: String,
-        required: false,
+        required: true,
       },
     },
   ],
+  rules: {
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      auto: true,
+    },
+    ruleList: [
+      {
+        ruleText: {
+          type: String,
+          required: true,
+          unique: true,
+        },
+        reportReason: {
+          type: String,
+          required: false,
+        },
+        appliesTo: {
+          type: String,
+          required: true,
+        },
+        fullDescription: {
+          type: String,
+          required: false,
+        },
+        descriptionHtml: {
+          type: String,
+          required: false,
+        },
+      },
+    ],
+  },
 
   appearance: {
     bannerImage: {
@@ -214,6 +228,12 @@ const subRedditSchema = new Schema({
     required: true,
     default: "red",
   },
+  orderWidget: [
+    {
+      type: Schema.Types.ObjectId,
+      required: false,
+    },
+  ],
 });
 
 module.exports = mongoose.model("subreddits", subRedditSchema);
