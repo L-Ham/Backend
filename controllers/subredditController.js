@@ -438,7 +438,7 @@ const getCommunityDetails = async (req, res) => {
     const bannerImage = await UserUploadModel.findById(
       subreddit.appearance.bannerImage
     );
-    
+    const createdSeconds = Math.floor(subreddit.createdAt.getTime() / 1000);
     const randomIndex = Math.floor(Math.random() * subreddit.members.length);
     const details = {
       name: subreddit.name,
@@ -451,6 +451,7 @@ const getCommunityDetails = async (req, res) => {
       currentlyViewingNickname: subreddit.currentlyViewingNickname,
       currentlyViewingCount: randomIndex,
       isMember: subreddit.members.includes(userId),
+      createdAt: createdSeconds,
     };
 
     res.status(200).json({
