@@ -139,6 +139,10 @@ function createNewPost(req, userId, subRedditId) {
   const votingLength = req.body["poll.votingLength"] || 0;
   const startTime = req.body["poll.startTime"] || null;
   const endTime = req.body["poll.endTime"] || null;
+  const options = pollOptions.map(option => ({
+    option,
+    voters: [],
+  }));
 
   return new Post({
     user: userId,
@@ -159,9 +163,8 @@ function createNewPost(req, userId, subRedditId) {
     spamCount: 0,
     createdAt: new Date(),
     poll: {
-      options: pollOptions,
+      options: options,
       votingLength: votingLength,
-      voters: [],
       startTime: startTime,
       endTime: endTime,
     },
