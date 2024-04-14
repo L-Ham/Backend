@@ -422,7 +422,7 @@ const getSubredditPosts = async (req, res, next) => {
 };
 const getCommunityDetails = async (req, res) => {
   const userId = req.userId;
-  const subRedditName = req.body.subRedditName;
+  const subRedditName = req.query.subRedditName;
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -699,7 +699,7 @@ const getSubredditRules = async (req, res, next) => {
 };
 const getWidget = async (req, res, next) => {
   const userId = req.userId;
-  const subredditId = req.body.subredditId;
+  const subredditId = req.query.subredditId;
   try {
     const user = await User.findById(userId);
     if (!user) {
