@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const { updateOne } = require("../models/socialLink");
+// const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
 const Post = require("../models/post");
 const UserUploadModel = require("../models/userUploads");
