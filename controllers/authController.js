@@ -36,7 +36,6 @@ const googleSignUp = async (req, res) => {
       signupGoogle: true,
     });
     user = await user.save();
-    console.log(user);
     const payload = {
       user: {
         id: user._id,
@@ -143,7 +142,6 @@ const forgetUsername = async (req, res, next) => {
         console.error("Error sending email:", err);
         return res.status(500).send("Failed to send email: " + err.message);
       }
-      console.log("Email sent:", info.response);
       res.send("Email sent");
     }
   );
@@ -191,7 +189,6 @@ const forgetPassword = async (req, res, next) => {
     } catch (err) {
       console.log(err.message);
     }
-    console.log(token);
     transporter.sendMail(
       {
         from: "r75118106@gmail.com",
@@ -258,8 +255,7 @@ const login = async (req, res) => {
       }
     );
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
@@ -333,8 +329,6 @@ const generateUserName = async (req, res, next) => {
 const updatePassword = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-  // console.log(req.headers["authorization"]);
-  console.log(token);
   if (!token) {
     return res.status(401).json({ message: "Unauthorized: No token provided" });
   }

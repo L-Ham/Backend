@@ -15,13 +15,11 @@ const getNotificationSettings = async (req, res, next) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json({ notificationSettings: user.notificationSettings });
   } catch (err) {
-    console.log("Error retrieving notification settings:", err);
     res
       .status(500)
       .json({ message: "Error retrieving notification settings", error: err });
@@ -34,7 +32,6 @@ const getProfileSettings = async (req, res, next) => {
     const user = await User.findById(userId).populate("socialLinks");
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -53,7 +50,6 @@ const getProfileSettings = async (req, res, next) => {
 
     res.json({ profileSettings });
   } catch (err) {
-    console.log("Error retrieving profile settings:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -65,7 +61,6 @@ const editProfileSettings = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -84,13 +79,11 @@ const editProfileSettings = async (req, res, next) => {
 
     const updatedUser = await user.save();
 
-    console.log("Profile settings updated: ", updatedUser);
     res.json({
       message: "User profile settings updated successfully",
       user: updatedUser,
     });
   } catch (err) {
-    console.log("Error updating profile settings:", err);
     res
       .status(500)
       .json({ message: "Error updating profile settings", error: err });
@@ -114,7 +107,6 @@ const getAccountSettings = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -124,10 +116,8 @@ const getAccountSettings = async (req, res, next) => {
       connectedToGoogle: user.signupGoogle,
     };
 
-    console.log("Account settings: ", accountSettings);
     res.json({ accountSettings });
   } catch (err) {
-    console.log("Error retrieving account settings:", err);
     res.status(500).json({ message: "Error Retreiving user", error: err });
   }
 };
@@ -170,7 +160,6 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
 
     return res.json(safetyAndPrivacySettings);
   } catch (error) {
-    console.log("Error fetching user settings:", error);
     res.status(500).json({ message: "Error fetching user settings" });
   }
 };
@@ -181,7 +170,6 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        console.log("User not found for user ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
       user.blockUsers = req.body.blockUsers;
@@ -189,21 +177,18 @@ const editSafetyAndPrivacySettings = (req, res, next) => {
       user
         .save()
         .then((updatedUser) => {
-          console.log("Safety and privacy settings updated: ", updatedUser);
           res.json({
             message: "User safety and privacy settings updated successfully",
             user: updatedUser,
           });
         })
         .catch((err) => {
-          console.log("Error updating safety and privacy settings:", err);
           res
             .status(500)
             .json({ message: "Failed to update safety and privacy settings " });
         });
     })
     .catch((err) => {
-      console.log("Error retrieving user:", err);
       res.status(500).json({ message: "Server error" });
     });
 };
@@ -224,7 +209,6 @@ const editNotificationSettings = async (req, res, next) => {
     // const user = await User.findById(userId).select("notificationSettings");
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -253,7 +237,6 @@ const editNotificationSettings = async (req, res, next) => {
       user,
     });
   } catch (err) {
-    console.log("Error updating Notification settings:", err);
     res.status(500).json({ message: "Error updating notification settings" });
   }
 };
@@ -291,8 +274,6 @@ const followUser = async (req, res, next) => {
     ) {
       return res.status(400).json({ message: "You have blocked this user" });
     }
-    console.log(userToFollow.blockUsers);
-    console.log(user._id);
     console.log(
       userToFollow.blockUsers.some(
         (blockUser) => blockUser.blockedUserId == user._id
@@ -318,7 +299,6 @@ const followUser = async (req, res, next) => {
       user: userToFollow,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: "Failed to follow user", error: err });
   }
 };
@@ -360,25 +340,19 @@ const checkUserNameAvailability = async (req, res, next) => {
     const userName = req.query.username;
 
     if (!userName) {
-      console.log("Username is empty");
       return res.status(400).json({ message: "Username is empty" });
     }
 
     const user = await User.findOne({ userName: userName });
 
     if (user) {
-      console.log("Username already taken:", userName);
       return res.status(409).json({ message: "Username already taken" });
     }
-
-    console.log("Username available:", userName);
     res.json({ message: "Username available" });
   } catch (err) {
-    console.log("Error checking username availability:", err);
     if (res.status) {
       res.status(500).json({ message: "Server error" });
     } else {
-      console.log("Invalid res object:", res);
       next(err);
     }
   }
@@ -391,7 +365,6 @@ const blockUser = async (req, res, next) => {
     const userToBlock = await User.findOne({ userName: blockedUserName });
 
     if (!userToBlock) {
-      console.log("User not found for username:", blockedUserName);
       return res.status(404).json({ message: "User not found" });
     }
     if (userToBlock._id.equals(userId)) {
@@ -406,7 +379,6 @@ const blockUser = async (req, res, next) => {
         blockedUser.blockedUserId.equals(userToBlock._id)
       )
     ) {
-      console.log("User already blocked:", userToBlock.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
     user.blockUsers.push({
@@ -418,10 +390,8 @@ const blockUser = async (req, res, next) => {
     user.followers.pull(userToBlock._id);
     const updatedUser = await user.save();
 
-    console.log("User blocked:", userToBlock.userName);
     res.json({ message: "User blocked", user: updatedUser });
   } catch (err) {
-    console.log("Error blocking user:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -433,7 +403,6 @@ const unblockUser = async (req, res, next) => {
     const userToUnblock = await User.findOne({ userName: blockedUserName });
 
     if (!userToUnblock) {
-      console.log("User not found for username:", blockedUserName);
       return res.status(404).json({ message: "User not found" });
     }
     if (userToUnblock._id.equals(userId)) {
@@ -448,7 +417,6 @@ const unblockUser = async (req, res, next) => {
         blockedUser.blockedUserId.equals(userToUnblock._id)
       )
     ) {
-      console.log("User is not blocked:", userToUnblock.userName);
       return res.status(409).json({ message: "User is not blocked" });
     }
     user.blockUsers = user.blockUsers.filter(
@@ -456,10 +424,8 @@ const unblockUser = async (req, res, next) => {
     );
     const updatedUser = await user.save();
 
-    console.log("User unblocked:", userToUnblock.userName);
     res.json({ message: "User unblocked", user: updatedUser });
   } catch (err) {
-    console.log("Error unblocking user:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -470,7 +436,6 @@ async function editFeedSettings(req, res, next) {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -496,13 +461,11 @@ async function editFeedSettings(req, res, next) {
     user.feedSettings.set("defaultToMarkdown", req.body.defaultToMarkdown);
 
     const updatedUser = await user.save();
-    console.log("Feed settings updated: ", updatedUser);
     res.json({
       message: "User Feed settings updated successfully",
       user: updatedUser,
     });
   } catch (err) {
-    console.log("Error:", err);
     res.status(500).json({ message: "Server error" });
   }
 }
@@ -513,7 +476,6 @@ async function viewFeedSettings(req, res, next) {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -535,7 +497,6 @@ async function viewFeedSettings(req, res, next) {
 
     res.json({ feedSettings });
   } catch (err) {
-    console.log("Error retrieving feed settings:", err);
     res.status(500).json({ message: "Server error" });
   }
 }
@@ -547,12 +508,10 @@ async function addSocialLink(req, res, next) {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     if (user.socialLinks.length >= 5) {
-      console.log("User has reached the maximum number of social links");
       return res
         .status(400)
         .json({ message: "Maximum number of social links reached" });
@@ -561,10 +520,8 @@ async function addSocialLink(req, res, next) {
     user.socialLinks.push({ linkOrUsername, appName, displayText });
 
     const updatedUser = await user.save();
-    console.log("Social link added: ", updatedUser);
     res.json({ message: "Social link added successfully", user: updatedUser });
   } catch (err) {
-    console.log("Error adding social link:", err);
     res
       .status(500)
       .json({ message: "Error adding social link to user", error: err });
@@ -579,7 +536,6 @@ const editSocialLink = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -588,7 +544,6 @@ const editSocialLink = async (req, res, next) => {
     );
 
     if (!socialLinkToUpdate) {
-      console.log("Social link not found for link ID:", linkId);
       return res.status(404).json({ message: "Social link not found" });
     }
 
@@ -598,13 +553,11 @@ const editSocialLink = async (req, res, next) => {
 
     const updatedUser = await user.save();
 
-    console.log("Social link updated: ", updatedUser);
     res.json({
       message: "Social link updated successfully",
       user: updatedUser,
     });
   } catch (err) {
-    console.log("Error updating social link:", err);
     res
       .status(500)
       .json({ message: "Error updating social link for user", error: err });
@@ -618,7 +571,6 @@ const deleteSocialLink = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -626,20 +578,17 @@ const deleteSocialLink = async (req, res, next) => {
       (link) => link._id.toString() === linkId
     );
     if (!socialLinkToDelete) {
-      console.log("Social link not found for link ID:", linkId);
       return res.status(404).json({ message: "Social link not found" });
     }
 
     user.socialLinks.pull(socialLinkToDelete);
     const updatedUser = await user.save();
 
-    console.log("Social link deleted: ", updatedUser);
     res.json({
       message: "Social link deleted successfully",
       user: updatedUser,
     });
   } catch (err) {
-    console.log("Error deleting social link:", err);
     res
       .status(500)
       .json({ message: "Error deleting social link from user", error: err });
@@ -652,7 +601,6 @@ const updateGender = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -681,7 +629,6 @@ const updateGender = async (req, res, next) => {
       });
     }
   } catch (err) {
-    console.log("Error updating user gender:", err);
     res.status(500).json({
       message: "Failed to update User Gender",
       error: err,
@@ -725,13 +672,11 @@ const muteCommunity = async (req, res, next) => {
     });
     await user.save();
 
-    console.log("Community muted: ", user);
     res.json({
       message: "Community muted successfully",
       user,
     });
   } catch (err) {
-    console.log("Error muting community:", err);
     res.status(500).json({
       message: "Error muting community for user",
       error: err,
@@ -746,13 +691,11 @@ const unmuteCommunity = async (req, res, next) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     const community = await SubReddit.findOne({ name: communityName });
     if (!community) {
-      console.log("Community not found for community ID:", community._id);
       return res.status(404).json({ message: "Community not found" });
     }
 
@@ -760,7 +703,6 @@ const unmuteCommunity = async (req, res, next) => {
       muteCommunity.mutedCommunityId.equals(community._id)
     );
     if (!isMuted) {
-      console.log("This subReddit is not muted for you:", community._id);
       return res
         .status(404)
         .json({ message: "This subReddit is not muted for you" });
@@ -772,7 +714,6 @@ const unmuteCommunity = async (req, res, next) => {
     );
     await user.save();
 
-    console.log("Community unmuted: ", user);
     res.json({
       message: "Community unmuted successfully",
       user,
@@ -919,7 +860,6 @@ const addFavoriteCommunity = async (req, res) => {
       community,
     });
   } catch (err) {
-    console.log("Error favoriting community:", err);
     res
       .status(500)
       .json({ message: "Error favoriting community", error: err.message });
@@ -933,22 +873,18 @@ const removeFavoriteCommunity = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
     const community = await SubReddit.findById(communityId);
     if (!community) {
-      console.log("Community not found for community ID:", communityId);
       return res.status(404).json({ message: "Community not found" });
     }
     if (!user.communities.includes(communityId)) {
-      console.log("User is not a member of this community");
       return res
         .status(400)
         .json({ message: "User is not a member of this community" });
     }
     if (!user.favoriteCommunities.includes(communityId)) {
-      console.log("Community not favorited: ", community);
       return res
         .status(400)
         .json({ message: "Community not favorited by user" });
@@ -961,7 +897,6 @@ const removeFavoriteCommunity = async (req, res) => {
       community,
     });
   } catch (err) {
-    console.log("Error unfavoriting community:", err);
     res
       .status(500)
       .json({ message: "Error unfavoriting community", error: err });
@@ -989,7 +924,6 @@ const getUpvotedPosts = async (req, res) => {
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
-          console.log("imageUrls", imageUrls);
         }
         if (post.type === "video") {
           videoUrls = await PostServices.getVideosUrls(post.videos);
@@ -1045,7 +979,6 @@ const getDownvotedPosts = async (req, res) => {
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
-          console.log("imageUrls", imageUrls);
         }
         if (post.type === "video") {
           videoUrls = await PostServices.getVideosUrls(post.videos);
@@ -1102,7 +1035,6 @@ const getSavedPosts = async (req, res) => {
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
-          console.log("imageUrls", imageUrls);
         }
         if (post.type === "video") {
           videoUrls = await PostServices.getVideosUrls(post.videos);
@@ -1159,7 +1091,6 @@ const getHiddenPosts = async (req, res) => {
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
-          console.log("imageUrls", imageUrls);
         }
         if (post.type === "video") {
           videoUrls = await PostServices.getVideosUrls(post.videos);
@@ -1208,13 +1139,11 @@ const getAllBlockedUsers = async (req, res) => {
       userName: blockedUser.blockedUserName,
       avatarImage: blockedUser.blockedUserAvatar,
     }));
-    console.log("Blocked users:", blockedUsers);
     res.json({
       message: "Blocked users list returned successfully",
       blockedUsers,
     });
   } catch (err) {
-    console.log("Error retrieving blocked users:", err);
     res
       .status(500)
       .json({ message: "Error retrieving blocked users", error: err });
@@ -1237,7 +1166,6 @@ const editUserLocation = async (req, res) => {
     await user.save();
     res.json({ message: "User location updated successfully", user });
   } catch (err) {
-    console.log("Error updating user location:", err);
     res
       .status(500)
       .json({ message: "Error updating user location", error: err });
@@ -1271,7 +1199,6 @@ const searchUsernames = async (req, res) => {
 
     res.json({ matchingUsernames: matchingUsernamesWithBlockStatus });
   } catch (err) {
-    console.log("Error searching usernames:", err);
     res.status(500).json({ message: "Error searching usernames", error: err });
   }
 };
@@ -1288,7 +1215,6 @@ const getUserLocation = async (req, res) => {
       location: user.location,
     });
   } catch (err) {
-    console.log("Error retrieving user location:", err);
     res
       .status(500)
       .json({ message: "Error retrieving user location", error: err });
@@ -1421,13 +1347,11 @@ const getEmailSettings = async (req, res, next) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json({ emailSettings: user.emailSettings });
   } catch (err) {
-    console.log("Error retrieving email settings:", err);
     res
       .status(500)
       .json({ message: "Error retrieving email settings", error: err });
@@ -1439,7 +1363,6 @@ const editEmailSettings = async (req, res, next) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -1462,7 +1385,6 @@ const editEmailSettings = async (req, res, next) => {
       user,
     });
   } catch (err) {
-    console.log("Error updating Email settings:", err);
     res.status(500).json({ message: "Error updating email settings" });
   }
 };
@@ -1472,7 +1394,6 @@ const editChatSettings = async (req, res, next) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -1511,7 +1432,6 @@ const getChatSettings = async (req, res, next) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
     return res.status(200).json(user.chatSettings);
@@ -1542,7 +1462,6 @@ const getUserSelfInfo = async (req, res, next) => {
     };
     res.status(200).json({ user: response });
   } catch (err) {
-    console.log("Error retrieving user:", err);
     res.status(500).json({ message: "Error retrieving user" });
   }
 };
@@ -1581,7 +1500,6 @@ const getUserInfo = async (req, res, next) => {
     };
     res.status(200).json({ user: response });
   } catch (err) {
-    console.log("Error retrieving user:", err);
     res.status(500).json({ message: "Error retrieving user" });
   }
 };
@@ -1620,7 +1538,6 @@ const getCommunitiesInfo = async (req, res, next) => {
     });
     res.status(200).json({ communities: response });
   } catch (err) {
-    console.log("Error retrieving user:", err);
     res.status(500).json({ message: "Error retrieving user" });
   }
 };

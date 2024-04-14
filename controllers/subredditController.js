@@ -91,15 +91,11 @@ const createCommunity = async (req, res, next) => {
     user.moderates.push(savedCommunity._id);
     const savedUser = await user.save();
 
-    console.log("Subreddit attached to user: ", savedUser);
-    console.log("Community created: ", savedCommunity);
-
     res.json({
       message: "Created community successfully",
       savedCommunity,
     });
   } catch (err) {
-    console.log(err.message);
     res.status(500).json({ message: "Failed to create community" });
   }
 };
@@ -141,7 +137,6 @@ const addRule = async (req, res, next) => {
       savedSubreddit,
     });
   } catch (error) {
-    console.log("Error adding rule:", error);
     res.status(500).json({ message: "Error adding rule" });
   }
 };
@@ -181,7 +176,6 @@ const editRule = async (req, res, next) => {
       rules: subreddit.rules,
     });
   } catch (error) {
-    console.log("Error editing rule:", error);
     res.status(500).json({ message: "Error editing rule" });
   }
 };
@@ -213,7 +207,6 @@ const deleteRule = async (req, res, next) => {
       rules: subreddit.rules,
     });
   } catch (error) {
-    console.log("Error deleting rule:", error);
     res.status(500).json({ message: "Error deleting rule" });
   }
 };
@@ -252,7 +245,6 @@ const addTextWidget = async (req, res, next) => {
       savedSubreddit,
     });
   } catch (error) {
-    console.log("Error adding text widget:", error);
     res.status(500).json({ message: "Error adding text widget" });
   }
 };
@@ -290,7 +282,6 @@ const editTextWidget = async (req, res, next) => {
       widgets: subreddit.textWidgets,
     });
   } catch (error) {
-    console.log("Error editing text widget:", error);
     res.status(500).json({ message: "Error editing text widget" });
   }
 };
@@ -379,7 +370,6 @@ const reorderRules = async (req, res, next) => {
       rules: savedSubreddit.rules.ruleList,
     });
   } catch (error) {
-    console.log("Error reordering rules:", error);
     res.status(500).json({ message: "Error reordering rules" });
   }
 };
@@ -502,7 +492,6 @@ const editCommunityDetails = async (req, res, next) => {
 };
 const getSubRedditRules = async (req, res, next) => {
   const subredditId = req.query.subredditId;
-  console.log(subredditId);
   try {
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
@@ -557,7 +546,6 @@ const uploadAvatarImage = async (req, res, next) => {
 const getAvatarImage = async (req, res, next) => {
   try {
     const subredditId = req.query.subredditId;
-    console.log(subredditId);
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
@@ -658,16 +646,18 @@ const getSubredditByNames = async (req, res) => {
         Math.floor(Math.random() * subreddit.members.length) + 1;
       const membersCount = subreddit.members.length;
       const avatarImageId = subreddit.appearance.avatarImage;
-      const avatarImage = avatarImageId? await UserUploadModel.findById(avatarImageId) : null;
-      
+      const avatarImage = avatarImageId
+        ? await UserUploadModel.findById(avatarImageId)
+        : null;
+
       return {
         ...subreddit._doc,
         currentlyViewingCount,
         membersCount,
         appearance: {
           ...subreddit.appearance,
-          avatarImage: avatarImage
-        }
+          avatarImage: avatarImage,
+        },
       };
     });
 
