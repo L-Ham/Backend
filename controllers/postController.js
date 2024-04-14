@@ -532,8 +532,8 @@ const unlockPost = async (req, res, next) => {
   }
 };
 const getAllPostComments = async (req, res, next) => {
-  const postId = req.body.postId;
-
+  const postId = req.query.postId;
+  console.log("postId", postId);
   try {
     const post = await Post.findById(postId).populate("comments");
     if (!post) {
