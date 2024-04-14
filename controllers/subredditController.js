@@ -422,7 +422,7 @@ const getSubredditPosts = async (req, res, next) => {
 };
 const getCommunityDetails = async (req, res) => {
   const userId = req.userId;
-  const subRedditName = req.body.subRedditName;
+  const subRedditName = req.query.subRedditName;
   try {
     const user = await User.findById(userId);
     if (!user) {
