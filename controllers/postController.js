@@ -7,8 +7,6 @@ const Report = require("../models/report");
 const mongoose = require("mongoose");
 const UserUploadModel = require("../models/userUploads");
 
-
-
 const createPost = async (req, res, next) => {
   const userId = req.userId;
   const subRedditId = req.body.subRedditId;
@@ -139,7 +137,7 @@ function createNewPost(req, userId, subRedditId) {
   const votingLength = req.body["poll.votingLength"] || 0;
   const startTime = req.body["poll.startTime"] || null;
   const endTime = req.body["poll.endTime"] || null;
-  const options = pollOptions.map(option => ({
+  const options = pollOptions.map((option) => ({
     option,
     voters: [],
   }));
@@ -906,43 +904,53 @@ const getTrendingPosts = async (req, res, next) => {
       .sort({ upvotes: -1, downvotes: 1 })
       .limit(6);
 
-    const postImagesIds = trendingPosts.map(post => post.images[0]);
-    const subRedditIds = trendingPosts.map(post => post.subReddit);
+    const postImagesIds = trendingPosts.map((post) => post.images[0]);
+    const subRedditIds = trendingPosts.map((post) => post.subReddit);
 
     const [Images, subReddits] = await Promise.all([
       UserUploadModel.find({ _id: { $in: postImagesIds } }),
-      SubReddit.find({ _id: { $in: subRedditIds } })
-      
+      SubReddit.find({ _id: { $in: subRedditIds } }),
     ]);
-    //avatarImages = await UserUploadModel.find({ _id: { $in: subReddits.map(community => community.appearance.avatarImage) } })
-    const formattedPosts = trendingPosts.map(post => {
-      const Image = Images.find(image => image._id.equals(post.images[0]));
-      const subRedditTemp = subReddits.find(community => community._id.equals(post.subReddit));
-      //const avatarImage = subReddit ? avatarImages.find(image => image._id.equals(subReddit.appearance.avatarImage)) : null;
-      if(subRedditTemp) {
-      return {
-        postId: post._id,
-        title: post.title,
-        text: post.text,
-        image: Image ? Image.url : null,
-        subreddit: subRedditTemp.name || null,
-        subRedditId: subRedditTemp ? subRedditTemp._id : null,
-        //avatarImageUrl: avatarImage ? avatarImage.url : null,
-        // upvotes: post.upvotes,
-        // downvotes: post.downvotes
-      };
-    }
+
+    const formattedPosts = await Promise.all(
+      trendingPosts.map(async (post) => {
+        const Image = Images.find((image) => image._id.equals(post.images[0]));
+        const subRedditTemp = subReddits.find((community) =>
+          community._id.equals(post.subReddit)
+        );
+        const avatarImageId = subRedditTemp.appearance.avatarImage;
+        const avatarImage = avatarImageId
+          ? await UserUploadModel.findById(avatarImageId)
+          : null;
+
+        if (subRedditTemp && Image) {
+          return {
+            postId: post._id,
+            title: post.title,
+            text: post.text,
+            image: Image ? Image.url : null,
+            subreddit: subRedditTemp.name || null,
+            subRedditId: subRedditTemp ? subRedditTemp._id : null,
+            avatarImage: avatarImage ? avatarImage.url : null,
+          };
+        }
+      })
+    );
+    const sortedPosts = formattedPosts.sort(
+      (a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
+    );
+
+    res.json({
+      message: "Retrieved Trending Posts Successfully",
+      trendingPosts: sortedPosts,
     });
-
-    const sortedPosts = formattedPosts.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
-
-    res.json({ trendingPosts: sortedPosts });
   } catch (error) {
-    res.status(500).json({ message: "Error processing trending posts", error: error.message });
+    res.status(500).json({
+      message: "Error processing trending posts",
+      error: error.message,
+    });
   }
 };
-
-
 
 module.exports = {
   savePost,
