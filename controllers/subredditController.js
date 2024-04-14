@@ -386,7 +386,7 @@ const reorderRules = async (req, res, next) => {
 
 const getSubredditPosts = async (req, res, next) => {
   const userId = req.userId;
-  const subredditId = req.body.subredditId;
+  const subredditId = req.query.subredditId;
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   const subreddit = await SubReddit.findById(subredditId);
@@ -646,7 +646,7 @@ const getBannerImage = async (req, res, next) => {
 
 const getSubredditByNames = async (req, res) => {
   try {
-    const { search } = req.body;
+    const { search } = req.query;
     const userId = req.userId;
     const user = await User.findById(userId);
     const regex = new RegExp(`^${search}`, "i");
