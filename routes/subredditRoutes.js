@@ -124,5 +124,4 @@ router.get(
   subredditController.getPopularCommunities
 );
 
-
 module.exports = router;
