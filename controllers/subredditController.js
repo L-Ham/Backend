@@ -495,7 +495,8 @@ const editCommunityDetails = async (req, res, next) => {
 const getSubRedditRules = async (req, res, next) => {
   const subredditId = req.query.subredditId;
   console.log("YASRAA");
-  console.log(req.query);
+  console.log(subredditId);
+
   try {
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
