@@ -68,7 +68,7 @@ router.get(
   subredditController.getCommunityDetails
 );
 router.get(
-  "/getSubRedditRules",
+  "/rule",
   bodyParser.json(),
   subredditController.getSubRedditRules
 );
