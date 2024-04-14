@@ -91,15 +91,11 @@ const createCommunity = async (req, res, next) => {
     user.moderates.push(savedCommunity._id);
     const savedUser = await user.save();
 
-    console.log("Subreddit attached to user: ", savedUser);
-    console.log("Community created: ", savedCommunity);
-
     res.json({
       message: "Created community successfully",
       savedCommunity,
     });
   } catch (err) {
-    console.log(err.message);
     res.status(500).json({ message: "Failed to create community" });
   }
 };
@@ -141,7 +137,6 @@ const addRule = async (req, res, next) => {
       savedSubreddit,
     });
   } catch (error) {
-    console.log("Error adding rule:", error);
     res.status(500).json({ message: "Error adding rule" });
   }
 };
@@ -181,7 +176,6 @@ const editRule = async (req, res, next) => {
       rules: subreddit.rules,
     });
   } catch (error) {
-    console.log("Error editing rule:", error);
     res.status(500).json({ message: "Error editing rule" });
   }
 };
@@ -213,7 +207,6 @@ const deleteRule = async (req, res, next) => {
       rules: subreddit.rules,
     });
   } catch (error) {
-    console.log("Error deleting rule:", error);
     res.status(500).json({ message: "Error deleting rule" });
   }
 };
@@ -252,7 +245,6 @@ const addTextWidget = async (req, res, next) => {
       savedSubreddit,
     });
   } catch (error) {
-    console.log("Error adding text widget:", error);
     res.status(500).json({ message: "Error adding text widget" });
   }
 };
@@ -290,7 +282,6 @@ const editTextWidget = async (req, res, next) => {
       widgets: subreddit.textWidgets,
     });
   } catch (error) {
-    console.log("Error editing text widget:", error);
     res.status(500).json({ message: "Error editing text widget" });
   }
 };
@@ -379,14 +370,13 @@ const reorderRules = async (req, res, next) => {
       rules: savedSubreddit.rules.ruleList,
     });
   } catch (error) {
-    console.log("Error reordering rules:", error);
     res.status(500).json({ message: "Error reordering rules" });
   }
 };
 
 const getSubredditPosts = async (req, res, next) => {
   const userId = req.userId;
-  const subredditId = req.body.subredditId;
+  const subredditId = req.query.subredditId;
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   const subreddit = await SubReddit.findById(subredditId);
@@ -422,7 +412,7 @@ const getSubredditPosts = async (req, res, next) => {
 };
 const getCommunityDetails = async (req, res) => {
   const userId = req.userId;
-  const subRedditName = req.body.subRedditName;
+  const subRedditName = req.query.subRedditName;
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -440,6 +430,12 @@ const getCommunityDetails = async (req, res) => {
     );
     const createdSeconds = Math.floor(subreddit.createdAt.getTime() / 1000);
     const randomIndex = Math.floor(Math.random() * subreddit.members.length);
+    const isFavorite = user.favoriteCommunities.includes(subreddit._id);
+    //const isMuted = user.muteCommunities.mutedCommunityId.includes(subreddit._id);
+    const isMuted = await User.findOne({
+      _id: userId,
+      "muteCommunities.mutedCommunityId": subreddit._id,
+    });
     const details = {
       name: subreddit.name,
       subredditId: subreddit._id,
@@ -451,6 +447,8 @@ const getCommunityDetails = async (req, res) => {
       currentlyViewingNickname: subreddit.currentlyViewingNickname,
       currentlyViewingCount: randomIndex,
       isMember: subreddit.members.includes(userId),
+      isFavorite: isFavorite,
+      isMuted: isMuted ? true : false,
       createdAt: createdSeconds,
     };
 
@@ -493,7 +491,7 @@ const editCommunityDetails = async (req, res, next) => {
   }
 };
 const getSubRedditRules = async (req, res, next) => {
-  const subredditId = req.body.subredditId;
+  const subredditId = req.query.subredditId;
   try {
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
@@ -547,8 +545,7 @@ const uploadAvatarImage = async (req, res, next) => {
 
 const getAvatarImage = async (req, res, next) => {
   try {
-    const subredditId = req.body.subredditId;
-    console.log(subredditId);
+    const subredditId = req.query.subredditId;
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
@@ -607,7 +604,7 @@ const uploadBannerImage = async (req, res, next) => {
 };
 const getBannerImage = async (req, res, next) => {
   try {
-    const subredditId = req.body.subredditId;
+    const subredditId = req.query.subredditId;
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
@@ -635,7 +632,7 @@ const getBannerImage = async (req, res, next) => {
 
 const getSubredditByNames = async (req, res) => {
   try {
-    const { search } = req.body;
+    const { search } = req.query;
     const userId = req.userId;
     const user = await User.findById(userId);
     const regex = new RegExp(`^${search}`, "i");
@@ -644,19 +641,27 @@ const getSubredditByNames = async (req, res) => {
       "_id name appearance.avatarImage members"
     );
 
-    const resultsWithRandomNumber = matchingNames.map((subreddit) => {
+    const avatarImagePromises = matchingNames.map(async (subreddit) => {
       const currentlyViewingCount =
         Math.floor(Math.random() * subreddit.members.length) + 1;
       const membersCount = subreddit.members.length;
-      const searchResults = {
+      const avatarImageId = subreddit.appearance.avatarImage;
+      const avatarImage = avatarImageId
+        ? await UserUploadModel.findById(avatarImageId)
+        : null;
+
+      return {
         ...subreddit._doc,
         currentlyViewingCount,
         membersCount,
+        appearance: {
+          ...subreddit.appearance,
+          avatarImage: avatarImage,
+        },
       };
-      delete searchResults.members;
-
-      return searchResults;
     });
+
+    const resultsWithRandomNumber = await Promise.all(avatarImagePromises);
 
     res.json({ matchingNames: resultsWithRandomNumber });
   } catch (err) {
@@ -665,6 +670,7 @@ const getSubredditByNames = async (req, res) => {
       .json({ message: "Error searching Subreddit Names", error: err.message });
   }
 };
+
 const getSubredditRules = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
@@ -688,7 +694,7 @@ const getSubredditRules = async (req, res, next) => {
 };
 const getWidget = async (req, res, next) => {
   const userId = req.userId;
-  const subredditId = req.body.subredditId;
+  const subredditId = req.query.subredditId;
   try {
     const user = await User.findById(userId);
     if (!user) {

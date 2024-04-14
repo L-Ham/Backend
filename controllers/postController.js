@@ -7,8 +7,6 @@ const Report = require("../models/report");
 const mongoose = require("mongoose");
 const UserUploadModel = require("../models/userUploads");
 
-
-
 const createPost = async (req, res, next) => {
   const userId = req.userId;
   const subRedditId = req.body.subRedditId;
@@ -63,7 +61,6 @@ const createPost = async (req, res, next) => {
       case "poll":
         // For poll posts, ensure poll object is provided with at least two options
         if (req.body["poll.options"].length < 2) {
-          console.log("henaaaaaaaaaaaaaaaaaaaaaa poll");
           return res.status(400).json({
             message:
               "Poll post must include a poll object with at least two options",
@@ -95,7 +92,6 @@ const createPost = async (req, res, next) => {
     let subReddit = null;
     if (subRedditId != "") {
       subReddit = await SubReddit.findById(subRedditId);
-      console.log("subReddit", subReddit);
       if (!subReddit) {
         console.error("Subreddit not found for subreddit ID:", subRedditId);
       }
@@ -139,6 +135,10 @@ function createNewPost(req, userId, subRedditId) {
   const votingLength = req.body["poll.votingLength"] || 0;
   const startTime = req.body["poll.startTime"] || null;
   const endTime = req.body["poll.endTime"] || null;
+  const options = pollOptions.map((option) => ({
+    option,
+    voters: [],
+  }));
 
   return new Post({
     user: userId,
@@ -159,9 +159,8 @@ function createNewPost(req, userId, subRedditId) {
     spamCount: 0,
     createdAt: new Date(),
     poll: {
-      options: pollOptions,
+      options: options,
       votingLength: votingLength,
-      voters: [],
       startTime: startTime,
       endTime: endTime,
     },
@@ -254,9 +253,7 @@ const unsavePost = async (req, res, next) => {
         .status(404)
         .json({ message: "This post is not saved in your profile" });
     }
-    console.log(user.savedPosts);
     user.savedPosts.pull(postId);
-    console.log(user.savedPosts);
     await user.save();
 
     res.status(200).json({ message: "Post unsaved successfully" });
@@ -320,7 +317,6 @@ const downvote = async (req, res, next) => {
     if (post.downvotedUsers.includes(userId)) {
       return res.status(400).json({ message: "Post already downvoted" });
     }
-    console.log(post.upvotedUsers);
     if (post.upvotedUsers.includes(userId)) {
       post.upvotes -= 1;
       post.upvotedUsers.pull(userId);
@@ -364,7 +360,6 @@ const hidePost = async (req, res, next) => {
 
     res.status(200).json({ message: "Post hidden successfully" });
   } catch (error) {
-    console.log("Error hidding post:", error);
     res
       .status(500)
       .json({ message: "Error hidding post", error: error.message });
@@ -403,8 +398,6 @@ const unhidePost = async (req, res, next) => {
     user.hidePosts.pull(postId);
 
     await user.save();
-
-    console.log("Post unhidden successfully");
     res.status(200).json({ message: "Post unhidden successfully" });
   } catch (error) {
     console.error("Error unhidding post:", error);
@@ -529,12 +522,10 @@ const unlockPost = async (req, res, next) => {
   }
 };
 const getAllPostComments = async (req, res, next) => {
-  const postId = req.body.postId;
-
+  const postId = req.query.postId;
   try {
     const post = await Post.findById(postId).populate("comments");
     if (!post) {
-      console.log("Post not found for post ID:", postId);
       return res.status(404).json({ message: "Post not found" });
     }
     res.status(200).json({
@@ -542,7 +533,6 @@ const getAllPostComments = async (req, res, next) => {
       comments: post.comments,
     });
   } catch (error) {
-    console.log("Error getting comments for post:", error);
     res.status(500).json({ message: "Error getting comments for post" });
   }
 };
@@ -581,7 +571,6 @@ const markAsNSFW = async (req, res, next) => {
     await post.save();
     res.status(200).json({ message: "Post marked as NSFW" });
   } catch (error) {
-    console.log("Error Marking post as NSFW:", error);
     res.status(500).json({ message: "Error Marking post as NSFW" });
   }
 };
@@ -618,7 +607,6 @@ const unmarkAsNSFW = async (req, res, next) => {
     await post.save();
     res.status(200).json({ message: "Post unmarked as NSFW" });
   } catch (error) {
-    console.log("Error Unmarking post as NSFW:", error);
     res.status(500).json({ message: "Error Unmarking post as NSFW" });
   }
 };
@@ -705,7 +693,6 @@ const approvePost = async (req, res, next) => {
     await post.save();
     res.status(200).json({ message: "Post approved successfully" });
   } catch (error) {
-    console.log("Error approving post:", error);
     res.status(500).json({ message: "Error approving post" });
   }
 };
@@ -744,7 +731,6 @@ const removePost = async (req, res, next) => {
     await subReddit.save();
     res.status(200).json({ message: "Post removed successfully" });
   } catch (error) {
-    console.log("Error removing post:", error);
     res.status(500).json({ message: "Error removing post" });
   }
 };
@@ -784,7 +770,6 @@ const markAsSpoiler = async (req, res, next) => {
     await post.save();
     res.status(200).json({ message: "Post marked as spoiler" });
   } catch (error) {
-    console.log("Error Marking post as spoiler:", error);
     res.status(500).json({ message: "Error Marking post as spoiler" });
   }
 };
@@ -822,7 +807,6 @@ const unmarkAsSpoiler = async (req, res, next) => {
     await post.save();
     res.status(200).json({ message: "Post unmarked as spoiler" });
   } catch (error) {
-    console.log("Error Unmarking post as spoiler:", error);
     res.status(500).json({ message: "Error Unmarking post as spoiler" });
   }
 };
@@ -863,7 +847,6 @@ const reportPost = async (req, res, next) => {
         blockedUser.blockedUserId.equals(postOwner._id)
       )
     ) {
-      console.log("User already blocked:", postOwner.userName);
       return res.status(409).json({ message: "User already blocked" });
     }
 
@@ -903,43 +886,53 @@ const getTrendingPosts = async (req, res, next) => {
       .sort({ upvotes: -1, downvotes: 1 })
       .limit(6);
 
-    const postImagesIds = trendingPosts.map(post => post.images[0]);
-    const subRedditIds = trendingPosts.map(post => post.subReddit);
+    const postImagesIds = trendingPosts.map((post) => post.images[0]);
+    const subRedditIds = trendingPosts.map((post) => post.subReddit);
 
     const [Images, subReddits] = await Promise.all([
       UserUploadModel.find({ _id: { $in: postImagesIds } }),
-      SubReddit.find({ _id: { $in: subRedditIds } })
-      
+      SubReddit.find({ _id: { $in: subRedditIds } }),
     ]);
-    //avatarImages = await UserUploadModel.find({ _id: { $in: subReddits.map(community => community.appearance.avatarImage) } })
-    const formattedPosts = trendingPosts.map(post => {
-      const Image = Images.find(image => image._id.equals(post.images[0]));
-      const subRedditTemp = subReddits.find(community => community._id.equals(post.subReddit));
-      //const avatarImage = subReddit ? avatarImages.find(image => image._id.equals(subReddit.appearance.avatarImage)) : null;
-      if(subRedditTemp) {
-      return {
-        postId: post._id,
-        title: post.title,
-        text: post.text,
-        image: Image ? Image.url : null,
-        subreddit: subRedditTemp.name || null,
-        subRedditId: subRedditTemp ? subRedditTemp._id : null,
-        //avatarImageUrl: avatarImage ? avatarImage.url : null,
-        // upvotes: post.upvotes,
-        // downvotes: post.downvotes
-      };
-    }
+
+    const formattedPosts = await Promise.all(
+      trendingPosts.map(async (post) => {
+        const Image = Images.find((image) => image._id.equals(post.images[0]));
+        const subRedditTemp = subReddits.find((community) =>
+          community._id.equals(post.subReddit)
+        );
+        const avatarImageId = subRedditTemp.appearance.avatarImage;
+        const avatarImage = avatarImageId
+          ? await UserUploadModel.findById(avatarImageId)
+          : null;
+
+        if (subRedditTemp && Image) {
+          return {
+            postId: post._id,
+            title: post.title,
+            text: post.text,
+            image: Image ? Image.url : null,
+            subreddit: subRedditTemp.name || null,
+            subRedditId: subRedditTemp ? subRedditTemp._id : null,
+            avatarImage: avatarImage ? avatarImage.url : null,
+          };
+        }
+      })
+    );
+    const sortedPosts = formattedPosts.sort(
+      (a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
+    );
+
+    res.json({
+      message: "Retrieved Trending Posts Successfully",
+      trendingPosts: sortedPosts,
     });
-
-    const sortedPosts = formattedPosts.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
-
-    res.json({ trendingPosts: sortedPosts });
   } catch (error) {
-    res.status(500).json({ message: "Error processing trending posts", error: error.message });
+    res.status(500).json({
+      message: "Error processing trending posts",
+      error: error.message,
+    });
   }
 };
-
-
 
 module.exports = {
   savePost,

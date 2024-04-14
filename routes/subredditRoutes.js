@@ -68,7 +68,7 @@ router.get(
   subredditController.getCommunityDetails
 );
 router.get(
-  "/getSubRedditRules",
+  "/rule",
   bodyParser.json(),
   subredditController.getSubRedditRules
 );
@@ -123,6 +123,5 @@ router.get(
   bodyParser.json(),
   subredditController.getPopularCommunities
 );
-
 
 module.exports = router;

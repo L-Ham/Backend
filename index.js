@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const multerConfig = require("./middleware/multerConfig");
 const app = express();
-const cors = require('cors'); 
+const cors = require("cors");
 const PORT = 5000;
 
 app.use(cors());
@@ -20,13 +20,11 @@ mongoose
       console.log(`Server running on port ${PORT}`);
       const userRoutes = require("./routes/userRoutes");
       const authRoutes = require("./routes/authRoutes");
-      const socialLinkRoutes = require("./routes/socialLinkRoutes");
       const postRoutes = require("./routes/postRoutes");
       const commentRoutes = require("./routes/commentRoutes");
       const subredditRoutes = require("./routes/subredditRoutes");
       app.use("/user", userRoutes);
       app.use("/auth", authRoutes);
-      app.use("/socialLink", socialLinkRoutes);
       app.use("/post", postRoutes);
       app.use("/comment", commentRoutes);
       app.use("/subreddit", subredditRoutes);
