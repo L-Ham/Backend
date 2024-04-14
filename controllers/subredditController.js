@@ -458,7 +458,7 @@ const getCommunityDetails = async (req, res) => {
       currentlyViewingCount: randomIndex,
       isMember: subreddit.members.includes(userId),
       isFavorite: isFavorite,
-      isMuted: isMuted? true : false,
+      isMuted: isMuted ? true : false,
       createdAt: createdSeconds,
     };
 
@@ -502,9 +502,7 @@ const editCommunityDetails = async (req, res, next) => {
 };
 const getSubRedditRules = async (req, res, next) => {
   const subredditId = req.query.subredditId;
-  console.log("YASRAA");
   console.log(subredditId);
-
   try {
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
