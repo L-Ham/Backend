@@ -696,7 +696,7 @@ const getSubredditRules = async (req, res, next) => {
 };
 const getWidget = async (req, res, next) => {
   const userId = req.userId;
-  const subredditId = req.body.subredditId;
+  const subredditId = req.query.subredditId;
   try {
     const user = await User.findById(userId);
     if (!user) {
