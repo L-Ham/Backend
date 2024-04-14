@@ -66,22 +66,25 @@ const postSchema = new Schema({
     required: false,
   },
   poll: {
-    options: {
-      type: [String],
-      required: false,
-      default: [],
-    },
+    options: [
+      {
+        option: {
+          type: String,
+          required: true,
+        },
+        voters: [
+          {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "user",
+          },
+        ],
+      },
+    ],
     votingLength: {
       type: Number,
       required: false,
       default: 0,
     },
-    voters: [
-      {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: "user",
-      },
-    ],
     startTime: {
       type: Date,
       required: false,
