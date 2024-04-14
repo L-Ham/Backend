@@ -440,6 +440,12 @@ const getCommunityDetails = async (req, res) => {
     );
     const createdSeconds = Math.floor(subreddit.createdAt.getTime() / 1000);
     const randomIndex = Math.floor(Math.random() * subreddit.members.length);
+    const isFavorite = user.favoriteCommunities.includes(subreddit._id);
+    //const isMuted = user.muteCommunities.mutedCommunityId.includes(subreddit._id);
+    const isMuted = await User.findOne({
+      _id: userId,
+      "muteCommunities.mutedCommunityId": subreddit._id,
+    });
     const details = {
       name: subreddit.name,
       subredditId: subreddit._id,
@@ -451,6 +457,8 @@ const getCommunityDetails = async (req, res) => {
       currentlyViewingNickname: subreddit.currentlyViewingNickname,
       currentlyViewingCount: randomIndex,
       isMember: subreddit.members.includes(userId),
+      isFavorite: isFavorite,
+      isMuted: isMuted? true : false,
       createdAt: createdSeconds,
     };
 
