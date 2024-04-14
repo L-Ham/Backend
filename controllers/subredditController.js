@@ -653,19 +653,25 @@ const getSubredditByNames = async (req, res) => {
       "_id name appearance.avatarImage members"
     );
 
-    const resultsWithRandomNumber = matchingNames.map((subreddit) => {
+    const avatarImagePromises = matchingNames.map(async (subreddit) => {
       const currentlyViewingCount =
         Math.floor(Math.random() * subreddit.members.length) + 1;
       const membersCount = subreddit.members.length;
-      const searchResults = {
+      const avatarImageId = subreddit.appearance.avatarImage;
+      const avatarImage = avatarImageId? await UserUploadModel.findById(avatarImageId) : null;
+      
+      return {
         ...subreddit._doc,
         currentlyViewingCount,
         membersCount,
+        appearance: {
+          ...subreddit.appearance,
+          avatarImage: avatarImage
+        }
       };
-      delete searchResults.members;
-
-      return searchResults;
     });
+
+    const resultsWithRandomNumber = await Promise.all(avatarImagePromises);
 
     res.json({ matchingNames: resultsWithRandomNumber });
   } catch (err) {
@@ -674,6 +680,7 @@ const getSubredditByNames = async (req, res) => {
       .json({ message: "Error searching Subreddit Names", error: err.message });
   }
 };
+
 const getSubredditRules = async (req, res, next) => {
   const userId = req.userId;
   const subredditId = req.body.subredditId;
