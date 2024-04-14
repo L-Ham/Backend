@@ -139,7 +139,7 @@ router.patch(
 router.get(
   "/trending",
   bodyParser.json(),
-  authenticateToken,
+  //authenticateToken,
   postController.getTrendingPosts
 );
 
