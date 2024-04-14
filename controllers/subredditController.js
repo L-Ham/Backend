@@ -33,8 +33,9 @@ const sorting = async (req, res, next) => {
 
     res.json(sortedPosts);
   } catch (error) {
-    console.error("Error sorting posts:", error);
-    res.status(500).json({ message: "Error sorting posts" });
+    res
+      .status(500)
+      .json({ message: "Error sorting posts", error: error.message });
   }
 };
 const createCommunity = async (req, res, next) => {
@@ -43,7 +44,6 @@ const createCommunity = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      console.error("User not found for user ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
     const existingCommunity = await checkCommunitynameExists(req.body.name);
@@ -502,8 +502,9 @@ const getSubRedditRules = async (req, res, next) => {
       rules: subreddit.rules,
     });
   } catch (error) {
-    console.error("Error getting subreddit rules:", error);
-    res.status(500).json({ message: "Error getting subreddit rules" });
+    res
+      .status(500)
+      .json({ message: "Error getting subreddit rules", error: error.message });
   }
 };
 
@@ -688,8 +689,9 @@ const getSubredditRules = async (req, res, next) => {
       rules: subreddit.rules,
     });
   } catch (error) {
-    console.error("Error getting subreddit rules:", error);
-    res.status(500).json({ message: "Error getting subreddit rules" });
+    res
+      .status(500)
+      .json({ message: "Error getting subreddit rules", error: error.message });
   }
 };
 const getWidget = async (req, res, next) => {
@@ -751,8 +753,12 @@ const getWidget = async (req, res, next) => {
 
     res.json(response);
   } catch (error) {
-    console.error("Error getting subreddit widgets:", error);
-    res.status(500).json({ message: "Error getting subreddit widgets" });
+    res
+      .status(500)
+      .json({
+        message: "Error getting subreddit widgets",
+        error: error.message,
+      });
   }
 };
 const getPopularCommunities = async (req, res) => {

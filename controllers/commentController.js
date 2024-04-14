@@ -23,14 +23,25 @@ const createComment = async (req, res, next) => {
     }
 
     // Check post lock
-    if (post.isLocked && !user.isAdmin && post.user.toString() !== userId && !post.moderators.includes(userId)) {
+    if (
+      post.isLocked &&
+      !user.isAdmin &&
+      post.user.toString() !== userId &&
+      !post.moderators.includes(userId)
+    ) {
       console.log("Post is locked");
       return res.status(400).json({ message: "Post is locked" });
     }
 
-    if ((!req.body.text || req.body.text.trim() === "") && (!req.files || req.files.length === 0) && !req.body.url) {
+    if (
+      (!req.body.text || req.body.text.trim() === "") &&
+      (!req.files || req.files.length === 0) &&
+      !req.body.url
+    ) {
       console.log("Comment text, file, or url is required");
-      return res.status(400).json({ message: "Comment text, file, or url is required" });
+      return res
+        .status(400)
+        .json({ message: "Comment text, file, or url is required" });
     }
 
     const comment = new Comment({
@@ -53,7 +64,6 @@ const createComment = async (req, res, next) => {
         const uploadedVideoId = await UserUpload.uploadMedia(commentfile);
         comment.videos.push(uploadedVideoId);
       } else {
-        console.error("Media upload failed:", commentfile);
         return res.status(400).json({ message: "Failed to upload media" });
       }
     }
@@ -67,7 +77,6 @@ const createComment = async (req, res, next) => {
     if (req.body.parentCommentId) {
       const parentComment = await Comment.findById(req.body.parentCommentId);
       if (!parentComment) {
-        console.error("Parent Comment not found for comment ID:", req.body.parentCommentId);
         return res.status(404).json({ message: "Parent Comment not found" });
       }
 
@@ -91,7 +100,6 @@ const createComment = async (req, res, next) => {
     res.status(500).json({ message: "Error Creating Comment", error: err });
   }
 };
-
 
 const upvote = async (req, res, next) => {
   try {
@@ -158,7 +166,7 @@ const cancelDownvote = async (req, res, next) => {
     const userId = req.userId;
     const commentId = req.body.commentId;
     const comment = await Comment.findById(commentId);
-    const user= await User.findById(userId);
+    const user = await User.findById(userId);
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
@@ -183,7 +191,7 @@ const cancelUpvote = async (req, res, next) => {
     const userId = req.userId;
     const commentId = req.body.commentId;
     const comment = await Comment.findById(commentId);
-    const user= await User.findById(userId);
+    const user = await User.findById(userId);
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
@@ -195,18 +203,14 @@ const cancelUpvote = async (req, res, next) => {
     await comment.save();
     if (user) {
       user.upvotedComments.pull(commentId);
- 
+
       await user.save();
-      
     }
     res.status(200).json({ message: "Upvote cancelled" });
   } catch (err) {
     res.status(500).json({ message: "Error cancelling upvote", error: err });
-
   }
 };
-
-
 
 const reportComment = async (req, res, next) => {
   const userId = req.userId;
@@ -231,8 +235,14 @@ const reportComment = async (req, res, next) => {
     if (!commentOwner) {
       return res.status(404).json({ message: "Comment owner not found" });
     }
-    if (user.blockUsers.some((blockedUser) => blockedUser.blockedUserId.equals(commentOwner._id))) {
-      return res.status(400).json({ message: "You have already blocked this user" });
+    if (
+      user.blockUsers.some((blockedUser) =>
+        blockedUser.blockedUserId.equals(commentOwner._id)
+      )
+    ) {
+      return res
+        .status(400)
+        .json({ message: "You have already blocked this user" });
     }
 
     const post = await Post.findById(comment.postId);
@@ -240,10 +250,10 @@ const reportComment = async (req, res, next) => {
       console.log("Post not found for post ID:", comment.postId);
       return res.status(404).json({ message: "Post not found" });
     }
-    if (title === ""){
+    if (title === "") {
       return res.status(400).json({ message: "Title is required" });
     }
-    if (description === ""){
+    if (description === "") {
       return res.status(400).json({ message: "Description is required" });
     }
     const subRedditId = post.subReddit;
@@ -264,22 +274,18 @@ const reportComment = async (req, res, next) => {
         blockedUserId: commentOwner._id,
         blockedUserName: commentOwner.userName,
         blockedUserAvatar: commentOwner.avatarImage,
-        blockedAt: new Date()
+        blockedAt: new Date(),
       });
       //user.blockUsers.push(commentOwner._id);
       await user.save();
     }
     await report.save();
     res.status(200).json({ message: "Comment reported successfully" });
-
-  }
-  catch (err) {
+  } catch (err) {
     console.log("Error reporting Comment:", err);
     res.status(500).json({ message: "Error reporting Comment", error: err });
   }
-}
-
-
+};
 
 const lockComment = async (req, res, next) => {
   try {
@@ -311,8 +317,9 @@ const lockComment = async (req, res, next) => {
     await comment.save();
     res.status(200).json({ message: "Comment locked" });
   } catch (err) {
-    console.error("Error locking comment:", err);
-    res.status(500).json({ message: "Error locking comment", error: err });
+    res
+      .status(500)
+      .json({ message: "Error locking comment", error: err.message });
   }
 };
 
@@ -345,8 +352,9 @@ const unlockComment = async (req, res, next) => {
     await comment.save();
     res.status(200).json({ message: "Comment unlocked" });
   } catch (err) {
-    console.error("Error unlocking comment:", err);
-    res.status(500).json({ message: "Error unlocking comment", error: err });
+    res
+      .status(500)
+      .json({ message: "Error unlocking comment", error: err.message });
   }
 };
 module.exports = {

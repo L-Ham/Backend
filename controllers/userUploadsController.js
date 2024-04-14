@@ -22,7 +22,6 @@ async function uploadMedia(file) {
 
     return newUserUpload._id;
   } catch (error) {
-    console.error("Error uploading image:", error);
     res.status(500).json({ error: "Failed to upload image" });
   }
 }
@@ -39,7 +38,6 @@ async function destroyMedia(mediaId) {
     console.log("Media deleted successfully");
   }
   catch (error) {
-    console.error("Error deleting media:", error);
     res.status(500).json({ error: "Failed to delete media" });
   }
 }

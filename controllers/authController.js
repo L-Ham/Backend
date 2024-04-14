@@ -98,7 +98,6 @@ const googleLogin = async (req, res, next) => {
       user: user,
     });
   } catch (error) {
-    console.error("Google login failed:", error);
     res
       .status(500)
       .json({ message: "Google login failed", error: error.message });
@@ -139,8 +138,9 @@ const forgetUsername = async (req, res, next) => {
     },
     (err, info) => {
       if (err) {
-        console.error("Error sending email:", err);
-        return res.status(500).send("Failed to send email: " + err.message);
+        return res
+          .status(500)
+          .json({ message: "Failed to send email: ", error: err.message });
       }
       res.send("Email sent");
     }
@@ -204,8 +204,9 @@ const forgetPassword = async (req, res, next) => {
       },
       (err) => {
         if (err) {
-          console.error("Error sending email:", err);
-          return res.status(500).json({ message: "Failed to send email" });
+          return res
+            .status(500)
+            .json({ message: "Failed to send email", error: err.message });
         }
         res.status(200).json({ message: "Email sent" });
       }
@@ -310,8 +311,7 @@ const signUp = async (req, res) => {
       }
     );
   } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 const generateUserName = async (req, res, next) => {
@@ -322,8 +322,9 @@ const generateUserName = async (req, res, next) => {
       usernames: userNames,
     });
   } catch (err) {
-    console.error("Error generating usernames:", err);
-    res.status(500).json({ message: "Error Creating usernames" });
+    res
+      .status(500)
+      .json({ message: "Error Creating usernames", error: err.message });
   }
 };
 const updatePassword = async (req, res, next) => {
@@ -407,8 +408,9 @@ const googleDisconnect = async (req, res, next) => {
       .status(200)
       .json({ message: "Google disconnected successfully" });
   } catch (err) {
-    console.error("Error disconnecting google:", err.message);
-    res.status(500).json({ message: "Error disconnecting google" });
+    res
+      .status(500)
+      .json({ message: "Error disconnecting google", error: err.message });
   }
 };
 
