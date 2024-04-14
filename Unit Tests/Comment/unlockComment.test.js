@@ -13,26 +13,26 @@ jest.mock("../../models/user", () => ({
 jest.mock("../../models/post", () => ({
   findById: jest.fn(),
 }));
-jest.mock("../../models/subreddit", () => ({
+jest.mock("../../models/subReddit", () => ({
   findById: jest.fn(),
 }));
 
-describe('unlockComment', () => {
+describe("unlockComment", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should unlock the comment and return success message', async () => {
-    const userId = 'user123';
-    const commentId = 'comment123';
+  it("should unlock the comment and return success message", async () => {
+    const userId = "user123";
+    const commentId = "comment123";
     const comment = {
       isLocked: true,
-      postId: 'post123',
+      postId: "post123",
       save: jest.fn(),
     };
     const user = {};
     const post = {
-      subReddit: 'subreddit123',
+      subReddit: "subreddit123",
     };
     const subReddit = {
       moderators: [userId],
@@ -57,12 +57,12 @@ describe('unlockComment', () => {
     expect(comment.isLocked).toBe(false);
     expect(comment.save).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Comment unlocked' });
+    expect(res.json).toHaveBeenCalledWith({ message: "Comment unlocked" });
   });
 
-  it('should return 404 if comment is not found', async () => {
-    const userId = 'user123';
-    const commentId = 'comment123';
+  it("should return 404 if comment is not found", async () => {
+    const userId = "user123";
+    const commentId = "comment123";
     Comment.findById.mockResolvedValueOnce(null);
 
     const req = { userId, body: { commentId } };
@@ -75,12 +75,12 @@ describe('unlockComment', () => {
 
     expect(Comment.findById).toHaveBeenCalledWith(commentId);
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Comment not found' });
+    expect(res.json).toHaveBeenCalledWith({ message: "Comment not found" });
   });
 
-  it('should return 400 if comment is already unlocked', async () => {
-    const userId = 'user123';
-    const commentId = 'comment123';
+  it("should return 400 if comment is already unlocked", async () => {
+    const userId = "user123";
+    const commentId = "comment123";
     const comment = {
       isLocked: false,
     };
@@ -96,22 +96,24 @@ describe('unlockComment', () => {
 
     expect(Comment.findById).toHaveBeenCalledWith(commentId);
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Comment is already unlocked' });
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Comment is already unlocked",
+    });
   });
 
-  it('should return 400 if user is not a subreddit moderator', async () => {
-    const userId = 'user123';
-    const commentId = 'comment123';
+  it("should return 400 if user is not a subreddit moderator", async () => {
+    const userId = "user123";
+    const commentId = "comment123";
     const comment = {
       isLocked: true,
-      postId: 'post123',
+      postId: "post123",
     };
     const user = {};
     const post = {
-      subReddit: 'subreddit123',
+      subReddit: "subreddit123",
     };
     const subReddit = {
-      moderators: ['moderator456'],
+      moderators: ["moderator456"],
     };
     Comment.findById.mockResolvedValueOnce(comment);
     User.findById.mockResolvedValueOnce(user);
@@ -131,13 +133,15 @@ describe('unlockComment', () => {
     expect(Post.findById).toHaveBeenCalledWith(comment.postId);
     expect(SubReddit.findById).toHaveBeenCalledWith(post.subReddit);
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ message: 'This feature is only available for subreddit moderators' });
+    expect(res.json).toHaveBeenCalledWith({
+      message: "This feature is only available for subreddit moderators",
+    });
   });
 
-  it('should handle server error', async () => {
-    const userId = 'user123';
-    const commentId = 'comment123';
-    const errorMessage = 'Some error message';
+  it("should handle server error", async () => {
+    const userId = "user123";
+    const commentId = "comment123";
+    const errorMessage = "Some error message";
     Comment.findById.mockRejectedValueOnce(new Error(errorMessage));
 
     const req = { userId, body: { commentId } };
@@ -150,6 +154,9 @@ describe('unlockComment', () => {
 
     expect(Comment.findById).toHaveBeenCalledWith(commentId);
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Error unlocking comment', error: new Error(errorMessage) });
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Error unlocking comment",
+      error: new Error(errorMessage),
+    });
   });
 });

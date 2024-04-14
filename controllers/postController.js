@@ -5,6 +5,9 @@ const Comment = require("../models/comment");
 const UserUpload = require("../controllers/userUploadsController");
 const Report = require("../models/report");
 const mongoose = require("mongoose");
+const UserUploadModel = require("../models/userUploads");
+
+
 
 const createPost = async (req, res, next) => {
   const userId = req.userId;
@@ -895,23 +898,49 @@ const reportPost = async (req, res, next) => {
   }
 };
 const getTrendingPosts = async (req, res, next) => {
-  const userId = req.userId;
   try {
     const trendingPosts = await Post.find()
       .sort({ upvotes: -1, downvotes: 1 })
-      .select("-comments")
-      .populate("user", "username")
       .limit(6);
-    res.status(200).json({
-      message: "Retrieved Top Trending Posts Successfully",
-      trendingPosts: trendingPosts,
+
+    const postImagesIds = trendingPosts.map(post => post.images[0]);
+    const subRedditIds = trendingPosts.map(post => post.subReddit);
+
+    const [Images, subReddits] = await Promise.all([
+      UserUploadModel.find({ _id: { $in: postImagesIds } }),
+      SubReddit.find({ _id: { $in: subRedditIds } })
+      
+    ]);
+    //avatarImages = await UserUploadModel.find({ _id: { $in: subReddits.map(community => community.appearance.avatarImage) } })
+    const formattedPosts = trendingPosts.map(post => {
+      const Image = Images.find(image => image._id.equals(post.images[0]));
+      const subRedditTemp = subReddits.find(community => community._id.equals(post.subReddit));
+      //const avatarImage = subReddit ? avatarImages.find(image => image._id.equals(subReddit.appearance.avatarImage)) : null;
+      if(subRedditTemp) {
+      return {
+        postId: post._id,
+        title: post.title,
+        text: post.text,
+        image: Image ? Image.url : null,
+        subreddit: subRedditTemp.name || null,
+        subRedditId: subRedditTemp ? subRedditTemp._id : null,
+        //avatarImageUrl: avatarImage ? avatarImage.url : null,
+        // upvotes: post.upvotes,
+        // downvotes: post.downvotes
+      };
+    }
     });
+
+    const sortedPosts = formattedPosts.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+
+    res.json({ trendingPosts: sortedPosts });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error getting trending posts", error: error.message });
+    res.status(500).json({ message: "Error processing trending posts", error: error.message });
   }
 };
+
+
+
 module.exports = {
   savePost,
   unsavePost,
