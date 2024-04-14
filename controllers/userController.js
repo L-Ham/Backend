@@ -1245,7 +1245,7 @@ const editUserLocation = async (req, res) => {
 };
 const searchUsernames = async (req, res) => {
   try {
-    const { search } = req.body;
+    const { search } = req.query;
     const userId = req.userId;
     const user = await User.findById(userId);
 
@@ -1602,7 +1602,6 @@ const getCommunitiesInfo = async (req, res, next) => {
         $in: communities.map((community) => community.appearance.avatarImage),
       },
     });
-    
 
     const response = communities.map((community) => {
       const isFavorite = user.favoriteCommunities.includes(community._id);
