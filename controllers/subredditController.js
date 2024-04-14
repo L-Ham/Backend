@@ -558,7 +558,7 @@ const uploadAvatarImage = async (req, res, next) => {
 
 const getAvatarImage = async (req, res, next) => {
   try {
-    const subredditId = req.body.subredditId;
+    const subredditId = req.query.subredditId;
     console.log(subredditId);
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
@@ -618,7 +618,7 @@ const uploadBannerImage = async (req, res, next) => {
 };
 const getBannerImage = async (req, res, next) => {
   try {
-    const subredditId = req.body.subredditId;
+    const subredditId = req.query.subredditId;
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
