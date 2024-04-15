@@ -1510,6 +1510,7 @@ const getUserSelfInfo = async (req, res, next) => {
       postKarma: user.upvotedPosts.length - user.downvotedPosts.length,
       avatar: avatarImage ? avatarImage.url : null,
       banner: bannerImage ? bannerImage.url : null,
+      About: user.profileSettings.get('about') || null,
     };
     res.status(200).json({ user: response });
   } catch (err) {
@@ -1541,7 +1542,6 @@ const getUserInfo = async (req, res, next) => {
       userId: otherUser._id,
       displayName: otherUser.profileSettings.displayName || null,
       username: otherUser.userName,
-      publicDescription: otherUser.publicDescription,
       commentKarma:
         otherUser.upvotedComments.length - otherUser.downvotedComments.length,
       created: createdSeconds,
@@ -1551,7 +1551,7 @@ const getUserInfo = async (req, res, next) => {
       isBlocked: isBlocked,
       avatar: avatarImage ? avatarImage.url : null,
       banner: bannerImage ? bannerImage.url : null,
-      about: otherUser.profileSettings.get("about"),
+      About: otherUser.profileSettings.get('about') || null,
     };
     res.status(200).json({ user: response });
   } catch (err) {
