@@ -1504,7 +1504,6 @@ const getUserSelfInfo = async (req, res, next) => {
       userId: user._id,
       displayName: user.profileSettings.displayName || null,
       username: user.userName,
-      about: user.profileSettings.get("about"),
       commentKarma: user.upvotedComments.length - user.downvotedComments.length,
       created: createdSeconds,
       postKarma: user.upvotedPosts.length - user.downvotedPosts.length,
