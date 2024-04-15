@@ -2,8 +2,8 @@ const User = require("../../models/user");
 const UserUploadModel = require("../../models/userUploads");
 const userController = require("../../controllers/userController");
 
-describe("getAvatarImage", () => {
-  it("should return the avatar image when it exists", async () => {
+describe("getBannerImage", () => {
+  it("should return the banner image when it exists", async () => {
     const req = {
       userId: "userId",
     };
@@ -14,24 +14,24 @@ describe("getAvatarImage", () => {
     };
 
     User.findById = jest.fn().mockResolvedValue({
-      avatarImage: "avatarImageId",
+      bannerImage: "bannerImageId",
     });
 
     UserUploadModel.findById = jest.fn().mockResolvedValue({
-      _id: "avatarImageId",
-      url: "avatarImageUrl",
-      originalname: "avatarImageName",
+      _id: "bannerImageId",
+      url: "bannerImageUrl",
+      originalname: "bannerImageName",
     });
 
-    await userController.getAvatarImage(req, res);
+    await userController.getBannerImage(req, res);
 
     expect(User.findById).toHaveBeenCalledWith("userId");
-    expect(UserUploadModel.findById).toHaveBeenCalledWith("avatarImageId");
+    expect(UserUploadModel.findById).toHaveBeenCalledWith("bannerImageId");
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
-      _id: "avatarImageId",
-      url: "avatarImageUrl",
-      originalname: "avatarImageName",
+      _id: "bannerImageId",
+      url: "bannerImageUrl",
+      originalname: "bannerImageName",
     });
     expect(res.json).not.toHaveBeenCalled();
   });
@@ -48,7 +48,7 @@ describe("getAvatarImage", () => {
 
     User.findById = jest.fn().mockResolvedValue(null);
 
-    await userController.getAvatarImage(req, res);
+    await userController.getBannerImage(req, res);
 
     expect(User.findById).toHaveBeenCalledWith("userId");
     expect(res.status).toHaveBeenCalledWith(404);
@@ -56,7 +56,7 @@ describe("getAvatarImage", () => {
     expect(res.send).not.toHaveBeenCalled();
   });
 
-  it("should return a 404 error when the avatar image is not found", async () => {
+  it("should return a 404 error when the banner image is not found", async () => {
     const req = {
       userId: "userId",
     };
@@ -67,23 +67,23 @@ describe("getAvatarImage", () => {
     };
 
     User.findById = jest.fn().mockResolvedValue({
-      avatarImage: "avatarImageId",
+      bannerImage: "bannerImageId",
     });
 
     UserUploadModel.findById = jest.fn().mockResolvedValue(null);
 
-    await userController.getAvatarImage(req, res);
+    await userController.getBannerImage(req, res);
 
     expect(User.findById).toHaveBeenCalledWith("userId");
-    expect(UserUploadModel.findById).toHaveBeenCalledWith("avatarImageId");
+    expect(UserUploadModel.findById).toHaveBeenCalledWith("bannerImageId");
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({
-      message: "Avatar image not found",
+      message: "Banner image not found",
     });
     expect(res.send).not.toHaveBeenCalled();
   });
 
-  it("should return a 500 error when there is an error getting the avatar image", async () => {
+  it("should return a 500 error when there is an error getting the banner image", async () => {
     const req = {
       userId: "userId",
     };
@@ -95,12 +95,12 @@ describe("getAvatarImage", () => {
 
     User.findById = jest.fn().mockRejectedValue(new Error("Database error"));
 
-    await userController.getAvatarImage(req, res);
+    await userController.getBannerImage(req, res);
 
     expect(User.findById).toHaveBeenCalledWith("userId");
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-      message: "Error getting avatar image",
+      message: "Error getting banner image",
     });
     expect(res.send).not.toHaveBeenCalled();
   });

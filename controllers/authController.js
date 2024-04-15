@@ -123,7 +123,6 @@ const forgetUsername = async (req, res, next) => {
   if (!user) {
     return res.status(404).send("User not found");
   }
-
   transporter.sendMail(
     {
       from: "r75118106@gmail.com",
@@ -290,12 +289,13 @@ const signUp = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
 
-    await user.save();
+    const newUser = await user.save();
 
     const payload = {
       user: {
-        userName: user.userName,
-        email: user.email,
+        id: newUser._id,
+        userName: newUser.userName,
+        email: newUser.email,
         type: "normal",
       },
     };

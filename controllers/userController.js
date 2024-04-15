@@ -116,20 +116,14 @@ const getAccountSettings = async (req, res, next) => {
       connectedToGoogle: user.signupGoogle,
     };
 
-    res.json({ accountSettings });
+    res.status(200).json({ accountSettings: accountSettings });
   } catch (err) {
-    res.status(500).json({ message: "Error Retreiving user", error: err });
+    res
+      .status(500)
+      .json({ message: "Error Retreiving user", error: err.message });
   }
 };
 
-/**
- * Retrieves the safety and privacy settings for a user.
- *
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {Function} next - The next middleware function.
- * @returns {Object} - The safety and privacy settings for the user.
- */
 const getSafetyAndPrivacySettings = async (req, res, next) => {
   const userId = req.userId;
   if (!userId) {
@@ -145,17 +139,35 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    const blockUsers = await Promise.all(
+      user.blockUsers.map(async (blockedUser) => {
+        const avatarImage = await UserUploadModel.findById(
+          blockedUser.blockedUserAvatar
+        );
+        return {
+          blockedUserName: blockedUser.blockedUserName,
+          blockedUserAvatar: avatarImage ? avatarImage.url : null,
+          blockedAt: blockedUser.blockedAt,
+        };
+      })
+    );
+
+    const muteCommunities = await Promise.all(
+      user.muteCommunities.map(async (mutedCommunity) => {
+        const avatarImage = await UserUploadModel.findById(
+          mutedCommunity.mutedCommunityAvatar
+        );
+        return {
+          mutedCommunityName: mutedCommunity.mutedCommunityName,
+          mutedCommunityAvatar: avatarImage ? avatarImage.url : null,
+          mutedAt: mutedCommunity.mutedAt,
+        };
+      })
+    );
+
     const safetyAndPrivacySettings = {
-      blockUsers: user.blockUsers.map((blockedUser) => ({
-        blockedUserName: blockedUser.blockedUserName,
-        blockedUserAvatar: blockedUser.blockedUserAvatar,
-        blockedAt: blockedUser.blockedAt,
-      })),
-      muteCommunities: user.muteCommunities.map((mutedCommunity) => ({
-        mutedCommunityName: mutedCommunity.mutedCommunityName,
-        mutedCommunityAvatar: mutedCommunity.mutedCommunityAvatar,
-        mutedAt: mutedCommunity.mutedAt,
-      })),
+      blockUsers,
+      muteCommunities,
     };
 
     return res.json(safetyAndPrivacySettings);
@@ -163,6 +175,41 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
     res.status(500).json({ message: "Error fetching user settings" });
   }
 };
+// const getSafetyAndPrivacySettings = async (req, res, next) => {
+//   const userId = req.userId;
+//   if (!userId) {
+//     return res.status(404).json({ message: "User Id not provided" });
+//   }
+
+//   try {
+//     const user = await User.findById(userId).select(
+//       "blockUsers muteCommunities"
+//     );
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     const safetyAndPrivacySettings = {
+//       blockUsers: user.blockUsers.map(async (blockedUser) => ({
+//         blockedUserName: blockedUser.blockedUserName,
+//         blockedUserAvatar: blockedUser.blockedUserAvatar,
+//         blockedAt: blockedUser.blockedAt,
+
+//       })),
+//       muteCommunities: user.muteCommunities.map((mutedCommunity) => ({
+//         mutedCommunityName: mutedCommunity.mutedCommunityName,
+//         mutedCommunityAvatar: mutedCommunity.mutedCommunityAvatar,
+//         mutedAt: mutedCommunity.mutedAt,
+//       })),
+//     };
+
+//     return res.json(safetyAndPrivacySettings);
+//   } catch (error) {
+//     console.log("Error fetching user settings:", error);
+//     res.status(500).json({ message: "Error fetching user settings" });
+//   }
+// };
 
 //REDUNDANT
 const editSafetyAndPrivacySettings = (req, res, next) => {
@@ -1452,11 +1499,12 @@ const getUserSelfInfo = async (req, res, next) => {
     const bannerImageId = user.bannerImage;
     const avatarImage = await UserUploadModel.findById(avatarImageId);
     const bannerImage = await UserUploadModel.findById(bannerImageId);
+    console.log(user.profileSettings.get("about"));
     const response = {
       userId: user._id,
       displayName: user.profileSettings.displayName || null,
       username: user.userName,
-      publicDescription: user.publicDescription,
+      about: user.profileSettings.get("about"),
       commentKarma: user.upvotedComments.length - user.downvotedComments.length,
       created: createdSeconds,
       postKarma: user.upvotedPosts.length - user.downvotedPosts.length,
