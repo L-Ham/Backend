@@ -1449,15 +1449,19 @@ const getUserSelfInfo = async (req, res, next) => {
     }
     const createdSeconds = Math.floor(user.createdAt.getTime() / 1000);
     const avatarImageId = user.avatarImage;
+    const bannerImageId = user.bannerImage;
     const avatarImage = await UserUploadModel.findById(avatarImageId);
+    const bannerImage = await UserUploadModel.findById(bannerImageId);
     const response = {
       userId: user._id,
-      displayName: user.profileSettings.displayName || user.userName,
+      displayName: user.profileSettings.displayName || null,
+      username: user.userName,
       publicDescription: user.publicDescription,
       commentKarma: user.upvotedComments.length - user.downvotedComments.length,
       created: createdSeconds,
       postKarma: user.upvotedPosts.length - user.downvotedPosts.length,
       avatar: avatarImage ? avatarImage.url : null,
+      banner: bannerImage ? bannerImage.url : null,
       publicDescription: user.publicDescription || null,
     };
     res.status(200).json({ user: response });
@@ -1484,9 +1488,12 @@ const getUserInfo = async (req, res, next) => {
     const createdSeconds = Math.floor(otherUser.createdAt.getTime() / 1000);
     const avatarImageId = otherUser.avatarImage;
     const avatarImage = await UserUploadModel.findById(avatarImageId);
+    const bannerImageId = otherUser.bannerImage;
+    const bannerImage = await UserUploadModel.findById(bannerImageId);
     const response = {
       userId: otherUser._id,
-      displayName: otherUser.profileSettings.displayName || otherUser.userName,
+      displayName: otherUser.profileSettings.displayName || null,
+      username: otherUser.userName,
       publicDescription: otherUser.publicDescription,
       commentKarma:
         otherUser.upvotedComments.length - otherUser.downvotedComments.length,
@@ -1496,6 +1503,7 @@ const getUserInfo = async (req, res, next) => {
       isFriend: isFollowed,
       isBlocked: isBlocked,
       avatar: avatarImage ? avatarImage.url : null,
+      banner: bannerImage ? bannerImage.url : null,
       publicDescription: otherUser.publicDescription || null,
     };
     res.status(200).json({ user: response });
