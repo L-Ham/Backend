@@ -343,10 +343,6 @@ const userSchema = new Schema({
       privateMessages: "Everyone",
     },
   },
-  // publicDescription: {
-  //   type: String,
-  //   required: false,
-  // },
   createdAt: {
     type: Date,
     default: Date.now,
