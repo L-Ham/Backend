@@ -1488,7 +1488,7 @@ const getUserSelfInfo = async (req, res, next) => {
     console.log(user.profileSettings.get("about"));
     const response = {
       userId: user._id,
-      displayName: user.profileSettings.displayName || null,
+      displayName: user.profileSettings.get('displayName') || null,
       username: user.userName,
       commentKarma: user.upvotedComments.length - user.downvotedComments.length,
       created: createdSeconds,
@@ -1525,7 +1525,7 @@ const getUserInfo = async (req, res, next) => {
     const bannerImage = await UserUploadModel.findById(bannerImageId);
     const response = {
       userId: otherUser._id,
-      displayName: otherUser.profileSettings.displayName || null,
+      displayName: otherUser.profileSettings.get('displayName') || null,
       username: otherUser.userName,
       commentKarma:
         otherUser.upvotedComments.length - otherUser.downvotedComments.length,
