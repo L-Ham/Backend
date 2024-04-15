@@ -124,4 +124,12 @@ router.get(
   subredditController.getPopularCommunities
 );
 
+router.get(
+  "/subredditNameAvailability",
+  bodyParser.json(),
+  subredditController.checkSubredditNameAvailability
+);
+
+
+
 module.exports = router;
