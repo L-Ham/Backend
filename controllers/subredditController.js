@@ -792,6 +792,29 @@ const getPopularCommunities = async (req, res) => {
   }
 };
 
+const checkSubredditNameAvailability = async (req, res, next) => {
+  try {
+    const name = req.query.name;
+
+    if (!name) {
+      return res.status(400).json({ message: "Name is empty" });
+    }
+
+    const subReddit = await SubReddit.findOne({ name: name });
+
+    if (subReddit) {
+      return res.status(409).json({ message: "Name already taken" });
+    }
+    res.json({ message: "Name available" });
+  } catch (err) {
+    if (res.status) {
+      res.status(500).json({ message: "Server error" });
+    } else {
+      next(err);
+    }
+  }
+};
+
 module.exports = {
   sorting,
   createCommunity,
@@ -814,4 +837,5 @@ module.exports = {
   getSubredditRules,
   getWidget,
   getPopularCommunities,
+  checkSubredditNameAvailability,
 };
