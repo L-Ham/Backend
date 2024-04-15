@@ -321,8 +321,9 @@ const generateUserName = async (req, res, next) => {
       usernames: userNames,
     });
   } catch (err) {
-    console.error("Error generating usernames:", err);
-    res.status(500).json({ message: "Error Creating usernames" });
+    res
+      .status(500)
+      .json({ message: "Error Creating usernames", error: err.message });
   }
 };
 const updatePassword = async (req, res, next) => {
