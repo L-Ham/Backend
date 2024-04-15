@@ -917,11 +917,6 @@ const removeFavoriteCommunity = async (req, res) => {
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-    // if (!user.communities.includes(communityId)) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "User is not a member of this community" });
-    // }
     if (!user.favoriteCommunities.includes(communityId)) {
       return res
         .status(400)
