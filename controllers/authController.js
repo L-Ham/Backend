@@ -98,7 +98,6 @@ const googleLogin = async (req, res, next) => {
       user: user,
     });
   } catch (error) {
-    console.error("Google login failed:", error);
     res
       .status(500)
       .json({ message: "Google login failed", error: error.message });
