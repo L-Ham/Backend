@@ -90,12 +90,6 @@ const editProfileSettings = async (req, res, next) => {
   }
 };
 
-/**
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {Function} next - Retrieves the account settings for a user..
- * @returns {Promise<void>} - A promise that resolves when the account settings are retrieved.
- */
 const getAccountSettings = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -172,6 +166,7 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
 
     return res.json(safetyAndPrivacySettings);
   } catch (error) {
+    console.error("Error fetching user settings:", error);
     res.status(500).json({ message: "Error fetching user settings" });
   }
 };
