@@ -100,6 +100,6 @@ describe('signUp', () => {
 
     expect(User.findOne).toHaveBeenCalledWith({ email: req.body.email });
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Server error' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Server error', error: 'Database error' });
   });
 });
