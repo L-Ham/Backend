@@ -426,7 +426,7 @@ const blockUser = async (req, res, next) => {
         blockedUser.blockedUserId.equals(userToBlock._id)
       )
     ) {
-      return res.status(409).json({ message: "User already blocked" });
+      return res.status(400).json({ message: "User already blocked" });
     }
     user.blockUsers.push({
       blockedUserId: userToBlock._id,
@@ -1216,7 +1216,7 @@ const searchUsernames = async (req, res) => {
 
     const regex = new RegExp(`^${search}`, "i");
     const matchingUsernames = await User.find(
-      { userName: regex },
+      { userName: regex, _id: { $ne: userId } },
       "_id userName avatarImage"
     );
 
@@ -1488,7 +1488,7 @@ const getUserSelfInfo = async (req, res, next) => {
     console.log(user.profileSettings.get("about"));
     const response = {
       userId: user._id,
-      displayName: user.profileSettings.get('displayName') || null,
+      displayName: user.profileSettings.get("displayName") || null,
       username: user.userName,
       commentKarma: user.upvotedComments.length - user.downvotedComments.length,
       created: createdSeconds,
@@ -1525,7 +1525,7 @@ const getUserInfo = async (req, res, next) => {
     const bannerImage = await UserUploadModel.findById(bannerImageId);
     const response = {
       userId: otherUser._id,
-      displayName: otherUser.profileSettings.get('displayName') || null,
+      displayName: otherUser.profileSettings.get("displayName") || null,
       username: otherUser.userName,
       commentKarma:
         otherUser.upvotedComments.length - otherUser.downvotedComments.length,
