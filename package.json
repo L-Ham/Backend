@@ -7,7 +7,6 @@
     "start": "nodemon index.js",
     "test": "jest",
     "test:coverage": "jest --coverage"
-
   },
   "author": "Ziad Abd EL Wareth, Rana Hatem, Marly Mofeed, Amr Ashraf",
   "license": "ISC",
