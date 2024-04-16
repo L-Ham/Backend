@@ -101,23 +101,23 @@ describe("forgetPassword", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-  
+
     const user = {
       _id: "userId",
       userName: "testuser",
       email: "test@example.com",
     };
     User.findOne = jest.fn().mockResolvedValue(user);
-  
+
     const transporterSendMailMock = jest.fn((mailOptions, callback) => {
       callback(new Error("Failed to send email"));
     });
     nodemailer.createTransport.mockReturnValue({
       sendMail: transporterSendMailMock,
     });
-  
+
     await authController.forgetPassword(req, res);
-  
+
     expect(User.findOne).toHaveBeenCalledWith({
       email: "test@example.com",
       userName: "testuser",
@@ -128,8 +128,8 @@ describe("forgetPassword", () => {
     );
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
+      error: "Failed to send email",
       message: "Failed to send email",
     });
   });
-  
 });
