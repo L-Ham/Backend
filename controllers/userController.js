@@ -166,7 +166,6 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
 
     return res.json(safetyAndPrivacySettings);
   } catch (error) {
-    console.error("Error fetching user settings:", error);
     res.status(500).json({ message: "Error fetching user settings" });
   }
 };
