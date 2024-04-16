@@ -706,7 +706,7 @@ const getWidget = async (req, res, next) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    
+
     const moderators = await Promise.all(
       subreddit.moderators.map(async (moderatorId) => {
         const moderator = await User.findById(moderatorId);
@@ -715,7 +715,7 @@ const getWidget = async (req, res, next) => {
         );
         return {
           username: moderator.userName,
-          avatarImage: moderatorAvatarImage?  moderatorAvatarImage.url : null,
+          avatarImage: moderatorAvatarImage ? moderatorAvatarImage.url : null,
         };
       })
     );
@@ -755,12 +755,10 @@ const getWidget = async (req, res, next) => {
     };
     res.json(response);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Error getting subreddit widgets",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Error getting subreddit widgets",
+      error: error.message,
+    });
   }
 };
 const getPopularCommunities = async (req, res) => {
@@ -811,7 +809,7 @@ const checkSubredditNameAvailability = async (req, res, next) => {
     const subReddit = await SubReddit.findOne({ name: name });
 
     if (subReddit) {
-      return res.status(409).json({ message: "Name already taken" });
+      return res.status(400).json({ message: "Name already taken" });
     }
     res.json({ message: "Name available" });
   } catch (err) {

@@ -90,12 +90,6 @@ const editProfileSettings = async (req, res, next) => {
   }
 };
 
-/**
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {Function} next - Retrieves the account settings for a user..
- * @returns {Promise<void>} - A promise that resolves when the account settings are retrieved.
- */
 const getAccountSettings = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -175,42 +169,6 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
     res.status(500).json({ message: "Error fetching user settings" });
   }
 };
-// const getSafetyAndPrivacySettings = async (req, res, next) => {
-//   const userId = req.userId;
-//   if (!userId) {
-//     return res.status(404).json({ message: "User Id not provided" });
-//   }
-
-//   try {
-//     const user = await User.findById(userId).select(
-//       "blockUsers muteCommunities"
-//     );
-
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     const safetyAndPrivacySettings = {
-//       blockUsers: user.blockUsers.map(async (blockedUser) => ({
-//         blockedUserName: blockedUser.blockedUserName,
-//         blockedUserAvatar: blockedUser.blockedUserAvatar,
-//         blockedAt: blockedUser.blockedAt,
-
-//       })),
-//       muteCommunities: user.muteCommunities.map((mutedCommunity) => ({
-//         mutedCommunityName: mutedCommunity.mutedCommunityName,
-//         mutedCommunityAvatar: mutedCommunity.mutedCommunityAvatar,
-//         mutedAt: mutedCommunity.mutedAt,
-//       })),
-//     };
-
-//     return res.json(safetyAndPrivacySettings);
-//   } catch (error) {
-//     console.log("Error fetching user settings:", error);
-//     res.status(500).json({ message: "Error fetching user settings" });
-//   }
-// };
-
 //REDUNDANT
 const editSafetyAndPrivacySettings = (req, res, next) => {
   const userId = req.userId;
@@ -426,7 +384,7 @@ const blockUser = async (req, res, next) => {
         blockedUser.blockedUserId.equals(userToBlock._id)
       )
     ) {
-      return res.status(409).json({ message: "User already blocked" });
+      return res.status(400).json({ message: "User already blocked" });
     }
     user.blockUsers.push({
       blockedUserId: userToBlock._id,
@@ -1216,7 +1174,7 @@ const searchUsernames = async (req, res) => {
 
     const regex = new RegExp(`^${search}`, "i");
     const matchingUsernames = await User.find(
-      { userName: regex },
+      { userName: regex, _id: { $ne: userId } },
       "_id userName avatarImage"
     );
 
@@ -1488,7 +1446,7 @@ const getUserSelfInfo = async (req, res, next) => {
     console.log(user.profileSettings.get("about"));
     const response = {
       userId: user._id,
-      displayName: user.profileSettings.get('displayName') || null,
+      displayName: user.profileSettings.get("displayName") || null,
       username: user.userName,
       commentKarma: user.upvotedComments.length - user.downvotedComments.length,
       created: createdSeconds,
@@ -1525,7 +1483,7 @@ const getUserInfo = async (req, res, next) => {
     const bannerImage = await UserUploadModel.findById(bannerImageId);
     const response = {
       userId: otherUser._id,
-      displayName: otherUser.profileSettings.get('displayName') || null,
+      displayName: otherUser.profileSettings.get("displayName") || null,
       username: otherUser.userName,
       commentKarma:
         otherUser.upvotedComments.length - otherUser.downvotedComments.length,

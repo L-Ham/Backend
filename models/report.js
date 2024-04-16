@@ -9,8 +9,8 @@ const reportSchema = new Schema({
   },
   referenceId: {
     type: Schema.Types.ObjectId,
-    refPath: 'type', // Reference model is determined by the value of 'type' field
-    required: true
+    refPath: "type", // Reference model is determined by the value of 'type' field
+    required: true,
   },
   reporterId: {
     type: Schema.Types.ObjectId,

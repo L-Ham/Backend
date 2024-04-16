@@ -1,7 +1,6 @@
 const User = require("../../models/user");
 const userController = require("../../controllers/userController");
 
-// Mocking User.findById and User.prototype.save functions
 jest.mock("../../models/user", () => ({
   findById: jest.fn(),
   prototype: {
