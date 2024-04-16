@@ -40,7 +40,7 @@ describe("checkSubredditNameAvailability", () => {
     await subredditController.checkSubredditNameAvailability(req, res);
 
     expect(SubReddit.findOne).toHaveBeenCalledWith({ name });
-    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ message: "Name already taken" });
   });
 
