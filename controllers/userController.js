@@ -169,42 +169,6 @@ const getSafetyAndPrivacySettings = async (req, res, next) => {
     res.status(500).json({ message: "Error fetching user settings" });
   }
 };
-// const getSafetyAndPrivacySettings = async (req, res, next) => {
-//   const userId = req.userId;
-//   if (!userId) {
-//     return res.status(404).json({ message: "User Id not provided" });
-//   }
-
-//   try {
-//     const user = await User.findById(userId).select(
-//       "blockUsers muteCommunities"
-//     );
-
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     const safetyAndPrivacySettings = {
-//       blockUsers: user.blockUsers.map(async (blockedUser) => ({
-//         blockedUserName: blockedUser.blockedUserName,
-//         blockedUserAvatar: blockedUser.blockedUserAvatar,
-//         blockedAt: blockedUser.blockedAt,
-
-//       })),
-//       muteCommunities: user.muteCommunities.map((mutedCommunity) => ({
-//         mutedCommunityName: mutedCommunity.mutedCommunityName,
-//         mutedCommunityAvatar: mutedCommunity.mutedCommunityAvatar,
-//         mutedAt: mutedCommunity.mutedAt,
-//       })),
-//     };
-
-//     return res.json(safetyAndPrivacySettings);
-//   } catch (error) {
-//     console.log("Error fetching user settings:", error);
-//     res.status(500).json({ message: "Error fetching user settings" });
-//   }
-// };
-
 //REDUNDANT
 const editSafetyAndPrivacySettings = (req, res, next) => {
   const userId = req.userId;
