@@ -1,36 +1,36 @@
-const { searchUsernames } = require('../../controllers/userController');
-const User = require('../../models/user');
+const { searchUsernames } = require("../../controllers/userController");
+const User = require("../../models/user");
 
-jest.mock('../../models/User');
+jest.mock("../../models/user");
 
-describe('searchUsernames', () => {
-  it('should return matching usernames with block status', async () => {
+describe("searchUsernames", () => {
+  it("should return matching usernames with block status", async () => {
     const req = {
-      query: { search: 'test' },
-      userId: 'userId',
+      query: { search: "test" },
+      userId: "userId",
     };
 
     const res = { json: jest.fn() };
 
     const userMock = {
-      _id: 'userId',
+      _id: "userId",
       blockUsers: [
-        { blockedUserId: 'blockedUserId1' },
-        { blockedUserId: 'blockedUserId2' },
+        { blockedUserId: "blockedUserId1" },
+        { blockedUserId: "blockedUserId2" },
       ],
     };
 
     const matchingUsernames = [
       {
-        _id: 'matchingUserId1',
-        userName: 'testUser1',
-        avatarImage: 'avatar1',
+        _id: "matchingUserId1",
+        userName: "testUser1",
+        avatarImage: "avatar1",
         isBlocked: false,
       },
       {
-        _id: 'matchingUserId2',
-        userName: 'testUser2',
-        avatarImage: 'avatar2',
+        _id: "matchingUserId2",
+        userName: "testUser2",
+        avatarImage: "avatar2",
         isBlocked: false,
       },
     ];
@@ -51,18 +51,18 @@ describe('searchUsernames', () => {
       ],
     };
 
-    expect(User.findById).toHaveBeenCalledWith('userId');
+    expect(User.findById).toHaveBeenCalledWith("userId");
     expect(User.find).toHaveBeenCalledWith(
-      { userName: /^test/i, _id: { $ne: 'userId' } },
-      '_id userName avatarImage'
+      { userName: /^test/i, _id: { $ne: "userId" } },
+      "_id userName avatarImage"
     );
     expect(res.json).toHaveBeenCalledWith(expectedResponse);
   });
 
-  it('should return a 404 status code if user is not found', async () => {
+  it("should return a 404 status code if user is not found", async () => {
     const req = {
-      query: { search: 'test' },
-      userId: 'userId',
+      query: { search: "test" },
+      userId: "userId",
     };
 
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
@@ -71,28 +71,28 @@ describe('searchUsernames', () => {
 
     await searchUsernames(req, res);
 
-    expect(User.findById).toHaveBeenCalledWith('userId');
+    expect(User.findById).toHaveBeenCalledWith("userId");
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ message: 'User not found' });
+    expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
   });
 
-  it('should return a 500 status code if an error occurs', async () => {
+  it("should return a 500 status code if an error occurs", async () => {
     const req = {
-      query: { search: 'test' },
-      userId: 'userId',
+      query: { search: "test" },
+      userId: "userId",
     };
 
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
-    User.findById.mockRejectedValue(new Error('Database error'));
+    User.findById.mockRejectedValue(new Error("Database error"));
 
     await searchUsernames(req, res);
 
-    expect(User.findById).toHaveBeenCalledWith('userId');
+    expect(User.findById).toHaveBeenCalledWith("userId");
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-      message: 'Error searching usernames',
-      error: new Error('Database error'),
+      message: "Error searching usernames",
+      error: new Error("Database error"),
     });
   });
 });

@@ -2,7 +2,7 @@ const { googleDisconnect } = require("../../controllers/authController");
 const User = require("../../models/user");
 const bcrypt = require("bcryptjs");
 
-jest.mock("../../models/User");
+jest.mock("../../models/user");
 jest.mock("bcryptjs");
 
 describe("googleDisconnect", () => {

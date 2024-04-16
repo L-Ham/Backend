@@ -1,9 +1,9 @@
-const { googleConnect } = require('../../controllers/authController');
-const User = require('../../models/user');
-const bcrypt = require('bcryptjs');
+const { googleConnect } = require("../../controllers/authController");
+const User = require("../../models/user");
+const bcrypt = require("bcryptjs");
 
-jest.mock('../../models/User');
-jest.mock('bcryptjs');
+jest.mock("../../models/user");
+jest.mock("bcryptjs");
 describe("googleConnect", () => {
   let req, res, next;
 
