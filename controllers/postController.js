@@ -871,7 +871,7 @@ const reportPost = async (req, res, next) => {
 };
 const getTrendingPosts = async (req, res, next) => {
   try {
-    const trendingPosts = await Post.find()
+    const trendingPosts = await Post.find({ images: { $exists: true, $ne: [] } })
       .sort({ upvotes: -1, downvotes: 1 })
       .limit(6);
 
