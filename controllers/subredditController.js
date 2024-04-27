@@ -64,7 +64,6 @@ const createCommunity = async (req, res, next) => {
       membersNickname: "Members",
       currentlyViewingNickname: "Online",
       communityDescription: "",
-      widgets: [],
       appearance: {
         avatarImage: null,
         bannerImage: null,
@@ -86,7 +85,7 @@ const createCommunity = async (req, res, next) => {
       },
     });
     const savedCommunity = await newCommunity.save();
-
+    console.log(savedCommunity);
     user.communities.push(savedCommunity._id);
     user.moderates.push(savedCommunity._id);
     const savedUser = await user.save();
@@ -96,7 +95,7 @@ const createCommunity = async (req, res, next) => {
       savedCommunity,
     });
   } catch (err) {
-    res.status(500).json({ message: "Failed to create community" });
+    res.status(500).json({ message: "Failed to create community",error:err.message });
   }
 };
 
