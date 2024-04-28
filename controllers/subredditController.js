@@ -994,7 +994,7 @@ const UnapproveUser = async (req,res,next) => {
     if (!subreddit.pendingMembers.includes(user._id)) {
       return res.status(400).json({ message: "User not in pending members" });
     }
-    subreddit.members.pop(user._id);
+    subreddit.pendingMembers.pop(user._id);
     await subreddit.save();
     res.json({ message: "User unapproved successfully" });
   } catch (error) {
