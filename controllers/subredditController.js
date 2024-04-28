@@ -882,9 +882,6 @@ const suggestSubreddit = async (req, res, next) => {
     if (subredditWithHighestMembers) {
       const avatarImage = await UserUploadModel.findById(subredditWithHighestMembers.appearance.avatarImage);
       const bannerImage = await UserUploadModel.findById(subredditWithHighestMembers.appearance.bannerImage);
-      console.log("Subreddit with highest members:", subredditWithHighestMembers.name);
-      console.log("Avatar Image:", avatarImage ? avatarImage.url : null);
-      console.log("Banner Image:", bannerImage ? bannerImage.url : null);
       const suggestedSubreddit = {
         name: subredditWithHighestMembers.name,
         avatarImage: avatarImage ? avatarImage.url : null,
