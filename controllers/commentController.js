@@ -34,8 +34,7 @@ const createComment = async (req, res, next) => {
       }
     }
 
-
-    if (post.isLocked && post.user !== userId && subReddit === null) {
+    if (post.isLocked && post.user.toString() !== userId && subReddit === null) {
       console.log("Post is locked");
       return res.status(400).json({ message: "Post is locked" });
     }
