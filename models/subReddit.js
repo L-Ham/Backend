@@ -238,6 +238,12 @@ const subRedditSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  bannedUsers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
 });
 
 module.exports = mongoose.model("subreddits", subRedditSchema);
