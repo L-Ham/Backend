@@ -413,7 +413,7 @@ const lockPost = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-
+    console.log(post);
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -432,7 +432,7 @@ const lockPost = async (req, res, next) => {
       }
     }
     if (post.subReddit !== null) {
-      if (!post.subReddit.moderators.includes(userId)) {
+      if (!subReddit.moderators.includes(userId)) {
         return res.status(400).json({
           message: "User not authorized to lock post in the subreddit",
         });
