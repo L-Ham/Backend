@@ -820,6 +820,55 @@ const checkSubredditNameAvailability = async (req, res, next) => {
   }
 };
 
+const getSubredditModerators = async (req, res, next) => {
+  const subredditName = req.query.subredditName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const moderators = await User.find({ _id: { $in: subreddit.moderators } });
+    const moderatorDetails = await Promise.all(moderators.map(async (moderator) => {
+      const userUpload = await UserUploadModel.findOne({ userId: moderator._id });
+      return {
+        _id: moderator._id,
+        userName: moderator.userName,
+        avatarImage: userUpload ? userUpload.avatarImage : null,
+      };
+    }));
+
+    res.json({ message:"Retrieved subreddit moderators Successfully",moderators:moderatorDetails });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error getting subreddit moderators", error: error.message });
+  }
+};
+
+const getSubredditMembers = async (req, res, next) => {
+  const subredditName = req.query.subredditName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const members = await User.find({ _id: { $in: subreddit.members } });
+    const membersDetails = await Promise.all(moderators.map(async (member) => {
+      const userUpload = await UserUploadModel.findOne({ userId: member._id });
+      return {
+        _id: member._id,
+        userName: member.userName,
+        avatarImage: userUpload ? userUpload.avatarImage : null,
+      };
+    }));
+
+    res.json({message:"Retrieved subreddit Approved Users Successfully", approvedMembers:membersDetails });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error getting subreddit Members", error: error.message });
+  }
+}; 
 module.exports = {
   sorting,
   createCommunity,
@@ -843,4 +892,6 @@ module.exports = {
   getWidget,
   getPopularCommunities,
   checkSubredditNameAvailability,
+  getSubredditModerators,
+  getSubredditMembers,
 };

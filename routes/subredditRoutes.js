@@ -130,6 +130,10 @@ router.get(
   subredditController.checkSubredditNameAvailability
 );
 
-
+router.get(
+  "/moderators",
+  bodyParser.json(),
+  subredditController.getSubredditModerators
+);
 
 module.exports = router;
