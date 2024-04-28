@@ -1133,8 +1133,9 @@ const getUserComments = async (req, res) => {
         result.slicedArray.map(async (comment) => {
           const isUpvoted = comment.upvotedUsers.includes(user._id);
           const isDownvoted = comment.downvotedUsers.includes(user._id);
-          const subreddit = await SubReddit.findById(comment.subReddit);
+          
           const post = await Post.findById(comment.postId);
+          const subreddit = await SubReddit.findById(post.subReddit);
           const score = comment.upvotedUsers.length - comment.downvotedUsers.length;
           const commentObj = {
             commentId: comment._id,
@@ -1152,8 +1153,8 @@ const getUserComments = async (req, res) => {
         })
       );
       return res.status(200).json({
-        message: "Retrieved User's Hidden Posts",
-        hiddenPosts: postsWithVoteStatus,
+        message: "Retrieved User's Comments",
+        hiddenPosts: userComments,
       });
 
     }
