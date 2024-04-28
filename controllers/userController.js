@@ -739,7 +739,7 @@ const joinCommunity = async (req, res, next) => {
 
     // Handle join logic based on community privacy
     if (community.privacy === "private" || community.privacy === "Private") {
-      if (community.pendingMembers.includes(userId)) {
+      if (community.pendingMembers.includes(userId) || community.members.includes(userId)) {
         return res
           .status(400)
           .json({ message: "User already requested to join community" });
