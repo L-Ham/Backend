@@ -21,7 +21,14 @@ const createComment = async (req, res, next) => {
       console.log("Post not found for post ID:", postId);
       return res.status(404).json({ message: "Post not found" });
     }
+    const subReddit = await SubReddit.findById(post.subReddit);
+    if (subReddit && subReddit.privacy === "private") {
+      if (!subReddit.members.includes(userId)) {
+        return res.status(400).json({ message: "You are not a member of this subreddit" });
+      }
+    }
 
+<<<<<<< Updated upstream
     // Check post lock
     if (
       post.isLocked &&
@@ -30,6 +37,18 @@ const createComment = async (req, res, next) => {
       !post.moderators.includes(userId)
     ) {
       return res.status(400).json({ message: "Post is Already locked" });
+=======
+    if(subReddit !== null){
+      if(Post.isLocked && !subReddit.moderators.includes(userId)){
+        return res.status(400).json({ message: "Post is Already locked in the SubReddit" });
+      }
+    }
+
+
+    if (post.isLocked && post.user !== userId && subReddit === null) {
+      console.log("Post is locked");
+      return res.status(400).json({ message: "Post is locked" });
+>>>>>>> Stashed changes
     }
 
     if (
@@ -54,12 +73,11 @@ const createComment = async (req, res, next) => {
     });
 
     if (req.files && req.files.length > 0) {
-      // Multer changed, use req.file now
       const commentfile = req.files[0];
-      if (req.body.type === "image") {
+      if (req.body.type === "image" || req.body.type === "Image") {
         const uploadedImageId = await UserUpload.uploadMedia(commentfile);
         comment.images.push(uploadedImageId);
-      } else if (req.body.type === "video") {
+      } else if (req.body.type === "video" || req.body.type === "Video") {
         const uploadedVideoId = await UserUpload.uploadMedia(commentfile);
         comment.videos.push(uploadedVideoId);
       } else {

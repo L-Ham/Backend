@@ -136,4 +136,12 @@ router.get(
   subredditController.getSubredditModerators
 );
 
+router.get(
+  "/trendingCommunity",
+  bodyParser.json(),
+  subredditController.getTrendingCommunities
+);
+
+
+
 module.exports = router;

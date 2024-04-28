@@ -820,6 +820,7 @@ const checkSubredditNameAvailability = async (req, res, next) => {
   }
 };
 
+<<<<<<< Updated upstream
 const getSubredditModerators = async (req, res, next) => {
   const subredditName = req.query.subredditName;
   try {
@@ -869,6 +870,47 @@ const getSubredditMembers = async (req, res, next) => {
       .json({ message: "Error getting subreddit Members", error: error.message });
   }
 }; 
+=======
+
+const getTrendingCommunities = async (req, res) => {
+  try {
+    const TrendingCommunities = await SubReddit.find()
+      .sort({ "posts.length": -1 })
+      .limit(20);
+
+    const avatarImages = await UserUploadModel.find({
+      _id: {
+        $in: TrendingCommunities.map(
+          (community) => community.appearance.avatarImage
+        ),
+      },
+    });
+
+    const formattedCommunities = TrendingCommunities.map((community) => {
+      const postCount = community.posts.length;
+      const memberCount = community.members.length;
+      const avatarImage = avatarImages.find((image) =>
+        image._id.equals(community.appearance.avatarImage)
+      );
+      return {
+        name: community.name,
+        communityId: community._id,
+        avatarImageUrl: avatarImage ? avatarImage.url : null,
+        memberCount: memberCount,
+        postCount: postCount,
+      };
+    });
+
+    const sortedCommunities = formattedCommunities.sort(
+      (a, b) => b.postCount - a.postCount
+    );
+
+    res.json({ TrendingCommunities: sortedCommunities });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting Trending communities" });
+  }
+};
+>>>>>>> Stashed changes
 module.exports = {
   sorting,
   createCommunity,
@@ -892,6 +934,10 @@ module.exports = {
   getWidget,
   getPopularCommunities,
   checkSubredditNameAvailability,
+<<<<<<< Updated upstream
   getSubredditModerators,
   getSubredditMembers,
+=======
+  getTrendingCommunities,
+>>>>>>> Stashed changes
 };
