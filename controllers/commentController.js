@@ -29,8 +29,7 @@ const createComment = async (req, res, next) => {
       post.user.toString() !== userId &&
       !post.moderators.includes(userId)
     ) {
-      console.log("Post is locked");
-      return res.status(400).json({ message: "Post is locked" });
+      return res.status(400).json({ message: "Post is Already locked" });
     }
 
     if (
@@ -97,7 +96,7 @@ const createComment = async (req, res, next) => {
     });
   } catch (err) {
     console.log("Error creating comment:", err);
-    res.status(500).json({ message: "Error Creating Comment", error: err });
+    res.status(500).json({ message: "Error Creating Comment", error: err.message });
   }
 };
 
