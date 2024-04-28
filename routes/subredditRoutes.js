@@ -142,6 +142,11 @@ router.get(
   subredditController.getTrendingCommunities
 );
 
-
+router.patch(
+  "/user/approve",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.approveUser
+);
 
 module.exports = router;
