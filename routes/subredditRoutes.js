@@ -144,4 +144,16 @@ router.get(
 
 
 
+router.get(
+    "/users/approved",
+    bodyParser.json(),
+    subredditController.getSubredditMembers
+);
+
+router.get(
+  "/suggest",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.suggestSubreddit
+);
 module.exports = router;

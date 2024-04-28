@@ -829,11 +829,11 @@ const getSubredditModerators = async (req, res, next) => {
     }
     const moderators = await User.find({ _id: { $in: subreddit.moderators } });
     const moderatorDetails = await Promise.all(moderators.map(async (moderator) => {
-      const userUpload = await UserUploadModel.findOne({ userId: moderator._id });
+      const userUpload = await UserUploadModel.findOne({ _id: moderator.avatarImage });
       return {
         _id: moderator._id,
         userName: moderator.userName,
-        avatarImage: userUpload ? userUpload.avatarImage : null,
+        avatarImage: userUpload ? userUpload.url : null,
       };
     }));
 
@@ -853,12 +853,13 @@ const getSubredditMembers = async (req, res, next) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     const members = await User.find({ _id: { $in: subreddit.members } });
-    const membersDetails = await Promise.all(moderators.map(async (member) => {
-      const userUpload = await UserUploadModel.findOne({ userId: member._id });
+    const membersDetails = await Promise.all(members.map(async (member) => {
+      const userUpload = await UserUploadModel.findOne({ _id: member.avatarImage });
+      console.log(userUpload);
       return {
         _id: member._id,
         userName: member.userName,
-        avatarImage: userUpload ? userUpload.avatarImage : null,
+        avatarImage: userUpload ? userUpload.url : null,
       };
     }));
 
@@ -869,6 +870,35 @@ const getSubredditMembers = async (req, res, next) => {
       .json({ message: "Error getting subreddit Members", error: error.message });
   }
 }; 
+
+const suggestSubreddit = async (req, res, next) => {
+  const userId = req.userId;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subredditWithHighestMembers = await SubReddit.findOne().sort({ "members.length": -1 });
+    if (subredditWithHighestMembers) {
+      const avatarImage = await UserUploadModel.findById(subredditWithHighestMembers.appearance.avatarImage);
+      const bannerImage = await UserUploadModel.findById(subredditWithHighestMembers.appearance.bannerImage);
+      const suggestedSubreddit = {
+        name: subredditWithHighestMembers.name,
+        avatarImage: avatarImage ? avatarImage.url : null,
+        bannerImage: bannerImage ? bannerImage.url : null,
+      };
+      res.status(200).json({ message: "Suggesting a Subreddit",suggestedSubreddit:suggestedSubreddit });
+
+    } else {
+      res.status(404).json({message: "No subreddits Found"})
+    }
+  }
+  catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error Suggesting a Subreddit", error: error.message });
+  }
+};
 const getTrendingCommunities = async (req, res) => {
   try {
     const TrendingCommunities = await SubReddit.find()
@@ -933,4 +963,5 @@ module.exports = {
   getSubredditModerators,
   getSubredditMembers,
   getTrendingCommunities,
+  suggestSubreddit,
 };

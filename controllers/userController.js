@@ -1,8 +1,8 @@
 const User = require("../models/user");
-// const { updateOne } = require("../models/socialLink");
 const SubReddit = require("../models/subReddit");
 const Post = require("../models/post");
 const UserUploadModel = require("../models/userUploads");
+const Comment = require("../models/comment");
 const jwt = require("jsonwebtoken");
 const UserUpload = require("../controllers/userUploadsController");
 const UserServices = require("../services/userServices");
@@ -894,11 +894,11 @@ const removeFavoriteCommunity = async (req, res) => {
   }
 };
 const getUpvotedPosts = async (req, res) => {
-  const userId = req.userId;
+  const username = req.query.username;
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ userName: username });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -909,8 +909,8 @@ const getUpvotedPosts = async (req, res) => {
     }
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
-        const isUpvoted = post.upvotedUsers.includes(userId);
-        const isDownvoted = post.downvotedUsers.includes(userId);
+        const isUpvoted = post.upvotedUsers.includes(user._id);
+        const isDownvoted = post.downvotedUsers.includes(user._id);
         const subreddit = await SubReddit.findById(post.subReddit);
         let imageUrls, videoUrls;
         if (post.type === "image") {
@@ -949,11 +949,11 @@ const getUpvotedPosts = async (req, res) => {
   }
 };
 const getDownvotedPosts = async (req, res) => {
-  const userId = req.userId;
+  const username = req.query.username;
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ userName: username });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -964,8 +964,8 @@ const getDownvotedPosts = async (req, res) => {
     }
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
-        const isUpvoted = post.upvotedUsers.includes(userId);
-        const isDownvoted = post.downvotedUsers.includes(userId);
+        const isUpvoted = post.upvotedUsers.includes(user._id);
+        const isDownvoted = post.downvotedUsers.includes(user._id);
         const subreddit = await SubReddit.findById(post.subReddit);
         let imageUrls, videoUrls;
         if (post.type === "image") {
@@ -1005,11 +1005,11 @@ const getDownvotedPosts = async (req, res) => {
 };
 
 const getSavedPosts = async (req, res) => {
-  const userId = req.userId;
+  const username = req.query.username;
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ userName: username });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -1020,8 +1020,8 @@ const getSavedPosts = async (req, res) => {
     }
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
-        const isUpvoted = post.upvotedUsers.includes(userId);
-        const isDownvoted = post.downvotedUsers.includes(userId);
+        const isUpvoted = post.upvotedUsers.includes(user._id);
+        const isDownvoted = post.downvotedUsers.includes(user._id);
         const subreddit = await SubReddit.findById(post.subReddit);
         let imageUrls, videoUrls;
         if (post.type === "image") {
@@ -1061,11 +1061,11 @@ const getSavedPosts = async (req, res) => {
 };
 
 const getHiddenPosts = async (req, res) => {
-  const userId = req.userId;
+  const username = req.query.username;
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({userName:username});
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -1076,8 +1076,8 @@ const getHiddenPosts = async (req, res) => {
     }
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
-        const isUpvoted = post.upvotedUsers.includes(userId);
-        const isDownvoted = post.downvotedUsers.includes(userId);
+        const isUpvoted = post.upvotedUsers.includes(user._id);
+        const isDownvoted = post.downvotedUsers.includes(user._id);
         const subreddit = await SubReddit.findById(post.subReddit);
         let imageUrls, videoUrls;
         if (post.type === "image") {
@@ -1114,6 +1114,56 @@ const getHiddenPosts = async (req, res) => {
       error: err.message,
     });
   }
+};
+const getUserComments = async (req, res) => {
+    const username = req.query.username;
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    try {
+      const user = await User.findOne({ userName:username});
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const query = Comment.find({ userId: user._id });
+      const result = await UserServices.paginateResults(query, page, limit);
+      if (result.slicedArray.length == 0) {
+        return res.status(500).json({ message: "The retrieved array is empty" });
+      }
+      const userComments = await Promise.all(
+        result.slicedArray.map(async (comment) => {
+          const isUpvoted = comment.upvotedUsers.includes(user._id);
+          const isDownvoted = comment.downvotedUsers.includes(user._id);
+          const subreddit = await SubReddit.findById(comment.subReddit);
+          const post = await Post.findById(comment.postId);
+          const score = comment.upvotedUsers.length - comment.downvotedUsers.length;
+          const commentObj = {
+            commentId: comment._id,
+            subredditName: subreddit ? subreddit.name : null,
+            postTitle: post ? post.title : null,
+            postId: comment.postId,
+            usernameRepliedTo: comment.usernameRepliedTo, // Assuming the username replied to is stored in `usernameRepliedTo`
+            score,
+            isUpvoted,
+            isDownvoted,
+            isSaved: comment.isSaved, // Assuming whether the comment is saved is stored in `isSaved`
+            isApproved: comment.isApproved, // Assuming whether the comment is approved is stored in `isApproved`
+          };
+          return commentObj;
+        })
+      );
+      return res.status(200).json({
+        message: "Retrieved User's Hidden Posts",
+        hiddenPosts: postsWithVoteStatus,
+      });
+
+    }
+    catch (err) {
+      res.status(500).json({
+        message: "Error Getting User Comments",
+        error: err.message,
+      });
+    
+    }
 };
 const getAllBlockedUsers = async (req, res) => {
   try {
@@ -1569,6 +1619,7 @@ module.exports = {
   getDownvotedPosts,
   getSavedPosts,
   getHiddenPosts,
+  getUserComments,
   getAllBlockedUsers,
   editUserLocation,
   searchUsernames,

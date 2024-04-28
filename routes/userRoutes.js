@@ -161,26 +161,27 @@ router.patch(
 router.get(
   "/upvotedPosts",
   bodyParser.json(),
-  authenticateToken,
   userController.getUpvotedPosts
 );
 router.get(
   "/downvotedPosts",
   bodyParser.json(),
-  authenticateToken,
   userController.getDownvotedPosts
 );
 router.get(
   "/savedPosts",
   bodyParser.json(),
-  authenticateToken,
   userController.getSavedPosts
 );
 router.get(
   "/hiddenPosts",
   bodyParser.json(),
-  authenticateToken,
   userController.getHiddenPosts
+);
+router.get(
+  "/comments",
+  bodyParser.json(),
+  userController.getUserComments
 );
 router.get(
   "/getAllBlockedUsers",
