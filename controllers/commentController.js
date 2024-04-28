@@ -28,16 +28,6 @@ const createComment = async (req, res, next) => {
       }
     }
 
-<<<<<<< Updated upstream
-    // Check post lock
-    if (
-      post.isLocked &&
-      !user.isAdmin &&
-      post.user.toString() !== userId &&
-      !post.moderators.includes(userId)
-    ) {
-      return res.status(400).json({ message: "Post is Already locked" });
-=======
     if(subReddit !== null){
       if(Post.isLocked && !subReddit.moderators.includes(userId)){
         return res.status(400).json({ message: "Post is Already locked in the SubReddit" });
@@ -48,7 +38,6 @@ const createComment = async (req, res, next) => {
     if (post.isLocked && post.user !== userId && subReddit === null) {
       console.log("Post is locked");
       return res.status(400).json({ message: "Post is locked" });
->>>>>>> Stashed changes
     }
 
     if (

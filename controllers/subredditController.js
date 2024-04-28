@@ -820,7 +820,6 @@ const checkSubredditNameAvailability = async (req, res, next) => {
   }
 };
 
-<<<<<<< Updated upstream
 const getSubredditModerators = async (req, res, next) => {
   const subredditName = req.query.subredditName;
   try {
@@ -870,8 +869,6 @@ const getSubredditMembers = async (req, res, next) => {
       .json({ message: "Error getting subreddit Members", error: error.message });
   }
 }; 
-=======
-
 const getTrendingCommunities = async (req, res) => {
   try {
     const TrendingCommunities = await SubReddit.find()
@@ -910,7 +907,6 @@ const getTrendingCommunities = async (req, res) => {
     res.status(500).json({ message: "Error getting Trending communities" });
   }
 };
->>>>>>> Stashed changes
 module.exports = {
   sorting,
   createCommunity,
@@ -934,10 +930,7 @@ module.exports = {
   getWidget,
   getPopularCommunities,
   checkSubredditNameAvailability,
-<<<<<<< Updated upstream
   getSubredditModerators,
   getSubredditMembers,
-=======
   getTrendingCommunities,
->>>>>>> Stashed changes
 };
