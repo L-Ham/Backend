@@ -161,4 +161,12 @@ router.get(
   authenticateToken,
   subredditController.suggestSubreddit
 );
+
+router.patch(
+  "/user/unapprove",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.UnapproveUser
+);
+
 module.exports = router;
