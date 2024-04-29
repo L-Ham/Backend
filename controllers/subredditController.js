@@ -1053,27 +1053,28 @@ const getBannedUsers = async (req, res, next) => {
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
     }
-    const bannedUsers = await User.find({ _id: { $in: subreddit.bannedUsers.map(bannedUser => bannedUser.userId) } });
+    const bannedUsersIds = subreddit.bannedUsers.map(bannedUser => bannedUser.userId);
+    const bannedUsers = await User.find({ _id: { $in: bannedUsersIds } });
     const bannedUsersDetails = await Promise.all(bannedUsers.map(async (bannedUser) => {
       const userUpload = await UserUploadModel.findOne({ _id: bannedUser.avatarImage });
+      const bannedUserDetails = subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id);
       return {
         _id: bannedUser._id,
         userName: bannedUser.userName,
         avatarImage: userUpload ? userUpload.url : null,
-        bannedAt: subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id).bannedAt,
-        permanent: subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id).permanent,
-        ruleBroken: subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id).ruleBroken,
-        modNote: subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id).modNote,
+        bannedAt: bannedUserDetails ? bannedUserDetails.bannedAt : null,
+        permanent: bannedUserDetails ? bannedUserDetails.permanent : null,
+        ruleBroken: bannedUserDetails ? bannedUserDetails.ruleBroken : null,
+        modNote: bannedUserDetails ? bannedUserDetails.modNote : null,
       };
     }));
 
-    res.json({ message:"Retrieved subreddit Banned Users Successfully", bannedUsers:bannedUsersDetails });
+    res.json({ message: "Retrieved subreddit Banned Users Successfully", bannedUsers: bannedUsersDetails });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error getting subreddit Banned Users", error: error.message });
+    res.status(500).json({ message: "Error getting subreddit Banned Users", error: error.message });
   }
 };
+
 
 const banUser = async (req, res, next) => {
   const userId = req.userId;

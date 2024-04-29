@@ -261,6 +261,7 @@ const subRedditSchema = new Schema({
       bannedAt: {
         type: Date,
         default: Date.now,
+        required: true,
       },
       modNote: {
         type: String,
