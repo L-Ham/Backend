@@ -24,6 +24,21 @@ router.post(
     messageController.unreadMessage
   );
 
+  router.get(
+    "/getAllInbox",
+    bodyParser.json(),
+    authenticateToken,
+    messageController.getAllInboxMessages
+  );
+
+  router.get(
+    "/getSentMessages",
+    bodyParser.json(),
+    authenticateToken,
+    messageController.getSentMessages
+  );
+
+
   router.patch(
     "/inbox/unread",
     bodyParser.json(),
