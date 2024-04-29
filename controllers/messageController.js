@@ -30,7 +30,7 @@ const composeMessage = async (req, res, next) => {
                     replies: [],
                     parentMessageId: parentMessageId || null,
                 });
-                if(parentMessage) {
+                if (parentMessage) {
                     parentMessage.replies.push(newMessage._id.toString());
                     await parentMessage.save();
                 }
@@ -50,7 +50,7 @@ const composeMessage = async (req, res, next) => {
                 replies: [],
                 parentMessageId: parentMessageId || null,
             });
-            if(parentMessage) {
+            if (parentMessage) {
                 parentMessage.replies.push(newMessage._id.toString());
                 await parentMessage.save();
             }
@@ -113,7 +113,7 @@ const unreadMessage = async (req, res, next) => {
         res.status(200).json({ message: "Message Marked as Unread" });
     }
     catch (error) {
-        res.status(500).json({ message: "Error Marking Message as Unread",error: error.message });
+        res.status(500).json({ message: "Error Marking Message as Unread", error: error.message });
     }
 };
 
@@ -125,10 +125,36 @@ const getAllInboxMessages = async (req, res, next) => {
             return res.status(404).json({ message: "User not found" });
         }
         const messages = await Message.find({ receiver: userId });
-        if (!messages) {
-            return res.status(404).json({ message: "No Messages found" });
-        }
-        res.status(200).json({ messages: messages });
+        const populatedMessages = await Promise.all(messages.map(async (message) => {
+            const sender = await User.findById(message.sender);
+            const receiver = await User.findById(message.receiver);
+            const parentMessage = await Message.findById(message.parentMessageId);
+            const replies = await Message.find({ _id: { $in: message.replies } });
+            const populatedReplies = await Promise.all(replies.map(async (reply) => {
+                const sender = await User.findById(reply.sender);
+                const receiver = await User.findById(reply.receiver);
+                return {
+                    sender: sender.userName,
+                    receiver: receiver.userName,
+                    subject: reply.subject,
+                    message: reply.message,
+                    isRead: reply.isRead,
+                    createdAt: reply.createdAt,
+                };
+            }));
+            return {
+                sender: sender.userName,
+                receiver: receiver.userName,
+                subject: message.subject,
+                message: message.message,
+                isRead: message.isRead,
+                createdAt: message.createdAt,
+                parentMessage: parentMessage,
+                replies: populatedReplies
+            };
+        }));
+
+        res.status(200).json({ messages: populatedMessages });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
