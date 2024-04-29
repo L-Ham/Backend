@@ -194,4 +194,24 @@ router.get(
   authenticateToken,
   subredditController.getSubredditFeed
 );
+
+router.get(
+  "/reportedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getReportedPosts
+);
+
+router.get(
+  "/editedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getEditedPosts
+)
+router.get(
+  "/unmoderatedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getUnmoderatedPosts
+)
 module.exports = router;

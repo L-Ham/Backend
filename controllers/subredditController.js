@@ -6,6 +6,7 @@ const UserUploadModel = require("../models/userUploads");
 const UserUpload = require("../controllers/userUploadsController");
 const UserServices = require("../services/userServices");
 const PostServices = require("../services/postServices");
+const subReddit = require("../models/subReddit");
 
 const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
@@ -1172,6 +1173,214 @@ const getSubredditFeed = async (req, res) => {
   }
 };
 
+const getReportedPosts = async (req, res) => {
+ const subredditName = req.query.subredditName;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  const userId = req.userId;
+
+  try {
+
+    const user= await User.findById(userId);
+
+    const subreddit = await subReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
+
+    const query = Post.find({ _id: { $in: subreddit.reportedPosts } });
+    console.log(subreddit.reportedPosts);
+    const result = await UserServices.paginateResults(query, page, limit);
+    
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    const postsWithVoteStatus = await Promise.all(
+      result.slicedArray.map(async (post) => {
+        const isUpvoted = post.upvotedUsers.includes(user._id);
+        const isDownvoted = post.downvotedUsers.includes(user._id);
+        let imageUrls, videoUrls;
+        const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
+        const spammedByUsernames = spammedBy.map((user) => user.userName);
+        if (post.type === "image") {
+          imageUrls = await PostServices.getImagesUrls(post.images);
+        }
+        if (post.type === "video") {
+          videoUrls = await PostServices.getVideosUrls(post.videos);
+        }
+        const postObj = {
+          ...post._doc,
+          subredditName: subreddit ? subreddit.name : null,
+          isUpvoted,
+          isDownvoted,
+          imageUrls,
+          videoUrls,
+          spammedByUsernames,
+        };
+        delete postObj.images;
+        delete postObj.videos;
+        delete postObj.upvotedUsers;
+        delete postObj.downvotedUsers;
+        delete postObj.comments;
+        delete postObj.spammedBy;
+        return postObj;
+      })
+    );
+    return res.status(200).json({
+      message: "Retrieved subreddit's reported posts",
+      savedPosts: postsWithVoteStatus,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error getting subreddit's reported posts",
+      error: err.message,
+    });
+  }
+};
+
+
+const getEditedPosts = async (req, res) => {
+  const subredditName = req.query.subredditName;
+   const page = parseInt(req.query.page);
+   const limit = parseInt(req.query.limit);
+   const userId = req.userId;
+ 
+   try {
+ 
+     const user= await User.findById(userId);
+ 
+     const subreddit = await subReddit.findOne({ name: subredditName });
+     if (!subreddit) {
+       return res.status(404).json({ message: "subreddit not found" });
+     }
+     if (!subreddit.moderators.includes(userId)) {
+       return res.status(403).json({ message: "You are not a moderator" });
+     }
+
+      const query = Post.find({ _id: { $in: subreddit.posts } ,isEdited:true});
+
+
+     const result = await UserServices.paginateResults(query, page, limit);
+     
+     if (result.slicedArray.length == 0) {
+       return res.status(500).json({ message: "The retrieved array is empty" });
+     }
+     const postsWithVoteStatus = await Promise.all(
+       result.slicedArray.map(async (post) => {
+         const isUpvoted = post.upvotedUsers.includes(user._id);
+         const isDownvoted = post.downvotedUsers.includes(user._id);
+         let imageUrls, videoUrls;
+         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
+         const spammedByUsernames = spammedBy.map((user) => user.userName);
+         if (post.type === "image") {
+           imageUrls = await PostServices.getImagesUrls(post.images);
+         }
+         if (post.type === "video") {
+           videoUrls = await PostServices.getVideosUrls(post.videos);
+         }
+         const postObj = {
+           ...post._doc,
+           subredditName: subreddit ? subreddit.name : null,
+           isUpvoted,
+           isDownvoted,
+           imageUrls,
+           videoUrls,
+           spammedByUsernames,
+         };
+         delete postObj.images;
+         delete postObj.videos;
+         delete postObj.upvotedUsers;
+         delete postObj.downvotedUsers;
+         delete postObj.comments;
+         delete postObj.spammedBy;
+         return postObj;
+       })
+     );
+     return res.status(200).json({
+       message: "Retrieved subreddit's edited posts",
+       savedPosts: postsWithVoteStatus,
+     });
+   } catch (err) {
+     res.status(500).json({
+       message: "Error getting subreddit's edited posts",
+       error: err.message,
+     });
+   }
+ };
+
+ const getUnmoderatedPosts = async (req, res) => {
+  const subredditName = req.query.subredditName;
+   const page = parseInt(req.query.page);
+   const limit = parseInt(req.query.limit);
+   const userId = req.userId;
+ 
+   try {
+ 
+     const user= await User.findById(userId);
+ 
+     const subreddit = await subReddit.findOne({ name: subredditName });
+     if (!subreddit) {
+       return res.status(404).json({ message: "subreddit not found" });
+     }
+     if (!subreddit.moderators.includes(userId)) {
+       return res.status(403).json({ message: "You are not a moderator" });
+     }
+
+      const query = Post.find({ _id: { $in: subreddit.posts } ,approved:false,disapproved:false});
+
+
+     const result = await UserServices.paginateResults(query, page, limit);
+
+     
+     if (result.slicedArray.length == 0) {
+       return res.status(500).json({ message: "The retrieved array is empty" });
+     }
+     const postsWithVoteStatus = await Promise.all(
+       result.slicedArray.map(async (post) => {
+         const isUpvoted = post.upvotedUsers.includes(user._id);
+         const isDownvoted = post.downvotedUsers.includes(user._id);
+         let imageUrls, videoUrls;
+         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
+         const spammedByUsernames = spammedBy.map((user) => user.userName);
+         if (post.type === "image") {
+           imageUrls = await PostServices.getImagesUrls(post.images);
+         }
+         if (post.type === "video") {
+           videoUrls = await PostServices.getVideosUrls(post.videos);
+         }
+         const postObj = {
+           ...post._doc,
+           subredditName: subreddit ? subreddit.name : null,
+           isUpvoted,
+           isDownvoted,
+           imageUrls,
+           videoUrls,
+           spammedByUsernames,
+         };
+         delete postObj.images;
+         delete postObj.videos;
+         delete postObj.upvotedUsers;
+         delete postObj.downvotedUsers;
+         delete postObj.comments;
+         delete postObj.spammedBy;
+         return postObj;
+       })
+     );
+     return res.status(200).json({
+       message: "Retrieved subreddit's unmoderated posts",
+       savedPosts: postsWithVoteStatus,
+     });
+   } catch (err) {
+     res.status(500).json({
+       message: "Error getting subreddit's unmoderated posts",
+       error: err.message,
+     });
+   }
+ };
+
 module.exports = {
   sorting,
   createCommunity,
@@ -1204,5 +1413,8 @@ module.exports = {
   getBannedUsers,
   banUser,
   unbanUser,
-  getSubredditFeed
+  getSubredditFeed,
+  getReportedPosts,
+  getEditedPosts,
+  getUnmoderatedPosts
 };
