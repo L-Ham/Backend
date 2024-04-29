@@ -30,4 +30,12 @@ router.post(
     authenticateToken,
     messageController.getAllInboxMessages
   );
+
+  router.get(
+    "/getSentMessages",
+    bodyParser.json(),
+    authenticateToken,
+    messageController.getSentMessages
+  );
+
   module.exports = router;

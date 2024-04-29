@@ -129,6 +129,8 @@ const getAllInboxMessages = async (req, res, next) => {
             const sender = await User.findById(message.sender);
             const receiver = await User.findById(message.receiver);
             const parentMessage = await Message.findById(message.parentMessageId);
+            const parentMessageSender = parentMessage ? await User.findById(parentMessage.sender) : null;
+            const parentMessageReceiver = parentMessage ? await User.findById(parentMessage.receiver) : null;
             const replies = await Message.find({ _id: { $in: message.replies } });
             const populatedReplies = await Promise.all(replies.map(async (reply) => {
                 const sender = await User.findById(reply.sender);
@@ -139,7 +141,6 @@ const getAllInboxMessages = async (req, res, next) => {
                     subject: reply.subject,
                     message: reply.message,
                     isRead: reply.isRead,
-                    createdAt: reply.createdAt,
                 };
             }));
             return {
@@ -148,16 +149,67 @@ const getAllInboxMessages = async (req, res, next) => {
                 subject: message.subject,
                 message: message.message,
                 isRead: message.isRead,
-                createdAt: message.createdAt,
-                parentMessage: parentMessage,
-                replies: populatedReplies
+                parentMessage: parentMessage ? {
+                    sender: parentMessageSender ? parentMessageSender.userName : null,
+                    receiver: parentMessageReceiver ? parentMessageReceiver.userName : null,
+                    subject: parentMessage.subject,
+                    message: parentMessage.message,
+                    isRead: parentMessage.isRead,
+                } : null,
+                replies: populatedReplies,
             };
         }));
-
-        res.status(200).json({ messages: populatedMessages });
+        res.json(populatedMessages);
+    } catch (error) {
+        res.status(500).json({ message: "Error getting Inbox messages", error: error.message });
     }
-    catch (error) {
-        res.status(500).json({ message: error.message });
+};
+
+const getSentMessages = async (req, res, next) => {
+    const userId = req.userId;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const messages = await Message.find({ sender: userId });
+        const populatedMessages = await Promise.all(messages.map(async (message) => {
+            const sender = await User.findById(message.sender);
+            const receiver = await User.findById(message.receiver);
+            const parentMessage = await Message.findById(message.parentMessageId);
+            const parentMessageSender = parentMessage ? await User.findById(parentMessage.sender) : null;
+            const parentMessageReceiver = parentMessage ? await User.findById(parentMessage.receiver) : null;
+            const replies = await Message.find({ _id: { $in: message.replies } });
+            const populatedReplies = await Promise.all(replies.map(async (reply) => {
+                const sender = await User.findById(reply.sender);
+                const receiver = await User.findById(reply.receiver);
+                return {
+                    sender: sender.userName,
+                    receiver: receiver.userName,
+                    subject: reply.subject,
+                    message: reply.message,
+                    isRead: reply.isRead,
+                };
+            }));
+            return {
+                sender: sender.userName,
+                receiver: receiver.userName,
+                subject: message.subject,
+                message: message.message,
+                isRead: message.isRead,
+                parentMessage: parentMessage ? {
+                    sender: parentMessageSender ? parentMessageSender.userName : null,
+                    receiver: parentMessageReceiver ? parentMessageReceiver.userName : null,
+                    subject: parentMessage.subject,
+                    message: parentMessage.message,
+                    isRead: parentMessage.isRead,
+                } : null,
+                replies: populatedReplies,
+            };
+        }));
+        res.json(populatedMessages);
+    } catch (error) {
+        res.status(500).json({ message: "Error getting sent messages", error: error.message });
     }
 };
 module.exports = {
@@ -165,4 +217,5 @@ module.exports = {
     readMessage,
     unreadMessage,
     getAllInboxMessages,
+    getSentMessages,
 };
