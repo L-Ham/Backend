@@ -937,6 +937,17 @@ const getTrendingCommunities = async (req, res) => {
     res.status(500).json({ message: "Error getting Trending communities" });
   }
 };
+
+const getSubredditFeed = async (req, res) => {
+  const subredditId = req.query.subredditId;
+  const subreddit = await SubReddit.findById(subredditId);
+  if (!subreddit) {
+    return res.status(404).json({ message: "Subreddit not found" });
+  }
+  const posts = subreddit.posts;
+  res.json({ posts });
+};
+
 module.exports = {
   sorting,
   createCommunity,
@@ -964,4 +975,5 @@ module.exports = {
   getSubredditMembers,
   getTrendingCommunities,
   suggestSubreddit,
+  getSubredditFeed
 };

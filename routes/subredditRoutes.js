@@ -156,4 +156,11 @@ router.get(
   authenticateToken,
   subredditController.suggestSubreddit
 );
+
+router.get(
+  "/feed",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getSubredditFeed
+);
 module.exports = router;

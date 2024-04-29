@@ -184,6 +184,11 @@ router.get(
   userController.getUserComments
 );
 router.get(
+  "/posts",
+  bodyParser.json(),
+  userController.getUserPosts
+);
+router.get(
   "/getAllBlockedUsers",
   bodyParser.json(),
   authenticateToken,
