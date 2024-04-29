@@ -23,4 +23,11 @@ router.post(
     authenticateToken,
     messageController.unreadMessage
   );
+
+  router.patch(
+    "/inbox/unread",
+    bodyParser.json(),
+    authenticateToken,
+    messageController.unreadMessage
+  );
   module.exports = router;
