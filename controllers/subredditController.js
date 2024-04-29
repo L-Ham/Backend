@@ -1013,23 +1013,25 @@ const getBannedUsers = async (req, res, next) => {
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
     }
-    const bannedUsers = await User.find({ _id: { $in: subreddit.bannedUsers.map(user => user.userId) } });
+    const bannedUsers = await User.find({ _id: { $in: subreddit.bannedUsers.map(bannedUser => bannedUser.userId) } });
     const bannedUsersDetails = await Promise.all(bannedUsers.map(async (bannedUser) => {
       const userUpload = await UserUploadModel.findOne({ _id: bannedUser.avatarImage });
       return {
         _id: bannedUser._id,
         userName: bannedUser.userName,
         avatarImage: userUpload ? userUpload.url : null,
-        bannedAt: subreddit.bannedUsers.find(user => user.userId.equals(bannedUser._id)).bannedAt,
-        permanent: subreddit.bannedUsers.find(user => user.userId.equals(bannedUser._id)).permanent,
-        ruleBroken: subreddit.bannedUsers.find(user => user.userId.equals(bannedUser._id)).ruleBroken,
-        modNote: subreddit.bannedUsers.find(user => user.userId.equals(bannedUser._id)).modNote,
+        bannedAt: subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id).bannedAt,
+        permanent: subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id).permanent,
+        ruleBroken: subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id).ruleBroken,
+        modNote: subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id).modNote,
       };
     }));
-    res.json({ message: "Retrieved subreddit banned users successfully", bannedUsers: bannedUsersDetails });
-  }
-  catch (error) {
-    res.status(500).json({ message: "Error getting subreddit banned users", error: error.message });
+
+    res.json({ message:"Retrieved subreddit Banned Users Successfully", bannedUsers:bannedUsersDetails });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error getting subreddit Banned Users", error: error.message });
   }
 };
 module.exports = {
