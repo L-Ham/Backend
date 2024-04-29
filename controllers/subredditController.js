@@ -1150,6 +1150,6 @@ module.exports = {
   UnapproveUser,
   getBannedUsers,
   banUser,
-  unbanUser
+  unbanUser,
   getSubredditFeed
 };
