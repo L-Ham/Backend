@@ -1153,6 +1153,7 @@ const unbanUser = async (req, res, next) => {
 const getSubredditFeed = async (req, res) => {
   const userId = req.userId;
   const subredditName = req.query.subredditName;
+  const sortMethod = req.query.sort;
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   try {
@@ -1165,7 +1166,7 @@ const getSubredditFeed = async (req, res) => {
       user = await User.findById(userId);
     }
     const query = Post.find({ subReddit: subreddit._id });
-    const result = await UserServices.paginateResults(query, page, limit);
+    const result = await PostServices.paginatePosts(query, page, limit,sortMethod);
     if (result.slicedArray.length == 0) {
       return res.status(500).json({ message: "The retrieved array is empty" });
     }
