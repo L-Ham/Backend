@@ -61,6 +61,63 @@ const composeMessage = async (req, res, next) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+const readMessage = async (req, res, next) => {
+    const userId = req.userId;
+    const messageId = req.body.messageId;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return res.status(404).json({ message: "Message not found" });
+        }
+        if (message.receiver.toString() !== userId) {
+            return res.status(403).json({ message: "Unauthorized You are not the message receiver" });
+        }
+        if (message.isRead) {
+            return res.status(400).json({ message: "Message already read" });
+        }
+        message.isRead = true;
+        await message.save();
+        res.status(200).json({ message: "Message Marked as Read" });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const unreadMessage = async (req, res, next) => {
+    const userId = req.userId;
+    const messageId = req.body.messageId;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return res.status(404).json({ message: "Message not found" });
+        }
+        if (message.receiver.toString() !== userId) {
+            return res.status(403).json({ message: "Unauthorized You are not the message receiver" });
+        }
+        if (!message.isRead) {
+            return res.status(400).json({ message: "Message already Unread" });
+        }
+        message.isRead = false;
+        await message.save();
+        res.status(200).json({ message: "Message Marked as Unread" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error Marking Message as Unread",error: error.message });
+    }
+};
 module.exports = {
-    composeMessage
+    composeMessage,
+    readMessage,
+    unreadMessage,
 };

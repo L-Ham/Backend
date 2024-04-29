@@ -10,5 +10,17 @@ router.post(
     authenticateToken,
     messageController.composeMessage
   );
+  router.patch(
+    "/read",
+    bodyParser.json(),
+    authenticateToken,
+    messageController.readMessage
+  );
 
+  router.patch(
+    "/unread",
+    bodyParser.json(),
+    authenticateToken,
+    messageController.unreadMessage
+  );
   module.exports = router;
