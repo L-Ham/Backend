@@ -238,11 +238,30 @@ const subRedditSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+
   bannedUsers: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-      required: false,
+      userId: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+        required: false,
+      },
+      permanent: {
+        type: Boolean,
+        default: false,
+      },
+      ruleBroken: {
+        type: String,
+        required: false,
+      },
+      bannedAt: {
+        type: Date,
+        default: Date.now,
+      },
+      modNote: {
+        type: String,
+        required: false,
+      },
     },
   ],
 });

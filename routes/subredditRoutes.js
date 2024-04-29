@@ -169,4 +169,12 @@ router.patch(
   subredditController.UnapproveUser
 );
 
+router.get(
+  "/users/banned",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getBannedUsers
+);
+
+
 module.exports = router;

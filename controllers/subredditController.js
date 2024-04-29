@@ -1001,6 +1001,37 @@ const UnapproveUser = async (req,res,next) => {
     res.status(500).json({ message: "Error unapproving user" });
   }
 };
+
+const getBannedUsers = async (req, res, next) => {
+  const userId = req.userId;
+  const subredditName = req.query.subredditName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
+    const bannedUsers = await User.find({ _id: { $in: subreddit.bannedUsers.map(user => user.userId) } });
+    const bannedUsersDetails = await Promise.all(bannedUsers.map(async (bannedUser) => {
+      const userUpload = await UserUploadModel.findOne({ _id: bannedUser.avatarImage });
+      return {
+        _id: bannedUser._id,
+        userName: bannedUser.userName,
+        avatarImage: userUpload ? userUpload.url : null,
+        bannedAt: subreddit.bannedUsers.find(user => user.userId.equals(bannedUser._id)).bannedAt,
+        permanent: subreddit.bannedUsers.find(user => user.userId.equals(bannedUser._id)).permanent,
+        ruleBroken: subreddit.bannedUsers.find(user => user.userId.equals(bannedUser._id)).ruleBroken,
+        modNote: subreddit.bannedUsers.find(user => user.userId.equals(bannedUser._id)).modNote,
+      };
+    }));
+    res.json({ message: "Retrieved subreddit banned users successfully", bannedUsers: bannedUsersDetails });
+  }
+  catch (error) {
+    res.status(500).json({ message: "Error getting subreddit banned users", error: error.message });
+  }
+};
 module.exports = {
   sorting,
   createCommunity,
@@ -1030,4 +1061,5 @@ module.exports = {
   suggestSubreddit,
   approveUser,
   UnapproveUser,
+  getBannedUsers,
 };
