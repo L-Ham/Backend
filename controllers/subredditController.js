@@ -11,73 +11,73 @@ const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
 };
 
-const sorting = async (req, res, next) => {
-  const { subredditName, Best, New, Top, Rising } = req.query;
+// const sorting = async (req, res, next) => {
+//   const { subredditName, Best, New, Top, Rising } = req.query;
 
-  try {
-    const subreddit = await SubReddit.findOne({ name: subredditName });
-    if (!subreddit || !subreddit.posts) {
-      return res.status(404).json({ message: "Subreddit not found" });
-    }
+//   try {
+//     const subreddit = await SubReddit.findOne({ name: subredditName });
+//     if (!subreddit || !subreddit.posts) {
+//       return res.status(404).json({ message: "Subreddit not found" });
+//     }
 
-    let sortedPosts = subreddit.posts;
-    if (Best) {
-      sortedPosts.sort((a, b) => b.votes - a.votes);
-    } else if (New) {
-      sortedPosts.sort((a, b) => b.createdAt - a.createdAt);
-    } else if (Top) {
-      sortedPosts.sort(
-        (a, b) => (b.votes + b.comments.length) - (a.votes + a.comments.length)
-      );
-    } else if (Rising) {
-      sortedPosts.sort(() => Math.random() - 0.5);
-    }
+//     let sortedPosts = subreddit.posts;
+//     if (Best) {
+//       sortedPosts.sort((a, b) => b.votes - a.votes);
+//     } else if (New) {
+//       sortedPosts.sort((a, b) => b.createdAt - a.createdAt);
+//     } else if (Top) {
+//       sortedPosts.sort(
+//         (a, b) => (b.votes + b.comments.length) - (a.votes + a.comments.length)
+//       );
+//     } else if (Rising) {
+//       sortedPosts.sort(() => Math.random() - 0.5);
+//     }
 
-    const postImagesIds = sortedPosts.Map((post) => post.images);
-    const subRedditIds = sortedPosts.map((post) => post.subReddit);
+//     const postImagesIds = sortedPosts.Map((post) => post.images);
+//     const subRedditIds = sortedPosts.map((post) => post.subReddit);
 
-    const Images = await UserUploadModel.find({ _id: { $in: postImagesIds } });
+//     const Images = await UserUploadModel.find({ _id: { $in: postImagesIds } });
 
-    const formattedPosts = await Promise.all(
-      sortedPosts.map(async (post) => {
-        const postImages = (post.images || []).map(imageId => {
-          const image = Images.find((img) => img._id.equals(imageId));
-          return image ? image.url : null;
-        });
-        const subRedditTemp = subReddits.find((community) =>
-          community._id.equals(post.subReddit)
-        );
-        const avatarImageId = subRedditTemp && subRedditTemp.appearance ? subRedditTemp.appearance.avatarImage : null;
-        const avatarImage = avatarImageId
-          ? await UserUploadModel.findById(avatarImageId)
-          : null;
+//     const formattedPosts = await Promise.all(
+//       sortedPosts.map(async (post) => {
+//         const postImages = (post.images || []).map(imageId => {
+//           const image = Images.find((img) => img._id.equals(imageId));
+//           return image ? image.url : null;
+//         });
+//         const subRedditTemp = subReddits.find((community) =>
+//           community._id.equals(post.subReddit)
+//         );
+//         const avatarImageId = subRedditTemp && subRedditTemp.appearance ? subRedditTemp.appearance.avatarImage : null;
+//         const avatarImage = avatarImageId
+//           ? await UserUploadModel.findById(avatarImageId)
+//           : null;
 
-        return {
-          postId: post._id,
-          title: post.title,
-          text: post.text,
-          images: postImages,
-          subreddit: subRedditTemp ? subRedditTemp.name : null,
-          subRedditId: subRedditTemp ? subRedditTemp._id : null,
-          avatarImage: avatarImage ? avatarImage.url : null,
-          upvotes: post.upvotes,
-          downvotes: post.downvotes,
-          isLocked: post.isLocked,
-          isSpoiler: post.isSpoiler,
-          isNSFW: post.isNSFW,
-          commentCount: post.commentCount,
-          poll: post.poll,
-          url: post.url,
-          createdAt: post.createdAt,
-        };
-      })
-    );
+//         return {
+//           postId: post._id,
+//           title: post.title,
+//           text: post.text,
+//           images: postImages,
+//           subreddit: subRedditTemp ? subRedditTemp.name : null,
+//           subRedditId: subRedditTemp ? subRedditTemp._id : null,
+//           avatarImage: avatarImage ? avatarImage.url : null,
+//           upvotes: post.upvotes,
+//           downvotes: post.downvotes,
+//           isLocked: post.isLocked,
+//           isSpoiler: post.isSpoiler,
+//           isNSFW: post.isNSFW,
+//           commentCount: post.commentCount,
+//           poll: post.poll,
+//           url: post.url,
+//           createdAt: post.createdAt,
+//         };
+//       })
+//     );
 
-    res.json(formattedPosts);
-  } catch (error) {
-    res.status(500).json({ message: "Error sorting posts", error: error.message });
-  }
-};
+//     res.json(formattedPosts);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error sorting posts", error: error.message });
+//   }
+// };
 const createCommunity = async (req, res, next) => {
   const userId = req.userId;
 
