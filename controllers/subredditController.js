@@ -1034,6 +1034,17 @@ const getBannedUsers = async (req, res, next) => {
       .json({ message: "Error getting subreddit Banned Users", error: error.message });
   }
 };
+
+const getSubredditFeed = async (req, res) => {
+  const subredditId = req.query.subredditId;
+  const subreddit = await SubReddit.findById(subredditId);
+  if (!subreddit) {
+    return res.status(404).json({ message: "Subreddit not found" });
+  }
+  const posts = subreddit.posts;
+  res.json({ posts });
+};
+
 module.exports = {
   sorting,
   createCommunity,
@@ -1064,4 +1075,5 @@ module.exports = {
   approveUser,
   UnapproveUser,
   getBannedUsers,
+  getSubredditFeed
 };

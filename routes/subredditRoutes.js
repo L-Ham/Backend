@@ -177,4 +177,11 @@ router.get(
 );
 
 
+
+router.get(
+  "/feed",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getSubredditFeed
+);
 module.exports = router;
