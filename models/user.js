@@ -351,6 +351,12 @@ const userSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  bannedSubreddits: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'subreddit',
+    },
+  ],
 });
 
 module.exports = mongoose.model("user", userSchema);
