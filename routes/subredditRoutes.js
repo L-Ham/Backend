@@ -174,6 +174,12 @@ router.patch(
   authenticateToken,
   subredditController.banUser
 );
+router.patch(
+  "/user/unban",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.unbanUser
+);
 
 router.get(
   "/users/banned",
