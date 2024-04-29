@@ -39,10 +39,10 @@ router.post(
   );
 
 
-  router.patch(
+  router.get(
     "/inbox/unread",
     bodyParser.json(),
     authenticateToken,
-    messageController.unreadMessage
+    messageController.getUnreadInboxMessages
   );
   module.exports = router;
