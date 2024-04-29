@@ -1034,6 +1034,50 @@ const getBannedUsers = async (req, res, next) => {
       .json({ message: "Error getting subreddit Banned Users", error: error.message });
   }
 };
+
+const banUser = async (req, res, next) => {
+  const userId = req.userId;
+  const subredditName = req.body.subredditName;
+  const userName = req.body.userName;
+  const reasonForBan = req.body.reasonForBan;
+  const modNote = req.body.modNote;
+  const permanent = req.body.permanent;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
+    const user = await User.findOne({ userName: userName });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!user.communities.includes(subreddit._id.toString())) {
+      return res.status(400).json({ message: "User is not a member of this subreddit" });
+    }
+    if (subreddit.bannedUsers.find(bannedUser => bannedUser.userId.toString() === user._id.toString())) {
+      return res.status(400).json({ message: "User already banned" });
+    }
+    subreddit.bannedUsers.push({
+      userId: user._id,
+      userName: user.userName,
+      permanent: permanent,
+      reasonForBan: reasonForBan,
+      bannedAt: new Date(),
+      modNote: modNote,
+    });
+    await subreddit.save();
+    user.bannedSubreddits.push(subreddit._id);
+    await user.save();
+
+    res.json({ message: "User banned successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error banning user" });
+  }
+};
+
 module.exports = {
   sorting,
   createCommunity,
@@ -1064,4 +1108,5 @@ module.exports = {
   approveUser,
   UnapproveUser,
   getBannedUsers,
+  banUser
 };

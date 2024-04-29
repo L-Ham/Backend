@@ -168,6 +168,12 @@ router.patch(
   authenticateToken,
   subredditController.UnapproveUser
 );
+router.patch(
+  "/user/ban",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.banUser
+);
 
 router.get(
   "/users/banned",
