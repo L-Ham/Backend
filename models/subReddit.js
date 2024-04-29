@@ -246,11 +246,15 @@ const subRedditSchema = new Schema({
         ref: "user",
         required: false,
       },
+      userName: {
+        type: String,
+        required: true,
+      },
       permanent: {
         type: Boolean,
         default: false,
       },
-      ruleBroken: {
+      reasonForBan: {
         type: String,
         required: false,
       },

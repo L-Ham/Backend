@@ -1,8 +1,11 @@
 const SubReddit = require("../models/subReddit");
 const User = require("../models/user");
+const Post = require("../models/post");
 const subredditServices = require("../services/subredditServices");
 const UserUploadModel = require("../models/userUploads");
 const UserUpload = require("../controllers/userUploadsController");
+const UserServices = require("../services/userServices");
+const PostServices = require("../services/postServices");
 
 const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
@@ -1072,14 +1075,138 @@ const getBannedUsers = async (req, res, next) => {
   }
 };
 
-const getSubredditFeed = async (req, res) => {
-  const subredditId = req.query.subredditId;
-  const subreddit = await SubReddit.findById(subredditId);
-  if (!subreddit) {
-    return res.status(404).json({ message: "Subreddit not found" });
+const banUser = async (req, res, next) => {
+  const userId = req.userId;
+  const subredditName = req.body.subredditName;
+  const userName = req.body.userName;
+  const reasonForBan = req.body.reasonForBan;
+  const modNote = req.body.modNote;
+  const permanent = req.body.permanent;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
+    const user = await User.findOne({ userName: userName });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!user.communities.includes(subreddit._id.toString())) {
+      return res.status(400).json({ message: "User is not a member of this subreddit" });
+    }
+    if (subreddit.bannedUsers.find(bannedUser => bannedUser.userId.toString() === user._id.toString())) {
+      return res.status(400).json({ message: "User already banned" });
+    }
+    subreddit.bannedUsers.push({
+      userId: user._id,
+      userName: user.userName,
+      permanent: permanent,
+      reasonForBan: reasonForBan,
+      bannedAt: new Date(),
+      modNote: modNote,
+    });
+    await subreddit.save();
+    user.bannedSubreddits.push(subreddit._id);
+    await user.save();
+
+    res.json({ message: "User banned successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error banning user" });
   }
-  const posts = subreddit.posts;
-  res.json({ posts });
+};
+
+const unbanUser = async (req, res, next) => {
+  const userId = req.userId;
+  const subredditName = req.body.subredditName;
+  const userName = req.body.userName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
+    const user = await User.findOne({ userName: userName });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!subreddit.bannedUsers.find(bannedUser => bannedUser.userId.toString() === user._id.toString())) {
+      return res.status(400).json({ message: "User not banned" });
+    }
+    subreddit.bannedUsers = subreddit.bannedUsers.filter(bannedUser => bannedUser.userId.toString() !== user._id.toString());
+    await subreddit.save();
+    user.bannedSubreddits = user.bannedSubreddits.filter(bannedSubreddit => bannedSubreddit.toString() !== subreddit._id.toString());
+    await user.save();
+
+    res.json({ message: "User unbanned successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error unbanning user" });
+  }
+};
+
+
+const getSubredditFeed = async (req, res) => {
+  const userId = req.userId;
+  const subredditName = req.query.subredditName;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    let user;
+    if (userId) {
+      user = await User.findById(userId);
+    }
+    const query = Post.find({ subReddit: subreddit._id });
+    const result = await UserServices.paginateResults(query, page, limit);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    // console.log(result.slicedArray);
+    const postsWithVoteStatus = await Promise.all(
+      result.slicedArray.map(async (post) => {
+        const isUpvoted = !userId?false:post.upvotedUsers.includes(user._id);
+        const isDownvoted = !userId?false:post.downvotedUsers.includes(user._id);
+        let imageUrls, videoUrls;
+        if (post.type === "image") {
+          imageUrls = await PostServices.getImagesUrls(post.images);
+        }
+        if (post.type === "video") {
+          videoUrls = await PostServices.getVideosUrls(post.videos);
+        }
+        const postObj = {
+          ...post._doc,
+          isUpvoted,
+          isDownvoted,
+          imageUrls,
+          videoUrls,
+        };
+        delete postObj.images;
+        delete postObj.videos;
+        delete postObj.upvotedUsers;
+        delete postObj.downvotedUsers;
+        delete postObj.comments;
+        delete postObj.spamCount;
+        delete postObj.spammedBy;
+        return postObj;
+      })
+    );
+    return res.status(200).json({
+      message: "Retrieved Subreddit's Posts",
+      subredditPosts: postsWithVoteStatus,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting Subreddit's Posts",
+      error: err.message,
+    });
+  }
 };
 
 module.exports = {
@@ -1112,5 +1239,7 @@ module.exports = {
   approveUser,
   UnapproveUser,
   getBannedUsers,
+  banUser,
+  unbanUser,
   getSubredditFeed
 };

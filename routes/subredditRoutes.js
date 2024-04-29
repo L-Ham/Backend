@@ -168,6 +168,18 @@ router.patch(
   authenticateToken,
   subredditController.UnapproveUser
 );
+router.patch(
+  "/user/ban",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.banUser
+);
+router.patch(
+  "/user/unban",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.unbanUser
+);
 
 router.get(
   "/users/banned",
@@ -175,8 +187,6 @@ router.get(
   authenticateToken,
   subredditController.getBannedUsers
 );
-
-
 
 router.get(
   "/feed",
