@@ -23,4 +23,11 @@ router.post(
     authenticateToken,
     messageController.unreadMessage
   );
+
+  router.get(
+    "/getAllInbox",
+    bodyParser.json(),
+    authenticateToken,
+    messageController.getAllInboxMessages
+  );
   module.exports = router;

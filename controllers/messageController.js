@@ -116,8 +116,27 @@ const unreadMessage = async (req, res, next) => {
         res.status(500).json({ message: "Error Marking Message as Unread",error: error.message });
     }
 };
+
+const getAllInboxMessages = async (req, res, next) => {
+    const userId = req.userId;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const messages = await Message.find({ receiver: userId });
+        if (!messages) {
+            return res.status(404).json({ message: "No Messages found" });
+        }
+        res.status(200).json({ messages: messages });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 module.exports = {
     composeMessage,
     readMessage,
     unreadMessage,
+    getAllInboxMessages,
 };
