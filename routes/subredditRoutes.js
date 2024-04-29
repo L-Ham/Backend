@@ -188,7 +188,6 @@ router.get(
   subredditController.getBannedUsers
 );
 
-
 router.get(
   "/feed",
   bodyParser.json(),

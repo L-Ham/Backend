@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const multerConfig = require("./middleware/multerConfig");
 const app = express();
 const cors = require("cors");
+const message = require("./models/message");
 const PORT = 5000;
 
 app.use(cors());
@@ -23,11 +24,13 @@ mongoose
       const postRoutes = require("./routes/postRoutes");
       const commentRoutes = require("./routes/commentRoutes");
       const subredditRoutes = require("./routes/subredditRoutes");
+      const messageRoutes = require("./routes/messageRoutes");
       app.use("/user", userRoutes);
       app.use("/auth", authRoutes);
       app.use("/post", postRoutes);
       app.use("/comment", commentRoutes);
       app.use("/subreddit", subredditRoutes);
+      app.use("/message",messageRoutes);
       app.get("/", function (req, res) {
         res.send("Hello World!");
       });
