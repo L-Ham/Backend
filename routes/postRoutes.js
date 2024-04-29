@@ -142,5 +142,11 @@ router.get(
   //authenticateToken,
   postController.getTrendingPosts
 );
+router.get(
+  "/get",
+  bodyParser.json(),
+  authenticateToken,
+  postController.getPostById
+);
 
 module.exports = router;

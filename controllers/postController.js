@@ -922,6 +922,18 @@ const getTrendingPosts = async (req, res, next) => {
     });
   }
 };
+const getPostById = async (req, res, next) => {
+  const postId = req.query.postId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    res.status(200).json({ message: "Post retrieved successfully", post });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting post", error: error.message });
+  }
+};
 
 module.exports = {
   savePost,
@@ -945,4 +957,5 @@ module.exports = {
   unmarkAsSpoiler,
   reportPost,
   getTrendingPosts,
+  getPostById
 };
