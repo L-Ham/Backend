@@ -12,7 +12,7 @@ router.post(
   subredditController.createCommunity
 );
 
-router.get("/sorting", bodyParser.json(), subredditController.sorting);
+// router.get("/sorting", bodyParser.json(), subredditController.sorting);
 router.post(
   "/rule",
   bodyParser.json(),

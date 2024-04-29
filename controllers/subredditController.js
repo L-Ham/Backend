@@ -1212,7 +1212,6 @@ const getSubredditFeed = async (req, res) => {
 };
 
 module.exports = {
-  sorting,
   createCommunity,
   addRule,
   addTextWidget,
