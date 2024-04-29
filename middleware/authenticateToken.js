@@ -4,18 +4,11 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
   // console.log(token);
   if (!token) {
-<<<<<<< Updated upstream
     // return res.status(401).json({ message: "Unauthorized: No token provided" });
     req.userId = null;
     next();
   }
   else{
-=======
-  req.userId = null;
-    next();
-  }
-else{
->>>>>>> Stashed changes
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(403).json({ message: "Forbidden: Invalid token" });
