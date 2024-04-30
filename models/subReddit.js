@@ -109,7 +109,34 @@ const subRedditSchema = new Schema({
       },
     ],
   },
-
+  bookMarks: [
+    {
+      widgetName: {
+        type: String,
+        required: true,
+      },
+      description: {
+        type: String,
+        required: false,
+      },
+      buttons: [
+        {
+          _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            auto: true,
+          },
+          label: {
+            type: String,
+            required: true,
+          },
+          link: {
+            type: String,
+            required: true,
+          },
+        },
+      ],
+    },
+  ],
   appearance: {
     bannerImage: {
       type: Schema.Types.ObjectId,

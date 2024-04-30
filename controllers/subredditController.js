@@ -1210,6 +1210,117 @@ const getSubredditFeed = async (req, res) => {
     });
   }
 };
+const addBookmark = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetName, description, buttons } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+
+    if (!widgetName) {
+      return res.status(400).json({ message: "Widget name is required" });
+    }
+
+    if (buttons && buttons.length > 0) {
+      for (let button of buttons) {
+        if (!button.label || !button.link) {
+          return res.status(400).json({ message: "Each button must have a label and a link" });
+        }
+      }
+    }
+
+    if (!subreddit.bookmarks) {
+      subreddit.bookmarks = []; 
+    }
+
+    subreddit.bookMarks.push({ widgetName, description, buttons });
+    await subreddit.save();
+    
+    res.status(200).json({ message: "Bookmark added successfully", bookmark: { widgetName, description, buttons } });
+  } catch (err) {
+    res.status(500).json({ message: "Error adding bookmark", error: err.message });
+  }
+};
+const editBookmark = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetId, widgetName, description } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    const bookmark = subreddit.bookMarks[bookmarkIndex];
+    if (widgetName) {
+      bookmark.widgetName = widgetName;
+    }
+    if (description) {
+      bookmark.description = description;
+    }
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark edited successfully", bookmark });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error editing bookmark", error: err.message });
+  }
+};
+const deleteBookmark = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    subreddit.bookMarks.splice(bookmarkIndex, 1);
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark deleted successfully" });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error deleting bookmark", error: err.message });
+  }
+}
+
+
+
 
 module.exports = {
   createCommunity,
@@ -1242,5 +1353,8 @@ module.exports = {
   getBannedUsers,
   banUser,
   unbanUser,
-  getSubredditFeed
+  getSubredditFeed,
+  addBookmark,
+  editBookmark,
+  deleteBookmark
 };

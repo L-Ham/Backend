@@ -194,4 +194,24 @@ router.get(
   authenticateToken,
   subredditController.getSubredditFeed
 );
+router.post(
+  "/bookmark",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addBookmark
+);
+router.patch(
+  "/bookmark",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editBookmark
+);
+router.delete(
+  "/bookmark",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteBookmark
+);
+
+
 module.exports = router;
