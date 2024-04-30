@@ -195,19 +195,19 @@ router.get(
   subredditController.getSubredditFeed
 );
 router.post(
-  "/bookmark",
+  "/widget/bookmark",
   bodyParser.json(),
   authenticateToken,
   subredditController.addBookmark
 );
 router.patch(
-  "/bookmark",
+  "/widget/bookmark",
   bodyParser.json(),
   authenticateToken,
   subredditController.editBookmark
 );
 router.delete(
-  "/bookmark",
+  "/widget/bookmark",
   bodyParser.json(),
   authenticateToken,
   subredditController.deleteBookmark
