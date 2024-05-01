@@ -1445,6 +1445,100 @@ const deleteBookmarkButton = async (req, res) => {
   }
 };
 
+const addRemovalReason = async (req, res) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  const title = req.body.title;
+  const message = req.body.message;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if(subreddit.removalReasons.length ===50) {
+      return res.status(500).json({ message: "Exceeded limit of 50 Reasons for the subreddit" });
+    }
+    subreddit.removalReasons.push({ title, message });
+    await subreddit.save();
+    res.status(200).json({ message: "Removal reason added successfully" });
+  } catch (error) {
+     return res.status(500).json({ message: "Error adding removal reason",error:error.message }); 
+    }
+};
+
+const editRemovalReason = async (req, res) => {
+    const userId = req.userId;
+    const subredditId = req.body.subredditId;
+    const reasonId = req.body.reasonId;
+    const title = req.body.title;
+    const message = req.body.message;
+    try{
+      const user = await User.findById (userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    const removalReasonIndex = subreddit.removalReasons.findIndex(reason => reason._id.equals(reasonId));
+    if (removalReasonIndex === -1) {
+      return res.status(404).json({ message: "Removal reason not found" });
+    }
+
+    subreddit.removalReasons[removalReasonIndex].title = title;
+    subreddit.removalReasons[removalReasonIndex].message = message;
+
+    await subreddit.save();
+
+    res.status(200).json({ message: "Removal reason edited successfully" });
+  }
+  catch (error) {
+    return res.status(500).json({ message: "Error editing removal reason",error:error.message });
+  }
+};
+
+const deleteRemovalReason = async (req, res) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  const reasonId = req.body.reasonId;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    const removalReasonIndex = subreddit.removalReasons.findIndex(reason => reason._id.equals(reasonId));
+    if (removalReasonIndex === -1) {
+      return res.status(404).json({ message: "Removal reason not found" });
+    }
+    subreddit.removalReasons.splice(removalReasonIndex, 1);
+    await subreddit.save();
+    res.status(200).json({ message: "Removal reason deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting removal reason",error:error.message });
+  }
+};
+
+const getRemovalReasons = async (req, res) => {
+  const userId = req.userId;
+};
 
 
 
@@ -1485,5 +1579,9 @@ module.exports = {
   deleteBookmark,
   addBookmarkButton,
   editBookmarkButton,
-  deleteBookmarkButton
+  deleteBookmarkButton,
+  addRemovalReason,
+  editRemovalReason,
+  deleteRemovalReason,
+  getRemovalReasons
 };

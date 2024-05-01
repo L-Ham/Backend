@@ -231,5 +231,29 @@ router.delete(
   subredditController.deleteBookmarkButton
 );
 
+router.post(
+  "/removalReason",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addRemovalReason
+);
+router.patch(
+  "/removalReason",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editRemovalReason
+);
+router.delete(
+  "/removalReason",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteRemovalReason
+);
+router.get(
+  "/removalReasons",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getRemovalReasons
+);
 
 module.exports = router;
