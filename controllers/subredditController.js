@@ -783,11 +783,16 @@ const getWidget = async (req, res, next) => {
       acc[widget._id] = widget;
       return acc;
     }, {});
+    const bookMarksById = subreddit.bookMarks.reduce((acc, bookmark) => {
+      acc[bookmark._id] = bookmark;
+      return acc;
+    }, {});
 
     let response = {
       message: "Subreddit widgets retrieved successfully",
       communityDetails,
       textWidgets: textWidgetsById,
+      bookMarks: bookMarksById,
       moderators,
       rules: subreddit.rules,
       orderWidget: subreddit.orderWidget,
@@ -1247,6 +1252,10 @@ const addBookmark = async (req, res) => {
     }
 
     subreddit.bookMarks.push({ widgetName, description, buttons });
+
+    subreddit.orderWidget.push(
+      subreddit.bookMarks[subreddit.bookMarks.length - 1]._id
+    );
     await subreddit.save();
     
     res.status(200).json({ message: "Bookmark added successfully", bookmark: { widgetName, description, buttons } });
