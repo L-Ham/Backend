@@ -824,6 +824,7 @@ const getPopularCommunities = async (req, res) => {
         communityId: community._id,
         avatarImageUrl: avatarImage ? avatarImage.url : null,
         memberCount: memberCount,
+        description: community.description,
       };
     });
 
@@ -965,6 +966,7 @@ const getTrendingCommunities = async (req, res) => {
         avatarImageUrl: avatarImage ? avatarImage.url : null,
         memberCount: memberCount,
         postCount: postCount,
+        description: community.description,
       };
     });
 
