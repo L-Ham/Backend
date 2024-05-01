@@ -1319,7 +1319,122 @@ const deleteBookmark = async (req, res) => {
   catch (err) {
     res.status(500).json({ message: "Error deleting bookmark", error: err.message });
   }
-}
+};
+const addBookmarkButton = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetId, button } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    if (!button.label || !button.link) {
+      return res.status(400).json({ message: "Button must have a label and a link" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    subreddit.bookMarks[bookmarkIndex].buttons.push(button);
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark button added successfully", button });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error adding bookmark button", error: err.message });
+  }
+};
+const editBookmarkButton = async (req, res) => {  
+  const userId = req.userId;
+  const { subredditId, widgetId, buttonId, label, link } = req.body;
+  try {
+    const user= await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    if (!buttonId) {
+      return res.status(400).json({ message: "Button ID is required" });
+    }
+    if (!label && !link) {
+      return res.status(400).json({ message: "Either label or link is required" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    const buttonIndex = subreddit.bookMarks[bookmarkIndex].buttons.findIndex(button => button._id.toString() === buttonId);
+    if (buttonIndex === -1) {
+      return res.status(404).json({ message: "Button not found" });
+    }
+    if (label) {
+      subreddit.bookMarks[bookmarkIndex].buttons[buttonIndex].label = label;
+    }
+    if (link) {
+      subreddit.bookMarks[bookmarkIndex].buttons[buttonIndex].link = link;
+    }
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark button edited successfully", button: subreddit.bookMarks[bookmarkIndex].buttons[buttonIndex] });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error editing bookmark button", error: err.message });
+  }
+};
+const deleteBookmarkButton = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetId, buttonId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    if (!buttonId) {
+      return res.status(400).json({ message: "Button ID is required" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    const buttonIndex = subreddit.bookMarks[bookmarkIndex].buttons.findIndex(button => button._id.toString() === buttonId);
+    if (buttonIndex === -1) {
+      return res.status(404).json({ message: "Button not found" });
+    }
+    subreddit.bookMarks[bookmarkIndex].buttons.splice(buttonIndex, 1);
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark button deleted successfully" });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error deleting bookmark button", error: err.message });
+  }
+};
 
 
 
@@ -1358,5 +1473,8 @@ module.exports = {
   getSubredditFeed,
   addBookmark,
   editBookmark,
-  deleteBookmark
+  deleteBookmark,
+  addBookmarkButton,
+  editBookmarkButton,
+  deleteBookmarkButton
 };
