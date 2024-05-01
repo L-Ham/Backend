@@ -212,6 +212,24 @@ router.delete(
   authenticateToken,
   subredditController.deleteBookmark
 );
+router.post(
+  "/bookmark/button",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addBookmarkButton
+);
+router.patch(
+  "/bookmark/button",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editBookmarkButton
+);
+router.delete(
+  "/bookmark/button",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteBookmarkButton
+);
 
 
 module.exports = router;
