@@ -1297,12 +1297,15 @@ const searchUsernames = async (req, res) => {
     const blockedUserIds = user.blockUsers.map((blockedUser) =>
       blockedUser.blockedUserId.toString()
     );
-    const matchingUsernamesWithBlockStatus = matchingUsernames.map(
-      (matchingUser) => ({
+
+    const matchingUsernamesWithBlockStatus = await Promise.all(matchingUsernames.map(async (matchingUser) => {
+      const avatarImageUrl = await UserUploadModel.findById(matchingUser.avatarImage);
+      return {
         ...matchingUser._doc,
+        avatarImageUrl: avatarImageUrl ? avatarImageUrl.url : null,
         isBlocked: blockedUserIds.includes(matchingUser._id.toString()),
-      })
-    );
+      };
+    }));
 
     res.json({ matchingUsernames: matchingUsernamesWithBlockStatus });
   } catch (err) {
