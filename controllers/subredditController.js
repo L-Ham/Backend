@@ -678,7 +678,7 @@ const getSubredditByNames = async (req, res) => {
     const regex = new RegExp(`^${search}`, "i");
     const matchingNames = await SubReddit.find(
       { name: regex },
-      "_id name appearance.avatarImage members"
+      "_id name appearance.avatarImage members ageRestriction"
     );
 
     const avatarImagePromises = matchingNames.map(async (subreddit) => {
@@ -698,6 +698,8 @@ const getSubredditByNames = async (req, res) => {
           ...subreddit.appearance,
           avatarImage: avatarImage,
         },
+        isNSFW: subreddit.ageRestriction
+
       };
     });
 
@@ -783,11 +785,16 @@ const getWidget = async (req, res, next) => {
       acc[widget._id] = widget;
       return acc;
     }, {});
+    const bookMarksById = subreddit.bookMarks.reduce((acc, bookmark) => {
+      acc[bookmark._id] = bookmark;
+      return acc;
+    }, {});
 
     let response = {
       message: "Subreddit widgets retrieved successfully",
       communityDetails,
       textWidgets: textWidgetsById,
+      bookMarks: bookMarksById,
       moderators,
       rules: subreddit.rules,
       orderWidget: subreddit.orderWidget,
@@ -824,6 +831,7 @@ const getPopularCommunities = async (req, res) => {
         communityId: community._id,
         avatarImageUrl: avatarImage ? avatarImage.url : null,
         memberCount: memberCount,
+        description: community.description,
       };
     });
 
@@ -965,6 +973,7 @@ const getTrendingCommunities = async (req, res) => {
         avatarImageUrl: avatarImage ? avatarImage.url : null,
         memberCount: memberCount,
         postCount: postCount,
+        description: community.description,
       };
     });
 
@@ -1210,6 +1219,348 @@ const getSubredditFeed = async (req, res) => {
     });
   }
 };
+const addBookmark = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetName, description, buttons } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+
+    if (!widgetName) {
+      return res.status(400).json({ message: "Widget name is required" });
+    }
+
+    if (buttons && buttons.length > 0) {
+      for (let button of buttons) {
+        if (!button.label || !button.link) {
+          return res.status(400).json({ message: "Each button must have a label and a link" });
+        }
+      }
+    }
+
+    if (!subreddit.bookmarks) {
+      subreddit.bookmarks = []; 
+    }
+
+    subreddit.bookMarks.push({ widgetName, description, buttons });
+
+    subreddit.orderWidget.push(
+      subreddit.bookMarks[subreddit.bookMarks.length - 1]._id
+    );
+    await subreddit.save();
+    
+    res.status(200).json({ message: "Bookmark added successfully", bookmark: { widgetName, description, buttons } });
+  } catch (err) {
+    res.status(500).json({ message: "Error adding bookmark", error: err.message });
+  }
+};
+const editBookmark = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetId, widgetName, description } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    const bookmark = subreddit.bookMarks[bookmarkIndex];
+    if (widgetName) {
+      bookmark.widgetName = widgetName;
+    }
+    if (description) {
+      bookmark.description = description;
+    }
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark edited successfully", bookmark });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error editing bookmark", error: err.message });
+  }
+};
+const deleteBookmark = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    subreddit.bookMarks.splice(bookmarkIndex, 1);
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark deleted successfully" });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error deleting bookmark", error: err.message });
+  }
+};
+const addBookmarkButton = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetId, button } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    if (!button.label || !button.link) {
+      return res.status(400).json({ message: "Button must have a label and a link" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    subreddit.bookMarks[bookmarkIndex].buttons.push(button);
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark button added successfully", button });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error adding bookmark button", error: err.message });
+  }
+};
+const editBookmarkButton = async (req, res) => {  
+  const userId = req.userId;
+  const { subredditId, widgetId, buttonId, label, link } = req.body;
+  try {
+    const user= await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    if (!buttonId) {
+      return res.status(400).json({ message: "Button ID is required" });
+    }
+    if (!label && !link) {
+      return res.status(400).json({ message: "Either label or link is required" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    const buttonIndex = subreddit.bookMarks[bookmarkIndex].buttons.findIndex(button => button._id.toString() === buttonId);
+    if (buttonIndex === -1) {
+      return res.status(404).json({ message: "Button not found" });
+    }
+    if (label) {
+      subreddit.bookMarks[bookmarkIndex].buttons[buttonIndex].label = label;
+    }
+    if (link) {
+      subreddit.bookMarks[bookmarkIndex].buttons[buttonIndex].link = link;
+    }
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark button edited successfully", button: subreddit.bookMarks[bookmarkIndex].buttons[buttonIndex] });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error editing bookmark button", error: err.message });
+  }
+};
+const deleteBookmarkButton = async (req, res) => {
+  const userId = req.userId;
+  const { subredditId, widgetId, buttonId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if (!widgetId) {
+      return res.status(400).json({ message: "Widget ID is required" });
+    }
+    if (!buttonId) {
+      return res.status(400).json({ message: "Button ID is required" });
+    }
+    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    if (bookmarkIndex === -1) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    const buttonIndex = subreddit.bookMarks[bookmarkIndex].buttons.findIndex(button => button._id.toString() === buttonId);
+    if (buttonIndex === -1) {
+      return res.status(404).json({ message: "Button not found" });
+    }
+    subreddit.bookMarks[bookmarkIndex].buttons.splice(buttonIndex, 1);
+    await subreddit.save();
+    res.status(200).json({ message: "Bookmark button deleted successfully" });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error deleting bookmark button", error: err.message });
+  }
+};
+
+const addRemovalReason = async (req, res) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  const title = req.body.title;
+  const message = req.body.message;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    if(subreddit.removalReasons.length ===50) {
+      return res.status(500).json({ message: "Exceeded limit of 50 Reasons for the subreddit" });
+    }
+    subreddit.removalReasons.push({ title, message });
+    await subreddit.save();
+    res.status(200).json({ message: "Removal reason added successfully" });
+  } catch (error) {
+     return res.status(500).json({ message: "Error adding removal reason",error:error.message }); 
+    }
+};
+
+const editRemovalReason = async (req, res) => {
+    const userId = req.userId;
+    const subredditId = req.body.subredditId;
+    const reasonId = req.body.reasonId;
+    const title = req.body.title;
+    const message = req.body.message;
+    try{
+      const user = await User.findById (userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    const removalReasonIndex = subreddit.removalReasons.findIndex(reason => reason._id.equals(reasonId));
+    if (removalReasonIndex === -1) {
+      return res.status(404).json({ message: "Removal reason not found" });
+    }
+
+    subreddit.removalReasons[removalReasonIndex].title = title;
+    subreddit.removalReasons[removalReasonIndex].message = message;
+
+    await subreddit.save();
+
+    res.status(200).json({ message: "Removal reason edited successfully" });
+  }
+  catch (error) {
+    return res.status(500).json({ message: "Error editing removal reason",error:error.message });
+  }
+};
+
+const deleteRemovalReason = async (req, res) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  const reasonId = req.body.reasonId;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+    }
+    const removalReasonIndex = subreddit.removalReasons.findIndex(reason => reason._id.equals(reasonId));
+    if (removalReasonIndex === -1) {
+      return res.status(404).json({ message: "Removal reason not found" });
+    }
+    subreddit.removalReasons.splice(removalReasonIndex, 1);
+    await subreddit.save();
+    res.status(200).json({ message: "Removal reason deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting removal reason",error:error.message });
+  }
+};
+
+const getRemovalReasons = async (req, res) => {
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  try{
+  const user = await User.findById (userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  const subreddit = await SubReddit.findById(subredditId);
+  if (!subreddit) {
+    return res.status(404).json({ message: "Subreddit not found" });
+  }
+  if (!subreddit.moderators.includes(userId)) {
+    return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+  }
+  res.status(200).json({ message: "Retrieved subreddit removal reasons", removalReasons: subreddit.removalReasons });
+  }
+  catch (error) {
+    return res.status(500).json({ message: "Error getting removal reasons",error:error.message });
+  }
+};
+
+
 
 module.exports = {
   createCommunity,
@@ -1242,5 +1593,15 @@ module.exports = {
   getBannedUsers,
   banUser,
   unbanUser,
-  getSubredditFeed
+  getSubredditFeed,
+  addBookmark,
+  editBookmark,
+  deleteBookmark,
+  addBookmarkButton,
+  editBookmarkButton,
+  deleteBookmarkButton,
+  addRemovalReason,
+  editRemovalReason,
+  deleteRemovalReason,
+  getRemovalReasons
 };

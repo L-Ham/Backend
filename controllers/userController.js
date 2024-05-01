@@ -1291,22 +1291,25 @@ const searchUsernames = async (req, res) => {
     const regex = new RegExp(`^${search}`, "i");
     const matchingUsernames = await User.find(
       { userName: regex, _id: { $ne: userId } },
-      "_id userName avatarImage"
+      "_id userName avatarImage profileSettings"
     );
 
     const blockedUserIds = user.blockUsers.map((blockedUser) =>
       blockedUser.blockedUserId.toString()
     );
-    const matchingUsernamesWithBlockStatus = matchingUsernames.map(
-      (matchingUser) => ({
+
+    const matchingUsernamesWithBlockStatus = await Promise.all(matchingUsernames.map(async (matchingUser) => {
+      const avatarImageUrl = await UserUploadModel.findById(matchingUser.avatarImage);
+      return {
         ...matchingUser._doc,
+        avatarImageUrl: avatarImageUrl ? avatarImageUrl.url : null,
         isBlocked: blockedUserIds.includes(matchingUser._id.toString()),
-      })
-    );
+      };
+    }));
 
     res.json({ matchingUsernames: matchingUsernamesWithBlockStatus });
   } catch (err) {
-    res.status(500).json({ message: "Error searching usernames", error: err });
+    res.status(500).json({ message: "Error searching usernames", error: err.message });
   }
 };
 

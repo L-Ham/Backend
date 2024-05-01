@@ -194,4 +194,66 @@ router.get(
   authenticateToken,
   subredditController.getSubredditFeed
 );
+router.post(
+  "/widget/bookmark",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addBookmark
+);
+router.patch(
+  "/widget/bookmark",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editBookmark
+);
+router.delete(
+  "/widget/bookmark",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteBookmark
+);
+router.post(
+  "/bookmark/button",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addBookmarkButton
+);
+router.patch(
+  "/bookmark/button",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editBookmarkButton
+);
+router.delete(
+  "/bookmark/button",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteBookmarkButton
+);
+
+router.post(
+  "/removalReason",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.addRemovalReason
+);
+router.patch(
+  "/removalReason",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.editRemovalReason
+);
+router.delete(
+  "/removalReason",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.deleteRemovalReason
+);
+router.get(
+  "/removalReasons",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getRemovalReasons
+);
+
 module.exports = router;
