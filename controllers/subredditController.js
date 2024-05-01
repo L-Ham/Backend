@@ -678,7 +678,7 @@ const getSubredditByNames = async (req, res) => {
     const regex = new RegExp(`^${search}`, "i");
     const matchingNames = await SubReddit.find(
       { name: regex },
-      "_id name appearance.avatarImage members"
+      "_id name appearance.avatarImage members ageRestriction"
     );
 
     const avatarImagePromises = matchingNames.map(async (subreddit) => {
@@ -698,6 +698,8 @@ const getSubredditByNames = async (req, res) => {
           ...subreddit.appearance,
           avatarImage: avatarImage,
         },
+        isNSFW: subreddit.ageRestriction
+
       };
     });
 
@@ -1538,6 +1540,24 @@ const deleteRemovalReason = async (req, res) => {
 
 const getRemovalReasons = async (req, res) => {
   const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  try{
+  const user = await User.findById (userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  const subreddit = await SubReddit.findById(subredditId);
+  if (!subreddit) {
+    return res.status(404).json({ message: "Subreddit not found" });
+  }
+  if (!subreddit.moderators.includes(userId)) {
+    return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+  }
+  res.status(200).json({ message: "Retrieved subreddit removal reasons", removalReasons: subreddit.removalReasons });
+  }
+  catch (error) {
+    return res.status(500).json({ message: "Error getting removal reasons",error:error.message });
+  }
 };
 
 
