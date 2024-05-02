@@ -158,36 +158,16 @@ router.patch(
   authenticateToken,
   userController.removeFavoriteCommunity
 );
-router.get(
-  "/upvotedPosts",
-  bodyParser.json(),
-  userController.getUpvotedPosts
-);
+router.get("/upvotedPosts", bodyParser.json(), userController.getUpvotedPosts);
 router.get(
   "/downvotedPosts",
   bodyParser.json(),
   userController.getDownvotedPosts
 );
-router.get(
-  "/savedPosts",
-  bodyParser.json(),
-  userController.getSavedPosts
-);
-router.get(
-  "/hiddenPosts",
-  bodyParser.json(),
-  userController.getHiddenPosts
-);
-router.get(
-  "/comments",
-  bodyParser.json(),
-  userController.getUserComments
-);
-router.get(
-  "/posts",
-  bodyParser.json(),
-  userController.getUserPosts
-);
+router.get("/savedPosts", bodyParser.json(), userController.getSavedPosts);
+router.get("/hiddenPosts", bodyParser.json(), userController.getHiddenPosts);
+router.get("/comments", bodyParser.json(), userController.getUserComments);
+router.get("/posts", bodyParser.json(), userController.getUserPosts);
 router.get(
   "/getAllBlockedUsers",
   bodyParser.json(),
@@ -229,7 +209,7 @@ router.post(
   "/banner",
   bodyParser.json(),
   authenticateToken,
-  uploadImage.array('file'),
+  uploadImage.array("file"),
   userController.uploadBannerImage
 );
 router.get(
@@ -279,7 +259,6 @@ router.get(
   userController.getUserInfo
 );
 
-
 router.get(
   "/community",
   bodyParser.json(),
@@ -287,5 +266,10 @@ router.get(
   userController.getCommunitiesInfo
 );
 
-
+router.get(
+  "/notifications",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getNotifications
+);
 module.exports = router;
