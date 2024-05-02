@@ -253,27 +253,33 @@ const getUnreadInboxMessages = async (req, res, next) => {
                 const sender = await User.findById(reply.sender);
                 const receiver = await User.findById(reply.receiver);
                 return {
+                    messageId: reply._id,
                     sender: sender.userName,
                     receiver: receiver.userName,
                     subject: reply.subject,
                     message: reply.message,
                     isRead: reply.isRead,
+                    createdAt: reply.createdAt,
                 };
             }));
             return {
+                messageId: message._id,
                 sender: sender.userName,
                 receiver: receiver.userName,
                 subject: message.subject,
                 message: message.message,
                 isRead: message.isRead,
                 parentMessage: parentMessage ? {
+                    messageId: parentMessage._id,
                     sender: parentMessageSender ? parentMessageSender.userName : null,
                     receiver: parentMessageReceiver ? parentMessageReceiver.userName : null,
                     subject: parentMessage.subject,
                     message: parentMessage.message,
                     isRead: parentMessage.isRead,
+                    createdAt: parentMessage.createdAt,
                 } : null,
                 replies: populatedReplies,
+                createdAt: message.createdAt,
             };
         }));
         res.json(populatedMessages);
