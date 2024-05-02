@@ -149,4 +149,10 @@ router.get(
   postController.getPostById
 );
 
+router.get(
+  "/homepage/feed",
+  bodyParser.json(),
+  authenticateToken,
+  postController.getAllPosts
+);
 module.exports = router;

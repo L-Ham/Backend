@@ -6,6 +6,7 @@ const UserUpload = require("../controllers/userUploadsController");
 const Report = require("../models/report");
 const mongoose = require("mongoose");
 const UserUploadModel = require("../models/userUploads");
+const PostServices = require("../services/postServices");
 
 const createPost = async (req, res, next) => {
   const userId = req.userId;
@@ -935,6 +936,63 @@ const getPostById = async (req, res, next) => {
   }
 };
 
+
+const getAllPosts = async (req, res) => {
+  const userId = req.userId;
+  const sortMethod = req.query.sort;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  try {
+    let user;
+    if (userId) {
+      user = await User.findById(userId);
+    }
+    const query = Post.find(); 
+    const result = await PostServices.paginatePosts(query, page, limit, sortMethod);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    const postsWithVoteStatus = await Promise.all(
+      result.slicedArray.map(async (post) => {
+        const isUpvoted = !userId ? false : post.upvotedUsers.includes(user._id);
+        const isDownvoted = !userId ? false : post.downvotedUsers.includes(user._id);
+        let imageUrls, videoUrls;
+        if (post.type === "image") {
+          imageUrls = await PostServices.getImagesUrls(post.images);
+        }
+        if (post.type === "video") {
+          videoUrls = await PostServices.getVideosUrls(post.videos);
+        }
+        const postObj = {
+          ...post._doc,
+          isUpvoted,
+          isDownvoted,
+          imageUrls,
+          videoUrls,
+        };
+        delete postObj.images;
+        delete postObj.videos;
+        delete postObj.upvotedUsers;
+        delete postObj.downvotedUsers;
+        delete postObj.comments;
+        delete postObj.spamCount;
+        delete postObj.spammedBy;
+        return postObj;
+      })
+    );
+    return res.status(200).json({
+      message: "Retrieved All Posts",
+      posts: postsWithVoteStatus,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting All Posts",
+      error: err.message,
+    });
+  }
+};
+
+
 module.exports = {
   savePost,
   unsavePost,
@@ -957,5 +1015,6 @@ module.exports = {
   unmarkAsSpoiler,
   reportPost,
   getTrendingPosts,
-  getPostById
+  getPostById,
+  getAllPosts,
 };

@@ -1540,7 +1540,7 @@ const deleteRemovalReason = async (req, res) => {
 
 const getRemovalReasons = async (req, res) => {
   const userId = req.userId;
-  const subredditId = req.body.subredditId;
+  const subredditId = req.query.subredditId;
   try{
   const user = await User.findById (userId);
   if (!user) {
