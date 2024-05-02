@@ -287,11 +287,35 @@ const getUnreadInboxMessages = async (req, res, next) => {
         res.status(500).json({ message: "Error getting Unread Inbox messages", error: error.message });
     }
 };
+
+const unsendMessage = async (req, res, next) => {
+    const userId = req.userId;
+    const messageId = req.body.messageId;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return res.status(404).json({ message: "Message not found" });
+        }
+        if (message.sender.toString() !== userId) {
+            return res.status(403).json({ message: "Unauthorized You are not the message sender" });
+        }
+        await message.remove();
+        res.status(200).json({ message: "Message Deleted" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error Deleting Message", error: error.message });
+    }
+};
 module.exports = {
     composeMessage,
     readMessage,
     unreadMessage,
     getAllInboxMessages,
     getSentMessages,
-    getUnreadInboxMessages
+    getUnreadInboxMessages,
+    unsendMessage,
 };
