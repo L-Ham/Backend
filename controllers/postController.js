@@ -6,6 +6,7 @@ const UserUpload = require("../controllers/userUploadsController");
 const Report = require("../models/report");
 const mongoose = require("mongoose");
 const UserUploadModel = require("../models/userUploads");
+const schedule = require("node-schedule");
 const PostServices = require("../services/postServices");
 
 const createPost = async (req, res, next) => {
@@ -872,7 +873,9 @@ const reportPost = async (req, res, next) => {
 };
 const getTrendingPosts = async (req, res, next) => {
   try {
-    const trendingPosts = await Post.find({ images: { $exists: true, $ne: [] } })
+    const trendingPosts = await Post.find({
+      images: { $exists: true, $ne: [] },
+    })
       .sort({ upvotes: -1, downvotes: 1 })
       .limit(6);
 
@@ -932,9 +935,207 @@ const getPostById = async (req, res, next) => {
     }
     res.status(200).json({ message: "Post retrieved successfully", post });
   } catch (error) {
-    res.status(500).json({ message: "Error getting post", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error getting post", error: error.message });
   }
 };
+
+const scheduledPost = async (req, res, next) => {
+  const userId = req.userId;
+  const subRedditId = req.body.subRedditId;
+  const scheduledMinutes = req.body.scheduledMinutes;
+  console.log(req.body.title);
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  try {
+    // Check if title is provided in the request body
+    if (!req.body.title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
+    // Check type of post
+    switch (req.body.type) {
+      case "text":
+        // For text posts, ensure no images, videos, or polls are provided
+        if (
+          (req.files && req.files.length > 0) ||
+          req.body["poll.options"] ||
+          req.body["poll.votingLength"] ||
+          req.body["poll.startTime"] ||
+          req.body["poll.endTime"] ||
+          req.body.url
+        ) {
+          return res.status(400).json({
+            message:
+              "Text posts cannot include images, videos, links, or polls",
+          });
+        }
+        break;
+      case "image":
+      case "video":
+        if (
+          req.body["poll.options"] ||
+          req.body["poll.votingLength"] ||
+          req.body["poll.startTime"] ||
+          req.body.url
+        ) {
+          return res.status(400).json({
+            message: "Image posts cannot include links or polls",
+          });
+        }
+        // For image or video posts, ensure media is provided
+        if (!req.files || req.files.length === 0) {
+          return res.status(400).json({
+            message: "Media file is required for image or video post",
+          });
+        }
+        break;
+      case "poll":
+        // For poll posts, ensure poll object is provided with at least two options
+        if (req.body["poll.options"].length < 2) {
+          return res.status(400).json({
+            message:
+              "Poll post must include a poll object with at least two options",
+          });
+        }
+        break;
+      case "link":
+        // For link posts, ensure URL is provided
+        if (
+          (req.files && req.files.length > 0) ||
+          req.body["poll.options"] ||
+          req.body["poll.votingLength"] ||
+          req.body["poll.startTime"] ||
+          req.body["poll.endTime"]
+        ) {
+          return res.status(400).json({
+            message: "Link posts cannot include media or polls",
+          });
+        }
+        if (!req.body.url) {
+          return res
+            .status(400)
+            .json({ message: "URL is required for link post" });
+        }
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid post type" });
+    }
+    let subReddit = null;
+    if (subRedditId != "") {
+      subReddit = await SubReddit.findById(subRedditId);
+      if (!subReddit) {
+        console.error("Subreddit not found for subreddit ID:", subRedditId);
+      }
+    }
+    const newPost = createNewScheduledPost(
+      req,
+      userId,
+      subRedditId,
+      scheduledMinutes
+    );
+    if (req.files) {
+      for (const media of req.files) {
+        if (media.originalname) {
+          const uploadedImageId = await UserUpload.uploadMedia(media);
+          if (uploadedImageId && req.body.type === "image") {
+            newPost.images.push(uploadedImageId);
+          } else if (uploadedImageId && req.body.type === "video") {
+            newPost.videos.push(uploadedImageId);
+          } else {
+            return res
+              .status(400)
+              .json({ message: "Failed to upload at least one media" });
+          }
+        } else {
+          console.error("Media data missing in form data:", media);
+        }
+      }
+    }
+  
+    const postToSave = { ...newPost._doc };
+
+    delete postToSave._id;
+
+    const scheduleExpression = `*/${scheduledMinutes} * * * *`;
+    schedule.scheduleJob(scheduleExpression, async () => {
+      try {
+        const post = new Post(postToSave);
+        await post.save();
+        if(subReddit){
+          subReddit.scheduledPosts.pull(newPost);
+          subReddit.posts.push(post);
+          await subReddit.save();
+        }
+        else{    
+          user.scheduledPosts.pull(newPost);   
+          user.posts.push(post);
+          await user.save();
+
+        }
+        console.log("Post created successfully at scheduled time.");
+      } catch (error) {
+        console.log("Error creating post:", error.message);
+      }
+    });
+    newPost.isScheduled = true;
+    if (subReddit) {
+      subReddit.scheduledPosts.push(newPost);
+      await subReddit.save();
+    } else {
+      user.scheduledPosts.push(newPost);
+      console.log(user.scheduledPosts);
+      await user.save();
+      console.log("User saved");
+    }
+    res.status(200).json({ message: "Post created successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating post", error: error.message });
+  }
+};
+function createNewScheduledPost(req, userId, subRedditId, scheduledMinutes) {
+  const pollOptions = req.body["poll.options"] || [];
+  const votingLength = req.body["poll.votingLength"] || 0;
+  const startTime = req.body["poll.startTime"] || null;
+  const endTime = req.body["poll.endTime"] || null;
+  const options = pollOptions.map((option) => ({
+    option,
+    voters: [],
+  }));
+
+  return new Post({
+    user: userId,
+    subReddit: subRedditId == "" ? null : subRedditId,
+    title: req.body.title,
+    text: req.body.text,
+    images: req.body.images || [],
+    videos: req.body.videos || [],
+    url: req.body.url || "",
+    type: req.body.type,
+    isNSFW: req.body.isNSFW || false,
+    isSpoiler: req.body.isSpoiler || false,
+    isLocked: req.body.isLocked || false,
+    upvotes: 1,
+    downvotes: 0,
+    views: 0,
+    commentCount: 0,
+    spamCount: 0,
+    createdAt: new Date(),
+    poll: {
+      options: options,
+      votingLength: votingLength,
+      startTime: startTime,
+      endTime: endTime,
+    },
+    isScheduled: true,
+    scheduledMinutes: scheduledMinutes,
+  });
+}
 
 
 const getAllPosts = async (req, res) => {
@@ -1016,5 +1217,6 @@ module.exports = {
   reportPost,
   getTrendingPosts,
   getPostById,
+  scheduledPost,,
   getAllPosts,
 };

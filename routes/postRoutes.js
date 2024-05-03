@@ -148,6 +148,13 @@ router.get(
   authenticateToken,
   postController.getPostById
 );
+router.post(
+  "/scheduledPost",
+  bodyParser.json(),
+  authenticateToken,
+  uploadImage.array("file"),
+  postController.scheduledPost
+);
 
 router.get(
   "/homepage/feed",

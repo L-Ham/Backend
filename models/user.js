@@ -362,6 +362,12 @@ const userSchema = new Schema({
       ref: "subreddit",
     },
   ],
+  scheduledPosts: [
+    {
+      type: Object,
+      ref: 'post',
+    },
+  ],
 });
 
 module.exports = mongoose.model("user", userSchema);
