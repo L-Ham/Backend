@@ -1055,7 +1055,7 @@ const scheduledPost = async (req, res, next) => {
         }
       }
     }
-  
+
     const postToSave = { ...newPost._doc };
 
     delete postToSave._id;
@@ -1065,16 +1065,14 @@ const scheduledPost = async (req, res, next) => {
       try {
         const post = new Post(postToSave);
         await post.save();
-        if(subReddit){
+        if (subReddit) {
           subReddit.scheduledPosts.pull(newPost);
           subReddit.posts.push(post);
           await subReddit.save();
-        }
-        else{    
-          user.scheduledPosts.pull(newPost);   
+        } else {
+          user.scheduledPosts.pull(newPost);
           user.posts.push(post);
           await user.save();
-
         }
         console.log("Post created successfully at scheduled time.");
       } catch (error) {
@@ -1137,7 +1135,6 @@ function createNewScheduledPost(req, userId, subRedditId, scheduledMinutes) {
   });
 }
 
-
 const getAllPosts = async (req, res) => {
   const userId = req.userId;
   const sortMethod = req.query.sort;
@@ -1148,15 +1145,24 @@ const getAllPosts = async (req, res) => {
     if (userId) {
       user = await User.findById(userId);
     }
-    const query = Post.find(); 
-    const result = await PostServices.paginatePosts(query, page, limit, sortMethod);
+    const query = Post.find();
+    const result = await PostServices.paginatePosts(
+      query,
+      page,
+      limit,
+      sortMethod
+    );
     if (result.slicedArray.length == 0) {
       return res.status(500).json({ message: "The retrieved array is empty" });
     }
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
-        const isUpvoted = !userId ? false : post.upvotedUsers.includes(user._id);
-        const isDownvoted = !userId ? false : post.downvotedUsers.includes(user._id);
+        const isUpvoted = !userId
+          ? false
+          : post.upvotedUsers.includes(user._id);
+        const isDownvoted = !userId
+          ? false
+          : post.downvotedUsers.includes(user._id);
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
@@ -1193,7 +1199,6 @@ const getAllPosts = async (req, res) => {
   }
 };
 
-
 module.exports = {
   savePost,
   unsavePost,
@@ -1217,6 +1222,6 @@ module.exports = {
   reportPost,
   getTrendingPosts,
   getPostById,
-  scheduledPost,,
+  scheduledPost,
   getAllPosts,
 };
