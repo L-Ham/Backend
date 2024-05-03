@@ -1054,40 +1054,30 @@ const scheduledPost = async (req, res, next) => {
         }
       }
     }
-    console.log("zh2t bgd");
-    console.log(!newPost.isScheduled);
-    console.log(newPost.scheduledTime);
-    console.log("Scheduling post...");
+  
     const postToSave = { ...newPost._doc };
 
-    console.log("Post to save:", postToSave);
     delete postToSave._id;
 
     const scheduleExpression = `*/${scheduledMinutes} * * * *`;
     schedule.scheduleJob(scheduleExpression, async () => {
-      console.log("Creating post at scheduled time...");
       try {
-        // Create a new Post object and save it
         const post = new Post(postToSave);
         await post.save();
-        console.log("Subreddit valeu aheh",subReddit);
         if(subReddit){
-          subReddit.scheduledPosts.pull(postToSave);
-          console.log("scheduledPostsScheduled",subReddit.scheduledPosts);
+          subReddit.scheduledPosts.pull(newPost);
           subReddit.posts.push(post);
           await subReddit.save();
         }
-        else{
-          console.log("userPostsScheduled");
-          user.scheduledPosts.pull(postToSave);          
+        else{    
+          user.scheduledPosts.pull(newPost);   
           user.posts.push(post);
           await user.save();
-          console.log("userPostsScheduled",user.scheduledPosts);
 
         }
         console.log("Post created successfully at scheduled time.");
       } catch (error) {
-        console.error("Error creating post:", error);
+        console.log("Error creating post:", error.message);
       }
     });
     newPost.isScheduled = true;
