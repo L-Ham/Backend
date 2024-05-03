@@ -67,11 +67,7 @@ router.get(
   authenticateToken,
   subredditController.getCommunityDetails
 );
-router.get(
-  "/rule",
-  bodyParser.json(),
-  subredditController.getSubRedditRules
-);
+router.get("/rule", bodyParser.json(), subredditController.getSubRedditRules);
 router.post(
   "/avatarImage",
   bodyParser.json(),
@@ -150,9 +146,9 @@ router.patch(
 );
 
 router.get(
-    "/users/approved",
-    bodyParser.json(),
-    subredditController.getSubredditMembers
+  "/users/approved",
+  bodyParser.json(),
+  subredditController.getSubredditMembers
 );
 
 router.get(
@@ -256,4 +252,23 @@ router.get(
   subredditController.getRemovalReasons
 );
 
+router.get(
+  "/reportedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getReportedPosts
+);
+
+router.get(
+  "/editedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getEditedPosts
+);
+router.get(
+  "/unmoderatedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getUnmoderatedPosts
+);
 module.exports = router;

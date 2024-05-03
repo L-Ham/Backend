@@ -45,4 +45,13 @@ router.post(
     authenticateToken,
     messageController.getUnreadInboxMessages
   );
+
+  router.delete(
+    "/getSentMessages/unsend",
+    bodyParser.json(),
+    authenticateToken,
+    messageController.unsendMessage
+  );
+
+  
   module.exports = router;

@@ -8,6 +8,7 @@ const UserUpload = require("../controllers/userUploadsController");
 const UserServices = require("../services/userServices");
 const PostServices = require("../services/postServices");
 const { get } = require("http");
+const { error } = require("console");
 
 const getNotificationSettings = async (req, res, next) => {
   try {
@@ -739,7 +740,10 @@ const joinCommunity = async (req, res, next) => {
 
     // Handle join logic based on community privacy
     if (community.privacy === "private" || community.privacy === "Private") {
-      if (community.pendingMembers.includes(userId) || community.members.includes(userId)) {
+      if (
+        community.pendingMembers.includes(userId) ||
+        community.members.includes(userId)
+      ) {
         return res
           .status(400)
           .json({ message: "User already requested to join community" });
@@ -1065,7 +1069,7 @@ const getHiddenPosts = async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   try {
-    const user = await User.findOne({userName:username});
+    const user = await User.findOne({ userName: username });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -1116,62 +1120,61 @@ const getHiddenPosts = async (req, res) => {
   }
 };
 const getUserComments = async (req, res) => {
-    const username = req.query.username;
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-    try {
-      const user = await User.findOne({ userName:username});
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      const query = Comment.find({ userId: user._id });
-      const result = await UserServices.paginateResults(query, page, limit);
-      if (result.slicedArray.length == 0) {
-        return res.status(500).json({ message: "The retrieved array is empty" });
-      }
-      const userComments = await Promise.all(
-        result.slicedArray.map(async (comment) => {
-          const isUpvoted = comment.upvotedUsers.includes(user._id);
-          const isDownvoted = comment.downvotedUsers.includes(user._id);
-          const post = await Post.findById(comment.postId);
-          const subreddit = await SubReddit.findById(post.subReddit);
-          const score = comment.upvotes - comment.downvotes;
-          let usernameRepliedTo ="";
-          if(comment.parentCommentId !== null) {
-            const parentComment = await Comment.findById(comment.parentCommentId);
-            const parentCommentUser = await User.findById(parentComment.userId);
-            usernameRepliedTo = parentCommentUser ? parentCommentUser.userName : null;
-          } else {
-            const parentPost = await Post.findById(comment.postId);
-            const parentPostUser = await User.findById(parentPost.user);
-            usernameRepliedTo = parentPostUser ? parentPostUser.userName : null;
-          }
-          const commentObj = {
-            commentId: comment._id,
-            subredditName: subreddit ? subreddit.name : null,
-            postTitle: post ? post.title : null,
-            postId: comment.postId,
-            usernameRepliedTo: usernameRepliedTo,
-            score,
-            isUpvoted,
-            isDownvoted,
-          };
-          return commentObj;
-        })
-      );
-      return res.status(200).json({
-        message: "Retrieved User's Comments",
-        hiddenPosts: userComments,
-      });
-
+  const username = req.query.username;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  try {
+    const user = await User.findOne({ userName: username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-    catch (err) {
-      res.status(500).json({
-        message: "Error Getting User Comments",
-        error: err.message,
-      });
-    
+    const query = Comment.find({ userId: user._id });
+    const result = await UserServices.paginateResults(query, page, limit);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
     }
+    const userComments = await Promise.all(
+      result.slicedArray.map(async (comment) => {
+        const isUpvoted = comment.upvotedUsers.includes(user._id);
+        const isDownvoted = comment.downvotedUsers.includes(user._id);
+        const post = await Post.findById(comment.postId);
+        const subreddit = await SubReddit.findById(post.subReddit);
+        const score = comment.upvotes - comment.downvotes;
+        let usernameRepliedTo = "";
+        if (comment.parentCommentId !== null) {
+          const parentComment = await Comment.findById(comment.parentCommentId);
+          const parentCommentUser = await User.findById(parentComment.userId);
+          usernameRepliedTo = parentCommentUser
+            ? parentCommentUser.userName
+            : null;
+        } else {
+          const parentPost = await Post.findById(comment.postId);
+          const parentPostUser = await User.findById(parentPost.user);
+          usernameRepliedTo = parentPostUser ? parentPostUser.userName : null;
+        }
+        const commentObj = {
+          commentId: comment._id,
+          subredditName: subreddit ? subreddit.name : null,
+          postTitle: post ? post.title : null,
+          postId: comment.postId,
+          usernameRepliedTo: usernameRepliedTo,
+          score,
+          isUpvoted,
+          isDownvoted,
+        };
+        return commentObj;
+      })
+    );
+    return res.status(200).json({
+      message: "Retrieved User's Comments",
+      hiddenPosts: userComments,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting User Comments",
+      error: err.message,
+    });
+  }
 };
 
 const getUserPosts = async (req, res) => {
@@ -1298,18 +1301,24 @@ const searchUsernames = async (req, res) => {
       blockedUser.blockedUserId.toString()
     );
 
-    const matchingUsernamesWithBlockStatus = await Promise.all(matchingUsernames.map(async (matchingUser) => {
-      const avatarImageUrl = await UserUploadModel.findById(matchingUser.avatarImage);
-      return {
-        ...matchingUser._doc,
-        avatarImageUrl: avatarImageUrl ? avatarImageUrl.url : null,
-        isBlocked: blockedUserIds.includes(matchingUser._id.toString()),
-      };
-    }));
+    const matchingUsernamesWithBlockStatus = await Promise.all(
+      matchingUsernames.map(async (matchingUser) => {
+        const avatarImageUrl = await UserUploadModel.findById(
+          matchingUser.avatarImage
+        );
+        return {
+          ...matchingUser._doc,
+          avatarImageUrl: avatarImageUrl ? avatarImageUrl.url : null,
+          isBlocked: blockedUserIds.includes(matchingUser._id.toString()),
+        };
+      })
+    );
 
     res.json({ matchingUsernames: matchingUsernamesWithBlockStatus });
   } catch (err) {
-    res.status(500).json({ message: "Error searching usernames", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error searching usernames", error: err.message });
   }
 };
 
@@ -1659,6 +1668,20 @@ const getCommunitiesInfo = async (req, res, next) => {
   }
 };
 
+const getNotifications = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Error retrieving User Notifications",
+      error: err.message,
+    });
+  }
+};
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -1705,4 +1728,5 @@ module.exports = {
   getUserSelfInfo,
   getUserInfo,
   getCommunitiesInfo,
+  getNotifications,
 };
