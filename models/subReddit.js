@@ -109,6 +109,18 @@ const subRedditSchema = new Schema({
       },
     ],
   },
+  removalReasons: [
+    {
+      title: {
+        type: String,
+        required: true,
+      },
+      message: {
+        type: String,
+        required: false,
+      },
+    },
+],
   bookMarks: [
     {
       widgetName: {
@@ -137,6 +149,7 @@ const subRedditSchema = new Schema({
       ],
     },
   ],
+
   appearance: {
     bannerImage: {
       type: Schema.Types.ObjectId,

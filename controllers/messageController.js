@@ -253,32 +253,61 @@ const getUnreadInboxMessages = async (req, res, next) => {
                 const sender = await User.findById(reply.sender);
                 const receiver = await User.findById(reply.receiver);
                 return {
+                    messageId: reply._id,
                     sender: sender.userName,
                     receiver: receiver.userName,
                     subject: reply.subject,
                     message: reply.message,
                     isRead: reply.isRead,
+                    createdAt: reply.createdAt,
                 };
             }));
             return {
+                messageId: message._id,
                 sender: sender.userName,
                 receiver: receiver.userName,
                 subject: message.subject,
                 message: message.message,
                 isRead: message.isRead,
                 parentMessage: parentMessage ? {
+                    messageId: parentMessage._id,
                     sender: parentMessageSender ? parentMessageSender.userName : null,
                     receiver: parentMessageReceiver ? parentMessageReceiver.userName : null,
                     subject: parentMessage.subject,
                     message: parentMessage.message,
                     isRead: parentMessage.isRead,
+                    createdAt: parentMessage.createdAt,
                 } : null,
                 replies: populatedReplies,
+                createdAt: message.createdAt,
             };
         }));
         res.json(populatedMessages);
     } catch (error) {
         res.status(500).json({ message: "Error getting Unread Inbox messages", error: error.message });
+    }
+};
+
+const unsendMessage = async (req, res, next) => {
+    const userId = req.userId;
+    const messageId = req.body.messageId;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return res.status(404).json({ message: "Message not found" });
+        }
+        if (message.sender.toString() !== userId) {
+            return res.status(403).json({ message: "Unauthorized You are not the message sender" });
+        }
+        await message.remove();
+        res.status(200).json({ message: "Message Deleted" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error Deleting Message", error: error.message });
     }
 };
 module.exports = {
@@ -287,5 +316,6 @@ module.exports = {
     unreadMessage,
     getAllInboxMessages,
     getSentMessages,
-    getUnreadInboxMessages
+    getUnreadInboxMessages,
+    unsendMessage,
 };

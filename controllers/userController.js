@@ -1291,7 +1291,7 @@ const searchUsernames = async (req, res) => {
     const regex = new RegExp(`^${search}`, "i");
     const matchingUsernames = await User.find(
       { userName: regex, _id: { $ne: userId } },
-      "_id userName avatarImage"
+      "_id userName avatarImage profileSettings"
     );
 
     const blockedUserIds = user.blockUsers.map((blockedUser) =>
@@ -1309,7 +1309,7 @@ const searchUsernames = async (req, res) => {
 
     res.json({ matchingUsernames: matchingUsernamesWithBlockStatus });
   } catch (err) {
-    res.status(500).json({ message: "Error searching usernames", error: err });
+    res.status(500).json({ message: "Error searching usernames", error: err.message });
   }
 };
 
