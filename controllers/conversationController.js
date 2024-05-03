@@ -33,6 +33,10 @@ const getUserChats = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+    const conversations = await Conversation.find({
+      participants: userId,
+    }).populate("messages");
+    return res.status(200).json({ conversations });
   } catch (error) {
     res
       .status(500)

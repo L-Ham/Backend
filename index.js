@@ -25,7 +25,7 @@ mongoose
       const subredditRoutes = require("./routes/subredditRoutes");
       const messageRoutes = require("./routes/messageRoutes");
       const conversationRoutes = require("./routes/conversationRoutes");
-      // const chatRoutes = require("./routes/chatRoutes");
+      const chatRoutes = require("./routes/chatRoutes");
 
       app.use("/user", userRoutes);
       app.use("/auth", authRoutes);
@@ -34,7 +34,7 @@ mongoose
       app.use("/subreddit", subredditRoutes);
       app.use("/message", messageRoutes);
       app.use("/conversation", conversationRoutes);
-      // app.use("/chat", chatRoutes);
+      app.use("/chat", chatRoutes);
 
       app.get("/", function (req, res) {
         res.send("Hello World!");
