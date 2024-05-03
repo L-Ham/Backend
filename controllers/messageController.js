@@ -303,7 +303,7 @@ const unsendMessage = async (req, res, next) => {
         if (message.sender.toString() !== userId) {
             return res.status(403).json({ message: "Unauthorized You are not the message sender" });
         }
-        await message.remove();
+        await Message.deleteOne({ _id: messageId });
         res.status(200).json({ message: "Message Deleted" });
     }
     catch (error) {
