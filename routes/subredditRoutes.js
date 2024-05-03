@@ -277,4 +277,10 @@ router.patch(
   authenticateToken,
   subredditController.inviteModerator
 );
+router.patch(
+  "/mod/leave",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.leaveModerator
+);
 module.exports = router;

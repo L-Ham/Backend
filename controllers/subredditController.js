@@ -1985,4 +1985,5 @@ module.exports = {
   deleteRemovalReason,
   getRemovalReasons,
   inviteModerator,
+  leaveModerator,
 };
