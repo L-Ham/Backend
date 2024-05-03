@@ -135,7 +135,9 @@ const createCommunity = async (req, res, next) => {
       savedCommunity,
     });
   } catch (err) {
-    res.status(500).json({ message: "Failed to create community",error:err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to create community", error: err.message });
   }
 };
 
@@ -698,8 +700,7 @@ const getSubredditByNames = async (req, res) => {
           ...subreddit.appearance,
           avatarImage: avatarImage,
         },
-        isNSFW: subreddit.ageRestriction
-
+        isNSFW: subreddit.ageRestriction,
       };
     });
 
@@ -876,20 +877,30 @@ const getSubredditModerators = async (req, res, next) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     const moderators = await User.find({ _id: { $in: subreddit.moderators } });
-    const moderatorDetails = await Promise.all(moderators.map(async (moderator) => {
-      const userUpload = await UserUploadModel.findOne({ _id: moderator.avatarImage });
-      return {
-        _id: moderator._id,
-        userName: moderator.userName,
-        avatarImage: userUpload ? userUpload.url : null,
-      };
-    }));
+    const moderatorDetails = await Promise.all(
+      moderators.map(async (moderator) => {
+        const userUpload = await UserUploadModel.findOne({
+          _id: moderator.avatarImage,
+        });
+        return {
+          _id: moderator._id,
+          userName: moderator.userName,
+          avatarImage: userUpload ? userUpload.url : null,
+        };
+      })
+    );
 
-    res.json({ message:"Retrieved subreddit moderators Successfully",moderators:moderatorDetails });
+    res.json({
+      message: "Retrieved subreddit moderators Successfully",
+      moderators: moderatorDetails,
+    });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error getting subreddit moderators", error: error.message });
+      .json({
+        message: "Error getting subreddit moderators",
+        error: error.message,
+      });
   }
 };
 
@@ -901,23 +912,33 @@ const getSubredditMembers = async (req, res, next) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     const members = await User.find({ _id: { $in: subreddit.members } });
-    const membersDetails = await Promise.all(members.map(async (member) => {
-      const userUpload = await UserUploadModel.findOne({ _id: member.avatarImage });
-      console.log(userUpload);
-      return {
-        _id: member._id,
-        userName: member.userName,
-        avatarImage: userUpload ? userUpload.url : null,
-      };
-    }));
+    const membersDetails = await Promise.all(
+      members.map(async (member) => {
+        const userUpload = await UserUploadModel.findOne({
+          _id: member.avatarImage,
+        });
+        console.log(userUpload);
+        return {
+          _id: member._id,
+          userName: member.userName,
+          avatarImage: userUpload ? userUpload.url : null,
+        };
+      })
+    );
 
-    res.json({message:"Retrieved subreddit Approved Users Successfully", approvedMembers:membersDetails });
+    res.json({
+      message: "Retrieved subreddit Approved Users Successfully",
+      approvedMembers: membersDetails,
+    });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error getting subreddit Members", error: error.message });
+      .json({
+        message: "Error getting subreddit Members",
+        error: error.message,
+      });
   }
-}; 
+};
 
 const suggestSubreddit = async (req, res, next) => {
   const userId = req.userId;
@@ -926,22 +947,31 @@ const suggestSubreddit = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const subredditWithHighestMembers = await SubReddit.findOne().sort({ "members.length": -1 });
+    const subredditWithHighestMembers = await SubReddit.findOne().sort({
+      "members.length": -1,
+    });
     if (subredditWithHighestMembers) {
-      const avatarImage = await UserUploadModel.findById(subredditWithHighestMembers.appearance.avatarImage);
-      const bannerImage = await UserUploadModel.findById(subredditWithHighestMembers.appearance.bannerImage);
+      const avatarImage = await UserUploadModel.findById(
+        subredditWithHighestMembers.appearance.avatarImage
+      );
+      const bannerImage = await UserUploadModel.findById(
+        subredditWithHighestMembers.appearance.bannerImage
+      );
       const suggestedSubreddit = {
         name: subredditWithHighestMembers.name,
         avatarImage: avatarImage ? avatarImage.url : null,
         bannerImage: bannerImage ? bannerImage.url : null,
       };
-      res.status(200).json({ message: "Suggesting a Subreddit",suggestedSubreddit:suggestedSubreddit });
-
+      res
+        .status(200)
+        .json({
+          message: "Suggesting a Subreddit",
+          suggestedSubreddit: suggestedSubreddit,
+        });
     } else {
-      res.status(404).json({message: "No subreddits Found"})
+      res.status(404).json({ message: "No subreddits Found" });
     }
-  }
-  catch (error) {
+  } catch (error) {
     res
       .status(500)
       .json({ message: "Error Suggesting a Subreddit", error: error.message });
@@ -987,7 +1017,7 @@ const getTrendingCommunities = async (req, res) => {
   }
 };
 
-const approveUser = async (req,res,next) => {
+const approveUser = async (req, res, next) => {
   const userId = req.userId;
   const subredditName = req.body.subredditName;
   const userName = req.body.userName;
@@ -997,7 +1027,9 @@ const approveUser = async (req,res,next) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (subreddit.privacy !== "private") {
-      return res.status(400).json({ message: "Subreddit is not private Anyone Can Join" });
+      return res
+        .status(400)
+        .json({ message: "Subreddit is not private Anyone Can Join" });
     }
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
@@ -1021,7 +1053,7 @@ const approveUser = async (req,res,next) => {
   }
 };
 
-const UnapproveUser = async (req,res,next) => {
+const UnapproveUser = async (req, res, next) => {
   const userId = req.userId;
   const subredditName = req.body.subredditName;
   const userName = req.body.userName;
@@ -1031,7 +1063,9 @@ const UnapproveUser = async (req,res,next) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (subreddit.privacy !== "private") {
-      return res.status(400).json({ message: "Subreddit is not private Anyone Can Join" });
+      return res
+        .status(400)
+        .json({ message: "Subreddit is not private Anyone Can Join" });
     }
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
@@ -1062,28 +1096,43 @@ const getBannedUsers = async (req, res, next) => {
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
     }
-    const bannedUsersIds = subreddit.bannedUsers.map(bannedUser => bannedUser.userId);
+    const bannedUsersIds = subreddit.bannedUsers.map(
+      (bannedUser) => bannedUser.userId
+    );
     const bannedUsers = await User.find({ _id: { $in: bannedUsersIds } });
-    const bannedUsersDetails = await Promise.all(bannedUsers.map(async (bannedUser) => {
-      const userUpload = await UserUploadModel.findOne({ _id: bannedUser.avatarImage });
-      const bannedUserDetails = subreddit.bannedUsers.find(bannedUserDetails => bannedUserDetails.userId === bannedUser._id);
-      return {
-        _id: bannedUser._id,
-        userName: bannedUser.userName,
-        avatarImage: userUpload ? userUpload.url : null,
-        bannedAt: bannedUserDetails ? bannedUserDetails.bannedAt : null,
-        permanent: bannedUserDetails ? bannedUserDetails.permanent : null,
-        ruleBroken: bannedUserDetails ? bannedUserDetails.ruleBroken : null,
-        modNote: bannedUserDetails ? bannedUserDetails.modNote : null,
-      };
-    }));
+    const bannedUsersDetails = await Promise.all(
+      bannedUsers.map(async (bannedUser) => {
+        const userUpload = await UserUploadModel.findOne({
+          _id: bannedUser.avatarImage,
+        });
+        const bannedUserDetails = subreddit.bannedUsers.find(
+          (bannedUserDetails) => bannedUserDetails.userId === bannedUser._id
+        );
+        return {
+          _id: bannedUser._id,
+          userName: bannedUser.userName,
+          avatarImage: userUpload ? userUpload.url : null,
+          bannedAt: bannedUserDetails ? bannedUserDetails.bannedAt : null,
+          permanent: bannedUserDetails ? bannedUserDetails.permanent : null,
+          ruleBroken: bannedUserDetails ? bannedUserDetails.ruleBroken : null,
+          modNote: bannedUserDetails ? bannedUserDetails.modNote : null,
+        };
+      })
+    );
 
-    res.json({ message: "Retrieved subreddit Banned Users Successfully", bannedUsers: bannedUsersDetails });
+    res.json({
+      message: "Retrieved subreddit Banned Users Successfully",
+      bannedUsers: bannedUsersDetails,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error getting subreddit Banned Users", error: error.message });
+    res
+      .status(500)
+      .json({
+        message: "Error getting subreddit Banned Users",
+        error: error.message,
+      });
   }
 };
-
 
 const banUser = async (req, res, next) => {
   const userId = req.userId;
@@ -1105,9 +1154,18 @@ const banUser = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
     if (!user.communities.includes(subreddit._id.toString())) {
-      return res.status(400).json({ message: "User is not a member of this subreddit" });
+      return res
+        .status(400)
+        .json({ message: "User is not a member of this subreddit" });
     }
-    if (subreddit.bannedUsers.find(bannedUser => bannedUser.userId.toString() === user._id.toString())) {
+    if (user.userName === userName) {
+      return res.status(400).json({ message: "You can't ban yourself" });
+    }
+    if (
+      subreddit.bannedUsers.find(
+        (bannedUser) => bannedUser.userId.toString() === user._id.toString()
+      )
+    ) {
       return res.status(400).json({ message: "User already banned" });
     }
     subreddit.bannedUsers.push({
@@ -1144,12 +1202,21 @@ const unbanUser = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    if (!subreddit.bannedUsers.find(bannedUser => bannedUser.userId.toString() === user._id.toString())) {
+    if (
+      !subreddit.bannedUsers.find(
+        (bannedUser) => bannedUser.userId.toString() === user._id.toString()
+      )
+    ) {
       return res.status(400).json({ message: "User not banned" });
     }
-    subreddit.bannedUsers = subreddit.bannedUsers.filter(bannedUser => bannedUser.userId.toString() !== user._id.toString());
+    subreddit.bannedUsers = subreddit.bannedUsers.filter(
+      (bannedUser) => bannedUser.userId.toString() !== user._id.toString()
+    );
     await subreddit.save();
-    user.bannedSubreddits = user.bannedSubreddits.filter(bannedSubreddit => bannedSubreddit.toString() !== subreddit._id.toString());
+    user.bannedSubreddits = user.bannedSubreddits.filter(
+      (bannedSubreddit) =>
+        bannedSubreddit.toString() !== subreddit._id.toString()
+    );
     await user.save();
 
     res.json({ message: "User unbanned successfully" });
@@ -1157,7 +1224,6 @@ const unbanUser = async (req, res, next) => {
     res.status(500).json({ message: "Error unbanning user" });
   }
 };
-
 
 const getSubredditFeed = async (req, res) => {
   const userId = req.userId;
@@ -1175,15 +1241,24 @@ const getSubredditFeed = async (req, res) => {
       user = await User.findById(userId);
     }
     const query = Post.find({ subReddit: subreddit._id });
-    const result = await PostServices.paginatePosts(query, page, limit,sortMethod);
+    const result = await PostServices.paginatePosts(
+      query,
+      page,
+      limit,
+      sortMethod
+    );
     if (result.slicedArray.length == 0) {
       return res.status(500).json({ message: "The retrieved array is empty" });
     }
     // console.log(result.slicedArray);
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
-        const isUpvoted = !userId?false:post.upvotedUsers.includes(user._id);
-        const isDownvoted = !userId?false:post.downvotedUsers.includes(user._id);
+        const isUpvoted = !userId
+          ? false
+          : post.upvotedUsers.includes(user._id);
+        const isDownvoted = !userId
+          ? false
+          : post.downvotedUsers.includes(user._id);
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
@@ -1234,7 +1309,9 @@ const addBookmark = async (req, res) => {
     }
 
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
     }
 
     if (!widgetName) {
@@ -1244,13 +1321,15 @@ const addBookmark = async (req, res) => {
     if (buttons && buttons.length > 0) {
       for (let button of buttons) {
         if (!button.label || !button.link) {
-          return res.status(400).json({ message: "Each button must have a label and a link" });
+          return res
+            .status(400)
+            .json({ message: "Each button must have a label and a link" });
         }
       }
     }
 
     if (!subreddit.bookmarks) {
-      subreddit.bookmarks = []; 
+      subreddit.bookmarks = [];
     }
 
     subreddit.bookMarks.push({ widgetName, description, buttons });
@@ -1259,10 +1338,17 @@ const addBookmark = async (req, res) => {
       subreddit.bookMarks[subreddit.bookMarks.length - 1]._id
     );
     await subreddit.save();
-    
-    res.status(200).json({ message: "Bookmark added successfully", bookmark: { widgetName, description, buttons } });
+
+    res
+      .status(200)
+      .json({
+        message: "Bookmark added successfully",
+        bookmark: { widgetName, description, buttons },
+      });
   } catch (err) {
-    res.status(500).json({ message: "Error adding bookmark", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error adding bookmark", error: err.message });
   }
 };
 const editBookmark = async (req, res) => {
@@ -1278,12 +1364,16 @@ const editBookmark = async (req, res) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
     }
     if (!widgetId) {
       return res.status(400).json({ message: "Widget ID is required" });
     }
-    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    const bookmarkIndex = subreddit.bookMarks.findIndex(
+      (bookmark) => bookmark._id.toString() === widgetId
+    );
     if (bookmarkIndex === -1) {
       return res.status(404).json({ message: "Bookmark not found" });
     }
@@ -1296,9 +1386,10 @@ const editBookmark = async (req, res) => {
     }
     await subreddit.save();
     res.status(200).json({ message: "Bookmark edited successfully", bookmark });
-  }
-  catch (err) {
-    res.status(500).json({ message: "Error editing bookmark", error: err.message });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error editing bookmark", error: err.message });
   }
 };
 const deleteBookmark = async (req, res) => {
@@ -1314,21 +1405,26 @@ const deleteBookmark = async (req, res) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
     }
     if (!widgetId) {
       return res.status(400).json({ message: "Widget ID is required" });
     }
-    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    const bookmarkIndex = subreddit.bookMarks.findIndex(
+      (bookmark) => bookmark._id.toString() === widgetId
+    );
     if (bookmarkIndex === -1) {
       return res.status(404).json({ message: "Bookmark not found" });
     }
     subreddit.bookMarks.splice(bookmarkIndex, 1);
     await subreddit.save();
     res.status(200).json({ message: "Bookmark deleted successfully" });
-  }
-  catch (err) {
-    res.status(500).json({ message: "Error deleting bookmark", error: err.message });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error deleting bookmark", error: err.message });
   }
 };
 const addBookmarkButton = async (req, res) => {
@@ -1344,31 +1440,40 @@ const addBookmarkButton = async (req, res) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
     }
     if (!widgetId) {
       return res.status(400).json({ message: "Widget ID is required" });
     }
     if (!button.label || !button.link) {
-      return res.status(400).json({ message: "Button must have a label and a link" });
+      return res
+        .status(400)
+        .json({ message: "Button must have a label and a link" });
     }
-    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    const bookmarkIndex = subreddit.bookMarks.findIndex(
+      (bookmark) => bookmark._id.toString() === widgetId
+    );
     if (bookmarkIndex === -1) {
       return res.status(404).json({ message: "Bookmark not found" });
     }
     subreddit.bookMarks[bookmarkIndex].buttons.push(button);
     await subreddit.save();
-    res.status(200).json({ message: "Bookmark button added successfully", button });
-  }
-  catch (err) {
-    res.status(500).json({ message: "Error adding bookmark button", error: err.message });
+    res
+      .status(200)
+      .json({ message: "Bookmark button added successfully", button });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error adding bookmark button", error: err.message });
   }
 };
-const editBookmarkButton = async (req, res) => {  
+const editBookmarkButton = async (req, res) => {
   const userId = req.userId;
   const { subredditId, widgetId, buttonId, label, link } = req.body;
   try {
-    const user= await User.findById(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -1377,7 +1482,9 @@ const editBookmarkButton = async (req, res) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
     }
     if (!widgetId) {
       return res.status(400).json({ message: "Widget ID is required" });
@@ -1386,13 +1493,19 @@ const editBookmarkButton = async (req, res) => {
       return res.status(400).json({ message: "Button ID is required" });
     }
     if (!label && !link) {
-      return res.status(400).json({ message: "Either label or link is required" });
+      return res
+        .status(400)
+        .json({ message: "Either label or link is required" });
     }
-    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    const bookmarkIndex = subreddit.bookMarks.findIndex(
+      (bookmark) => bookmark._id.toString() === widgetId
+    );
     if (bookmarkIndex === -1) {
       return res.status(404).json({ message: "Bookmark not found" });
     }
-    const buttonIndex = subreddit.bookMarks[bookmarkIndex].buttons.findIndex(button => button._id.toString() === buttonId);
+    const buttonIndex = subreddit.bookMarks[bookmarkIndex].buttons.findIndex(
+      (button) => button._id.toString() === buttonId
+    );
     if (buttonIndex === -1) {
       return res.status(404).json({ message: "Button not found" });
     }
@@ -1403,10 +1516,16 @@ const editBookmarkButton = async (req, res) => {
       subreddit.bookMarks[bookmarkIndex].buttons[buttonIndex].link = link;
     }
     await subreddit.save();
-    res.status(200).json({ message: "Bookmark button edited successfully", button: subreddit.bookMarks[bookmarkIndex].buttons[buttonIndex] });
-  }
-  catch (err) {
-    res.status(500).json({ message: "Error editing bookmark button", error: err.message });
+    res
+      .status(200)
+      .json({
+        message: "Bookmark button edited successfully",
+        button: subreddit.bookMarks[bookmarkIndex].buttons[buttonIndex],
+      });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error editing bookmark button", error: err.message });
   }
 };
 const deleteBookmarkButton = async (req, res) => {
@@ -1422,7 +1541,9 @@ const deleteBookmarkButton = async (req, res) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
     }
     if (!widgetId) {
       return res.status(400).json({ message: "Widget ID is required" });
@@ -1430,20 +1551,25 @@ const deleteBookmarkButton = async (req, res) => {
     if (!buttonId) {
       return res.status(400).json({ message: "Button ID is required" });
     }
-    const bookmarkIndex = subreddit.bookMarks.findIndex(bookmark => bookmark._id.toString() === widgetId);
+    const bookmarkIndex = subreddit.bookMarks.findIndex(
+      (bookmark) => bookmark._id.toString() === widgetId
+    );
     if (bookmarkIndex === -1) {
       return res.status(404).json({ message: "Bookmark not found" });
     }
-    const buttonIndex = subreddit.bookMarks[bookmarkIndex].buttons.findIndex(button => button._id.toString() === buttonId);
+    const buttonIndex = subreddit.bookMarks[bookmarkIndex].buttons.findIndex(
+      (button) => button._id.toString() === buttonId
+    );
     if (buttonIndex === -1) {
       return res.status(404).json({ message: "Button not found" });
     }
     subreddit.bookMarks[bookmarkIndex].buttons.splice(buttonIndex, 1);
     await subreddit.save();
     res.status(200).json({ message: "Bookmark button deleted successfully" });
-  }
-  catch (err) {
-    res.status(500).json({ message: "Error deleting bookmark button", error: err.message });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error deleting bookmark button", error: err.message });
   }
 };
 
@@ -1462,38 +1588,48 @@ const addRemovalReason = async (req, res) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
     }
-    if(subreddit.removalReasons.length ===50) {
-      return res.status(500).json({ message: "Exceeded limit of 50 Reasons for the subreddit" });
+    if (subreddit.removalReasons.length === 50) {
+      return res
+        .status(500)
+        .json({ message: "Exceeded limit of 50 Reasons for the subreddit" });
     }
     subreddit.removalReasons.push({ title, message });
     await subreddit.save();
     res.status(200).json({ message: "Removal reason added successfully" });
   } catch (error) {
-     return res.status(500).json({ message: "Error adding removal reason",error:error.message }); 
-    }
+    return res
+      .status(500)
+      .json({ message: "Error adding removal reason", error: error.message });
+  }
 };
 
 const editRemovalReason = async (req, res) => {
-    const userId = req.userId;
-    const subredditId = req.body.subredditId;
-    const reasonId = req.body.reasonId;
-    const title = req.body.title;
-    const message = req.body.message;
-    try{
-      const user = await User.findById (userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+  const userId = req.userId;
+  const subredditId = req.body.subredditId;
+  const reasonId = req.body.reasonId;
+  const title = req.body.title;
+  const message = req.body.message;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
     const subreddit = await SubReddit.findById(subredditId);
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
     }
-    const removalReasonIndex = subreddit.removalReasons.findIndex(reason => reason._id.equals(reasonId));
+    const removalReasonIndex = subreddit.removalReasons.findIndex((reason) =>
+      reason._id.equals(reasonId)
+    );
     if (removalReasonIndex === -1) {
       return res.status(404).json({ message: "Removal reason not found" });
     }
@@ -1504,9 +1640,10 @@ const editRemovalReason = async (req, res) => {
     await subreddit.save();
 
     res.status(200).json({ message: "Removal reason edited successfully" });
-  }
-  catch (error) {
-    return res.status(500).json({ message: "Error editing removal reason",error:error.message });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error editing removal reason", error: error.message });
   }
 };
 
@@ -1524,9 +1661,13 @@ const deleteRemovalReason = async (req, res) => {
       return res.status(404).json({ message: "Subreddit not found" });
     }
     if (!subreddit.moderators.includes(userId)) {
-      return res.status(403).json({ message: "You are not a moderator of this subreddit" });
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
     }
-    const removalReasonIndex = subreddit.removalReasons.findIndex(reason => reason._id.equals(reasonId));
+    const removalReasonIndex = subreddit.removalReasons.findIndex((reason) =>
+      reason._id.equals(reasonId)
+    );
     if (removalReasonIndex === -1) {
       return res.status(404).json({ message: "Removal reason not found" });
     }
@@ -1534,33 +1675,41 @@ const deleteRemovalReason = async (req, res) => {
     await subreddit.save();
     res.status(200).json({ message: "Removal reason deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error deleting removal reason",error:error.message });
+    return res
+      .status(500)
+      .json({ message: "Error deleting removal reason", error: error.message });
   }
 };
 
 const getRemovalReasons = async (req, res) => {
   const userId = req.userId;
   const subredditId = req.query.subredditId;
-  try{
-  const user = await User.findById (userId);
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
-  const subreddit = await SubReddit.findById(subredditId);
-  if (!subreddit) {
-    return res.status(404).json({ message: "Subreddit not found" });
-  }
-  if (!subreddit.moderators.includes(userId)) {
-    return res.status(403).json({ message: "You are not a moderator of this subreddit" });
-  }
-  res.status(200).json({ message: "Retrieved subreddit removal reasons", removalReasons: subreddit.removalReasons });
-  }
-  catch (error) {
-    return res.status(500).json({ message: "Error getting removal reasons",error:error.message });
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
+    }
+    res
+      .status(200)
+      .json({
+        message: "Retrieved subreddit removal reasons",
+        removalReasons: subreddit.removalReasons,
+      });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error getting removal reasons", error: error.message });
   }
 };
-
-
 
 module.exports = {
   createCommunity,
@@ -1603,5 +1752,5 @@ module.exports = {
   addRemovalReason,
   editRemovalReason,
   deleteRemovalReason,
-  getRemovalReasons
+  getRemovalReasons,
 };

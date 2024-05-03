@@ -77,6 +77,11 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
+  fcmTokens: {
+    type: [String],
+    required: true,
+    default: [],
+  },
   gender: {
     type: String,
     required: false,
@@ -251,7 +256,7 @@ const userSchema = new Schema({
   ],
   muteCommunities: [
     {
-     mutedCommunityId: {
+      mutedCommunityId: {
         type: Schema.Types.ObjectId,
         ref: "subReddit",
         required: false,
@@ -336,7 +341,7 @@ const userSchema = new Schema({
   },
   chatSettings: {
     type: Map,
-    of: mongoose.Schema.Types.String ,
+    of: mongoose.Schema.Types.String,
     required: true,
     default: {
       chatRequests: "Everyone",
@@ -354,7 +359,7 @@ const userSchema = new Schema({
   bannedSubreddits: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'subreddit',
+      ref: "subreddit",
     },
   ],
 });

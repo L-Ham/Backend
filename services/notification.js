@@ -11,14 +11,17 @@ admin.initializeApp({
 
 const notificationTemplate = {};
 
-const sendNotification = async (username, type, from) => {
+const sendNotification = async (username, type) => {
   const user = await User.findOne({ userName: username });
-  // const fcmToken = user.fcmToken;
-  // console.log(fcmToken);
-  //   if (fcmToken.length === 0) {
-  //     return;
-  //   }
-
+  const fcmTokens = user.fcmTokens;
+  console.log(fcmTokens);
+  if (fcmTokens.length === 0) {
+    return;
+  }
+  if (type === "upvotedPost") {
+    notificationTemplate.title = `${from} upvoted your post`;
+    notificationTemplate.body = "Check it out!";
+  }
   let messageStr = {};
   if (type === "upvotedPost") {
     console.log("upvotedPost");
@@ -33,7 +36,7 @@ const sendNotification = async (username, type, from) => {
       title: messageStr.title,
       body: messageStr.body,
     },
-    tokens: fcmToken,
+    tokens: fcmTokens,
   };
 
   getMessaging()
@@ -59,3 +62,22 @@ const sendNotification = async (username, type, from) => {
       console.error("Error sending message:", error);
     });
 };
+
+// const FCM = require("fcm-node");
+// const serverKey =
+//   "AAAALBbAVsU: APA91bFiQNr3pmGfkdw2k7NgIokJqwE078vJec9 - jLMOdh-s80RRQs8sj9aXOWdqL";
+// const fcm = new FCM(serverKey);
+// const message = {
+//   notification: {
+//     title: "Notification Title",
+//     body: "Notification Body",
+//   },
+//   to: "d25zGp4SRWCzxgEqrTcb_Q:APA91bGFK4jQ-tPsdL7Vv1QVEBuV0Gm09xjI3SY7C5uPbJMBr3i",
+// };
+// fcm.send(message, function (err, response) {
+//   if (err) {
+//     console.error("Error sending message:", err);
+//   } else {
+//     console.log("Successfully sent message:", response);
+//   }
+// });
