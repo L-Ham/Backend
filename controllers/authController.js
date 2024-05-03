@@ -63,8 +63,29 @@ const googleSignUp = async (req, res) => {
   }
 };
 
-const logout = (req, res, next) => {
-  res.clearCookie("token");
+const logout = async (req, res, next) => {
+  const userId = req.userId;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.fcmTokens && user.fcmTokens.length === 0) {
+      return res.status(400).json({ message: "No FCM tokens to remove" });
+    }
+    if (user.fcmTokens && user.fcmTokens.includes(req.body.fcmToken)) {
+      user.fcmTokens = user.fcmTokens.filter(
+        (token) => token !== req.body.fcmToken
+      );
+      await user.save();
+      res
+        .status(200)
+        .clearCookie("token")
+        .json({ message: "User logged out successfully" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Error logging out", error: err.message });
+  }
 };
 
 const googleLogin = async (req, res, next) => {
@@ -226,10 +247,10 @@ const login = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { userName, password, email } = req.body;
+  const { userName, password, email, fcmToken } = req.body;
   try {
     const user = await User.findOne({ $or: [{ userName }, { email }] });
-    console.log("userrrr", user);
+    // console.log("userrrr", user);
     if (!user) {
       return res
         .status(400)
@@ -241,6 +262,8 @@ const login = async (req, res) => {
         .status(400)
         .json({ message: "Invalid username/email or password" });
     }
+    user.fcmTokens.push(fcmToken);
+    await user.save();
     const payload = {
       user: {
         id: user._id,

@@ -22,6 +22,12 @@ router.post(
 router.post("/signUp", bodyParser.json(), authController.signUp);
 router.post("/login", bodyParser.json(), authController.login);
 router.post(
+  "/logout",
+  authenticateToken,
+  bodyParser.json(),
+  authController.logout
+);
+router.post(
   "/forgotUsername",
   bodyParser.json(),
   authController.forgetUsername
