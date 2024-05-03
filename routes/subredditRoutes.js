@@ -271,4 +271,10 @@ router.get(
   authenticateToken,
   subredditController.getUnmoderatedPosts
 );
+router.patch(
+  "/mod/invite",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.inviteModerator
+);
 module.exports = router;

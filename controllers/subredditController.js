@@ -1151,16 +1151,13 @@ const banUser = async (req, res, next) => {
         .status(400)
         .json({ message: "User is not a member of this subreddit" });
     }
-    if (user.userName === userName) {
+    if (user._id.toString() === userId.toString()){
       return res.status(400).json({ message: "You can't ban yourself" });
     }
-    if (
-      subreddit.bannedUsers.find(
-        (bannedUser) => bannedUser.userId.toString() === user._id.toString()
-      )
-    ) {
-      return res.status(400).json({ message: "User already banned" });
-    }
+    // if (subreddit.bannedUsers.find((bannedUser) => bannedUser.userId.toString() === user._id.toString())) 
+    // {
+    //   return res.status(400).json({ message: "User already banned" });
+    // }
     subreddit.bannedUsers.push({
       userId: user._id,
       userName: user.userName,
@@ -1896,6 +1893,52 @@ const getRemovalReasons = async (req, res) => {
       .json({ message: "Error getting removal reasons", error: error.message });
   }
 };
+
+const inviteModerator = async (req, res) => {
+  const userId = req.userId;
+  const subredditName= req.body.subredditName;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    subreddit.moderators.push(userId);
+    await subreddit.save();
+    res.status(200).json({ message: "Moderator invited successfully" });
+  }
+  catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error inviting moderator", error: error.message });
+  }
+};
+
+const leaveModerator = async (req, res) => {
+  const userId = req.userId;
+  const subredditName= req.body.subredditName;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    subreddit.moderators.pop(userId);
+    await subreddit.save();
+    res.status(200).json({ message: "Moderator left successfully" });
+  }
+  catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error leaving moderator", error: error.message });
+  }
+};
 module.exports = {
   createCommunity,
   addRule,
@@ -1941,4 +1984,5 @@ module.exports = {
   editRemovalReason,
   deleteRemovalReason,
   getRemovalReasons,
+  inviteModerator,
 };
