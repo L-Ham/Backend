@@ -69,16 +69,20 @@ const logout = (req, res, next) => {
 
 const googleLogin = async (req, res, next) => {
   const data = req.decoded;
+  const fcmToken = req.body.fcmToken;
   try {
     const user = await User.findOne({ email: data.email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
     if (user && user.signupGoogle === false) {
       return res
         .status(404)
         .json({ message: "User didn't signup using google signup" });
     }
+    user.fcmTokens.push(fcmToken);
+    await user.save();
     const payload = {
       user: {
         id: user._id,

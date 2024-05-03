@@ -3,9 +3,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const multerConfig = require("./middleware/multerConfig");
-const app = express();
 const cors = require("cors");
-const message = require("./models/message");
+const { app, server } = require("./socket/socket.js");
 const PORT = 5000;
 
 app.use(cors());
@@ -17,7 +16,7 @@ mongoose
   )
   .then((result) => {
     console.log("Connected to the database");
-    app.listen(PORT, (req, res, next) => {
+    server.listen(PORT, (req, res, next) => {
       console.log(`Server running on port ${PORT}`);
       const userRoutes = require("./routes/userRoutes");
       const authRoutes = require("./routes/authRoutes");
@@ -25,12 +24,18 @@ mongoose
       const commentRoutes = require("./routes/commentRoutes");
       const subredditRoutes = require("./routes/subredditRoutes");
       const messageRoutes = require("./routes/messageRoutes");
+      const conversationRoutes = require("./routes/conversationRoutes");
+      // const chatRoutes = require("./routes/chatRoutes");
+
       app.use("/user", userRoutes);
       app.use("/auth", authRoutes);
       app.use("/post", postRoutes);
       app.use("/comment", commentRoutes);
       app.use("/subreddit", subredditRoutes);
-      app.use("/message",messageRoutes);
+      app.use("/message", messageRoutes);
+      app.use("/conversation", conversationRoutes);
+      // app.use("/chat", chatRoutes);
+
       app.get("/", function (req, res) {
         res.send("Hello World!");
       });
