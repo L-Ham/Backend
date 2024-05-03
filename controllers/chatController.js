@@ -13,7 +13,8 @@ const sendMessage = async (req, res) => {
     // const { message } = req.body;
     // const { id: receiverId } = req.params;
     // const senderId = req.user._id;
-
+    console.log("A7ee");
+    console.log(req.body.chatName);
     let conversation = await Conversation.findOne({ chatName: chatName });
     if (!conversation) {
       return res
