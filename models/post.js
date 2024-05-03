@@ -166,6 +166,11 @@ const postSchema = new Schema({
       ref: "comment",
     },
   ],
+  isEdited: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("post", postSchema);
