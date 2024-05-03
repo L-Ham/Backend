@@ -296,6 +296,12 @@ const subRedditSchema = new Schema({
       },
     },
   ],
+  scheduledPosts: [
+    {
+      type: Object,
+      ref: 'post',
+    },
+  ],
 });
 
 module.exports = mongoose.model("subreddits", subRedditSchema);
