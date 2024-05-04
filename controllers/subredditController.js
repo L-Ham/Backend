@@ -676,8 +676,8 @@ const getBannerImage = async (req, res, next) => {
 const getSubredditByNames = async (req, res) => {
   try {
     const { search } = req.query;
-    const userId = req.userId;
-    const user = await User.findById(userId);
+    // const userId = req.userId;
+    // const user = await User.findById(userId);
     const regex = new RegExp(`^${search}`, "i");
     const matchingNames = await SubReddit.find(
       { name: regex },
