@@ -5,7 +5,7 @@ const conversationSchema = new Schema(
   {
     chatName: {
       type: String,
-      required: true,
+      required: false,
     },
     type: {
       type: String,
@@ -15,6 +15,12 @@ const conversationSchema = new Schema(
       {
         type: String,
         required: true,
+      },
+    ],
+    participantsAvatarUrls: [
+      {
+        type: String,
+        required: false,
       },
     ],
     messages: [
