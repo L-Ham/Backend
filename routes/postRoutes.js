@@ -142,11 +142,13 @@ router.get(
   //authenticateToken,
   postController.getTrendingPosts
 );
-router.get(
-  "/get",
+router.get("/get", bodyParser.json(), postController.getPostById);
+router.post(
+  "/scheduledPost",
   bodyParser.json(),
   authenticateToken,
-  postController.getPostById
+  uploadImage.array("file"),
+  postController.scheduledPost
 );
 
 router.get(

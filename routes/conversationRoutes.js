@@ -17,5 +17,11 @@ router.get(
   authenticateToken,
   conversationController.getUserChats
 );
+router.patch(
+  "/markAsRead",
+  bodyParser.json(),
+  authenticateToken,
+  conversationController.markChatAsRead
+);
 
 module.exports = router;

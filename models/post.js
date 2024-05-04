@@ -166,6 +166,23 @@ const postSchema = new Schema({
       ref: "comment",
     },
   ],
+  isScheduled: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  scheduledMinutes: {
+    type: Number,
+    required: false,
+  },
+  // scheduledDate: {
+  //   type: Date,
+  //   required: false,
+  // },
+  // scheduledTime: {
+  //   type: Date,
+  //   required: false,
+  // },
   isEdited: {
     type: Boolean,
     required: true,

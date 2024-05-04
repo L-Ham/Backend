@@ -13,17 +13,29 @@ const chatSchema = new Schema(
       required: true,
     },
     receiverId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: [mongoose.Schema.Types.ObjectId],
       ref: "User",
       required: true,
     },
     receiverName: {
+      type: [String],
+      required: true,
+    },
+    type: {
       type: String,
       required: true,
     },
     message: {
       type: String,
-      required: true,
+      required: false,
+    },
+    imageUrl: {
+      type: String,
+      required: false,
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
     },
     // createdAt, updatedAt
   },
