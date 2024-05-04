@@ -142,12 +142,7 @@ router.get(
   //authenticateToken,
   postController.getTrendingPosts
 );
-router.get(
-  "/get",
-  bodyParser.json(),
-  authenticateToken,
-  postController.getPostById
-);
+router.get("/get", bodyParser.json(), postController.getPostById);
 router.post(
   "/scheduledPost",
   bodyParser.json(),
