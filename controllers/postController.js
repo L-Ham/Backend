@@ -195,6 +195,7 @@ const editPost = (req, res, next) => {
           .json({ message: "Text field is required for editing" });
       }
       post.text = req.body.text;
+      post.isEdited = true;
       post
         .save()
         .then(() => {
