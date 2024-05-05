@@ -41,7 +41,6 @@ const userSocketMap = {}; // {user_id: socketId}
 // and sets up an event listener for the "disconnect" event.
 io.on("connection", async (socket) => {
   console.log("a user connected", socket.id);
-
   // Get the user from the procided token to fill the userSocketMap.
 
   // Extract the token from the query parameter.
@@ -53,14 +52,14 @@ io.on("connection", async (socket) => {
   try {
     user_token = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
-    // console.log({ err: { status: 401, message: Invalid Token: ${err.message} } });
     console.log({
       err: { status: 401, message: `Invalid Token: ${err.message}` },
     });
   }
 
   // Get the user id from the token.
-  const user_id = user_token._id;
+  // console.log(user_token);
+  const user_id = user_token.user.id;
 
   // Get the user from the id.
   const user = await User.findById(user_id);
@@ -69,6 +68,7 @@ io.on("connection", async (socket) => {
     console.log({ err: { status: 404, message: "User not found" } });
   } else {
     userSocketMap[user_id] = socket.id;
+    console.log(userSocketMap);
   }
 
   // socket.on() is used to listen to the events. can be used both on client and server side

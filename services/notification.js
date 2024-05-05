@@ -67,7 +67,6 @@ const sendNotification = async (username, senderUsername, post, type) => {
       // Handle unknown notification types
       break;
   }
-  console.log("A77777AAAAAAA");
   console.log(fcmTokens[0]);
   if (fcmTokens.length === 0) {
     return;

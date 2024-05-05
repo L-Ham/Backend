@@ -104,6 +104,8 @@ const sendMessage = async (req, res) => {
       console.log(receiverSocketId);
 
       if (receiverSocketId) {
+        console.log(receiverSocketId);
+
         // io.to(<socket_id>).emit() used to send events to specific client
         console.log("Ana hsta3ml el socket");
         io.to(receiverSocketId).emit("newMessage", newMessage);
