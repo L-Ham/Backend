@@ -1101,7 +1101,7 @@ const getBannedUsers = async (req, res, next) => {
           _id: bannedUser.avatarImage,
         });
         const bannedUserDetails = subreddit.bannedUsers.find(
-          (bannedUserDetails) => bannedUserDetails.userId === bannedUser._id
+          (bannedUserDetails) => bannedUserDetails.userId.toString() === bannedUser._id.toString()
         );
         return {
           _id: bannedUser._id,
@@ -1109,7 +1109,7 @@ const getBannedUsers = async (req, res, next) => {
           avatarImage: userUpload ? userUpload.url : null,
           bannedAt: bannedUserDetails ? bannedUserDetails.bannedAt : null,
           permanent: bannedUserDetails ? bannedUserDetails.permanent : null,
-          ruleBroken: bannedUserDetails ? bannedUserDetails.ruleBroken : null,
+          reasonForBan: bannedUserDetails ? bannedUserDetails.reasonForBan : null,
           modNote: bannedUserDetails ? bannedUserDetails.modNote : null,
         };
       })
