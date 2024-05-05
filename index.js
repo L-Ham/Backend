@@ -26,6 +26,7 @@ mongoose
       const messageRoutes = require("./routes/messageRoutes");
       const conversationRoutes = require("./routes/conversationRoutes");
       const chatRoutes = require("./routes/chatRoutes");
+      const notificationRoutes = require("./routes/notificationRoutes");
 
       app.use("/user", userRoutes);
       app.use("/auth", authRoutes);
@@ -35,6 +36,7 @@ mongoose
       app.use("/message", messageRoutes);
       app.use("/conversation", conversationRoutes);
       app.use("/chat", chatRoutes);
+      app.use("/notification", notificationRoutes);
 
       app.get("/", function (req, res) {
         res.send("Hello World!");
