@@ -337,6 +337,13 @@ const downvote = async (req, res, next) => {
       user.downvotedPosts.push(postId);
       await user.save();
     }
+    const receiver = await User.findById(post.user);
+    await NotificationServices.sendNotification(
+      receiver.userName,
+      user.userName,
+      post._id,
+      "downvotedPost"
+    );
     res.status(200).json({ message: "Post downvoted & added to user" });
   } catch (err) {
     res
@@ -1203,6 +1210,63 @@ const getAllPosts = async (req, res) => {
     });
   }
 };
+const deletePost = async (req, res) => {
+  const postId = req.body.postId;
+  const userId = req.userId;
+
+  try {
+    if (!postId) {
+      return res
+        .status(400)
+        .json({ message: "Missing postId in request body" });
+    }
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (post.user.toString() !== userId) {
+      return res
+        .status(401)
+        .json({ message: "User not authorized to delete post" });
+    }
+    if (post.subReddit) {
+      const subReddit = await SubReddit.findById(post.subReddit);
+      if (!subReddit) {
+        return res.status(404).json({ message: "SubReddit not found" });
+      }
+      if (!subReddit.moderators.includes(req.userId)) {
+        return res
+          .status(401)
+          .json({ message: "User not authorized to delete post" });
+      }
+      subReddit.posts.pull(postId);
+      await subReddit.save();
+    } else {
+      const user = await User.findById(post.user);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      user.posts.pull(postId);
+      await user.save();
+    }
+    if (post.images.length > 0) {
+      for (const imageId of post.images) {
+        await UserUpload.destroyMedia(imageId);
+      }
+    }
+    if (post.videos.length > 0) {
+      for (const videoId of post.videos) {
+        await UserUpload.destroyMedia(videoId);
+      }
+    }
+
+    await Post.findByIdAndDelete(postId);
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting post" });
+  }
+};
 
 module.exports = {
   savePost,
@@ -1229,4 +1293,5 @@ module.exports = {
   getPostById,
   scheduledPost,
   getAllPosts,
+  deletePost,
 };
