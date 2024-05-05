@@ -26,7 +26,6 @@ const sendNotification = async (username, senderUsername, post, type) => {
     subreddit = await Subreddit.findById(affectedPost.subReddit);
   }
   const fcmTokens = user.fcmTokens;
-  console.log("A77777AAAAAAA");
   console.log(fcmTokens);
   // Remove the redundant declaration and assignment of 'notification' variable
   let notification = null;
