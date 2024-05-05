@@ -97,7 +97,6 @@ router.get(
 router.get(
   "/nameSearch",
   bodyParser.json(),
-  authenticateToken,
   subredditController.getSubredditByNames
 );
 
@@ -282,5 +281,25 @@ router.patch(
   bodyParser.json(),
   authenticateToken,
   subredditController.leaveModerator
+);
+router.get(
+  "/moderators/invited",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getInvitedModerators
+);
+
+router.patch(
+  "/mod/invite/accept",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.acceptModeratorInvite
+);
+
+router.patch(
+  "/mod/invite/decline",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.declineModeratorInvite
 );
 module.exports = router;

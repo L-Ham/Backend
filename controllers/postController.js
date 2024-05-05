@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const UserUploadModel = require("../models/userUploads");
 const schedule = require("node-schedule");
 const PostServices = require("../services/postServices");
+const NotificationServices = require("../services/notification");
 
 const createPost = async (req, res, next) => {
   const userId = req.userId;
@@ -264,13 +265,7 @@ const unsavePost = async (req, res, next) => {
     res.status(500).json({ message: "Error unsaving post" });
   }
 };
-/**
- * Upvotes a post and adds it to the user's upvoted posts list and adds the user to the Post's list of upvotes.
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {Function} next - The next middleware function.
- * @returns {Promise<void>} - A promise that resolves when the post is upvoted.
- */
+
 const upvote = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -295,9 +290,18 @@ const upvote = async (req, res, next) => {
       user.upvotedPosts.push(postId);
       await user.save();
     }
+    const receiver = await User.findById(post.user);
+    await NotificationServices.sendNotification(
+      receiver.userName,
+      user.userName,
+      post._id,
+      "upvotedPost"
+    );
     res.status(200).json({ message: "Post upvoted & added to user" });
   } catch (err) {
-    res.status(500).json({ message: "Error upvoting post", error: err });
+    res
+      .status(500)
+      .json({ message: "Error upvoting post", error: err.message });
   }
 };
 

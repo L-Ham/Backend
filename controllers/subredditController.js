@@ -1896,6 +1896,7 @@ const getRemovalReasons = async (req, res) => {
 
 const inviteModerator = async (req, res) => {
   const userId = req.userId;
+  const invitedModeratorUsername = req.body.invitedModeratorUsername;
   const subredditName = req.body.subredditName;
   try {
     const user = await User.findById(userId);
@@ -1906,13 +1907,53 @@ const inviteModerator = async (req, res) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    subreddit.moderators.push(userId);
+    const invitedModerator = await User.findOne({
+      userName: invitedModeratorUsername,
+    });
+    if (subreddit.moderators.includes(invitedModerator._id)) {
+      return res.status(400).json({ message: "User is already a moderator" });
+    }
+    if (!invitedModerator) {
+      return res.status(404).json({ message: "Invited moderator not found" });
+    }
+    subreddit.invitedModerators.push(invitedModerator);
     await subreddit.save();
     res.status(200).json({ message: "Moderator invited successfully" });
   } catch (error) {
     return res
       .status(500)
       .json({ message: "Error inviting moderator", error: error.message });
+  }
+};
+const acceptModeratorInvite = async (req, res) => {
+  const userId = req.userId;
+  const subredditName = req.body.subredditName;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.invitedModerators.includes(userId)) {
+      return res.status(400).json({ message: "You are not invited" });
+    }
+    if (subreddit.moderators.includes(userId)) {
+      return res.status(400).json({ message: "You are already a moderator" });
+    }
+    subreddit.invitedModerators = subreddit.invitedModerators.filter(
+      (invitedModerator) => invitedModerator.toString() !== userId.toString()
+    );
+    subreddit.moderators.push(userId);
+    await subreddit.save();
+    res.status(200).json({ message: "Moderator accepted successfully" });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error accepting moderator invite",
+      error: error.message,
+    });
   }
 };
 
@@ -1937,6 +1978,74 @@ const leaveModerator = async (req, res) => {
       .json({ message: "Error leaving moderator", error: error.message });
   }
 };
+
+const getInvitedModerators = async (req, res) => {
+  const subredditName = req.query.subredditName;
+  const userId = req.userId;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const invitedModerators = await User.find({
+      _id: { $in: subreddit.invitedModerators },
+    });
+    const invitedModeratorDetails = await Promise.all(
+      invitedModerators.map(async (invitedModerator) => {
+        const userUpload = await UserUploadModel.findOne({
+          _id: invitedModerator.avatarImage,
+        });
+        return {
+          _id: invitedModerator._id,
+          userName: invitedModerator.userName,
+          avatarImage: userUpload ? userUpload.url : null,
+        };
+      })
+    );
+    res.status(200).json({
+      message: "Retrieved subreddit invited moderators",
+      invitedModerators: invitedModeratorDetails,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error getting invited moderators",
+      error: error.message,
+    });
+  }
+};
+
+const declineModeratorInvite = async (req, res) => {
+  const userId = req.userId;
+  const subredditName = req.body.subredditName;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.invitedModerators.includes(userId)) {
+      return res.status(400).json({ message: "You are not invited" });
+    }
+    subreddit.invitedModerators = subreddit.invitedModerators.filter(
+      (invitedModerator) => invitedModerator.toString() !== userId.toString()
+    );
+    await subreddit.save();
+    res.status(200).json({ message: "Moderator declined successfully" });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error declining moderator invite",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createCommunity,
   addRule,
@@ -1984,4 +2093,7 @@ module.exports = {
   getRemovalReasons,
   inviteModerator,
   leaveModerator,
+  getInvitedModerators,
+  acceptModeratorInvite,
+  declineModeratorInvite,
 };
