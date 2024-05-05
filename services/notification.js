@@ -7,7 +7,9 @@ require("dotenv").config();
 var admin = require("firebase-admin");
 const { getMessaging } = require("firebase-admin/messaging");
 
-const serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+// const serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+const serviceAccount = require("../redditelham-firebase-adminsdk-x77td-78e378a9c4.json");
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
