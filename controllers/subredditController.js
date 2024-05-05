@@ -944,18 +944,23 @@ const suggestSubreddit = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const subredditWithHighestMembers = await SubReddit.findOne().sort({
-      "members.length": -1,
+    // const userSubreddits = user.subreddits.map((subreddit) => subreddit._id);
+    const subredditsNotJoined = await SubReddit.find({
+      _id: { $nin: user.communities },
     });
-    if (subredditWithHighestMembers) {
+    if (subredditsNotJoined.length > 0) {
+      const randomSubreddit =
+        subredditsNotJoined[
+          Math.floor(Math.random() * subredditsNotJoined.length)
+        ];
       const avatarImage = await UserUploadModel.findById(
-        subredditWithHighestMembers.appearance.avatarImage
+        randomSubreddit.appearance.avatarImage
       );
       const bannerImage = await UserUploadModel.findById(
-        subredditWithHighestMembers.appearance.bannerImage
+        randomSubreddit.appearance.bannerImage
       );
       const suggestedSubreddit = {
-        name: subredditWithHighestMembers.name,
+        name: randomSubreddit.name,
         avatarImage: avatarImage ? avatarImage.url : null,
         bannerImage: bannerImage ? bannerImage.url : null,
       };
@@ -972,6 +977,7 @@ const suggestSubreddit = async (req, res, next) => {
       .json({ message: "Error Suggesting a Subreddit", error: error.message });
   }
 };
+
 const getTrendingCommunities = async (req, res) => {
   try {
     const TrendingCommunities = await SubReddit.find()
@@ -1101,7 +1107,8 @@ const getBannedUsers = async (req, res, next) => {
           _id: bannedUser.avatarImage,
         });
         const bannedUserDetails = subreddit.bannedUsers.find(
-          (bannedUserDetails) => bannedUserDetails.userId.toString() === bannedUser._id.toString()
+          (bannedUserDetails) =>
+            bannedUserDetails.userId.toString() === bannedUser._id.toString()
         );
         return {
           _id: bannedUser._id,
@@ -1109,7 +1116,9 @@ const getBannedUsers = async (req, res, next) => {
           avatarImage: userUpload ? userUpload.url : null,
           bannedAt: bannedUserDetails ? bannedUserDetails.bannedAt : null,
           permanent: bannedUserDetails ? bannedUserDetails.permanent : null,
-          reasonForBan: bannedUserDetails ? bannedUserDetails.reasonForBan : null,
+          reasonForBan: bannedUserDetails
+            ? bannedUserDetails.reasonForBan
+            : null,
           modNote: bannedUserDetails ? bannedUserDetails.modNote : null,
         };
       })
