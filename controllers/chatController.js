@@ -98,9 +98,16 @@ const sendMessage = async (req, res) => {
 
     // SOCKET IO FUNCTIONALITY WILL GO HERE
     if (conversation.type === "single") {
-      const receiverSocketId = getReceiverSocketId(receiverIds[0]);
+      console.log(receiverIds[0]);
+      const receiverSocketId = getReceiverSocketId(receiverIds[0].toString());
+      console.log("Ana hsta3ml el socket");
+      console.log(receiverSocketId);
+
       if (receiverSocketId) {
+        console.log(receiverSocketId);
+
         // io.to(<socket_id>).emit() used to send events to specific client
+        console.log("Ana hsta3ml el socket");
         io.to(receiverSocketId).emit("newMessage", newMessage);
       }
     } else if (conversation.type === "group") {
@@ -110,6 +117,7 @@ const sendMessage = async (req, res) => {
         if (participant == sender.userName) continue;
         const participantSocketId = getReceiverSocketId(participant);
         if (participantSocketId) {
+          console.log("Ana hsta3ml el socket");
           io.to(participantSocketId).emit("newMessage", newMessage);
         }
       }
@@ -125,25 +133,6 @@ const sendMessage = async (req, res) => {
   }
 };
 
-// const getMessages = async (req, res) => {
-//   try {
-//     const { id: userToChatId } = req.params;
-//     const senderId = req.user._id;
-
-//     const conversation = await Conversation.findOne({
-//       participants: { $all: [senderId, userToChatId] },
-//     }).populate("messages"); // NOT REFERENCE BUT ACTUAL MESSAGES
-
-//     if (!conversation) return res.status(200).json([]);
-
-//     const messages = conversation.messages;
-
-//     res.status(200).json(messages);
-//   } catch (error) {
-//     console.log("Error in getMessages controller: ", error.message);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
 module.exports = {
   sendMessage,
 };

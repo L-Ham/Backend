@@ -337,6 +337,13 @@ const downvote = async (req, res, next) => {
       user.downvotedPosts.push(postId);
       await user.save();
     }
+    const receiver = await User.findById(post.user);
+    await NotificationServices.sendNotification(
+      receiver.userName,
+      user.userName,
+      post._id,
+      "downvotedPost"
+    );
     res.status(200).json({ message: "Post downvoted & added to user" });
   } catch (err) {
     res

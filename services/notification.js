@@ -8,14 +8,13 @@ var admin = require("firebase-admin");
 const { getMessaging } = require("firebase-admin/messaging");
 
 // const serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-const serviceAccount = require("../redditelham-firebase-adminsdk-x77td-78e378a9c4.json");
+const serviceAccount = require("../reddit-bylham-firebase-adminsdk-p32d0-be4d755618.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
 const notificationTemplate = {};
-
 const sendNotification = async (username, senderUsername, post, type) => {
   const user = await User.findOne({ userName: username });
   const sender = await User.findOne({ userName: senderUsername });
@@ -68,7 +67,6 @@ const sendNotification = async (username, senderUsername, post, type) => {
       // Handle unknown notification types
       break;
   }
-  console.log("A77777AAAAAAA");
   console.log(fcmTokens[0]);
   if (fcmTokens.length === 0) {
     return;
