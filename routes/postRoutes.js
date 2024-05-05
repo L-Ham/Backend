@@ -19,6 +19,12 @@ router.patch(
   authenticateToken,
   postController.editPost
 );
+router.delete(
+  "/deletePost",
+  bodyParser.json(),
+  authenticateToken,
+  postController.deletePost
+);
 router.patch(
   "/save",
   bodyParser.json(),

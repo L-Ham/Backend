@@ -5,13 +5,12 @@ const cloudinary = require("../middleware/cloudinary");
 const { use } = require("moongose/routes");
 
 async function uploadMedia(file) {
-  const b64 = Buffer.from(file.buffer).toString('base64')
-  const dataURI = 'data:' + file.mimetype + ';base64,' + b64
-  console.log("dataURI",dataURI)
-  const {secure_url} = await cloudinary.uploader.upload(
-    dataURI,
-    {resource_type: "auto"}
-  );
+  const b64 = Buffer.from(file.buffer).toString("base64");
+  const dataURI = "data:" + file.mimetype + ";base64," + b64;
+  console.log("dataURI", dataURI);
+  const { secure_url } = await cloudinary.uploader.upload(dataURI, {
+    resource_type: "auto",
+  });
   try {
     const newUserUpload = await UserUpload.create({
       originalname: file.originalname,
@@ -26,23 +25,22 @@ async function uploadMedia(file) {
   }
 }
 async function destroyMedia(mediaId) {
- 
   try {
-    const media = await userUploads
-      .findById(mediaId);
+    const media = await UserUpload.findById(mediaId);
+    const urls = media.url.split("/");
+   
+    let publicId = urls[urls.length - 1];
+    publicId = publicId.substring(0, publicId.lastIndexOf("."));
+    await cloudinary.api.delete_resources([publicId]);
+    await UserUpload.findByIdAndDelete(mediaId);
 
-    const urls=media.url.split("/")
-    console.log("media",media)
-    await cloudinary.api.delete_resources(urls[urls.length-1]);
-    await media.remove();
-    console.log("Media deleted successfully");
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).json({ error: "Failed to delete media" });
   }
+  console.log("Media deleted successfully");
 }
 
 module.exports = {
   uploadMedia,
-  destroyMedia
+  destroyMedia,
 };
