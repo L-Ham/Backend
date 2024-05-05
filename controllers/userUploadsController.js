@@ -37,7 +37,7 @@ async function destroyMedia(mediaId) {
     publicId = publicId.substring(0, publicId.lastIndexOf("."));
     await cloudinary.api.delete_resources([publicId]);
     console.log("finished Cloudinary");
-    await media.remove();
+    await UserUpload.findByIdAndDelete(mediaId);
 
     console.log("Media deleted successfully");
   } catch (error) {

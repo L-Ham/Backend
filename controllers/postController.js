@@ -1239,18 +1239,17 @@ const deletePost = async (req, res) => {
       console.log("delete images");
       for (const imageId of post.images) {
         await UserUpload.destroyMedia(imageId);
-        //await UserUploadModel.findByIdAndDelete(imageId);
         console.log("delete images done");
       }
     }
     if (post.videos.length > 0) {
       for (const videoId of post.videos) {
         await UserUpload.destroyMedia(videoId);
-        await UserUploadModel.findByIdAndDelete(videoId);
       }
     }
-
-    await post.delete();
+    console.log("delete post last step");
+    console.log("Post",post);
+    await Post.findByIdAndDelete(postId);    
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting post" });
