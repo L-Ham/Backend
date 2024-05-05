@@ -25,21 +25,15 @@ async function uploadMedia(file) {
   }
 }
 async function destroyMedia(mediaId) {
-  console.log("mediaId", mediaId);
   try {
-    console.log("we will delte noww from cloudinary", mediaId);
     const media = await UserUpload.findById(mediaId);
-    console.log("media", media);
     const urls = media.url.split("/");
-    console.log("media", media);
-    console.log("urls", urls[urls.length - 1]);
+   
     let publicId = urls[urls.length - 1];
     publicId = publicId.substring(0, publicId.lastIndexOf("."));
     await cloudinary.api.delete_resources([publicId]);
-    console.log("finished Cloudinary");
     await UserUpload.findByIdAndDelete(mediaId);
 
-    console.log("Media deleted successfully");
   } catch (error) {
     res.status(500).json({ error: "Failed to delete media" });
   }

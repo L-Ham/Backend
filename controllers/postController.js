@@ -1202,44 +1202,46 @@ const getAllPosts = async (req, res) => {
 const deletePost = async (req, res) => {
   const postId = req.body.postId;
   const userId = req.userId;
-  console.log("delete post");
+
   try {
+    if (!postId) {
+      return res
+        .status(400)
+        .json({ message: "Missing postId in request body" });
+    }
     const post = await Post.findById(postId);
-    console.log("postId",post);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    console.log("legnth",post.subReddit);
-    if(post.subReddit){
-      console.log(post.subReddit);
+    if (post.user.toString() !== userId) {
+      return res
+        .status(401)
+        .json({ message: "User not authorized to delete post" });
+    }
+    if (post.subReddit) {
       const subReddit = await SubReddit.findById(post.subReddit);
       if (!subReddit) {
         return res.status(404).json({ message: "SubReddit not found" });
       }
       if (!subReddit.moderators.includes(req.userId)) {
-        return res.status(401).json({ message: "User not authorized to delete post" });
+        return res
+          .status(401)
+          .json({ message: "User not authorized to delete post" });
       }
       subReddit.posts.pull(postId);
       await subReddit.save();
-    }
-    else
-    {
-      console.log("delete user post")
+    } else {
       const user = await User.findById(post.user);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      console.log("delete user post")
-      console.log("User",user.posts);
+
       user.posts.pull(postId);
       await user.save();
-      console.log("After User",user.posts);
     }
     if (post.images.length > 0) {
-      console.log("delete images");
       for (const imageId of post.images) {
         await UserUpload.destroyMedia(imageId);
-        console.log("delete images done");
       }
     }
     if (post.videos.length > 0) {
@@ -1247,9 +1249,8 @@ const deletePost = async (req, res) => {
         await UserUpload.destroyMedia(videoId);
       }
     }
-    console.log("delete post last step");
-    console.log("Post",post);
-    await Post.findByIdAndDelete(postId);    
+
+    await Post.findByIdAndDelete(postId);
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting post" });
@@ -1281,5 +1282,5 @@ module.exports = {
   getPostById,
   scheduledPost,
   getAllPosts,
-  deletePost
+  deletePost,
 };
