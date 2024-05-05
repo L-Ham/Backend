@@ -486,8 +486,9 @@ const unlockPost = async (req, res, next) => {
           .json({ message: "User not authorized to lock post" });
       }
     }
+   
     if (post.subReddit !== null) {
-      if (!post.subReddit.moderators.includes(userId)) {
+      if (!subReddit.moderators.includes(userId)) {
         console.error(
           "User not authorized to lock post in the subreddit",
           post.subReddit.name
@@ -666,9 +667,6 @@ const approvePost = async (req, res, next) => {
     if (post.approved) {
       return res.status(400).json({ message: "Post already approved" });
     }
-    if (post.disapproved) {
-      return res.status(400).json({ message: "Post already disapproved" });
-    }
     const subReddit = await SubReddit.findById(post.subReddit);
     if (!subReddit) {
       return res.status(404).json({ message: "Subreddit not found" });
@@ -680,6 +678,8 @@ const approvePost = async (req, res, next) => {
     }
     post.approved = true;
     post.approvedBy = userId;
+    post.disapproved = false;
+    post.approvedAt = new Date();
     await post.save();
     res.status(200).json({ message: "Post approved successfully" });
   } catch (error) {
@@ -708,20 +708,20 @@ const removePost = async (req, res, next) => {
         .status(401)
         .json({ message: "User not authorized to remove post" });
     }
-    if (post.approved == true) {
-      return res.status(400).json({ message: "Post already approved" });
-    }
     if (post.disapproved == true) {
-      return res.status(400).json({ message: "Post already disapproved" });
+      return res.status(400).json({ message: "Post already removed" });
     }
     post.disapproved = true;
     post.disapprovedBy = userId;
+    post.approved = false;
+    post.disapprovedAt = new Date();
     await post.save();
     subReddit.removedPosts.push(postId);
     await subReddit.save();
     res.status(200).json({ message: "Post removed successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error removing post" });
+    console.log(error);
   }
 };
 
