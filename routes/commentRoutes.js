@@ -61,4 +61,10 @@ router.get(
   commentController.getReplies
 );
 
+router.get(
+  "/searchComments",
+  bodyParser.json(),
+  commentController.commentSearch
+);
+
 module.exports = router;

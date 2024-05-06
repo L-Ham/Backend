@@ -1003,13 +1003,18 @@ const reportPost = async (req, res, next) => {
       .json({ message: "Error reporting post", error: err.message });
   }
 };
+
 const getTrendingPosts = async (req, res, next) => {
   try {
     const trendingPosts = await Post.find({
-      images: { $exists: true, $ne: [] },
+      subReddit: {
+        $ne: null,
+      },
+      images: {
+        $ne: [],
+      }
     })
-      .sort({ upvotes: -1, downvotes: 1 })
-      .limit(6);
+      .sort({ upvotes: -1 }).limit(6);
 
     const postImagesIds = trendingPosts.map((post) => post.images[0]);
     const subRedditIds = trendingPosts.map((post) => post.subReddit);
@@ -1025,31 +1030,32 @@ const getTrendingPosts = async (req, res, next) => {
         const subRedditTemp = subReddits.find((community) =>
           community._id.equals(post.subReddit)
         );
-        const avatarImageId = subRedditTemp.appearance.avatarImage;
-        const avatarImage = avatarImageId
-          ? await UserUploadModel.findById(avatarImageId)
-          : null;
 
-        if (subRedditTemp && Image) {
-          return {
-            postId: post._id,
-            title: post.title,
-            text: post.text,
-            image: Image ? Image.url : null,
-            subreddit: subRedditTemp.name || null,
-            subRedditId: subRedditTemp ? subRedditTemp._id : null,
-            avatarImage: avatarImage ? avatarImage.url : null,
-          };
+        let avatarImage = null;
+        if (subRedditTemp) {
+          const avatarImageId = subRedditTemp.appearance.avatarImage;
+          avatarImage = avatarImageId
+            ? await UserUploadModel.findById(avatarImageId.toString())
+            : null;
         }
+
+        return {
+          postId: post._id,
+          title: post.title,
+          text: post.text,
+          image: Image ? Image.url : null,
+          subreddit: subRedditTemp ? subRedditTemp.name : null,
+          subRedditId: subRedditTemp ? subRedditTemp._id : null,
+          avatarImage: avatarImage ? avatarImage.url : null,
+        };
       })
     );
-    const sortedPosts = formattedPosts.sort(
-      (a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
-    );
+
+    formattedPosts.sort((a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes));
 
     res.json({
       message: "Retrieved Trending Posts Successfully",
-      trendingPosts: sortedPosts,
+      trendingPosts: formattedPosts,
     });
   } catch (error) {
     res.status(500).json({
@@ -1058,6 +1064,7 @@ const getTrendingPosts = async (req, res, next) => {
     });
   }
 };
+
 const getPostById = async (req, res, next) => {
   const postId = req.query.postId;
   try {
