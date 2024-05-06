@@ -1,59 +1,22 @@
-// const Server = require("socket.io").Server;
-// const http = require("http");
-// const express = require("express");
-
-// const app = express();
-
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: "*",
-//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-//   },
-// });
-
-// const getReceiverSocketId = (receiverId) => {
-//   console.log("GOWAA EL SCOKET");
-//   console.log(userSocketMap[receiverId]);
-//   console.log(userSocketMap);
-//   return userSocketMap[receiverId];
-// };
-
-// const userSocketMap = {}; // {userId: socketId}
-
-// io.on("connection", (socket) => {
-//   console.log("a user connected", socket.id);
-
-//   const userId = socket.handshake.query.userId;
-//   if (userId != "undefined") userSocketMap[userId] = socket.id;
-
-//   // io.emit() is used to send events to all the connected clients
-//   io.emit("getOnlineUsers", Object.keys(userSocketMap));
-
-//   // socket.on() is used to listen to the events. can be used both on client and server side
-//   socket.on("disconnect", () => {
-//     console.log("user disconnected", socket.id);
-//     delete userSocketMap[userId];
-//     io.emit("getOnlineUsers", Object.keys(userSocketMap));
-//   });
-// });
-
-// module.exports = { app, io, server, getReceiverSocketId };
+// import { Server } from "socket.io";
+// import http from "http";
+// import express from "express";
 // import { stat } from "fs";
 // import jwt from "jsonwebtoken";
-
+// import { User } from "../db/models/User.js";
 const Server = require("socket.io").Server;
 const http = require("http");
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const jwt = require("jsonwebtoken"); // You forgot to import jwt
 
-// This line creates a new Express application.
+// // This line creates a new Express application.
 const app = express();
 
-// This line creates a new HTTP server that uses the Express application.
-// const socketPort = 3001;
+// // This line creates a new HTTP server that uses the Express application.
 const server = http.createServer(app);
+
+// // TODO: Uncomment.
 
 const io = new Server(server, {
   cors: {
@@ -62,21 +25,23 @@ const io = new Server(server, {
   },
 });
 
+// This function is exported so it can be used in other files.
+// It takes a receiverId and returns the corresponding socket ID from userSocketMap.
+const getReceiverSocketId = (receiverId) => {
+  return userSocketMap[receiverId];
+};
+
 // This object maps user IDs to socket IDs.
 // It's used to keep track of which socket belongs to which user.
 const userSocketMap = {}; // {user_id: socketId}
 
-// This function is exported so it can be used in other files.
-// It takes a receiverId and returns the corresponding socket ID from userSocketMap.
-const getReceiverSocketId = (receiverId) => {
-  console.log(userSocketMap);
-  console.log("GOWAA EL SCOKET");
-  console.log(userSocketMap[receiverId]);
-  return userSocketMap[receiverId];
-};
-
+// This sets up an event listener for the "connection" event, which is emitted whenever a client connects to the server.
+// Inside the event listener, it logs the socket ID,
+// stores the socket ID in userSocketMap if the user ID is defined,
+// and sets up an event listener for the "disconnect" event.
 io.on("connection", async (socket) => {
   console.log("a user connected", socket.id);
+  // Get the user from the procided token to fill the userSocketMap.
 
   // Extract the token from the query parameter.
   const token = socket.handshake.query.token.split(" ")[1];
@@ -89,30 +54,52 @@ io.on("connection", async (socket) => {
   } catch (err) {
     console.log({
       err: { status: 401, message: `Invalid Token: ${err.message}` },
-    }); // Template literals were missing
-    return; // If token is invalid, return from the function
+    });
   }
 
   // Get the user id from the token.
-  const user_id = user_token._id;
+  // console.log(user_token);
+  const user_id = user_token.user.id;
 
   // Get the user from the id.
   const user = await User.findById(user_id);
 
   if (!user) {
     console.log({ err: { status: 404, message: "User not found" } });
-    return; // If user is not found, return from the function
   } else {
     userSocketMap[user_id] = socket.id;
+    console.log(userSocketMap);
   }
 
+  // socket.on() is used to listen to the events. can be used both on client and server side
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);
     delete userSocketMap[user_id];
   });
 });
-// server.listen(socketPort, () => {
-//   // Start the Socket.IO server on port 3005
-//   console.log(`Socket.IO server running on port ${socketPort}...`);
-// });
-module.exports = { app, io, server, getReceiverSocketId }; // Use module.exports for Node.js
+
+module.exports = { app, io, server, getReceiverSocketId };
+
+// // io.on:
+// // This is used to set up a listener for a specific event on the Socket.IO server.
+// // The listener will be called whenever that event is emitted by any client.
+// // For example, io.on('connection', callback) sets up a listener for the 'connection' event,
+// // which is emitted whenever a client connects to the server.
+
+// // socket.on:
+// // This is used to set up a listener for a specific event on a specific socket.
+// // The listener will be called whenever that event is emitted by the client associated with that socket.
+// // For example, socket.on('disconnect', callback) sets up a listener for the 'disconnect' event,
+// // which is emitted when the client associated with the socket disconnects.
+
+// // io.emit:
+// // This is used to emit an event to all connected clients.
+
+// // socket.emit:
+// // This is used to emit an event to the client associated with that socket.
+
+// // io.to.emit:
+// // This is used to emit an event to all clients in a specific room.
+
+// // socket.to.emit:
+// // This is used to emit an event to all clients in a specific room, excluding the client associated with the socket.
