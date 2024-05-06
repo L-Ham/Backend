@@ -681,7 +681,7 @@ const getSubredditByNames = async (req, res) => {
     const regex = new RegExp(`^${search}`, "i");
     const matchingNames = await SubReddit.find(
       { name: regex },
-      "_id name appearance.avatarImage members ageRestriction"
+      "_id name appearance.avatarImage members ageRestriction description"
     );
 
     const avatarImagePromises = matchingNames.map(async (subreddit) => {

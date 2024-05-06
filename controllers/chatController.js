@@ -112,15 +112,15 @@ const sendMessage = async (req, res) => {
       }
     } else if (conversation.type === "group") {
       // io.to(<room_name>).emit() used to send events to all clients in a room
-      // io.to(conversation.chatName).emit("newMessage", newMessage);
-      for (participant of conversation.participants) {
-        if (participant == sender.userName) continue;
-        const participantSocketId = getReceiverSocketId(participant);
-        if (participantSocketId) {
-          console.log("Ana hsta3ml el socket");
-          io.to(participantSocketId).emit("newMessage", newMessage);
-        }
-      }
+      io.to(conversation.chatName).emit("newMessage", newMessage);
+      // for (participant of conversation.participants) {
+      //   if (participant == sender.userName) continue;
+      //   const participantSocketId = getReceiverSocketId(participant);
+      //   if (participantSocketId) {
+      //     console.log("Ana hsta3ml el socket");
+      //     io.to(participantSocketId).emit("newMessage", newMessage);
+      //   }
+      // }
     }
 
     res
