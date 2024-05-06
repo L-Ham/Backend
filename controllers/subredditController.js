@@ -7,6 +7,7 @@ const UserUpload = require("../controllers/userUploadsController");
 const UserServices = require("../services/userServices");
 const PostServices = require("../services/postServices");
 const subReddit = require("../models/subReddit");
+const notification = require("../models/notification");
 
 const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
@@ -489,6 +490,8 @@ const getCommunityDetails = async (req, res) => {
       currentlyViewingNickname: subreddit.currentlyViewingNickname,
       currentlyViewingCount: randomIndex,
       isMember: subreddit.members.includes(userId),
+      isModerator: subreddit.moderators.includes(userId),
+      notificationLevelAttribute: "frequent",
       isFavorite: isFavorite,
       isMuted: isMuted ? true : false,
       createdAt: createdSeconds,
