@@ -1065,13 +1065,28 @@ const getPostById = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    res.status(200).json({ message: "Post retrieved successfully", post });
+
+    const subreddit = await SubReddit.findById(post.subReddit);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    const response = {
+      message: "Post retrieved successfully",
+      post: {
+        ...post.toObject(), 
+        subRedditName: subreddit.name 
+      }
+    };
+
+    res.status(200).json(response);
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error getting post", error: error.message });
   }
 };
+
 
 const scheduledPost = async (req, res, next) => {
   const userId = req.userId;
