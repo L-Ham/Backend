@@ -292,13 +292,22 @@ const upvote = async (req, res, next) => {
       await user.save();
     }
     const receiver = await User.findById(post.user);
-    await NotificationServices.sendNotification(
-      receiver.userName,
-      user.userName,
-      post._id,
-      "upvotedPost"
-    );
-    res.status(200).json({ message: "Post upvoted & added to user" });
+    if (receiver.notificationSettings.get("upvotesToPosts")) {
+      await NotificationServices.sendNotification(
+        receiver.userName,
+        user.userName,
+        post._id,
+        null,
+        "upvotedPost"
+      );
+      res
+        .status(200)
+        .json({ message: "Post upvoted & added to user & Notification Sent" });
+    } else {
+      res.status(200).json({
+        message: "Post upvoted & added to user & Notification Not Required",
+      });
+    }
   } catch (err) {
     res
       .status(500)
@@ -338,13 +347,22 @@ const downvote = async (req, res, next) => {
       await user.save();
     }
     const receiver = await User.findById(post.user);
-    await NotificationServices.sendNotification(
-      receiver.userName,
-      user.userName,
-      post._id,
-      "downvotedPost"
-    );
-    res.status(200).json({ message: "Post downvoted & added to user" });
+    if (receiver.notificationSettings.get("upvotesToPosts")) {
+      await NotificationServices.sendNotification(
+        receiver.userName,
+        user.userName,
+        post._id,
+        null,
+        "downvotedPost"
+      );
+      res.status(200).json({
+        message: "Post downvoted & added to user & Notification Sent",
+      });
+    } else {
+      res.status(200).json({
+        message: "Post downvoted & added to user & Notification Not Required",
+      });
+    }
   } catch (err) {
     res
       .status(500)

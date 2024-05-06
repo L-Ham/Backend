@@ -937,6 +937,38 @@ const getSubredditMembers = async (req, res, next) => {
   }
 };
 
+const getPendingMembers = async (req, res, next) => {
+  const subredditName = req.query.subredditName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const members = await User.find({ _id: { $in: subreddit.pendingMembers } });
+    const membersDetails = await Promise.all(
+      members.map(async (member) => {
+        const userUpload = await UserUploadModel.findOne({
+          _id: member.avatarImage,
+        });
+        return {
+          _id: member._id,
+          userName: member.userName,
+          avatarImage: userUpload ? userUpload.url : null,
+        };
+      })
+    );
+
+    res.json({
+      message: "Retrieved subreddit Pending Users Successfully",
+      pendingMembers: membersDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error getting subreddit Members",
+      error: error.message,
+    });
+  }
+};
 const suggestSubreddit = async (req, res, next) => {
   const userId = req.userId;
   try {
@@ -1027,7 +1059,7 @@ const approveUser = async (req, res, next) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    if (subreddit.privacy !== "private") {
+    if (subreddit.privacy !== "private" && subreddit.privacy !== "Private") {
       return res
         .status(400)
         .json({ message: "Subreddit is not private Anyone Can Join" });
@@ -1047,6 +1079,7 @@ const approveUser = async (req, res, next) => {
     }
     subreddit.pendingMembers.pop(user._id);
     subreddit.members.push(user._id);
+    user.communities.push(subreddit._id);
     await subreddit.save();
     res.json({ message: "User approved successfully" });
   } catch (error) {
@@ -1063,7 +1096,7 @@ const UnapproveUser = async (req, res, next) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    if (subreddit.privacy !== "private") {
+    if (subreddit.privacy !== "private" && subreddit.privacy !== "Private") {
       return res
         .status(400)
         .json({ message: "Subreddit is not private Anyone Can Join" });
@@ -1083,6 +1116,39 @@ const UnapproveUser = async (req, res, next) => {
     res.json({ message: "User unapproved successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error unapproving user" });
+  }
+};
+
+const removeSubredditMember = async (req, res, next) => {
+  const username = req.body.userName;
+  const subredditName = req.body.subredditName;
+  const userId = req.userId;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
+    const user = await User.findOne({ userName: username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!subreddit.members.includes(user._id)) {
+      return res.status(400).json({ message: "User not a member" });
+    }
+    subreddit.members = subreddit.members.filter(
+      (member) => member.toString() !== user._id.toString()
+    );
+    user.communities = user.communities.filter(
+      (community) => community.toString() !== subreddit._id.toString()
+    );
+    await subreddit.save();
+    await user.save();
+    res.json({ message: "Subreddit member removed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error removing subreddit member" });
   }
 };
 
@@ -1155,7 +1221,12 @@ const banUser = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    if (!user.communities.includes(subreddit._id.toString())) {
+    if (
+      !user.communities.includes(subreddit._id.toString()) &&
+      !subreddit.bannedUsers.some((bannedUser) =>
+        bannedUser.userId.equals(user._id)
+      )
+    ) {
       return res
         .status(400)
         .json({ message: "User is not a member of this subreddit" });
@@ -1163,10 +1234,21 @@ const banUser = async (req, res, next) => {
     if (user._id.toString() === userId.toString()) {
       return res.status(400).json({ message: "You can't ban yourself" });
     }
-    // if (subreddit.bannedUsers.find((bannedUser) => bannedUser.userId.toString() === user._id.toString()))
-    // {
-    //   return res.status(400).json({ message: "User already banned" });
-    // }
+    if (
+      subreddit.bannedUsers.some((bannedUser) =>
+        bannedUser.userId.equals(user._id)
+      )
+    ) {
+      const bannedUser = subreddit.bannedUsers.find((bannedUser) =>
+        bannedUser.userId.equals(user._id)
+      );
+      if (bannedUser) {
+        bannedUser.modNote = modNote;
+        bannedUser.reasonForBan = reasonForBan;
+        await subreddit.save();
+        return res.json({ message: "Banned user updated successfully" });
+      }
+    }
     subreddit.bannedUsers.push({
       userId: user._id,
       userName: user.userName,
@@ -1978,7 +2060,12 @@ const leaveModerator = async (req, res) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    subreddit.moderators.pop(userId);
+    subreddit.moderators = subreddit.moderators.filter(
+      (moderator) => moderator.toString() !== userId.toString()
+    );
+    user.communities = user.communities.filter(
+      (community) => community.toString() !== subreddit._id.toString()
+    );
     await subreddit.save();
     res.status(200).json({ message: "Moderator left successfully" });
   } catch (error) {
@@ -2079,10 +2166,12 @@ module.exports = {
   checkSubredditNameAvailability,
   getSubredditModerators,
   getSubredditMembers,
+  getPendingMembers,
   getTrendingCommunities,
   suggestSubreddit,
   approveUser,
   UnapproveUser,
+  removeSubredditMember,
   getBannedUsers,
   banUser,
   unbanUser,

@@ -151,6 +151,12 @@ router.get(
 );
 
 router.get(
+  "/users/pending",
+  bodyParser.json(),
+  subredditController.getPendingMembers
+);
+
+router.get(
   "/suggest",
   bodyParser.json(),
   authenticateToken,
@@ -163,6 +169,14 @@ router.patch(
   authenticateToken,
   subredditController.UnapproveUser
 );
+
+router.patch(
+  "/user/remove",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.removeSubredditMember
+);
+
 router.patch(
   "/user/ban",
   bodyParser.json(),

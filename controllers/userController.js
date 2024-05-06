@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const UserUpload = require("../controllers/userUploadsController");
 const UserServices = require("../services/userServices");
 const PostServices = require("../services/postServices");
+const NotificationServices = require("../services/notification");
 const { get } = require("http");
 const { error } = require("console");
 
@@ -247,15 +248,6 @@ const editNotificationSettings = async (req, res, next) => {
   }
 };
 
-/**
- * Follows a user.
- *
- * @param {Object} req - The request object. It should have a `userId` property (the ID of the user who wants to follow another user) and a `body` property with a `usernameToFollow` property (the username of the user to be followed).
- * @param {Object} res - The response object. This function will set the status and JSON body of the response.
- * @param {Function} next - The next middleware function. This function is not used in the current implementation, but is included for potential future use.
- * @returns {Promise<void>} - A promise that resolves when the user is followed successfully. The promise does not resolve to any value.
- * @throws {Error} - If there is an error while following the user, an error is thrown and the response status is set to 500 with a JSON body containing the error message.
- */
 const followUser = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -299,13 +291,36 @@ const followUser = async (req, res, next) => {
     }
     user.following.push(userToFollow._id);
     userToFollow.followers.push(userId);
+    // console.log(userToFollow);
+    // const receiver = await User.findById(post.user);
+    // console.log(userToFollow.notificationSettings.get("newFollowers"));
     await Promise.all([user.save(), userToFollow.save()]);
-    res.status(200).json({
-      message: "User followed successfully",
-      user: userToFollow,
-    });
+
+    if (userToFollow.notificationSettings.get("newFollowers")) {
+      await NotificationServices.sendNotification(
+        userToFollow.userName,
+        user.userName,
+        null,
+        null,
+        "followed"
+      );
+      res
+        .status(200)
+        .json({ message: "User followed successfully & Notification Sent" });
+    } else {
+      res.status(200).json({
+        message: "User followed successfully & Notification Not Required",
+      });
+    }
+
+    // res.status(200).json({
+    //   message: "User followed successfully",
+    //   user: userToFollow,
+    // });
   } catch (err) {
-    res.status(500).json({ message: "Failed to follow user", error: err });
+    res
+      .status(500)
+      .json({ message: "Failed to follow user", error: err.message });
   }
 };
 
@@ -737,7 +752,13 @@ const joinCommunity = async (req, res, next) => {
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
-
+    if (
+      community.bannedUsers.some((bannedUser) =>
+        bannedUser.userId.equals(user._id)
+      )
+    ) {
+      return res.status(400).json({ message: "User is banned from community" });
+    }
     // Handle join logic based on community privacy
     if (community.privacy === "private" || community.privacy === "Private") {
       if (
@@ -775,7 +796,9 @@ const joinCommunity = async (req, res, next) => {
       });
     }
   } catch (err) {
-    res.status(500).json({ message: "Error joining community", error: err });
+    res
+      .status(500)
+      .json({ message: "Error joining community", error: err.message });
   }
 };
 const unjoinCommunity = async (req, res) => {
