@@ -497,6 +497,89 @@ const commentSearch = async (req, res, next) => {
   }
 };
 
+const subredditCommentSearch = async (req, res, next) => {
+  const search = req.query.search;
+  const relevance = req.query.relevance;
+  const top = req.query.top;
+  const newest = req.query.new;
+  const subredditName = req.query.subredditName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const posts = await Post.find({ subReddit: subreddit._id });
+    const postIds = posts.map(post => post._id);
+    let query = {};
+    if (search) {
+      query = { postId: { $in: postIds }, text: { $regex: search, $options: 'i' } }
+    }
+    let sort = {};
+    if (relevance || top) {
+      sort.upvotes = -1;
+    }
+    if (newest) {
+      sort.createdAt = -1;
+    }
+    const populatedComments = await Comment.find(query)
+      .sort(sort)
+      .populate({
+        path: 'userId',
+        model: 'user', 
+      })
+      .populate({
+        path: 'images',
+        model: 'userUploads' 
+      })
+      .populate({
+        path: 'postId',
+        model: 'post' 
+      });
+    const comments = await Promise.all(populatedComments.map(async comment => {
+      const subredditId = comment.postId.subReddit;
+      let subreddittemp;
+      let subredditAvatarId;
+      let subredditAvatar;
+      if (subredditId) {
+        subreddittemp = await SubReddit.findById(subredditId);
+        subredditAvatarId = subreddittemp.appearance.avatarImage;
+        if (subredditAvatarId) {
+          subredditAvatar = await UserUploadModel.findById(subredditAvatarId);
+        }
+      }
+      let userAvatarId = comment.userId.avatarImage;
+      let userAvatar;
+      if (userAvatarId) {
+        userAvatar = await UserUploadModel.findById(userAvatarId);
+      }
+
+      return {
+        _id: comment._id,
+        postId: comment.postId._id,
+        userId: comment.userId._id,
+        userName: comment.userId.userName,
+        userAvatar: userAvatarId? userAvatar.url : null,
+        postCreatedAt: comment.postId.createdAt,
+        postTitle: comment.postId.title,
+        postText: comment.postId.text,
+        postUpvotes: comment.postId.upvotes,
+        postDownvotes: comment.postId.downvotes,
+        subRedditName: subredditId? subreddittemp.name : null,
+        subRedditAvatar: subredditAvatarId? subredditAvatar.url : null,
+        commentText: comment.text,
+        commentImage: comment.images,
+        commentUpvotes: comment.upvotes,
+        commentDownvotes: comment.downvotes,
+        commentCreatedAt: comment.createdAt,
+      };
+    }
+    ));
+    res.status(200).json({ message: "Comments fetched", comments: comments });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error fetching comments", error: err });
+  }
+};
 
 module.exports = {
   createComment,
@@ -509,4 +592,5 @@ module.exports = {
   cancelUpvote,
   getReplies,
   commentSearch,
+  subredditCommentSearch,
 };

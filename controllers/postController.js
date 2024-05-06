@@ -1475,6 +1475,10 @@ const searchPosts = async (req, res) => {
       .populate({
         path: 'images',
         model: 'userUploads' 
+      })
+      .populate({
+        path: 'videos',
+        model: 'userUploads'
       });
       const posts = await Promise.all(populatedPosts.map(async (post) => {
         const score = post.upvotes - post.downvotes;
@@ -1496,8 +1500,11 @@ const searchPosts = async (req, res) => {
         return {
           postId: post._id,
           title: post.title,
+          type: post.type,
           text: post.text,
           image: post.images[0].url,
+          video: post.videos.url || null,
+          URL: post.url,
           userName: post.user ? post.user.userName : null,
           userAvatarImage: avatarImage,
           subreddit: subReddit ? subReddit.name : null,

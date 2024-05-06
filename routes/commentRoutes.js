@@ -67,4 +67,10 @@ router.get(
   commentController.commentSearch
 );
 
+router.get(
+  "/subreddit/searchComment",
+  bodyParser.json(),
+  commentController.subredditCommentSearch
+);
+
 module.exports = router;
