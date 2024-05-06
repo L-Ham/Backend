@@ -368,6 +368,12 @@ const userSchema = new Schema({
       ref: 'post',
     },
   ],
+  historyPosts: [
+    {
+      type: Object,
+      ref: "post",
+    },
+  ],
 });
 
 module.exports = mongoose.model("user", userSchema);

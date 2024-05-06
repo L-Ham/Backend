@@ -1705,6 +1705,28 @@ const getNotifications = async (req, res, next) => {
     });
   }
 };
+const getHistoryPosts = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const posts = await Post.find({ _id: { $in: user.historyPosts } });
+
+    res.status(200).json({
+      message: "Retrieved User's History Posts",
+      historyPosts: posts,
+    });
+  }
+  catch (err) {
+    res.status(500).json({
+      message: "Error Getting Posts in User History",
+      error: err.message,
+    });
+  }
+}
+
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -1752,4 +1774,5 @@ module.exports = {
   getUserInfo,
   getCommunitiesInfo,
   getNotifications,
+  getHistoryPosts
 };

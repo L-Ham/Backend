@@ -272,4 +272,10 @@ router.get(
   authenticateToken,
   userController.getNotifications
 );
+router.get(
+  "/history/get",
+  bodyParser.json(),
+  authenticateToken,
+  userController.getHistoryPosts
+);
 module.exports = router;
