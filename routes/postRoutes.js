@@ -80,6 +80,7 @@ router.patch(
 router.get(
   "/comments",
   bodyParser.json(),
+  authenticateToken,
   postController.getAllPostComments
 );
 router.patch(
@@ -162,4 +163,5 @@ router.get(
   authenticateToken,
   postController.getAllPosts
 );
+
 module.exports = router;

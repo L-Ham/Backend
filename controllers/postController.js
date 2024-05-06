@@ -546,6 +546,8 @@ const getAllPostComments = async (req, res, next) => {
   const postId = req.query.postId;
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
+  const userId = req.userId? req.userId : null;
+ 
 
   try {
     const post = await Post.findById(postId).populate({
@@ -648,6 +650,14 @@ const getAllPostComments = async (req, res, next) => {
         replies: replies
       };
     }));
+
+    if(userId){
+      const user = await User.findById(userId);
+      if(user){
+        user.historyPosts.push(post);
+        await user.save();
+      }
+    }
 
     res.status(200).json({
       message: "Comments retrieved successfully",
