@@ -1141,9 +1141,19 @@ const removeSubredditMember = async (req, res, next) => {
     subreddit.members = subreddit.members.filter(
       (member) => member.toString() !== user._id.toString()
     );
+    if (!subreddit.removedUsers) {
+      subreddit.removedUsers = [];
+    }
+    subreddit.removedUsers.push({
+      user: {
+        _id: user._id,
+        userName: user.userName,
+      },
+    });
     user.communities = user.communities.filter(
       (community) => community.toString() !== subreddit._id.toString()
     );
+ 
     await subreddit.save();
     await user.save();
     res.json({ message: "Subreddit member removed successfully" });
