@@ -400,6 +400,25 @@ const unlockComment = async (req, res, next) => {
       .json({ message: "Error unlocking comment", error: err.message });
   }
 };
+const getReplies = async (req, res, next) => {
+  try {
+    const commentId = req.query.commentId;
+    const comment = await Comment
+      .findById(commentId)
+      .populate({
+        path: 'replies',
+        populate: { path: 'replies' } 
+      })
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    res.status(200).json({ message: "Replies fetched", replies: comment.replies });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error fetching replies", error: err });
+  }
+}
+
 module.exports = {
   createComment,
   upvote,
@@ -409,4 +428,5 @@ module.exports = {
   unlockComment,
   cancelDownvote,
   cancelUpvote,
+  getReplies
 };

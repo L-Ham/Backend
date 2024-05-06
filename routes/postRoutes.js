@@ -78,7 +78,7 @@ router.patch(
 );
 
 router.get(
-  "/getAllPostComments",
+  "/comments",
   bodyParser.json(),
   authenticateToken,
   postController.getAllPostComments

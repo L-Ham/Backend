@@ -55,6 +55,10 @@ router.patch(
   authenticateToken,
   commentController.cancelDownvote
 )
-
+router.get(
+  "/replies",
+  bodyParser.json(),
+  commentController.getReplies
+);
 
 module.exports = router;
