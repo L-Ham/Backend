@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const multerConfig = require("./middleware/multerConfig");
 const cors = require("cors");
 const { app, server } = require("./socket/socket.js");
+
 const PORT = 5000;
 
 app.use(cors());

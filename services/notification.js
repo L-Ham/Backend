@@ -1,6 +1,7 @@
 const Notification = require("../models/notification");
 const User = require("../models/user");
 const Post = require("../models/post");
+const Comment = require("../models/comment");
 const Subreddit = require("../models/subReddit");
 const UserUploadModel = require("../models/userUploads");
 require("dotenv").config();
@@ -15,16 +16,34 @@ admin.initializeApp({
 });
 
 const notificationTemplate = {};
-const sendNotification = async (username, senderUsername, post, type) => {
+const sendNotification = async (
+  username,
+  senderUsername,
+  post,
+  comment,
+  type
+) => {
   const user = await User.findOne({ userName: username });
   const sender = await User.findOne({ userName: senderUsername });
   const userAvatar = await UserUploadModel.findById(user.avatarImage);
   const senderAvatar = await UserUploadModel.findById(sender.avatarImage);
   let affectedPost = null;
   let subreddit = null;
+  let subredditAvatar = null;
   if (post) {
+    console.log("ANA DA5EL HNAAAAA");
     affectedPost = await Post.findById(post);
     subreddit = await Subreddit.findById(affectedPost.subReddit);
+    if (subreddit) {
+      subredditAvatar = await UserUploadModel.findById(subreddit.avatarImage);
+      if (subredditAvatar) {
+        subredditAvatar = subredditAvatar.url;
+      }
+    }
+  }
+  let PostedComment = null;
+  if (comment) {
+    PostedComment = await Comment.findById(comment);
   }
   const fcmTokens = user.fcmTokens;
   console.log(fcmTokens);
@@ -32,7 +51,7 @@ const sendNotification = async (username, senderUsername, post, type) => {
   let notification = null;
   switch (type) {
     case "upvotedPost":
-      notificationTemplate.title = `${sender.userName} upvoted your post`;
+      notificationTemplate.title = `${sender.userName} Upvoted Your Post`;
       notificationTemplate.body = "Check it out!";
       notification = await Notification.create({
         senderId: sender._id,
@@ -42,13 +61,14 @@ const sendNotification = async (username, senderUsername, post, type) => {
         receiverName: user.userName,
         receiverAvatar: userAvatar ? userAvatar.url : null,
         subredditName: subreddit ? subreddit.name : null,
+        subredditAvatar: subredditAvatar ? subredditAvatar : null,
         type: "upvotedPost",
         isRead: false,
       });
       await notification.save();
       break;
     case "downvotedPost":
-      notificationTemplate.title = `${sender.userName} downvoted your post`;
+      notificationTemplate.title = `${sender.userName} Downvoted Your Post`;
       notificationTemplate.body = "Check it out!";
       notification = await Notification.create({
         senderId: sender._id,
@@ -58,7 +78,42 @@ const sendNotification = async (username, senderUsername, post, type) => {
         receiverName: user.userName,
         receiverAvatar: userAvatar ? userAvatar.url : null,
         subredditName: subreddit ? subreddit.name : null,
+        subredditAvatar: subredditAvatar ? subredditAvatar : null,
         type: "upvotedPost",
+        isRead: false,
+      });
+      await notification.save();
+      break;
+    case "followed":
+      notificationTemplate.title = `${sender.userName} Followed YOU!!`;
+      notificationTemplate.body = "Check it out!";
+      notification = await Notification.create({
+        senderId: sender._id,
+        senderName: sender.userName,
+        senderAvatar: senderAvatar ? senderAvatar.url : null,
+        receiverId: user._id,
+        receiverName: user.userName,
+        receiverAvatar: userAvatar ? userAvatar.url : null,
+        subredditName: subreddit ? subreddit.name : null,
+        subredditAvatar: subredditAvatar ? subredditAvatar : null,
+        type: "followed",
+        isRead: false,
+      });
+      await notification.save();
+      break;
+    case "commentedPost":
+      notificationTemplate.title = `${sender.userName} Commented on your Post!!`;
+      notificationTemplate.body = `Title: ${affectedPost.title}!!`;
+      notification = await Notification.create({
+        senderId: sender._id,
+        senderName: sender.userName,
+        senderAvatar: senderAvatar ? senderAvatar.url : null,
+        receiverId: user._id,
+        receiverName: user.userName,
+        receiverAvatar: userAvatar ? userAvatar.url : null,
+        subredditName: subreddit ? subreddit.name : null,
+        subredditAvatar: subredditAvatar ? subredditAvatar : null,
+        type: "commentedPost",
         isRead: false,
       });
       await notification.save();
@@ -71,17 +126,7 @@ const sendNotification = async (username, senderUsername, post, type) => {
   if (fcmTokens.length === 0) {
     return;
   }
-  // if (type === "upvotedPost") {
-  //   notificationTemplate.title = `${from} upvoted your post`;
-  //   notificationTemplate.body = "Check it out!";
-  // }
-  let messageStr = {};
-
-  // const notification = new Notification({
-  //   type: type,
-  //   message: messageStr,
-  // });
-  // await notification.save();
+  // let messageStr = {};
   const message = {
     notification: {
       title: notificationTemplate.title,
@@ -89,7 +134,7 @@ const sendNotification = async (username, senderUsername, post, type) => {
     },
     tokens: fcmTokens,
   };
-  console.log(serviceAccount);
+  // console.log(serviceAccount);
   getMessaging()
     .sendEachForMulticast(message)
     .then((response) => {

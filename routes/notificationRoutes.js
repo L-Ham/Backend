@@ -24,4 +24,11 @@ router.patch(
   authenticateToken,
   notificationController.readAllNotifications
 );
+
+router.delete(
+  "/hide",
+  bodyParser.json(),
+  authenticateToken,
+  notificationController.hideNotification
+);
 module.exports = router;

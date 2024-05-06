@@ -30,6 +30,10 @@ const notificationSchema = new Schema(
       type: String,
       required: false,
     },
+    subredditAvatar: {
+      type: String,
+      required: false,
+    },
     type: {
       type: String,
       required: true,

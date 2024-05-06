@@ -4,6 +4,7 @@ const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
 const UserUpload = require("../controllers/userUploadsController");
 const Report = require("../models/report");
+const NotificationServices = require("../services/notification");
 
 const createComment = async (req, res, next) => {
   const userId = req.userId;
@@ -24,24 +25,35 @@ const createComment = async (req, res, next) => {
     const subReddit = await SubReddit.findById(post.subReddit);
     if (subReddit && subReddit.privacy === "private") {
       if (!subReddit.members.includes(userId)) {
-        return res.status(400).json({ message: "You are not a member of this subreddit" });
+        return res
+          .status(400)
+          .json({ message: "You are not a member of this subreddit" });
       }
     }
 
-    const isUserBanned = subReddit.bannedUsers.some((bannedUser) => bannedUser.userId.toString() === userId.toString());
+    const isUserBanned = subReddit.bannedUsers.some(
+      (bannedUser) => bannedUser.userId.toString() === userId.toString()
+    );
 
     if (isUserBanned) {
-      return res.status(400).json({ message: "You are banned from this subreddit" });
+      return res
+        .status(400)
+        .json({ message: "You are banned from this subreddit" });
     }
-
 
     if (subReddit !== null) {
       if (post.isLocked && !subReddit.moderators.includes(userId)) {
-        return res.status(400).json({ message: "Post is Already locked in the SubReddit" });
+        return res
+          .status(400)
+          .json({ message: "Post is Already locked in the SubReddit" });
       }
     }
 
-    if (post.isLocked && post.user.toString() !== userId && subReddit === null) {
+    if (
+      post.isLocked &&
+      post.user.toString() !== userId &&
+      subReddit === null
+    ) {
       console.log("Post is locked");
       return res.status(400).json({ message: "Post is locked" });
     }
@@ -102,14 +114,33 @@ const createComment = async (req, res, next) => {
 
     user.comments.push(savedComment._id);
     await user.save();
+    const receiver = await User.findById(post.user);
+    if (receiver.notificationSettings.get("upvotesToPosts")) {
+      await NotificationServices.sendNotification(
+        receiver.userName,
+        user.userName,
+        post._id,
+        savedComment._id,
+        "commentedPost"
+      );
+      res
+        .status(200)
+        .json({ message: "Comment Created successfully & Notification Sent" });
+    } else {
+      res.status(200).json({
+        message: "Comment Created successfully & Notification Not Required",
+      });
+    }
 
-    res.json({
-      message: "Comment Created successfully",
-      savedComment,
-    });
+    // res.status(200).json({
+    //   message: "Comment Created successfully",
+    //   savedComment,
+    // });
   } catch (err) {
     console.log("Error creating comment:", err);
-    res.status(500).json({ message: "Error Creating Comment", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error Creating Comment", error: err.message });
   }
 };
 
