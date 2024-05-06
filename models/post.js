@@ -44,6 +44,10 @@ const postSchema = new Schema({
     ref: "user",
     required: false,
   },
+  approvedAt: {
+    type: Date,
+    required: false,
+  },
   disapproved: {
     type: Boolean,
     required: false,
@@ -52,6 +56,10 @@ const postSchema = new Schema({
   disapprovedBy: {
     type: Schema.Types.ObjectId,
     ref: "user",
+    required: false,
+  },
+  disapprovedAt: {
+    type: Date,
     required: false,
   },
   videos: [
