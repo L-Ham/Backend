@@ -417,7 +417,31 @@ const getReplies = async (req, res, next) => {
   catch (err) {
     res.status(500).json({ message: "Error fetching replies", error: err });
   }
-}
+};
+
+const commentSearch = async (req, res, next) => {
+  const search = req.query.search;
+  const relevance = req.query.relevance;
+  const top = req.query.top;
+  const newest = req.query.new;
+  try {
+    let comments = [];
+    if (relevance) {
+      comments = await Comment.find({ text: { $regex: search, $options: 'i' } }).sort({ votes: -1 });
+    }
+    if (top) {
+      comments = await Comment.find({ text: { $regex: search, $options: 'i' } }).sort({ votes: -1 });
+    }
+    if (newest) {
+      comments = await Comment.find({ text: { $regex: search, $options: 'i' } }).sort({ createdAt: -1 });
+    }
+    res.status(200).json({ message: "Comments fetched", comments });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error fetching comments", error: err });
+  }
+
+};
 
 module.exports = {
   createComment,
