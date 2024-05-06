@@ -544,19 +544,92 @@ const unlockPost = async (req, res, next) => {
 };
 const getAllPostComments = async (req, res, next) => {
   const postId = req.query.postId;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+
   try {
-    const post = await Post.findById(postId).populate("comments");
+    const post = await Post.findById(postId).populate({
+      path: 'comments',
+      options: {
+        skip: (page - 1) * limit,
+        limit: limit
+      },
+      populate: [
+        {
+          path: 'replies',
+          model: 'comment', 
+          populate: {
+            path: 'replies',
+            model: 'comment' 
+          }
+        },
+        {
+          path: 'images',
+          model: 'userUploads' 
+        }
+      ]
+    });
+
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+
+    const comments = post.comments.map(comment => {
+      const score = comment.upvotes - comment.downvotes;
+      const replies = comment.replies.map(reply => {
+        const replyScore = reply.upvotes - reply.downvotes;
+        let replyType = 'text';
+        let replyContent = reply.text;
+        if (reply.images && reply.images.length > 0) {
+          replyType = 'image';
+          replyContent = reply.images.map(image => image.url); 
+        } else if (reply.url) {
+          replyType = 'link';
+          replyContent = reply.url;
+        }
+        return {
+          userId: reply.userId,
+          commentId: reply._id,
+          score: replyScore,
+          isUpvoted: reply.upvotes > 0,
+          isDownvoted: reply.downvotes > 0,
+          repliedId: comment._id,
+          commentType: replyType,
+          content: replyContent,
+          replies: reply.replies 
+        };
+      });
+      let commentType = 'text';
+      let commentContent = comment.text;
+      if (comment.images && comment.images.length > 0) {
+        commentType = 'image';
+        commentContent = comment.images.map(image => image.url); 
+      } else if (comment.url) {
+        commentType = 'link';
+        commentContent = comment.url;
+      }
+      return {
+        userId: comment.userId,
+        commentId: comment._id,
+        score: score,
+        isUpvoted: comment.upvotes > 0,
+        isDownvoted: comment.downvotes > 0,
+        repliedId: null,
+        commentType: commentType,
+        content: commentContent,
+        replies: replies
+      };
+    });
+
     res.status(200).json({
       message: "Comments retrieved successfully",
-      comments: post.comments,
+      comments: comments,
     });
   } catch (error) {
     res.status(500).json({ message: "Error getting comments for post" });
   }
 };
+
 const markAsNSFW = async (req, res, next) => {
   const userId = req.userId;
   const postId = req.body.postId;
