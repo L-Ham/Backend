@@ -319,6 +319,12 @@ const subRedditSchema = new Schema({
       ref: "post",
     },
   ],
+  removedUsers: [
+    {
+      type: Object,
+      ref: "user",
+    },
+  ],
 });
 
 module.exports = mongoose.model("subreddits", subRedditSchema);

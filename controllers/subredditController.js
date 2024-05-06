@@ -7,6 +7,7 @@ const UserUpload = require("../controllers/userUploadsController");
 const UserServices = require("../services/userServices");
 const PostServices = require("../services/postServices");
 const subReddit = require("../models/subReddit");
+const notification = require("../models/notification");
 
 const checkCommunitynameExists = (Communityname) => {
   return SubReddit.findOne({ name: Communityname });
@@ -489,6 +490,8 @@ const getCommunityDetails = async (req, res) => {
       currentlyViewingNickname: subreddit.currentlyViewingNickname,
       currentlyViewingCount: randomIndex,
       isMember: subreddit.members.includes(userId),
+      isModerator: subreddit.moderators.includes(userId),
+      notificationLevelAttribute: "frequent",
       isFavorite: isFavorite,
       isMuted: isMuted ? true : false,
       createdAt: createdSeconds,
@@ -1141,9 +1144,19 @@ const removeSubredditMember = async (req, res, next) => {
     subreddit.members = subreddit.members.filter(
       (member) => member.toString() !== user._id.toString()
     );
+    if (!subreddit.removedUsers) {
+      subreddit.removedUsers = [];
+    }
+    subreddit.removedUsers.push({
+      user: {
+        _id: user._id,
+        userName: user.userName,
+      },
+    });
     user.communities = user.communities.filter(
       (community) => community.toString() !== subreddit._id.toString()
     );
+ 
     await subreddit.save();
     await user.save();
     res.json({ message: "Subreddit member removed successfully" });

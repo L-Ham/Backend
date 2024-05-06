@@ -3,8 +3,10 @@ const Post = require("../models/post");
 const User = require("../models/user");
 const SubReddit = require("../models/subReddit");
 const UserUpload = require("../controllers/userUploadsController");
+const UserUploadModel = require("../models/userUploads");
 const Report = require("../models/report");
 const NotificationServices = require("../services/notification");
+const { format } = require("path");
 
 const createComment = async (req, res, next) => {
   const userId = req.userId;
@@ -400,6 +402,102 @@ const unlockComment = async (req, res, next) => {
       .json({ message: "Error unlocking comment", error: err.message });
   }
 };
+const getReplies = async (req, res, next) => {
+  try {
+    const commentId = req.query.commentId;
+    const comment = await Comment
+      .findById(commentId)
+      .populate({
+        path: 'replies',
+        populate: { path: 'replies' } 
+      })
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    res.status(200).json({ message: "Replies fetched", replies: comment.replies });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error fetching replies", error: err });
+  }
+};
+
+const commentSearch = async (req, res, next) => {
+  const search = req.query.search;
+  const relevance = req.query.relevance;
+  const top = req.query.top;
+  const newest = req.query.new;
+  try {
+    let query = {};
+    if (search) {
+      query.text = { $regex: search, $options: 'i' };
+    }
+    let sort = {};
+    if (relevance || top) {
+      sort.votes = -1;
+    }
+    if (newest) {
+      sort.createdAt = -1;
+    }
+    const populatedComments = await Comment.find(query)
+      .sort(sort)
+      .populate({
+        path: 'userId',
+        model: 'user', 
+      })
+      .populate({
+        path: 'images',
+        model: 'userUploads' 
+      })
+      .populate({
+        path: 'postId',
+        model: 'post' 
+      });
+    const comments = await Promise.all(populatedComments.map(async comment => {
+      const subredditId = comment.postId.subReddit;
+      let subreddittemp;
+      let subredditAvatarId;
+      let subredditAvatar;
+      if (subredditId) {
+        subreddittemp = await SubReddit.findById(subredditId);
+        subredditAvatarId = subreddittemp.appearance.avatarImage;
+        if (subredditAvatarId) {
+          subredditAvatar = await UserUploadModel.findById(subredditAvatarId);
+        }
+      }
+      let userAvatarId = comment.userId.avatarImage;
+      let userAvatar;
+      if (userAvatarId) {
+        userAvatar = await UserUploadModel.findById(userAvatarId);
+      }
+
+      return {
+        _id: comment._id,
+        postId: comment.postId._id,
+        userId: comment.userId._id,
+        userName: comment.userId.userName,
+        userAvatar: userAvatarId? userAvatar.url : null,
+        postCreatedAt: comment.postId.createdAt,
+        postTitle: comment.postId.title,
+        postText: comment.postId.text,
+        postUpvotes: comment.postId.upvotes,
+        postDownvotes: comment.postId.downvotes,
+        subRedditName: subredditId? subreddittemp.name : null,
+        subRedditAvatar: subredditAvatarId? subredditAvatar.url : null,
+        commentText: comment.text,
+        commentImage: comment.images,
+        commentUpvotes: comment.upvotes,
+        commentDownvotes: comment.downvotes,
+        commentCreatedAt: comment.createdAt,
+      };
+    }));
+    res.status(200).json({ message: "Comments fetched", comments: comments });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error fetching comments", error: err });
+  }
+};
+
+
 module.exports = {
   createComment,
   upvote,
@@ -409,4 +507,6 @@ module.exports = {
   unlockComment,
   cancelDownvote,
   cancelUpvote,
+  getReplies,
+  commentSearch,
 };

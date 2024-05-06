@@ -516,7 +516,7 @@ const unlockPost = async (req, res, next) => {
           .json({ message: "User not authorized to lock post" });
       }
     }
-   
+
     if (post.subReddit !== null) {
       if (!subReddit.moderators.includes(userId)) {
         console.error(
@@ -544,19 +544,121 @@ const unlockPost = async (req, res, next) => {
 };
 const getAllPostComments = async (req, res, next) => {
   const postId = req.query.postId;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+
   try {
-    const post = await Post.findById(postId).populate("comments");
+    const post = await Post.findById(postId).populate({
+      path: 'comments',
+      options: {
+        skip: (page - 1) * limit,
+        limit: limit
+      },
+      populate: [
+        {
+          path: 'replies',
+          model: 'comment', 
+          populate: {
+            path: 'replies',
+            model: 'comment' 
+          }
+        },
+        {
+          path: 'images',
+          model: 'userUploads' 
+        }
+      ]
+    });
+
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+
+    const comments = await Promise.all(post.comments.map(async comment => {
+      const score = comment.upvotes - comment.downvotes;
+      const replies = await Promise.all(comment.replies.map(async reply => {
+        const replyScore = reply.upvotes - reply.downvotes;
+        let replyType = 'text';
+        let replyContent = reply.text;
+        if (reply.images && reply.images.length > 0) {
+          replyType = 'image';
+          replyContent = reply.images.map(image => image.url);
+          if (replyContent.length === 1) {
+            replyContent = replyContent[0]; // If there's only one image, use it as a single URL
+          }
+        }
+        const replyReplies = await Promise.all(reply.replies.map(async reply2 => {
+          const replyScore2 = reply2.upvotes - reply2.downvotes;
+          let replyType2 = 'text';
+          let replyContent2 = reply2.text;
+          if (reply2.images && reply2.images.length > 0) {
+            replyType2 = 'image';
+            replyContent2 = reply2.images.map(image => image.url);
+            if (replyContent2.length === 1) {
+              replyContent2 = replyContent2[0]; // If there's only one image, use it as a single URL
+            }
+          }
+          return {
+            userId: reply2.userId,
+            commentId: reply2._id,
+            score: replyScore2,
+            isUpvoted: reply2.upvotes > 0,
+            isDownvoted: reply2.downvotes > 0,
+            repliedId: reply._id,
+            commentType: replyType2,
+            content: replyContent2,
+            createdAt: reply2.createdAt,
+            replies: []
+          };
+        }));
+
+        return {
+          userId: reply.userId,
+          commentId: reply._id,
+          score: replyScore,
+          isUpvoted: reply.upvotes > 0,
+          isDownvoted: reply.downvotes > 0,
+          repliedId: comment._id,
+          commentType: replyType,
+          content: replyContent,
+          createdAt: reply.createdAt,
+          replies: replyReplies
+        };
+      }));
+
+      let commentType = 'text';
+      let commentContent = comment.text;
+      if (comment.images && comment.images.length > 0) {
+        commentType = 'image';
+        commentContent = comment.images.map(image => image.url);
+        if (commentContent.length === 1) {
+          commentContent = commentContent[0]; // If there's only one image, use it as a single URL
+        }
+      }
+      return {
+        userId: comment.userId,
+        commentId: comment._id,
+        score: score,
+        isUpvoted: comment.upvotes > 0,
+        isDownvoted: comment.downvotes > 0,
+        repliedId: null,
+        commentType: commentType,
+        content: commentContent,
+        createdAt: comment.createdAt,
+        replies: replies
+      };
+    }));
+
     res.status(200).json({
       message: "Comments retrieved successfully",
-      comments: post.comments,
+      comments: comments,
     });
   } catch (error) {
     res.status(500).json({ message: "Error getting comments for post" });
   }
 };
+
+
 const markAsNSFW = async (req, res, next) => {
   const userId = req.userId;
   const postId = req.body.postId;
@@ -901,13 +1003,18 @@ const reportPost = async (req, res, next) => {
       .json({ message: "Error reporting post", error: err.message });
   }
 };
+
 const getTrendingPosts = async (req, res, next) => {
   try {
     const trendingPosts = await Post.find({
-      images: { $exists: true, $ne: [] },
+      subReddit: {
+        $ne: null,
+      },
+      images: {
+        $ne: [],
+      }
     })
-      .sort({ upvotes: -1, downvotes: 1 })
-      .limit(6);
+      .sort({ upvotes: -1 }).limit(6);
 
     const postImagesIds = trendingPosts.map((post) => post.images[0]);
     const subRedditIds = trendingPosts.map((post) => post.subReddit);
@@ -923,31 +1030,32 @@ const getTrendingPosts = async (req, res, next) => {
         const subRedditTemp = subReddits.find((community) =>
           community._id.equals(post.subReddit)
         );
-        const avatarImageId = subRedditTemp.appearance.avatarImage;
-        const avatarImage = avatarImageId
-          ? await UserUploadModel.findById(avatarImageId)
-          : null;
 
-        if (subRedditTemp && Image) {
-          return {
-            postId: post._id,
-            title: post.title,
-            text: post.text,
-            image: Image ? Image.url : null,
-            subreddit: subRedditTemp.name || null,
-            subRedditId: subRedditTemp ? subRedditTemp._id : null,
-            avatarImage: avatarImage ? avatarImage.url : null,
-          };
+        let avatarImage = null;
+        if (subRedditTemp) {
+          const avatarImageId = subRedditTemp.appearance.avatarImage;
+          avatarImage = avatarImageId
+            ? await UserUploadModel.findById(avatarImageId.toString())
+            : null;
         }
+
+        return {
+          postId: post._id,
+          title: post.title,
+          text: post.text,
+          image: Image ? Image.url : null,
+          subreddit: subRedditTemp ? subRedditTemp.name : null,
+          subRedditId: subRedditTemp ? subRedditTemp._id : null,
+          avatarImage: avatarImage ? avatarImage.url : null,
+        };
       })
     );
-    const sortedPosts = formattedPosts.sort(
-      (a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
-    );
+
+    formattedPosts.sort((a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes));
 
     res.json({
       message: "Retrieved Trending Posts Successfully",
-      trendingPosts: sortedPosts,
+      trendingPosts: formattedPosts,
     });
   } catch (error) {
     res.status(500).json({
@@ -956,6 +1064,7 @@ const getTrendingPosts = async (req, res, next) => {
     });
   }
 };
+
 const getPostById = async (req, res, next) => {
   const postId = req.query.postId;
   try {
@@ -963,13 +1072,28 @@ const getPostById = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    res.status(200).json({ message: "Post retrieved successfully", post });
+
+    const subreddit = await SubReddit.findById(post.subReddit);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    const response = {
+      message: "Post retrieved successfully",
+      post: {
+        ...post.toObject(), 
+        subRedditName: subreddit.name 
+      }
+    };
+
+    res.status(200).json(response);
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error getting post", error: error.message });
   }
 };
+
 
 const scheduledPost = async (req, res, next) => {
   const userId = req.userId;
