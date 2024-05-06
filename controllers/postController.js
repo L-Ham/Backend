@@ -1410,6 +1410,121 @@ const deletePost = async (req, res) => {
   }
 };
 
+const searchPosts = async (req, res) => {
+  const search = req.query.search;
+  const relevance = req.query.relevance;
+  const top = req.query.top;
+  const newest = req.query.new;
+  const mediaOnly = req.query.mediaOnly;
+  const isNSFW = req.query.isNSFW;
+  try {
+    let query = {};
+    if (search) {
+      if(mediaOnly && isNSFW) {
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { text: { $regex: search, $options: "i" } },
+        ],
+        images: { $exists: "true", $ne: [] },
+      };
+    } else if (mediaOnly && !isNSFW) {
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { text: { $regex: search, $options: "i" } },
+        ],
+        isNSFW: "false",
+        images: { $exists: "true", $ne: [] },
+      };
+    } else if (!mediaOnly && isNSFW) {
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { text: { $regex: search, $options: "i" } },
+        ],
+      };
+    } else {
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { text: { $regex: search, $options: "i" } },
+        ],
+        isNSFW: "false",
+      };
+    }
+
+  }
+    let sort = {};
+    if (relevance || top) {
+      sort.upvotes = -1;
+    }
+    if (newest) {
+      sort.createdAt = -1;
+    }
+    const populatedPosts = await Post.find(query)
+      .sort(sort)
+      .populate({
+        path: 'user',
+        model: 'user', 
+        populate: {
+          path: 'avatarImage',
+          model: 'userUploads'
+        }
+      })
+      .populate({
+        path: 'images',
+        model: 'userUploads' 
+      });
+      const posts = await Promise.all(populatedPosts.map(async (post) => {
+        const score = post.upvotes - post.downvotes;
+        let avatarImage = null;
+        if (post.user && post.user.avatarImage) {
+          avatarImage = post.user.avatarImage.url;
+        }
+        let subReddit = null;
+        if (post.subReddit) {
+          subReddit = await SubReddit.findById(post.subReddit);
+        }
+        let avatarImageSubReddit = null;
+        if (subReddit) {
+          const avatarImageId = subReddit.appearance.avatarImage;
+          avatarImageSubReddit = avatarImageId
+            ? await UserUploadModel.findById(avatarImageId.toString())
+            : null;
+        }
+        return {
+          postId: post._id,
+          title: post.title,
+          text: post.text,
+          image: post.images[0].url,
+          userName: post.user ? post.user.userName : null,
+          userAvatarImage: avatarImage,
+          subreddit: subReddit ? subReddit.name : null,
+          subRedditId: subReddit ? subReddit._id : null,
+          avatarImageSubReddit: avatarImageSubReddit ? avatarImageSubReddit.url : null,
+          score: score,
+          isUpvoted: post.upvotes > 0,
+          isDownvoted: post.downvotes > 0,
+          commentCount: post.comments.length,
+          isNSFW: post.isNSFW,
+          createdAt: post.createdAt,
+        };
+        }));
+    res.status(200).json({
+      message: "Posts retrieved successfully",
+      posts: posts,
+    });
+  }
+  catch (err) {
+    res.status(500).json({
+      message: "Error searching posts",
+      error: err.message,
+    });
+  }
+};
+
+
 module.exports = {
   savePost,
   unsavePost,
@@ -1436,4 +1551,5 @@ module.exports = {
   scheduledPost,
   getAllPosts,
   deletePost,
+  searchPosts,
 };

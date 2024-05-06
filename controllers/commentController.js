@@ -433,7 +433,7 @@ const commentSearch = async (req, res, next) => {
     }
     let sort = {};
     if (relevance || top) {
-      sort.votes = -1;
+      sort.upvotes = -1;
     }
     if (newest) {
       sort.createdAt = -1;

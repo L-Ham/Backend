@@ -162,4 +162,12 @@ router.get(
   authenticateToken,
   postController.getAllPosts
 );
+
+router.get(
+  "/searchPosts",
+  bodyParser.json(),
+  postController.searchPosts
+);
+
+
 module.exports = router;
