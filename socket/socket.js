@@ -55,6 +55,7 @@ io.on("connection", async (socket) => {
     console.log({
       err: { status: 401, message: `Invalid Token: ${err.message}` },
     });
+    return; // need to fix this
   }
 
   // Get the user id from the token.
