@@ -516,7 +516,7 @@ const unlockPost = async (req, res, next) => {
           .json({ message: "User not authorized to lock post" });
       }
     }
-   
+
     if (post.subReddit !== null) {
       if (!subReddit.moderators.includes(userId)) {
         console.error(
@@ -574,19 +574,44 @@ const getAllPostComments = async (req, res, next) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const comments = post.comments.map(comment => {
+    const comments = await Promise.all(post.comments.map(async comment => {
       const score = comment.upvotes - comment.downvotes;
-      const replies = comment.replies.map(reply => {
+      const replies = await Promise.all(comment.replies.map(async reply => {
         const replyScore = reply.upvotes - reply.downvotes;
         let replyType = 'text';
         let replyContent = reply.text;
         if (reply.images && reply.images.length > 0) {
           replyType = 'image';
-          replyContent = reply.images.map(image => image.url); 
-        } else if (reply.url) {
-          replyType = 'link';
-          replyContent = reply.url;
+          replyContent = reply.images.map(image => image.url);
+          if (replyContent.length === 1) {
+            replyContent = replyContent[0]; // If there's only one image, use it as a single URL
+          }
         }
+        const replyReplies = await Promise.all(reply.replies.map(async reply2 => {
+          const replyScore2 = reply2.upvotes - reply2.downvotes;
+          let replyType2 = 'text';
+          let replyContent2 = reply2.text;
+          if (reply2.images && reply2.images.length > 0) {
+            replyType2 = 'image';
+            replyContent2 = reply2.images.map(image => image.url);
+            if (replyContent2.length === 1) {
+              replyContent2 = replyContent2[0]; // If there's only one image, use it as a single URL
+            }
+          }
+          return {
+            userId: reply2.userId,
+            commentId: reply2._id,
+            score: replyScore2,
+            isUpvoted: reply2.upvotes > 0,
+            isDownvoted: reply2.downvotes > 0,
+            repliedId: reply._id,
+            commentType: replyType2,
+            content: replyContent2,
+            createdAt: reply2.createdAt,
+            replies: []
+          };
+        }));
+
         return {
           userId: reply.userId,
           commentId: reply._id,
@@ -596,17 +621,19 @@ const getAllPostComments = async (req, res, next) => {
           repliedId: comment._id,
           commentType: replyType,
           content: replyContent,
-          replies: reply.replies 
+          createdAt: reply.createdAt,
+          replies: replyReplies
         };
-      });
+      }));
+
       let commentType = 'text';
       let commentContent = comment.text;
       if (comment.images && comment.images.length > 0) {
         commentType = 'image';
-        commentContent = comment.images.map(image => image.url); 
-      } else if (comment.url) {
-        commentType = 'link';
-        commentContent = comment.url;
+        commentContent = comment.images.map(image => image.url);
+        if (commentContent.length === 1) {
+          commentContent = commentContent[0]; // If there's only one image, use it as a single URL
+        }
       }
       return {
         userId: comment.userId,
@@ -617,9 +644,10 @@ const getAllPostComments = async (req, res, next) => {
         repliedId: null,
         commentType: commentType,
         content: commentContent,
+        createdAt: comment.createdAt,
         replies: replies
       };
-    });
+    }));
 
     res.status(200).json({
       message: "Comments retrieved successfully",
@@ -629,6 +657,7 @@ const getAllPostComments = async (req, res, next) => {
     res.status(500).json({ message: "Error getting comments for post" });
   }
 };
+
 
 const markAsNSFW = async (req, res, next) => {
   const userId = req.userId;
