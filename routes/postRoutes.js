@@ -170,6 +170,10 @@ router.get(
   postController.searchPosts
 );
 
-
+router.get(
+  "/subreddit/searchPosts",
+  bodyParser.json(),
+  postController.subredditPostSearch
+);
 
 module.exports = router;
