@@ -1156,7 +1156,7 @@ const removeSubredditMember = async (req, res, next) => {
     user.communities = user.communities.filter(
       (community) => community.toString() !== subreddit._id.toString()
     );
- 
+
     await subreddit.save();
     await user.save();
     res.json({ message: "Subreddit member removed successfully" });
@@ -1347,12 +1347,18 @@ const getSubredditFeed = async (req, res) => {
     // console.log(result.slicedArray);
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
+        let subreddit = null;
+        if (post.subReddit) {
+          subreddit = await SubReddit.findById(post.subReddit);
+        }
+        const subredditName = subreddit ? subreddit.name : null;
         const isUpvoted = !userId
           ? false
           : post.upvotedUsers.includes(user._id);
         const isDownvoted = !userId
           ? false
           : post.downvotedUsers.includes(user._id);
+        const isSaved = !userId ? false : user.savedPosts.includes(post._id);
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
@@ -1362,8 +1368,10 @@ const getSubredditFeed = async (req, res) => {
         }
         const postObj = {
           ...post._doc,
+          subredditName,
           isUpvoted,
           isDownvoted,
+          isSaved,
           imageUrls,
           videoUrls,
         };
