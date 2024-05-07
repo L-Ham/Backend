@@ -97,7 +97,6 @@ router.get(
 router.get(
   "/nameSearch",
   bodyParser.json(),
-  authenticateToken,
   subredditController.getSubredditByNames
 );
 
@@ -152,6 +151,12 @@ router.get(
 );
 
 router.get(
+  "/users/pending",
+  bodyParser.json(),
+  subredditController.getPendingMembers
+);
+
+router.get(
   "/suggest",
   bodyParser.json(),
   authenticateToken,
@@ -164,6 +169,14 @@ router.patch(
   authenticateToken,
   subredditController.UnapproveUser
 );
+
+router.patch(
+  "/user/remove",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.removeSubredditMember
+);
+
 router.patch(
   "/user/ban",
   bodyParser.json(),
@@ -282,5 +295,25 @@ router.patch(
   bodyParser.json(),
   authenticateToken,
   subredditController.leaveModerator
+);
+router.get(
+  "/moderators/invited",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getInvitedModerators
+);
+
+router.patch(
+  "/mod/invite/accept",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.acceptModeratorInvite
+);
+
+router.patch(
+  "/mod/invite/decline",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.declineModeratorInvite
 );
 module.exports = router;

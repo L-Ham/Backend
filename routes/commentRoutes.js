@@ -55,6 +55,22 @@ router.patch(
   authenticateToken,
   commentController.cancelDownvote
 )
+router.get(
+  "/replies",
+  bodyParser.json(),
+  commentController.getReplies
+);
 
+router.get(
+  "/searchComments",
+  bodyParser.json(),
+  commentController.commentSearch
+);
+
+router.get(
+  "/subreddit/searchComment",
+  bodyParser.json(),
+  commentController.subredditCommentSearch
+);
 
 module.exports = router;

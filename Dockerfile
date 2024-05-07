@@ -2,6 +2,7 @@ FROM node:16.14.0-alpine
 WORKDIR "/app"
 COPY package*.json ./
 RUN npm install
+RUN npm install socket.io 
 RUN npm install -g nodemon
 RUN npm install -g express body-parser mongoose
 RUN npm install --save express body-parser mongoose

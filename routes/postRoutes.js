@@ -19,6 +19,12 @@ router.patch(
   authenticateToken,
   postController.editPost
 );
+router.delete(
+  "/deletePost",
+  bodyParser.json(),
+  authenticateToken,
+  postController.deletePost
+);
 router.patch(
   "/save",
   bodyParser.json(),
@@ -72,7 +78,7 @@ router.patch(
 );
 
 router.get(
-  "/getAllPostComments",
+  "/comments",
   bodyParser.json(),
   authenticateToken,
   postController.getAllPostComments
@@ -157,4 +163,17 @@ router.get(
   authenticateToken,
   postController.getAllPosts
 );
+
+router.get(
+  "/searchPosts",
+  bodyParser.json(),
+  postController.searchPosts
+);
+
+router.get(
+  "/subreddit/searchPosts",
+  bodyParser.json(),
+  postController.subredditPostSearch
+);
+
 module.exports = router;

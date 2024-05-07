@@ -24,6 +24,10 @@ const subRedditSchema = new Schema({
     type: [Schema.Types.ObjectId],
     ref: "user",
   },
+  invitedModerators: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+  },
   members: {
     type: [Schema.Types.ObjectId],
     ref: "user",
@@ -120,7 +124,7 @@ const subRedditSchema = new Schema({
         required: false,
       },
     },
-],
+  ],
   bookMarks: [
     {
       widgetName: {
@@ -312,7 +316,13 @@ const subRedditSchema = new Schema({
   scheduledPosts: [
     {
       type: Object,
-      ref: 'post',
+      ref: "post",
+    },
+  ],
+  removedUsers: [
+    {
+      type: Object,
+      ref: "user",
     },
   ],
 });

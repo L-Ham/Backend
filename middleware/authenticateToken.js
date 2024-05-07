@@ -7,19 +7,18 @@ const authenticateToken = (req, res, next) => {
     // return res.status(401).json({ message: "Unauthorized: No token provided" });
     req.userId = null;
     next();
-  }
-  else{
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: "Forbidden: Invalid token" });
-    }
+  } else {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(403).json({ message: "Forbidden: Invalid token" });
+      }
 
-    req.userId = decoded.user.id;
-    console.log("Ana fl Authentication");
-    // console.log(req.userId);
-    next();
-  });
-}
+      req.userId = decoded.user.id;
+      console.log("Ana fl Authentication");
+      // console.log(req.userId);
+      next();
+    });
+  }
 };
 
 module.exports = authenticateToken;

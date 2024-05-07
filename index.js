@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const multerConfig = require("./middleware/multerConfig");
 const cors = require("cors");
 const { app, server } = require("./socket/socket.js");
+
 const PORT = 5000;
 
 app.use(cors());
@@ -26,6 +27,7 @@ mongoose
       const messageRoutes = require("./routes/messageRoutes");
       const conversationRoutes = require("./routes/conversationRoutes");
       const chatRoutes = require("./routes/chatRoutes");
+      const notificationRoutes = require("./routes/notificationRoutes");
 
       app.use("/user", userRoutes);
       app.use("/auth", authRoutes);
@@ -35,6 +37,7 @@ mongoose
       app.use("/message", messageRoutes);
       app.use("/conversation", conversationRoutes);
       app.use("/chat", chatRoutes);
+      app.use("/notification", notificationRoutes);
 
       app.get("/", function (req, res) {
         res.send("Hello World!");
