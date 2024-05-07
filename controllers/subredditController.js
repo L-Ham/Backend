@@ -1086,7 +1086,9 @@ const approveUser = async (req, res, next) => {
     await subreddit.save();
     res.json({ message: "User approved successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error approving user" });
+    res
+      .status(500)
+      .json({ message: "Error approving user", error: error.message });
   }
 };
 
@@ -1114,11 +1116,15 @@ const UnapproveUser = async (req, res, next) => {
     if (!subreddit.pendingMembers.includes(user._id)) {
       return res.status(400).json({ message: "User not in pending members" });
     }
-    subreddit.pendingMembers.pop(user._id);
+    subreddit.pendingMembers.pull(user._id);
+    user.communities.pull(subreddit._id);
     await subreddit.save();
+    await user.save();
     res.json({ message: "User unapproved successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error unapproving user" });
+    res
+      .status(500)
+      .json({ message: "Error unapproving user", error: error.message });
   }
 };
 
@@ -1156,12 +1162,15 @@ const removeSubredditMember = async (req, res, next) => {
     user.communities = user.communities.filter(
       (community) => community.toString() !== subreddit._id.toString()
     );
- 
+
     await subreddit.save();
     await user.save();
     res.json({ message: "Subreddit member removed successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error removing subreddit member" });
+    res.status(500).json({
+      message: "Error removing subreddit member",
+      error: error.message,
+    });
   }
 };
 
@@ -1347,12 +1356,18 @@ const getSubredditFeed = async (req, res) => {
     // console.log(result.slicedArray);
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
+        let subreddit = null;
+        if (post.subReddit) {
+          subreddit = await SubReddit.findById(post.subReddit);
+        }
+        const subredditName = subreddit ? subreddit.name : null;
         const isUpvoted = !userId
           ? false
           : post.upvotedUsers.includes(user._id);
         const isDownvoted = !userId
           ? false
           : post.downvotedUsers.includes(user._id);
+        const isSaved = !userId ? false : user.savedPosts.includes(post._id);
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
@@ -1362,8 +1377,10 @@ const getSubredditFeed = async (req, res) => {
         }
         const postObj = {
           ...post._doc,
+          subredditName,
           isUpvoted,
           isDownvoted,
+          isSaved,
           imageUrls,
           videoUrls,
         };
