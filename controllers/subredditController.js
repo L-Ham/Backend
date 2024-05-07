@@ -1594,6 +1594,32 @@ const getUnmoderatedPosts = async (req, res) => {
   }
 };
 
+const getScheduledPosts= async(req,res)=>{
+  const subredditId = req.query.subredditId;
+  const userId = req.userId;
+  try {
+    const user
+    = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
+    const scheduledPosts = subreddit.scheduledPosts;
+    if (scheduledPosts.length === 0) {
+      return res.status(404).json({ message: "No scheduled posts found" });
+    }
+   return res.status(200).json({ message: "Retrieved scheduled posts", scheduledPosts });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting scheduledposts", error: error.message });
+  }
+}
+
 const addBookmark = async (req, res) => {
   const userId = req.userId;
   const { subredditId, widgetName, description, buttons } = req.body;
@@ -2207,4 +2233,5 @@ module.exports = {
   getInvitedModerators,
   acceptModeratorInvite,
   declineModeratorInvite,
+  getScheduledPosts,
 };
