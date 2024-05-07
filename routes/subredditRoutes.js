@@ -323,4 +323,10 @@ router.get(
   authenticateToken,
   subredditController.getScheduledPosts
 )
+router.get(
+  "/removedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getRemovedPosts
+)
 module.exports = router;
