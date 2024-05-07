@@ -80,6 +80,7 @@ router.patch(
 router.get(
   "/comments",
   bodyParser.json(),
+  authenticateToken,
   postController.getAllPostComments
 );
 router.patch(
@@ -147,7 +148,12 @@ router.get(
   //authenticateToken,
   postController.getTrendingPosts
 );
-router.get("/get", bodyParser.json(), postController.getPostById);
+router.get(
+  "/get",
+  bodyParser.json(),
+  authenticateToken,
+  postController.getPostById
+);
 router.post(
   "/scheduledPost",
   bodyParser.json(),
@@ -162,4 +168,13 @@ router.get(
   authenticateToken,
   postController.getAllPosts
 );
+
+router.get("/searchPosts", bodyParser.json(), postController.searchPosts);
+
+router.get(
+  "/subreddit/searchPosts",
+  bodyParser.json(),
+  postController.subredditPostSearch
+);
+
 module.exports = router;

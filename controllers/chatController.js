@@ -24,6 +24,7 @@ const sendMessage = async (req, res) => {
         .status(404)
         .json({ message: "No user was found with that id (Sender)" });
     }
+    senderAvatarImage = await UserUploadModel.findById(sender.avatarImage);
     let receiver = null;
     let receivers = null;
     if (conversation.type === "single") {
@@ -57,8 +58,10 @@ const sendMessage = async (req, res) => {
     let newMessage = null;
     if (type == "text") {
       newMessage = await Chat.create({
+        conversationId: chatId,
         senderId: userId,
         senderName: sender.userName,
+        senderAvatar: senderAvatarImage ? senderAvatarImage.url : null,
         receiverId: receiverIds,
         receiverName: receiverNames,
         type: type,
@@ -74,8 +77,10 @@ const sendMessage = async (req, res) => {
       console.log(uploadedImageId);
       const messageImage = await UserUploadModel.findById(uploadedImageId);
       newMessage = await Chat.create({
+        conversationId: chatId,
         senderId: userId,
         senderName: sender.userName,
+        senderAvatar: senderAvatarImage ? senderAvatarImage.url : null,
         receiverId: receiverIds,
         receiverName: receiverNames,
         type: type,

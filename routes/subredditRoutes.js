@@ -316,4 +316,11 @@ router.patch(
   authenticateToken,
   subredditController.declineModeratorInvite
 );
+
+router.get(
+  "/mod/scheduledPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getScheduledPosts
+)
 module.exports = router;

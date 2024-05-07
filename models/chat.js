@@ -3,6 +3,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const chatSchema = new Schema(
   {
+    conversationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
+    },
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -11,6 +16,10 @@ const chatSchema = new Schema(
     senderName: {
       type: String,
       required: true,
+    },
+    senderAvatar: {
+      type: String,
+      required: false,
     },
     receiverId: {
       type: [mongoose.Schema.Types.ObjectId],

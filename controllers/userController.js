@@ -765,6 +765,7 @@ const joinCommunity = async (req, res, next) => {
         community.pendingMembers.includes(userId) ||
         community.members.includes(userId)
       ) {
+        console.log(community.members.includes(userId));
         return res
           .status(400)
           .json({ message: "User already requested to join community" });
@@ -938,6 +939,7 @@ const getUpvotedPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
+        const isSaved = user.savedPosts.includes(post._id);
         const subreddit = await SubReddit.findById(post.subReddit);
         let imageUrls, videoUrls;
         if (post.type === "image") {
@@ -951,6 +953,7 @@ const getUpvotedPosts = async (req, res) => {
           subredditName: subreddit ? subreddit.name : null,
           isUpvoted,
           isDownvoted,
+          isSaved,
           imageUrls,
           videoUrls,
         };
@@ -993,6 +996,7 @@ const getDownvotedPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
+        const isSaved = user.savedPosts.includes(post._id);
         const subreddit = await SubReddit.findById(post.subReddit);
         let imageUrls, videoUrls;
         if (post.type === "image") {
@@ -1006,6 +1010,7 @@ const getDownvotedPosts = async (req, res) => {
           subredditName: subreddit ? subreddit.name : null,
           isUpvoted,
           isDownvoted,
+          isSaved,
           imageUrls,
           videoUrls,
         };
@@ -1049,6 +1054,7 @@ const getSavedPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
+        const isSaved = user.savedPosts.includes(post._id);
         const subreddit = await SubReddit.findById(post.subReddit);
         let imageUrls, videoUrls;
         if (post.type === "image") {
@@ -1062,6 +1068,7 @@ const getSavedPosts = async (req, res) => {
           subredditName: subreddit ? subreddit.name : null,
           isUpvoted,
           isDownvoted,
+          isSaved,
           imageUrls,
           videoUrls,
         };
@@ -1105,6 +1112,7 @@ const getHiddenPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
+        const isSaved = user.savedPosts.includes(post._id);
         const subreddit = await SubReddit.findById(post.subReddit);
         let imageUrls, videoUrls;
         if (post.type === "image") {
@@ -1118,6 +1126,7 @@ const getHiddenPosts = async (req, res) => {
           subredditName: subreddit ? subreddit.name : null,
           isUpvoted,
           isDownvoted,
+          isSaved,
           imageUrls,
           videoUrls,
         };
@@ -1219,6 +1228,7 @@ const getUserPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
+        const isSaved = user.savedPosts.includes(post._id);
         const subreddit = await SubReddit.findById(post.subReddit);
         let imageUrls, videoUrls;
         if (post.type === "image") {
@@ -1232,6 +1242,7 @@ const getUserPosts = async (req, res) => {
           subredditName: subreddit ? subreddit.name : null,
           isUpvoted,
           isDownvoted,
+          isSaved,
           imageUrls,
           videoUrls,
         };
@@ -1705,6 +1716,27 @@ const getNotifications = async (req, res, next) => {
     });
   }
 };
+const getHistoryPosts = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const posts = await Post.find({ _id: { $in: user.historyPosts } });
+
+    res.status(200).json({
+      message: "Retrieved User's History Posts",
+      historyPosts: posts,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error Getting Posts in User History",
+      error: err.message,
+    });
+  }
+};
+
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -1752,4 +1784,5 @@ module.exports = {
   getUserInfo,
   getCommunitiesInfo,
   getNotifications,
+  getHistoryPosts,
 };
