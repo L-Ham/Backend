@@ -765,6 +765,7 @@ const joinCommunity = async (req, res, next) => {
         community.pendingMembers.includes(userId) ||
         community.members.includes(userId)
       ) {
+        console.log(community.members.includes(userId));
         return res
           .status(400)
           .json({ message: "User already requested to join community" });
