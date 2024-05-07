@@ -1507,6 +1507,14 @@ const searchPosts = async (req, res) => {
           ? await UserUploadModel.findById(avatarImageId.toString())
           : null;
       }
+      let subredditBanner = null;
+      if (subReddit) {
+        const bannerImageId = subReddit.appearance.bannerImage;
+        subredditBanner = bannerImageId
+          ? await UserUploadModel.findById
+          (bannerImageId.toString())
+          : null;
+      }
       return {
         postId: post._id,
         title: post.title,
@@ -1520,6 +1528,9 @@ const searchPosts = async (req, res) => {
         subreddit: subReddit ? subReddit.name : null,
         subRedditId: subReddit ? subReddit._id : null,
         avatarImageSubReddit: avatarImageSubReddit ? avatarImageSubReddit.url : null,
+        subredditBanner: subredditBanner ? subredditBanner.url : null,
+        subRedditDescription: subReddit ? subReddit.description : null,
+        subRedditMembers: subReddit ? subReddit.members.length : null,
         score: score,
         isUpvoted: post.upvotes > 0,
         isDownvoted: post.downvotes > 0,
