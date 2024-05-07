@@ -862,6 +862,7 @@ const removePost = async (req, res, next) => {
     post.approved = false;
     post.disapprovedAt = new Date();
     await post.save();
+    subreddit.posts.pull(postId);
     subReddit.removedPosts.push(postId);
     await subReddit.save();
     res.status(200).json({ message: "Post removed successfully" });
