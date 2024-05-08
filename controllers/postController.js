@@ -611,6 +611,7 @@ const getAllPostComments = async (req, res, next) => {
                   repliedId: reply._id,
                   commentType: replyType2,
                   content: replyContent2,
+                  text: reply2.text,
                   createdAt: reply2.createdAt,
                   replies: [],
                 };
@@ -626,6 +627,7 @@ const getAllPostComments = async (req, res, next) => {
               repliedId: comment._id,
               commentType: replyType,
               content: replyContent,
+              text: reply.text,
               createdAt: reply.createdAt,
               replies: replyReplies,
             };
@@ -650,6 +652,7 @@ const getAllPostComments = async (req, res, next) => {
           repliedId: null,
           commentType: commentType,
           content: commentContent,
+          text: comment.text,
           createdAt: comment.createdAt,
           replies: replies,
         };
@@ -1087,7 +1090,11 @@ const getPostById = async (req, res, next) => {
   const userId = req.userId;
   const postId = req.query.postId;
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId)
+    .populate({
+      path: "images",
+      model: "userUploads"
+    });
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -1549,6 +1556,7 @@ const searchPosts = async (req, res) => {
           video: post.videos.url || null,
           URL: post.url,
           userName: post.user ? post.user.userName : null,
+          userAbout:post.user.profileSettings.get("about") || null,
           userAvatarImage: avatarImage,
           subreddit: subReddit ? subReddit.name : null,
           subRedditId: subReddit ? subReddit._id : null,
@@ -1558,6 +1566,8 @@ const searchPosts = async (req, res) => {
           subredditBanner: subredditBanner ? subredditBanner.url : null,
           subRedditDescription: subReddit ? subReddit.description : null,
           subRedditMembers: subReddit ? subReddit.members.length : null,
+          subRedditNickName: subReddit ? subReddit.membersNickname : null,
+          subRedditCreated: subReddit ? subReddit.createdAt : null,
           score: score,
           isUpvoted: post.upvotes > 0,
           isDownvoted: post.downvotes > 0,
@@ -1585,33 +1595,31 @@ const subredditPostSearch = async (req, res) => {
   const top = req.query.top;
   const newest = req.query.new;
   const mediaOnly = req.query.mediaOnly;
+  const isNSFW = req.query.isNSFW;
   const subredditName = req.query.subredditName;
   try {
     const subReddit = await SubReddit.findOne({ name: subredditName });
     if (!subReddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    let query = {};
-    if (search) {
-      if (mediaOnly) {
-        query = {
-          $or: [
-            { title: { $regex: search, $options: "i" } },
-            { text: { $regex: search, $options: "i" } },
-          ],
-          //subReddit: subReddit._id.toString(),
-          images: { $exists: "true", $ne: [] },
-        };
-      } else {
-        query = {
-          $or: [
-            { title: { $regex: search, $options: "i" } },
-            { text: { $regex: search, $options: "i" } },
-          ],
-          //subReddit: subReddit._id,
-        };
-      }
+    let query = {
+      subReddit: subReddit._id,
+      $or: [
+        { title: { $regex: search, $options: "i" } },
+        { text: { $regex: search, $options: "i" } },
+      ],
+    };
+    if (mediaOnly && isNSFW) {
+      query.images = { $exists: true, $ne: [] };
+    } else if (mediaOnly && !isNSFW) {
+      query.images = { $exists: true, $ne: [] };
+      query.isNSFW = false;
+    } else if (!mediaOnly && isNSFW) {
+      query.isNSFW = true;
+    } else {
+      query.isNSFW = false;
     }
+
     let sort = {};
     if (relevance || top) {
       sort.upvotes = -1;
@@ -1660,8 +1668,8 @@ const subredditPostSearch = async (req, res) => {
           title: post.title,
           type: post.type,
           text: post.text,
-          image: post.images[0].url,
-          video: post.videos.url || null,
+          image: post.images && post.images.length > 0 ? post.images[0].url : null,
+          video: post.videos && post.videos.length > 0 ? post.videos[0].url : null,
           URL: post.url,
           userName: post.user ? post.user.userName : null,
           userAvatarImage: avatarImage,
@@ -1690,6 +1698,7 @@ const subredditPostSearch = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   savePost,

@@ -1694,6 +1694,7 @@ const getCommunitiesInfo = async (req, res, next) => {
         communityAvatar: avatarImage ? avatarImage.url : null,
         memberCount: memberCount,
         isFavorite: isFavorite,
+        isModerator: community.moderators.includes(userId),
       };
     });
     res.status(200).json({ communities: response });

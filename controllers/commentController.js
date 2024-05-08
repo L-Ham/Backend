@@ -409,7 +409,7 @@ const getReplies = async (req, res, next) => {
       .findById(commentId)
       .populate({
         path: 'replies',
-        populate: { path: 'replies' } 
+        populate: { path: 'replies' }
       })
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
@@ -442,17 +442,18 @@ const commentSearch = async (req, res, next) => {
       .sort(sort)
       .populate({
         path: 'userId',
-        model: 'user', 
+        model: 'user',
       })
       .populate({
         path: 'images',
-        model: 'userUploads' 
+        model: 'userUploads'
       })
       .populate({
         path: 'postId',
-        model: 'post' 
+        model: 'post'
       });
     const comments = await Promise.all(populatedComments.map(async comment => {
+      const score = comment.upvotes - comment.downvotes;
       const subredditId = comment.postId.subReddit;
       let subreddittemp;
       let subredditAvatarId;
@@ -469,20 +470,34 @@ const commentSearch = async (req, res, next) => {
       if (userAvatarId) {
         userAvatar = await UserUploadModel.findById(userAvatarId);
       }
+      let subredditBanner = null;
+      if (subredditId) {
+        const bannerImageId = subreddittemp.appearance.bannerImage;
+        subredditBanner = bannerImageId
+          ? await UserUploadModel.findById(bannerImageId.toString())
+          : null;
+      }
 
       return {
         _id: comment._id,
         postId: comment.postId._id,
         userId: comment.userId._id,
         userName: comment.userId.userName,
-        userAvatar: userAvatarId? userAvatar.url : null,
+        userAbout: comment.userId.profileSettings.get("about") || null,
+        userAvatar: userAvatarId ? userAvatar.url : null,
         postCreatedAt: comment.postId.createdAt,
         postTitle: comment.postId.title,
         postText: comment.postId.text,
         postUpvotes: comment.postId.upvotes,
         postDownvotes: comment.postId.downvotes,
-        subRedditName: subredditId? subreddittemp.name : null,
-        subRedditAvatar: subredditAvatarId? subredditAvatar.url : null,
+        score: score,
+        subRedditName: subredditId ? subreddittemp.name : null,
+        subRedditAvatar: subredditAvatarId ? subredditAvatar.url : null,
+        subRedditBanner: subredditBanner ? subredditBanner.url : null,
+        subRedditDescription: subredditId ? subreddittemp.description : null,
+        subRedditMembers: subredditId ? subreddittemp.members.length : null,
+        subRedditNickName: subredditId ? subreddittemp.membersNickname : null,
+        subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
         commentText: comment.text,
         commentImage: comment.images,
         commentUpvotes: comment.upvotes,
@@ -508,11 +523,11 @@ const subredditCommentSearch = async (req, res, next) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    const posts = await Post.find({ subReddit: subreddit._id });
-    const postIds = posts.map(post => post._id);
-    let query = {};
+    const posts = await Post.find({ subReddit: subreddit._id.toString() });
+    const postIds = posts.map(post => post._id.toString());
+    let query = { postId: { $in: postIds } };
     if (search) {
-      query = { postId: { $in: postIds }, text: { $regex: search, $options: 'i' } }
+      query.text = { $regex: search, $options: 'i' };
     }
     let sort = {};
     if (relevance || top) {
@@ -525,17 +540,18 @@ const subredditCommentSearch = async (req, res, next) => {
       .sort(sort)
       .populate({
         path: 'userId',
-        model: 'user', 
+        model: 'user',
       })
       .populate({
         path: 'images',
-        model: 'userUploads' 
+        model: 'userUploads'
       })
       .populate({
         path: 'postId',
-        model: 'post' 
+        model: 'post'
       });
     const comments = await Promise.all(populatedComments.map(async comment => {
+      const score = comment.upvotes - comment.downvotes;
       const subredditId = comment.postId.subReddit;
       let subreddittemp;
       let subredditAvatarId;
@@ -546,6 +562,13 @@ const subredditCommentSearch = async (req, res, next) => {
         if (subredditAvatarId) {
           subredditAvatar = await UserUploadModel.findById(subredditAvatarId);
         }
+      }
+      let subredditBanner = null;
+      if (subredditId) {
+        const bannerImageId = subreddittemp.appearance.bannerImage;
+        subredditBanner = bannerImageId
+          ? await UserUploadModel.findById(bannerImageId.toString())
+          : null;
       }
       let userAvatarId = comment.userId.avatarImage;
       let userAvatar;
@@ -558,14 +581,21 @@ const subredditCommentSearch = async (req, res, next) => {
         postId: comment.postId._id,
         userId: comment.userId._id,
         userName: comment.userId.userName,
-        userAvatar: userAvatarId? userAvatar.url : null,
+        userAbout: comment.userId.profileSettings.get("about") || null,
+        userAvatar: userAvatarId ? userAvatar.url : null,
         postCreatedAt: comment.postId.createdAt,
         postTitle: comment.postId.title,
         postText: comment.postId.text,
         postUpvotes: comment.postId.upvotes,
         postDownvotes: comment.postId.downvotes,
-        subRedditName: subredditId? subreddittemp.name : null,
-        subRedditAvatar: subredditAvatarId? subredditAvatar.url : null,
+        score: score,
+        subRedditName: subredditId ? subreddittemp.name : null,
+        subRedditAvatar: subredditAvatarId ? subredditAvatar.url : null,
+        subRedditBanner: subredditBanner ? subredditBanner.url : null,
+        subRedditDescription: subredditId ? subreddittemp.description : null,
+        subRedditMembers: subredditId ? subreddittemp.members.length : null,
+        subRedditNickName: subredditId ? subreddittemp.membersNickname : null,
+        subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
         commentText: comment.text,
         commentImage: comment.images,
         commentUpvotes: comment.upvotes,
