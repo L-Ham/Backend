@@ -1368,6 +1368,12 @@ const getSubredditFeed = async (req, res) => {
           ? false
           : post.downvotedUsers.includes(user._id);
         const isSaved = !userId ? false : user.savedPosts.includes(post._id);
+        const creator = await User.findById(post.user);
+        const creatorUsername = creator.userName;
+        const creatorAvatarImage = await UserUploadModel.findById(
+          creator.avatarImage
+        );
+
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
@@ -1377,6 +1383,10 @@ const getSubredditFeed = async (req, res) => {
         }
         const postObj = {
           ...post._doc,
+          creatorUsername,
+          creatorAvatarImage: creatorAvatarImage
+            ? creatorAvatarImage.url
+            : null,
           subredditName,
           isUpvoted,
           isDownvoted,
@@ -1611,12 +1621,11 @@ const getUnmoderatedPosts = async (req, res) => {
   }
 };
 
-const getScheduledPosts= async(req,res)=>{
+const getScheduledPosts = async (req, res) => {
   const subredditId = req.query.subredditId;
   const userId = req.userId;
   try {
-    const user
-    = await User.findById(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -1631,11 +1640,15 @@ const getScheduledPosts= async(req,res)=>{
     if (scheduledPosts.length === 0) {
       return res.status(404).json({ message: "No scheduled posts found" });
     }
-   return res.status(200).json({ message: "Retrieved scheduled posts", scheduledPosts });
+    return res
+      .status(200)
+      .json({ message: "Retrieved scheduled posts", scheduledPosts });
   } catch (error) {
-    res.status(500).json({ message: "Error getting scheduledposts", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error getting scheduledposts", error: error.message });
   }
-}
+};
 
 const addBookmark = async (req, res) => {
   const userId = req.userId;

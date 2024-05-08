@@ -41,9 +41,15 @@ const sendNotification = async (
       }
     }
   }
-  let PostedComment = null;
+  let postedComment = null;
   if (comment) {
-    PostedComment = await Comment.findById(comment);
+    postedComment = await Comment.findById(comment);
+  }
+  let parentComment = null;
+  if (postedComment) {
+    if (postedComment.parentCommentId) {
+      parentComment = await Comment.findById(postedComment.parentCommentId);
+    }
   }
   const fcmTokens = user.fcmTokens;
   console.log(fcmTokens);
@@ -54,6 +60,10 @@ const sendNotification = async (
       notificationTemplate.title = `${sender.userName} Upvoted Your Post`;
       notificationTemplate.body = "Check it out!";
       notification = await Notification.create({
+        sent: {
+          title: notificationTemplate.title,
+          body: notificationTemplate.body,
+        },
         senderId: sender._id,
         senderName: sender.userName,
         senderAvatar: senderAvatar ? senderAvatar.url : null,
@@ -71,6 +81,10 @@ const sendNotification = async (
       notificationTemplate.title = `${sender.userName} Downvoted Your Post`;
       notificationTemplate.body = "Check it out!";
       notification = await Notification.create({
+        sent: {
+          title: notificationTemplate.title,
+          body: notificationTemplate.body,
+        },
         senderId: sender._id,
         senderName: sender.userName,
         senderAvatar: senderAvatar ? senderAvatar.url : null,
@@ -88,6 +102,10 @@ const sendNotification = async (
       notificationTemplate.title = `${sender.userName} Followed YOU!!`;
       notificationTemplate.body = "Check it out!";
       notification = await Notification.create({
+        sent: {
+          title: notificationTemplate.title,
+          body: notificationTemplate.body,
+        },
         senderId: sender._id,
         senderName: sender.userName,
         senderAvatar: senderAvatar ? senderAvatar.url : null,
@@ -103,8 +121,12 @@ const sendNotification = async (
       break;
     case "commentedPost":
       notificationTemplate.title = `${sender.userName} Commented on your Post!!`;
-      notificationTemplate.body = `Title: ${affectedPost.title}!!`;
+      notificationTemplate.body = `Post Title: ${affectedPost.title}!!`;
       notification = await Notification.create({
+        sent: {
+          title: notificationTemplate.title,
+          body: notificationTemplate.body,
+        },
         senderId: sender._id,
         senderName: sender.userName,
         senderAvatar: senderAvatar ? senderAvatar.url : null,
@@ -113,7 +135,30 @@ const sendNotification = async (
         receiverAvatar: userAvatar ? userAvatar.url : null,
         subredditName: subreddit ? subreddit.name : null,
         subredditAvatar: subredditAvatar ? subredditAvatar : null,
+        content: postedComment.text ? postedComment.text : null,
         type: "commentedPost",
+        isRead: false,
+      });
+      await notification.save();
+      break;
+    case "commentReply":
+      notificationTemplate.title = `${sender.userName} Replied to your Comment!!`;
+      notificationTemplate.body = `Check it out!!`;
+      notification = await Notification.create({
+        sent: {
+          title: notificationTemplate.title,
+          body: notificationTemplate.body,
+        },
+        senderId: sender._id,
+        senderName: sender.userName,
+        senderAvatar: senderAvatar ? senderAvatar.url : null,
+        receiverId: user._id,
+        receiverName: user.userName,
+        receiverAvatar: userAvatar ? userAvatar.url : null,
+        subredditName: subreddit ? subreddit.name : null,
+        subredditAvatar: subredditAvatar ? subredditAvatar : null,
+        content: parentComment.text ? parentComment.text : null,
+        type: "commentReply",
         isRead: false,
       });
       await notification.save();
@@ -160,21 +205,3 @@ const sendNotification = async (
 };
 
 module.exports = { sendNotification };
-// const FCM = require("fcm-node");
-// const serverKey =
-//   "AAAALBbAVsU: APA91bFiQNr3pmGfkdw2k7NgIokJqwE078vJec9 - jLMOdh-s80RRQs8sj9aXOWdqL";
-// const fcm = new FCM(serverKey);
-// const message = {
-//   notification: {
-//     title: "Notification Title",
-//     body: "Notification Body",
-//   },
-//   to: "d25zGp4SRWCzxgEqrTcb_Q:APA91bGFK4jQ-tPsdL7Vv1QVEBuV0Gm09xjI3SY7C5uPbJMBr3i",
-// };
-// fcm.send(message, function (err, response) {
-//   if (err) {
-//     console.error("Error sending message:", err);
-//   } else {
-//     console.log("Successfully sent message:", response);
-//   }
-// });
