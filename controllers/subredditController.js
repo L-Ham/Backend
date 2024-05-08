@@ -1678,7 +1678,7 @@ const getScheduledPosts= async(req,res)=>{
     if (scheduledPosts.length === 0) {
       return res.status(404).json({ message: "No scheduled posts found" });
     }
-    
+
     scheduledPostswithsubredditNameAndUsername = await Promise.all(scheduledPosts.map(async (scheduledPost) => {
       const user = await User.findById(scheduledPost.user);
       const userName = user.userName;
@@ -2255,6 +2255,40 @@ const declineModeratorInvite = async (req, res) => {
   }
 };
 
+const changeSubredditType = async (req, res) => {
+  const userId = req.userId;
+  const subredditName = req.query.subredditName;
+  const ageRestriction= req.query.ageRestriction;
+  const privacyType = req.query.privacyType;
+  if(!ageRestriction || !privacyType){
+    return res.status(400).json({message: "Age restriction and privacy type are required"});
+  }
+  if(privacyType !== "public" && privacyType !== "private" && privacyType !== "restricted"){
+    return res.status(400).json({message: "Invalid privacy type"});
+  }
+  try {
+    const user= await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message: "User not found"});
+    }
+    const subreddit = await SubReddit.findOne({name: subredditName});
+    if(!subreddit){
+      return res.status(404).json({message: "Subreddit not found"});
+    }
+    if(!subreddit.moderators.includes(userId)){
+      return res.status(403).json({message: "You are not a moderator of this subreddit"});
+    }
+    subreddit.ageRestriction = ageRestriction;
+    subreddit.privacy = privacyType;
+    await subreddit.save();
+    res.status(200).json({message: "Subreddit type changed successfully"});
+  }
+  catch(error){
+    return res.status(500).json({message: "Error changing subreddit type", error: error.message});
+  }
+}
+
+
 module.exports = {
   createCommunity,
   addRule,
@@ -2309,4 +2343,5 @@ module.exports = {
   declineModeratorInvite,
   getScheduledPosts,
   getRemovedPosts,
+  changeSubredditType
 };

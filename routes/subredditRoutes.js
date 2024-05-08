@@ -329,4 +329,10 @@ router.get(
   authenticateToken,
   subredditController.getRemovedPosts
 )
+router.patch(
+  "/type",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.changeSubredditType
+)
 module.exports = router;
