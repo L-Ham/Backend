@@ -323,4 +323,16 @@ router.get(
   authenticateToken,
   subredditController.getScheduledPosts
 )
+router.get(
+  "/removedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getRemovedPosts
+)
+router.patch(
+  "/type",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.changeSubredditType
+)
 module.exports = router;
