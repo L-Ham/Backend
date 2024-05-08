@@ -1678,7 +1678,17 @@ const getScheduledPosts= async(req,res)=>{
     if (scheduledPosts.length === 0) {
       return res.status(404).json({ message: "No scheduled posts found" });
     }
-   return res.status(200).json({ message: "Retrieved scheduled posts", scheduledPosts });
+    
+    scheduledPostswithsubredditNameAndUsername = await Promise.all(scheduledPosts.map(async (scheduledPost) => {
+      const user = await User.findById(scheduledPost.user);
+      const userName = user.userName;
+      return {
+        ...scheduledPost,
+        subredditName: subreddit.name,
+        userName: userName,
+      };
+    }));
+   return res.status(200).json({ message: "Retrieved scheduled posts", scheduledPosts: scheduledPostswithsubredditNameAndUsername});
   } catch (error) {
     res.status(500).json({ message: "Error getting scheduledposts", error: error.message });
   }
