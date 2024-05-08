@@ -865,13 +865,14 @@ const removePost = async (req, res, next) => {
     post.approved = false;
     post.disapprovedAt = new Date();
     await post.save();
-    subreddit.posts.pull(postId);
+    subReddit.posts.pull(postId);
     subReddit.removedPosts.push(postId);
     await subReddit.save();
     res.status(200).json({ message: "Post removed successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error removing post" });
-    console.log(error);
+    res
+      .status(500)
+      .json({ message: "Error removing post", error: error.message });
   }
 };
 
@@ -951,76 +952,7 @@ const unmarkAsSpoiler = async (req, res, next) => {
   }
 };
 
-const reportPost = async (req, res, next) => {
-  const userId = req.userId;
-  const postId = req.body.postId;
-  const title = req.body.title;
-  const description = req.body.description;
-  try {
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const postOwner = await User.findById(post.user);
-    if (!postOwner) {
-      return res.status(404).json({ message: "Post owner not found" });
-    }
-    // if (user.blockUsers.includes(postOwner._id)) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "You have already blocked this user" });
-    // }
-
-    // user.blockUsers.some((blockedUser) => blockedUser.blockedUserId.equals(postOwner._id))
-    if (title == "") {
-      return res.status(400).json({ message: "Title is required" });
-    }
-    if (description == "") {
-      return res.status(400).json({ message: "Description is required" });
-    }
-    if (
-      user.blockUsers.some((blockedUser) =>
-        blockedUser.blockedUserId.equals(postOwner._id)
-      )
-    ) {
-      return res.status(409).json({ message: "User already blocked" });
-    }
-
-    const subRedditId = post.subReddit;
-    const report = new Report({
-      type: "post",
-      referenceId: postId,
-      reporterId: userId,
-      reportedId: postOwner._id,
-      subredditId: subRedditId || null,
-      title: title || "",
-      description: description,
-      blockUser: req.body.blockUser || false,
-    });
-
-    if (req.body.blockUser) {
-      user.blockUsers.push({
-        blockedUserId: postOwner._id,
-        blockedUserName: postOwner.userName,
-        blockedUserAvatar: postOwner.avatarImage,
-        blockedAt: new Date(),
-      });
-      //user.blockUsers.push(postOwner._id);
-      await user.save();
-    }
-
-    await report.save();
-    res.status(200).json({ message: "Post reported successfully" });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error reporting post", error: err.message });
-  }
-};
+const reportPost = async (req, res, next) => {};
 
 const getTrendingPosts = async (req, res, next) => {
   try {
@@ -1106,6 +1038,8 @@ const getPostById = async (req, res, next) => {
     if (post.subReddit) {
       subreddit = await SubReddit.findById(post.subReddit);
     }
+    const creator = await User.findById(post.user);
+    const creatorAvatar = await UserUploadModel.findById(creator.avatarImage);
     const isUpvoted = !userId ? false : post.upvotedUsers.includes(user._id);
     const isDownvoted = !userId
       ? false
@@ -1115,6 +1049,8 @@ const getPostById = async (req, res, next) => {
       message: "Post retrieved successfully",
       post: {
         ...post.toObject(),
+        creatorName: creator.userName,
+        creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
         subRedditName: subreddit ? subreddit.name : null,
         isUpvoted: isUpvoted,
         isDownvoted: isDownvoted,
@@ -1331,10 +1267,12 @@ const getAllPosts = async (req, res) => {
   const limit = parseInt(req.query.limit);
   try {
     let user;
+    let query = Post.find();
     if (userId) {
       user = await User.findById(userId);
+      query = Post.find({ _id: { $nin: user.hidePosts } });
     }
-    const query = Post.find();
+
     const result = await PostServices.paginatePosts(
       query,
       page,
@@ -1350,6 +1288,11 @@ const getAllPosts = async (req, res) => {
         if (post.subReddit) {
           subreddit = await SubReddit.findById(post.subReddit);
         }
+        const creator = await User.findById(post.user);
+        const creatorUsername = creator.userName;
+        const creatorAvatar = await UserUploadModel.findById(
+          creator.avatarImage
+        );
         const subredditName = subreddit ? subreddit.name : null;
         const isUpvoted = !userId
           ? false
@@ -1367,6 +1310,8 @@ const getAllPosts = async (req, res) => {
         }
         const postObj = {
           ...post._doc,
+          creatorUsername,
+          creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
           subredditName,
           isUpvoted,
           isDownvoted,
