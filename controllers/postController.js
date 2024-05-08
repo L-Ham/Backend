@@ -1083,13 +1083,12 @@ const getPostById = async (req, res, next) => {
         ...post.toObject(),
         creatorName: creator.userName,
         creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
-        subRedditName: subreddit ? subreddit.name : null,
+        subRedditName: subreddit ? subreddit.name: null,
         isUpvoted: isUpvoted,
         isDownvoted: isDownvoted,
         isSaved: isSaved,
       },
     };
-
     res.status(200).json(response);
   } catch (error) {
     res
@@ -1678,6 +1677,45 @@ const subredditPostSearch = async (req, res) => {
     });
   }
 };
+const addVoteToPoll = async (req, res) => {
+  const userId = req.userId;
+  const postId = req.body.postId;
+  const option = req.body.option;
+
+  try {
+    if (userId == null) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    const post = await Post.findById(postId).populate("poll.options.voters");
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (post.type !== "poll") {
+      return res.status(400).json({ message: "Post is not a poll" });
+    }
+    const optionVotedFor = post.poll.options.find(opt => opt.option === option);
+    if (!optionVotedFor) {
+      return res.status(400).json({ message: "Option not found" });
+    }
+
+    const votedOption = post.poll.options.find(option => option.voters.map(voter => voter._id.toString()).includes(userId));    
+    if (votedOption) {
+      return res.status(400).json({ message: `You already voted for option: ${votedOption.option}` });
+    }
+   
+    optionVotedFor.voters.push(userId);
+    await post.save();
+    res.status(200).json({ message: "Vote added to poll successfully" });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Error adding vote to poll",
+      error: err.message,
+    });
+  }
+};
+
+
 
 module.exports = {
   savePost,
@@ -1707,4 +1745,5 @@ module.exports = {
   deletePost,
   searchPosts,
   subredditPostSearch,
+  addVoteToPoll,
 };
