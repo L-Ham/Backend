@@ -148,7 +148,12 @@ router.get(
   //authenticateToken,
   postController.getTrendingPosts
 );
-router.get("/get", bodyParser.json(), postController.getPostById);
+router.get(
+  "/get",
+  bodyParser.json(),
+  authenticateToken,
+  postController.getPostById
+);
 router.post(
   "/scheduledPost",
   bodyParser.json(),
@@ -164,11 +169,7 @@ router.get(
   postController.getAllPosts
 );
 
-router.get(
-  "/searchPosts",
-  bodyParser.json(),
-  postController.searchPosts
-);
+router.get("/searchPosts", bodyParser.json(), postController.searchPosts);
 
 router.get(
   "/subreddit/searchPosts",

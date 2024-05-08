@@ -1086,7 +1086,9 @@ const approveUser = async (req, res, next) => {
     await subreddit.save();
     res.json({ message: "User approved successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error approving user" });
+    res
+      .status(500)
+      .json({ message: "Error approving user", error: error.message });
   }
 };
 
@@ -1114,11 +1116,15 @@ const UnapproveUser = async (req, res, next) => {
     if (!subreddit.pendingMembers.includes(user._id)) {
       return res.status(400).json({ message: "User not in pending members" });
     }
-    subreddit.pendingMembers.pop(user._id);
+    subreddit.pendingMembers.pull(user._id);
+    user.communities.pull(subreddit._id);
     await subreddit.save();
+    await user.save();
     res.json({ message: "User unapproved successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error unapproving user" });
+    res
+      .status(500)
+      .json({ message: "Error unapproving user", error: error.message });
   }
 };
 
@@ -1156,12 +1162,15 @@ const removeSubredditMember = async (req, res, next) => {
     user.communities = user.communities.filter(
       (community) => community.toString() !== subreddit._id.toString()
     );
- 
+
     await subreddit.save();
     await user.save();
     res.json({ message: "Subreddit member removed successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error removing subreddit member" });
+    res.status(500).json({
+      message: "Error removing subreddit member",
+      error: error.message,
+    });
   }
 };
 
@@ -1347,12 +1356,24 @@ const getSubredditFeed = async (req, res) => {
     // console.log(result.slicedArray);
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
+        let subreddit = null;
+        if (post.subReddit) {
+          subreddit = await SubReddit.findById(post.subReddit);
+        }
+        const subredditName = subreddit ? subreddit.name : null;
         const isUpvoted = !userId
           ? false
           : post.upvotedUsers.includes(user._id);
         const isDownvoted = !userId
           ? false
           : post.downvotedUsers.includes(user._id);
+        const isSaved = !userId ? false : user.savedPosts.includes(post._id);
+        const creator = await User.findById(post.user);
+        const creatorUsername = creator.userName;
+        const creatorAvatarImage = await UserUploadModel.findById(
+          creator.avatarImage
+        );
+
         let imageUrls, videoUrls;
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
@@ -1362,8 +1383,14 @@ const getSubredditFeed = async (req, res) => {
         }
         const postObj = {
           ...post._doc,
+          creatorUsername,
+          creatorAvatarImage: creatorAvatarImage
+            ? creatorAvatarImage.url
+            : null,
+          subredditName,
           isUpvoted,
           isDownvoted,
+          isSaved,
           imageUrls,
           videoUrls,
         };
@@ -1591,6 +1618,111 @@ const getUnmoderatedPosts = async (req, res) => {
       message: "Error getting subreddit's unmoderated posts",
       error: err.message,
     });
+  }
+};
+
+const getRemovedPosts = async (req, res) => {
+  const subredditName = req.query.subredditName;
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
+    const query = Post.find({ _id: { $in: subreddit.removedPosts } });
+    const result = await UserServices.paginateResults(query, page, limit);
+    if (result.slicedArray.length == 0) {
+      return res.status(500).json({ message: "The retrieved array is empty" });
+    }
+    const postsWithVoteStatus = await Promise.all(
+      result.slicedArray.map(async (post) => {
+        const isUpvoted = post.upvotedUsers.includes(user._id);
+        const isDownvoted = post.downvotedUsers.includes(user._id);
+        let imageUrls, videoUrls;
+        const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
+        const spammedByUsernames = spammedBy.map((user) => user.userName);
+        if (post.type === "image") {
+          imageUrls = await PostServices.getImagesUrls(post.images);
+        }
+        if (post.type === "video") {
+          videoUrls = await PostServices.getVideosUrls(post.videos);
+        }
+        const postObj = {
+          ...post._doc,
+          subredditName: subreddit ? subreddit.name : null,
+          isUpvoted,
+          isDownvoted,
+          imageUrls,
+          videoUrls,
+          spammedByUsernames,
+        };
+        delete postObj.images;
+        delete postObj.videos;
+        delete postObj.upvotedUsers;
+        delete postObj.downvotedUsers;
+        delete postObj.comments;
+        delete postObj.spammedBy;
+        return postObj;
+      })
+    );
+    return res.status(200).json({
+      message: "Retrieved subreddit's removed posts",
+      removedPosts: postsWithVoteStatus,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error getting subreddit's removed posts",
+      error: err.message,
+    });
+  }
+};
+
+const getScheduledPosts = async (req, res) => {
+  const subredditId = req.query.subredditId;
+  const userId = req.userId;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findById(subredditId);
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
+    const scheduledPosts = subreddit.scheduledPosts;
+    if (scheduledPosts.length === 0) {
+      return res.status(404).json({ message: "No scheduled posts found" });
+    }
+
+    scheduledPostswithsubredditNameAndUsername = await Promise.all(
+      scheduledPosts.map(async (scheduledPost) => {
+        const user = await User.findById(scheduledPost.user);
+        const userName = user.userName;
+        return {
+          ...scheduledPost,
+          subredditName: subreddit.name,
+          userName: userName,
+        };
+      })
+    );
+    return res.status(200).json({
+      message: "Retrieved scheduled posts",
+      scheduledPosts: scheduledPostswithsubredditNameAndUsername,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error getting scheduledposts", error: error.message });
   }
 };
 
@@ -2155,6 +2287,48 @@ const declineModeratorInvite = async (req, res) => {
   }
 };
 
+const changeSubredditType = async (req, res) => {
+  const userId = req.userId;
+  const subredditName = req.query.subredditName;
+  const ageRestriction = req.query.ageRestriction;
+  const privacyType = req.query.privacyType;
+  if (!ageRestriction || !privacyType) {
+    return res
+      .status(400)
+      .json({ message: "Age restriction and privacy type are required" });
+  }
+  if (
+    privacyType !== "public" &&
+    privacyType !== "private" &&
+    privacyType !== "restricted"
+  ) {
+    return res.status(400).json({ message: "Invalid privacy type" });
+  }
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res
+        .status(403)
+        .json({ message: "You are not a moderator of this subreddit" });
+    }
+    subreddit.ageRestriction = ageRestriction;
+    subreddit.privacy = privacyType;
+    await subreddit.save();
+    res.status(200).json({ message: "Subreddit type changed successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error changing subreddit type", error: error.message });
+  }
+};
+
 module.exports = {
   createCommunity,
   addRule,
@@ -2207,4 +2381,7 @@ module.exports = {
   getInvitedModerators,
   acceptModeratorInvite,
   declineModeratorInvite,
+  getScheduledPosts,
+  getRemovedPosts,
+  changeSubredditType,
 };

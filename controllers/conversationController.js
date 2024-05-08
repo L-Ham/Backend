@@ -21,7 +21,7 @@ const createChat = async (req, res) => {
         .status(404)
         .json({ error: "One/Some of the Participants don't exist" });
     }
-    const userUpload = await UserUploadModel.findOne({ userId: user._id });
+    const userUpload = await UserUploadModel.findOne({ _id: user.avatarImage });
     participantsAvatarUrls.push(userUpload ? userUpload.url : null);
   }
   try {
@@ -83,7 +83,11 @@ const getUserChats = async (req, res) => {
           (chat) => chat.isRead === false
         ).length;
         const conversationObject = conversation.toObject();
-        conversationObject.messages = chats;
+        conversationObject.messages = chats.map((chat) => {
+          const chatObject = chat.toObject();
+          chatObject.conversationId = conversation._id;
+          return chatObject;
+        });
         conversationObject.unreadCount = unreadCount;
         return conversationObject;
       })
@@ -101,6 +105,41 @@ const getUserChats = async (req, res) => {
       .json({ error: "Error Fetching Chats", error: error.message });
   }
 };
+// const getUserChats = async (req, res) => {
+//   const userId = req.userId;
+//   try {
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+//     const conversations = await Conversation.find({
+//       participants: user.userName,
+//     });
+//     const conversationsWithChats = await Promise.all(
+//       conversations.map(async (conversation) => {
+//         const chats = await Chat.find({ _id: { $in: conversation.messages } });
+//         const unreadCount = chats.filter(
+//           (chat) => chat.isRead === false
+//         ).length;
+//         const conversationObject = conversation.toObject();
+//         conversationObject.messages = chats;
+//         conversationObject.unreadCount = unreadCount;
+//         return conversationObject;
+//       })
+//     );
+//     const totalUnreadCount = conversationsWithChats.reduce(
+//       (total, conversation) => total + conversation.unreadCount,
+//       0
+//     );
+//     return res
+//       .status(200)
+//       .json({ conversations: conversationsWithChats, totalUnreadCount });
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ error: "Error Fetching Chats", error: error.message });
+//   }
+// };
 
 const markChatAsRead = async (req, res) => {
   const userId = req.userId;

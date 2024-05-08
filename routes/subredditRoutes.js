@@ -316,4 +316,23 @@ router.patch(
   authenticateToken,
   subredditController.declineModeratorInvite
 );
+
+router.get(
+  "/mod/scheduledPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getScheduledPosts
+)
+router.get(
+  "/removedPosts",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getRemovedPosts
+)
+router.patch(
+  "/type",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.changeSubredditType
+)
 module.exports = router;
