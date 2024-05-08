@@ -1532,6 +1532,7 @@ const searchPosts = async (req, res) => {
           image: post.images[0].url,
           video: post.videos.url || null,
           URL: post.url,
+          postCommentCount: post.comments.length,
           userName: post.user ? post.user.userName : null,
           userAbout: post.user.profileSettings.get("about") || null,
           userAvatarImage: avatarImage,
