@@ -2,6 +2,16 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const notificationSchema = new Schema(
   {
+    sent: {
+      title: {
+        type: String,
+        required: true,
+      },
+      body: {
+        type: String,
+        required: true,
+      },
+    },
     senderId: {
       type: Schema.Types.ObjectId,
       ref: "user",
@@ -31,6 +41,10 @@ const notificationSchema = new Schema(
       required: false,
     },
     subredditAvatar: {
+      type: String,
+      required: false,
+    },
+    content: {
       type: String,
       required: false,
     },

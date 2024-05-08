@@ -176,5 +176,10 @@ router.get(
   bodyParser.json(),
   postController.subredditPostSearch
 );
-
+router.patch(
+  "/votePoll",
+  bodyParser.json(),
+  authenticateToken,
+  postController.addVoteToPoll
+);
 module.exports = router;

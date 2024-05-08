@@ -125,7 +125,40 @@ const createPost = async (req, res, next) => {
       await user.save();
     }
     await newPost.save();
-    res.status(200).json({ message: "Post created successfully" });
+    if (newPost.subReddit) {
+      const subReddit = await SubReddit.findById(newPost.subReddit);
+      console.log(subReddit.moderators[0]);
+      console.log(user._id);
+      if (user._id.toString() !== subReddit.moderators[0].toString()) {
+        const receiver = await User.findById(subReddit.moderators[0]);
+        console.log(receiver.notificationSettings.get("modNotifications"));
+        if (receiver.notificationSettings.get("modNotifications")) {
+          console.log("ana mtnyel");
+          await NotificationServices.sendNotification(
+            receiver.userName,
+            user.userName,
+            newPost._id,
+            null,
+            "postedInSubreddit"
+          );
+          res
+            .status(200)
+            .json({ message: "Post created successfully & Notification Sent" });
+        } else {
+          res.status(200).json({
+            message: "Post created successfully & No Notification Required",
+          });
+        }
+      } else {
+        res.status(200).json({
+          message: "Post created successfully & Notification Not Required",
+        });
+      }
+    } else {
+      res.status(200).json({
+        message: "Post created successfully & No Notification Required",
+      });
+    }
   } catch (error) {
     res
       .status(500)
@@ -611,6 +644,7 @@ const getAllPostComments = async (req, res, next) => {
                   repliedId: reply._id,
                   commentType: replyType2,
                   content: replyContent2,
+                  text: reply2.text,
                   createdAt: reply2.createdAt,
                   replies: [],
                 };
@@ -626,6 +660,7 @@ const getAllPostComments = async (req, res, next) => {
               repliedId: comment._id,
               commentType: replyType,
               content: replyContent,
+              text: reply.text,
               createdAt: reply.createdAt,
               replies: replyReplies,
             };
@@ -650,6 +685,7 @@ const getAllPostComments = async (req, res, next) => {
           repliedId: null,
           commentType: commentType,
           content: commentContent,
+          text: comment.text,
           createdAt: comment.createdAt,
           replies: replies,
         };
@@ -862,13 +898,14 @@ const removePost = async (req, res, next) => {
     post.approved = false;
     post.disapprovedAt = new Date();
     await post.save();
-    subreddit.posts.pull(postId);
+    subReddit.posts.pull(postId);
     subReddit.removedPosts.push(postId);
     await subReddit.save();
     res.status(200).json({ message: "Post removed successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error removing post" });
-    console.log(error);
+    res
+      .status(500)
+      .json({ message: "Error removing post", error: error.message });
   }
 };
 
@@ -948,76 +985,7 @@ const unmarkAsSpoiler = async (req, res, next) => {
   }
 };
 
-const reportPost = async (req, res, next) => {
-  const userId = req.userId;
-  const postId = req.body.postId;
-  const title = req.body.title;
-  const description = req.body.description;
-  try {
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const postOwner = await User.findById(post.user);
-    if (!postOwner) {
-      return res.status(404).json({ message: "Post owner not found" });
-    }
-    // if (user.blockUsers.includes(postOwner._id)) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "You have already blocked this user" });
-    // }
-
-    // user.blockUsers.some((blockedUser) => blockedUser.blockedUserId.equals(postOwner._id))
-    if (title == "") {
-      return res.status(400).json({ message: "Title is required" });
-    }
-    if (description == "") {
-      return res.status(400).json({ message: "Description is required" });
-    }
-    if (
-      user.blockUsers.some((blockedUser) =>
-        blockedUser.blockedUserId.equals(postOwner._id)
-      )
-    ) {
-      return res.status(409).json({ message: "User already blocked" });
-    }
-
-    const subRedditId = post.subReddit;
-    const report = new Report({
-      type: "post",
-      referenceId: postId,
-      reporterId: userId,
-      reportedId: postOwner._id,
-      subredditId: subRedditId || null,
-      title: title || "",
-      description: description,
-      blockUser: req.body.blockUser || false,
-    });
-
-    if (req.body.blockUser) {
-      user.blockUsers.push({
-        blockedUserId: postOwner._id,
-        blockedUserName: postOwner.userName,
-        blockedUserAvatar: postOwner.avatarImage,
-        blockedAt: new Date(),
-      });
-      //user.blockUsers.push(postOwner._id);
-      await user.save();
-    }
-
-    await report.save();
-    res.status(200).json({ message: "Post reported successfully" });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error reporting post", error: err.message });
-  }
-};
+const reportPost = async (req, res, next) => {};
 
 const getTrendingPosts = async (req, res, next) => {
   try {
@@ -1087,7 +1055,10 @@ const getPostById = async (req, res, next) => {
   const userId = req.userId;
   const postId = req.query.postId;
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate({
+      path: "images",
+      model: "userUploads",
+    });
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -1099,6 +1070,8 @@ const getPostById = async (req, res, next) => {
     if (post.subReddit) {
       subreddit = await SubReddit.findById(post.subReddit);
     }
+    const creator = await User.findById(post.user);
+    const creatorAvatar = await UserUploadModel.findById(creator.avatarImage);
     const isUpvoted = !userId ? false : post.upvotedUsers.includes(user._id);
     const isDownvoted = !userId
       ? false
@@ -1108,13 +1081,14 @@ const getPostById = async (req, res, next) => {
       message: "Post retrieved successfully",
       post: {
         ...post.toObject(),
+        creatorName: creator.userName,
+        creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
         subRedditName: subreddit ? subreddit.name : null,
         isUpvoted: isUpvoted,
         isDownvoted: isDownvoted,
         isSaved: isSaved,
       },
     };
-
     res.status(200).json(response);
   } catch (error) {
     res
@@ -1324,10 +1298,12 @@ const getAllPosts = async (req, res) => {
   const limit = parseInt(req.query.limit);
   try {
     let user;
+    let query = Post.find();
     if (userId) {
       user = await User.findById(userId);
+      query = Post.find({ _id: { $nin: user.hidePosts } });
     }
-    const query = Post.find();
+
     const result = await PostServices.paginatePosts(
       query,
       page,
@@ -1343,6 +1319,11 @@ const getAllPosts = async (req, res) => {
         if (post.subReddit) {
           subreddit = await SubReddit.findById(post.subReddit);
         }
+        const creator = await User.findById(post.user);
+        const creatorUsername = creator.userName;
+        const creatorAvatar = await UserUploadModel.findById(
+          creator.avatarImage
+        );
         const subredditName = subreddit ? subreddit.name : null;
         const isUpvoted = !userId
           ? false
@@ -1360,6 +1341,8 @@ const getAllPosts = async (req, res) => {
         }
         const postObj = {
           ...post._doc,
+          creatorUsername,
+          creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
           subredditName,
           isUpvoted,
           isDownvoted,
@@ -1548,7 +1531,9 @@ const searchPosts = async (req, res) => {
           image: post.images[0].url,
           video: post.videos.url || null,
           URL: post.url,
+          postCommentCount: post.comments.length,
           userName: post.user ? post.user.userName : null,
+          userAbout: post.user.profileSettings.get("about") || null,
           userAvatarImage: avatarImage,
           subreddit: subReddit ? subReddit.name : null,
           subRedditId: subReddit ? subReddit._id : null,
@@ -1558,6 +1543,8 @@ const searchPosts = async (req, res) => {
           subredditBanner: subredditBanner ? subredditBanner.url : null,
           subRedditDescription: subReddit ? subReddit.description : null,
           subRedditMembers: subReddit ? subReddit.members.length : null,
+          subRedditNickName: subReddit ? subReddit.membersNickname : null,
+          subRedditCreated: subReddit ? subReddit.createdAt : null,
           score: score,
           isUpvoted: post.upvotes > 0,
           isDownvoted: post.downvotes > 0,
@@ -1585,32 +1572,52 @@ const subredditPostSearch = async (req, res) => {
   const top = req.query.top;
   const newest = req.query.new;
   const mediaOnly = req.query.mediaOnly;
+  const isNSFW = req.query.isNSFW;
   const subredditName = req.query.subredditName;
   try {
     const subReddit = await SubReddit.findOne({ name: subredditName });
     if (!subReddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    let query = {};
-    if (search) {
-      if (mediaOnly) {
-        query = {
-          $or: [
-            { title: { $regex: search, $options: "i" } },
-            { text: { $regex: search, $options: "i" } },
-          ],
-          //subReddit: subReddit._id.toString(),
-          images: { $exists: "true", $ne: [] },
-        };
-      } else {
-        query = {
-          $or: [
-            { title: { $regex: search, $options: "i" } },
-            { text: { $regex: search, $options: "i" } },
-          ],
-          //subReddit: subReddit._id,
-        };
-      }
+    let query = {
+      subReddit: subReddit._id,
+      $or: [
+        { title: { $regex: search, $options: "i" } },
+        { text: { $regex: search, $options: "i" } },
+      ],
+    };
+    console.log(query);
+    // console.log(`mediaOnly: ${mediaOnly}, isNSFW: ${isNSFW}`);
+    // if (mediaOnly && isNSFW) {
+    //   console.log("mediaOnly true isNSFW true");
+    //   query.images = { $exists: true, $ne: [] };
+    // } else if (mediaOnly && !isNSFW) {
+    //   console.log("mediaOnly true isNSFW false");
+    //   query.images = { $exists: true, $ne: [] };
+    //   query.isNSFW = false;
+    // } else if (!mediaOnly && isNSFW) {
+    //   console.log("mediaOnly false isNSFW true");
+    //   query.isNSFW = true;
+    // } else {
+    //   query.isNSFW = false;
+    // }
+    console.log(`mediaOnly before if: ${mediaOnly}`);
+    if (mediaOnly && isNSFW) {
+      console.log("mediaOnly true isNSFW true");
+      console.log(`mediaOnly in if: ${mediaOnly}`);
+      query.images = { $exists: true, $ne: [] };
+    } else if (mediaOnly && !isNSFW) {
+      console.log("mediaOnly true isNSFW false");
+      console.log(`mediaOnly in else if 1: ${mediaOnly}`);
+      query.images = { $exists: true, $ne: [] };
+      query.isNSFW = false;
+    } else if (!mediaOnly && isNSFW) {
+      console.log("mediaOnly false isNSFW true");
+      console.log(`mediaOnly in else if 2: ${mediaOnly}`);
+      query.isNSFW = true;
+    } else {
+      console.log(`mediaOnly in else: ${mediaOnly}`);
+      query.isNSFW = false;
     }
     let sort = {};
     if (relevance || top) {
@@ -1619,24 +1626,25 @@ const subredditPostSearch = async (req, res) => {
     if (newest) {
       sort.createdAt = -1;
     }
-    const populatedPosts = await Post.find(query)
-      .sort(sort)
-      .populate({
-        path: "user",
-        model: "user",
-        populate: {
-          path: "avatarImage",
-          model: "userUploads",
-        },
-      })
-      .populate({
-        path: "images",
-        model: "userUploads",
-      })
-      .populate({
-        path: "videos",
-        model: "userUploads",
-      });
+    const populatedPosts = await Post.find(query);
+    // .sort(sort)
+    // .populate({
+    //   path: "user",
+    //   model: "user",
+    //   populate: {
+    //     path: "avatarImage",
+    //     model: "userUploads",
+    //   },
+    // });
+    // .populate({
+    //   path: "images",
+    //   model: "userUploads",
+    // })
+    // .populate({
+    //   path: "videos",
+    //   model: "userUploads",
+    // });
+    console.log(populatedPosts);
     const posts = await Promise.all(
       populatedPosts.map(async (post) => {
         const score = post.upvotes - post.downvotes;
@@ -1660,8 +1668,10 @@ const subredditPostSearch = async (req, res) => {
           title: post.title,
           type: post.type,
           text: post.text,
-          image: post.images[0].url,
-          video: post.videos.url || null,
+          image:
+            post.images && post.images.length > 0 ? post.images[0].url : null,
+          video:
+            post.videos && post.videos.length > 0 ? post.videos[0].url : null,
           URL: post.url,
           userName: post.user ? post.user.userName : null,
           userAvatarImage: avatarImage,
@@ -1686,6 +1696,48 @@ const subredditPostSearch = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Error searching posts",
+      error: err.message,
+    });
+  }
+};
+const addVoteToPoll = async (req, res) => {
+  const userId = req.userId;
+  const postId = req.body.postId;
+  const option = req.body.option;
+
+  try {
+    if (userId == null) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    const post = await Post.findById(postId).populate("poll.options.voters");
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (post.type !== "poll") {
+      return res.status(400).json({ message: "Post is not a poll" });
+    }
+    const optionVotedFor = post.poll.options.find(
+      (opt) => opt.option === option
+    );
+    if (!optionVotedFor) {
+      return res.status(400).json({ message: "Option not found" });
+    }
+
+    const votedOption = post.poll.options.find((option) =>
+      option.voters.map((voter) => voter._id.toString()).includes(userId)
+    );
+    if (votedOption) {
+      return res.status(400).json({
+        message: `You already voted for option: ${votedOption.option}`,
+      });
+    }
+
+    optionVotedFor.voters.push(userId);
+    await post.save();
+    res.status(200).json({ message: "Vote added to poll successfully" });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error adding vote to poll",
       error: err.message,
     });
   }
@@ -1719,4 +1771,5 @@ module.exports = {
   deletePost,
   searchPosts,
   subredditPostSearch,
+  addVoteToPoll,
 };
