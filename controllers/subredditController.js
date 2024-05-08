@@ -1434,7 +1434,6 @@ const getReportedPosts = async (req, res) => {
     }
 
     const query = Post.find({ _id: { $in: subreddit.reportedPosts } });
-    // console.log(subreddit.reportedPosts);
     const result = await UserServices.paginateResults(query, page, limit);
 
     if (result.slicedArray.length == 0) {
@@ -1445,6 +1444,7 @@ const getReportedPosts = async (req, res) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
         let imageUrls, videoUrls;
+        const isSaved = user.savedPosts.includes(post._id);
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
         const spammedByUsernames = spammedBy.map((user) => user.userName);
         if (post.type === "image") {
@@ -1461,6 +1461,7 @@ const getReportedPosts = async (req, res) => {
           imageUrls,
           videoUrls,
           spammedByUsernames,
+          isSaved,
         };
         delete postObj.images;
         delete postObj.videos;
@@ -1499,7 +1500,7 @@ const getEditedPosts = async (req, res) => {
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
     }
-
+    console.log(subreddit.posts);
     const query = Post.find({ _id: { $in: subreddit.posts }, isEdited: true });
 
     const result = await UserServices.paginateResults(query, page, limit);
@@ -1514,6 +1515,8 @@ const getEditedPosts = async (req, res) => {
         let imageUrls, videoUrls;
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
         const spammedByUsernames = spammedBy.map((user) => user.userName);
+        const isSaved = user.savedPosts.includes(post._id);
+
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
         }
@@ -1528,6 +1531,7 @@ const getEditedPosts = async (req, res) => {
           imageUrls,
           videoUrls,
           spammedByUsernames,
+          isSaved,
         };
         delete postObj.images;
         delete postObj.videos;
@@ -1585,6 +1589,8 @@ const getUnmoderatedPosts = async (req, res) => {
         let imageUrls, videoUrls;
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
         const spammedByUsernames = spammedBy.map((user) => user.userName);
+        const isSaved = user.savedPosts.includes(post._id);
+
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
         }
@@ -1599,6 +1605,7 @@ const getUnmoderatedPosts = async (req, res) => {
           imageUrls,
           videoUrls,
           spammedByUsernames,
+          isSaved,
         };
         delete postObj.images;
         delete postObj.videos;
@@ -1636,6 +1643,8 @@ const getRemovedPosts = async (req, res) => {
     if (!subreddit.moderators.includes(userId)) {
       return res.status(403).json({ message: "You are not a moderator" });
     }
+    //get posts with isDisapproved=true
+
     const query = Post.find({ _id: { $in: subreddit.removedPosts } });
     const result = await UserServices.paginateResults(query, page, limit);
     if (result.slicedArray.length == 0) {
@@ -1648,6 +1657,8 @@ const getRemovedPosts = async (req, res) => {
         let imageUrls, videoUrls;
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
         const spammedByUsernames = spammedBy.map((user) => user.userName);
+        const isSaved = user.savedPosts.includes(post._id);
+
         if (post.type === "image") {
           imageUrls = await PostServices.getImagesUrls(post.images);
         }
@@ -1662,6 +1673,7 @@ const getRemovedPosts = async (req, res) => {
           imageUrls,
           videoUrls,
           spammedByUsernames,
+          isSaved,
         };
         delete postObj.images;
         delete postObj.videos;
