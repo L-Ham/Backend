@@ -31,7 +31,6 @@ const sendNotification = async (
   let subreddit = null;
   let subredditAvatar = null;
   if (post) {
-    console.log("ANA DA5EL HNAAAAA");
     affectedPost = await Post.findById(post);
     subreddit = await Subreddit.findById(affectedPost.subReddit);
     if (subreddit) {
@@ -159,6 +158,28 @@ const sendNotification = async (
         subredditAvatar: subredditAvatar ? subredditAvatar : null,
         content: parentComment.text ? parentComment.text : null,
         type: "commentReply",
+        isRead: false,
+      });
+      await notification.save();
+      break;
+    case "postedInSubreddit":
+      notificationTemplate.title = `${sender.userName} Posted In Your Subreddit!!`;
+      notificationTemplate.body = `Check it out!!`;
+      notification = await Notification.create({
+        sent: {
+          title: notificationTemplate.title,
+          body: notificationTemplate.body,
+        },
+        senderId: sender._id,
+        senderName: sender.userName,
+        senderAvatar: senderAvatar ? senderAvatar.url : null,
+        receiverId: user._id,
+        receiverName: user.userName,
+        receiverAvatar: userAvatar ? userAvatar.url : null,
+        subredditName: subreddit ? subreddit.name : null,
+        subredditAvatar: subredditAvatar ? subredditAvatar : null,
+        content: affectedPost.text ? affectedPost.text : null,
+        type: "postedInSubreddit",
         isRead: false,
       });
       await notification.save();

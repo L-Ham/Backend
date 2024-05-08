@@ -125,7 +125,40 @@ const createPost = async (req, res, next) => {
       await user.save();
     }
     await newPost.save();
-    res.status(200).json({ message: "Post created successfully" });
+    if (newPost.subReddit) {
+      const subReddit = await SubReddit.findById(newPost.subReddit);
+      console.log(subReddit.moderators[0]);
+      console.log(user._id);
+      if (user._id.toString() !== subReddit.moderators[0].toString()) {
+        const receiver = await User.findById(subReddit.moderators[0]);
+        console.log(receiver.notificationSettings.get("modNotifications"));
+        if (receiver.notificationSettings.get("modNotifications")) {
+          console.log("ana mtnyel");
+          await NotificationServices.sendNotification(
+            receiver.userName,
+            user.userName,
+            newPost._id,
+            null,
+            "postedInSubreddit"
+          );
+          res
+            .status(200)
+            .json({ message: "Post created successfully & Notification Sent" });
+        } else {
+          res.status(200).json({
+            message: "Post created successfully & No Notification Required",
+          });
+        }
+      } else {
+        res.status(200).json({
+          message: "Post created successfully & Notification Not Required",
+        });
+      }
+    } else {
+      res.status(200).json({
+        message: "Post created successfully & No Notification Required",
+      });
+    }
   } catch (error) {
     res
       .status(500)
@@ -1022,10 +1055,9 @@ const getPostById = async (req, res, next) => {
   const userId = req.userId;
   const postId = req.query.postId;
   try {
-    const post = await Post.findById(postId)
-    .populate({
+    const post = await Post.findById(postId).populate({
       path: "images",
-      model: "userUploads"
+      model: "userUploads",
     });
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
@@ -1501,7 +1533,7 @@ const searchPosts = async (req, res) => {
           video: post.videos.url || null,
           URL: post.url,
           userName: post.user ? post.user.userName : null,
-          userAbout:post.user.profileSettings.get("about") || null,
+          userAbout: post.user.profileSettings.get("about") || null,
           userAvatarImage: avatarImage,
           subreddit: subReddit ? subReddit.name : null,
           subRedditId: subReddit ? subReddit._id : null,
@@ -1613,8 +1645,10 @@ const subredditPostSearch = async (req, res) => {
           title: post.title,
           type: post.type,
           text: post.text,
-          image: post.images && post.images.length > 0 ? post.images[0].url : null,
-          video: post.videos && post.videos.length > 0 ? post.videos[0].url : null,
+          image:
+            post.images && post.images.length > 0 ? post.images[0].url : null,
+          video:
+            post.videos && post.videos.length > 0 ? post.videos[0].url : null,
           URL: post.url,
           userName: post.user ? post.user.userName : null,
           userAvatarImage: avatarImage,
@@ -1643,7 +1677,6 @@ const subredditPostSearch = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   savePost,
