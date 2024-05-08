@@ -551,31 +551,20 @@ const getAllPostComments = async (req, res, next) => {
   try {
     const post = await Post.findById(postId).populate({
       path: "comments",
-      path: "comments",
       options: {
         skip: (page - 1) * limit,
-        limit: limit,
         limit: limit,
       },
       populate: [
         {
           path: "replies",
           model: "comment",
-          path: "replies",
-          model: "comment",
           populate: {
-            path: "replies",
-            model: "comment",
-          },
             path: "replies",
             model: "comment",
           },
         },
         {
-          path: "images",
-          model: "userUploads",
-        },
-      ],
           path: "images",
           model: "userUploads",
         },
@@ -586,47 +575,6 @@ const getAllPostComments = async (req, res, next) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const comments = await Promise.all(
-      post.comments.map(async (comment) => {
-        const score = comment.upvotes - comment.downvotes;
-        const replies = await Promise.all(
-          comment.replies.map(async (reply) => {
-            const replyScore = reply.upvotes - reply.downvotes;
-            let replyType = "text";
-            let replyContent = reply.text;
-            if (reply.images && reply.images.length > 0) {
-              replyType = "image";
-              replyContent = reply.images.map((image) => image.url);
-              if (replyContent.length === 1) {
-                replyContent = replyContent[0]; // If there's only one image, use it as a single URL
-              }
-            }
-            const replyReplies = await Promise.all(
-              reply.replies.map(async (reply2) => {
-                const replyScore2 = reply2.upvotes - reply2.downvotes;
-                let replyType2 = "text";
-                let replyContent2 = reply2.text;
-                if (reply2.images && reply2.images.length > 0) {
-                  replyType2 = "image";
-                  replyContent2 = reply2.images.map((image) => image.url);
-                  if (replyContent2.length === 1) {
-                    replyContent2 = replyContent2[0]; // If there's only one image, use it as a single URL
-                  }
-                }
-                return {
-                  userId: reply2.userId,
-                  commentId: reply2._id,
-                  score: replyScore2,
-                  isUpvoted: reply2.upvotes > 0,
-                  isDownvoted: reply2.downvotes > 0,
-                  repliedId: reply._id,
-                  commentType: replyType2,
-                  content: replyContent2,
-                  createdAt: reply2.createdAt,
-                  replies: [],
-                };
-              })
-            );
     const comments = await Promise.all(
       post.comments.map(async (comment) => {
         const score = comment.upvotes - comment.downvotes;
@@ -1015,10 +963,7 @@ const getTrendingPosts = async (req, res, next) => {
       images: {
         $ne: [],
       },
-      },
     })
-      .sort({ upvotes: -1 })
-      .limit(6);
       .sort({ upvotes: -1 })
       .limit(6);
 
@@ -1057,9 +1002,6 @@ const getTrendingPosts = async (req, res, next) => {
       })
     );
 
-    formattedPosts.sort(
-      (a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
-    );
     formattedPosts.sort(
       (a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
     );
@@ -1109,15 +1051,12 @@ const getPostById = async (req, res, next) => {
         ...post.toObject(),
         creatorName: creator.userName,
         creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
-        subRedditName: subreddit ? subreddit.name,
-        imageUrls: imageUrls,
-        videoUrls: videoUrls, : null,
+        subRedditName: subreddit ? subreddit.name: null,
         isUpvoted: isUpvoted,
         isDownvoted: isDownvoted,
         isSaved: isSaved,
-      },,
+      },
     };
-
     res.status(200).json(response);
   } catch (error) {
     res
