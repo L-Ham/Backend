@@ -985,7 +985,7 @@ const unmarkAsSpoiler = async (req, res, next) => {
   }
 };
 
-const reportPost = async (req, res, next) => {};
+const reportPost = async (req, res, next) => { };
 
 const getTrendingPosts = async (req, res, next) => {
   try {
@@ -1579,44 +1579,21 @@ const subredditPostSearch = async (req, res) => {
     if (!subReddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
+    const subredditPosts = await Post.find({ subReddit: subReddit._id });
+    const postIds = subredditPosts.map((post) => post._id);
     let query = {
-      subReddit: subReddit._id,
+      _id: { $in: postIds },
       $or: [
         { title: { $regex: search, $options: "i" } },
         { text: { $regex: search, $options: "i" } },
       ],
     };
-    console.log(query);
-    // console.log(`mediaOnly: ${mediaOnly}, isNSFW: ${isNSFW}`);
-    // if (mediaOnly && isNSFW) {
-    //   console.log("mediaOnly true isNSFW true");
-    //   query.images = { $exists: true, $ne: [] };
-    // } else if (mediaOnly && !isNSFW) {
-    //   console.log("mediaOnly true isNSFW false");
-    //   query.images = { $exists: true, $ne: [] };
-    //   query.isNSFW = false;
-    // } else if (!mediaOnly && isNSFW) {
-    //   console.log("mediaOnly false isNSFW true");
-    //   query.isNSFW = true;
-    // } else {
-    //   query.isNSFW = false;
-    // }
-    console.log(`mediaOnly before if: ${mediaOnly}`);
     if (mediaOnly && isNSFW) {
-      console.log("mediaOnly true isNSFW true");
-      console.log(`mediaOnly in if: ${mediaOnly}`);
       query.images = { $exists: true, $ne: [] };
     } else if (mediaOnly && !isNSFW) {
-      console.log("mediaOnly true isNSFW false");
-      console.log(`mediaOnly in else if 1: ${mediaOnly}`);
       query.images = { $exists: true, $ne: [] };
       query.isNSFW = false;
-    } else if (!mediaOnly && isNSFW) {
-      console.log("mediaOnly false isNSFW true");
-      console.log(`mediaOnly in else if 2: ${mediaOnly}`);
-      query.isNSFW = true;
-    } else {
-      console.log(`mediaOnly in else: ${mediaOnly}`);
+    } else if (!mediaOnly && !isNSFW) {
       query.isNSFW = false;
     }
     let sort = {};
@@ -1626,25 +1603,24 @@ const subredditPostSearch = async (req, res) => {
     if (newest) {
       sort.createdAt = -1;
     }
-    const populatedPosts = await Post.find(query);
-    // .sort(sort)
-    // .populate({
-    //   path: "user",
-    //   model: "user",
-    //   populate: {
-    //     path: "avatarImage",
-    //     model: "userUploads",
-    //   },
-    // });
-    // .populate({
-    //   path: "images",
-    //   model: "userUploads",
-    // })
-    // .populate({
-    //   path: "videos",
-    //   model: "userUploads",
-    // });
-    console.log(populatedPosts);
+    const populatedPosts = await Post.find(query)
+      .sort(sort)
+      .populate({
+        path: "user",
+        model: "user",
+        populate: {
+          path: "avatarImage",
+          model: "userUploads",
+        },
+      })
+      .populate({
+        path: "images",
+        model: "userUploads",
+      })
+      .populate({
+        path: "videos",
+        model: "userUploads",
+      });
     const posts = await Promise.all(
       populatedPosts.map(async (post) => {
         const score = post.upvotes - post.downvotes;
@@ -1668,10 +1644,8 @@ const subredditPostSearch = async (req, res) => {
           title: post.title,
           type: post.type,
           text: post.text,
-          image:
-            post.images && post.images.length > 0 ? post.images[0].url : null,
-          video:
-            post.videos && post.videos.length > 0 ? post.videos[0].url : null,
+          image: post.images && post.images.length > 0 ? post.images[0].url : null,
+          video: post.videos && post.videos.length > 0 ? post.videos[0].url : null,
           URL: post.url,
           userName: post.user ? post.user.userName : null,
           userAvatarImage: avatarImage,
@@ -1700,6 +1674,7 @@ const subredditPostSearch = async (req, res) => {
     });
   }
 };
+
 const addVoteToPoll = async (req, res) => {
   const userId = req.userId;
   const postId = req.body.postId;
