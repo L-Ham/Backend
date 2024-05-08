@@ -1434,44 +1434,48 @@ const searchPosts = async (req, res) => {
   const relevance = req.query.relevance;
   const top = req.query.top;
   const newest = req.query.new;
-  const mediaOnly = req.query.mediaOnly;
-  const isNSFW = req.query.isNSFW;
+  const mediaOnly = req.query.mediaOnly === 'true';
+  const isNSFW = req.query.isNSFW === 'true';
   try {
     let query = {};
-    if (search) {
-      if (mediaOnly && isNSFW) {
-        query = {
+    if (mediaOnly === true && isNSFW === true) {
+      query = {
           $or: [
             { title: { $regex: search, $options: "i" } },
             { text: { $regex: search, $options: "i" } },
           ],
-          images: { $exists: "true", $ne: [] },
-        };
-      } else if (mediaOnly && !isNSFW) {
-        query = {
+          images: { $exists: true, $ne: [] }
+        };     
+    }
+
+    if (mediaOnly === false && isNSFW === true) {
+      query = {
           $or: [
             { title: { $regex: search, $options: "i" } },
             { text: { $regex: search, $options: "i" } },
           ],
-          isNSFW: "false",
-          images: { $exists: "true", $ne: [] },
-        };
-      } else if (!mediaOnly && isNSFW) {
-        query = {
+        };     
+    }
+
+    if (mediaOnly === true && isNSFW === false) {
+      query = {
           $or: [
             { title: { $regex: search, $options: "i" } },
             { text: { $regex: search, $options: "i" } },
           ],
-        };
-      } else {
-        query = {
+          isNSFW: false,
+          images: { $exists: true, $ne: [] }
+        };     
+    }
+
+    if (mediaOnly === false && isNSFW === false) {
+      query = {
           $or: [
             { title: { $regex: search, $options: "i" } },
             { text: { $regex: search, $options: "i" } },
           ],
-          isNSFW: "false",
-        };
-      }
+          isNSFW: false
+        };     
     }
     let sort = {};
     if (relevance || top) {
@@ -1571,8 +1575,8 @@ const subredditPostSearch = async (req, res) => {
   const relevance = req.query.relevance;
   const top = req.query.top;
   const newest = req.query.new;
-  const mediaOnly = req.query.mediaOnly;
-  const isNSFW = req.query.isNSFW;
+  const mediaOnly = req.query.mediaOnly === 'true';
+  const isNSFW = req.query.isNSFW === 'true';
   const subredditName = req.query.subredditName;
   try {
     const subReddit = await SubReddit.findOne({ name: subredditName });
@@ -1581,20 +1585,49 @@ const subredditPostSearch = async (req, res) => {
     }
     const subredditPosts = await Post.find({ subReddit: subReddit._id });
     const postIds = subredditPosts.map((post) => post._id);
-    let query = {
-      _id: { $in: postIds },
-      $or: [
-        { title: { $regex: search, $options: "i" } },
-        { text: { $regex: search, $options: "i" } },
-      ],
-    };
-    if (mediaOnly && isNSFW) {
-      query.images = { $exists: true, $ne: [] };
-    } else if (mediaOnly && !isNSFW) {
-      query.images = { $exists: true, $ne: [] };
-      query.isNSFW = false;
-    } else if (!mediaOnly && !isNSFW) {
-      query.isNSFW = false;
+    let query = {};
+    if (mediaOnly === true && isNSFW === true) {
+      query = {
+          _id: { $in: postIds },
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { text: { $regex: search, $options: "i" } },
+          ],
+          images: { $exists: true, $ne: [] }
+        };     
+    }
+
+    if (mediaOnly === false && isNSFW === true) {
+      query = {
+          _id: { $in: postIds },
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { text: { $regex: search, $options: "i" } },
+          ],
+        };     
+    }
+
+    if (mediaOnly === true && isNSFW === false) {
+      query = {
+          _id: { $in: postIds },
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { text: { $regex: search, $options: "i" } },
+          ],
+          isNSFW: false,
+          images: { $exists: true, $ne: [] }
+        };     
+    }
+
+    if (mediaOnly === false && isNSFW === false) {
+      query = {
+          _id: { $in: postIds },
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { text: { $regex: search, $options: "i" } },
+          ],
+          isNSFW: false
+        };     
     }
     let sort = {};
     if (relevance || top) {
