@@ -1083,7 +1083,7 @@ const getPostById = async (req, res, next) => {
         ...post.toObject(),
         creatorName: creator.userName,
         creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
-        subRedditName: subreddit ? subreddit.name: null,
+        subRedditName: subreddit ? subreddit.name : null,
         isUpvoted: isUpvoted,
         isDownvoted: isDownvoted,
         isSaved: isSaved,
@@ -1586,17 +1586,39 @@ const subredditPostSearch = async (req, res) => {
         { text: { $regex: search, $options: "i" } },
       ],
     };
+    console.log(query);
+    // console.log(`mediaOnly: ${mediaOnly}, isNSFW: ${isNSFW}`);
+    // if (mediaOnly && isNSFW) {
+    //   console.log("mediaOnly true isNSFW true");
+    //   query.images = { $exists: true, $ne: [] };
+    // } else if (mediaOnly && !isNSFW) {
+    //   console.log("mediaOnly true isNSFW false");
+    //   query.images = { $exists: true, $ne: [] };
+    //   query.isNSFW = false;
+    // } else if (!mediaOnly && isNSFW) {
+    //   console.log("mediaOnly false isNSFW true");
+    //   query.isNSFW = true;
+    // } else {
+    //   query.isNSFW = false;
+    // }
+    console.log(`mediaOnly before if: ${mediaOnly}`);
     if (mediaOnly && isNSFW) {
+      console.log("mediaOnly true isNSFW true");
+      console.log(`mediaOnly in if: ${mediaOnly}`);
       query.images = { $exists: true, $ne: [] };
     } else if (mediaOnly && !isNSFW) {
+      console.log("mediaOnly true isNSFW false");
+      console.log(`mediaOnly in else if 1: ${mediaOnly}`);
       query.images = { $exists: true, $ne: [] };
       query.isNSFW = false;
     } else if (!mediaOnly && isNSFW) {
+      console.log("mediaOnly false isNSFW true");
+      console.log(`mediaOnly in else if 2: ${mediaOnly}`);
       query.isNSFW = true;
     } else {
+      console.log(`mediaOnly in else: ${mediaOnly}`);
       query.isNSFW = false;
     }
-
     let sort = {};
     if (relevance || top) {
       sort.upvotes = -1;
@@ -1604,24 +1626,25 @@ const subredditPostSearch = async (req, res) => {
     if (newest) {
       sort.createdAt = -1;
     }
-    const populatedPosts = await Post.find(query)
-      .sort(sort)
-      .populate({
-        path: "user",
-        model: "user",
-        populate: {
-          path: "avatarImage",
-          model: "userUploads",
-        },
-      })
-      .populate({
-        path: "images",
-        model: "userUploads",
-      })
-      .populate({
-        path: "videos",
-        model: "userUploads",
-      });
+    const populatedPosts = await Post.find(query);
+    // .sort(sort)
+    // .populate({
+    //   path: "user",
+    //   model: "user",
+    //   populate: {
+    //     path: "avatarImage",
+    //     model: "userUploads",
+    //   },
+    // });
+    // .populate({
+    //   path: "images",
+    //   model: "userUploads",
+    // })
+    // .populate({
+    //   path: "videos",
+    //   model: "userUploads",
+    // });
+    console.log(populatedPosts);
     const posts = await Promise.all(
       populatedPosts.map(async (post) => {
         const score = post.upvotes - post.downvotes;
@@ -1693,20 +1716,25 @@ const addVoteToPoll = async (req, res) => {
     if (post.type !== "poll") {
       return res.status(400).json({ message: "Post is not a poll" });
     }
-    const optionVotedFor = post.poll.options.find(opt => opt.option === option);
+    const optionVotedFor = post.poll.options.find(
+      (opt) => opt.option === option
+    );
     if (!optionVotedFor) {
       return res.status(400).json({ message: "Option not found" });
     }
 
-    const votedOption = post.poll.options.find(option => option.voters.map(voter => voter._id.toString()).includes(userId));    
+    const votedOption = post.poll.options.find((option) =>
+      option.voters.map((voter) => voter._id.toString()).includes(userId)
+    );
     if (votedOption) {
-      return res.status(400).json({ message: `You already voted for option: ${votedOption.option}` });
+      return res.status(400).json({
+        message: `You already voted for option: ${votedOption.option}`,
+      });
     }
-   
+
     optionVotedFor.voters.push(userId);
     await post.save();
     res.status(200).json({ message: "Vote added to poll successfully" });
-
   } catch (err) {
     res.status(500).json({
       message: "Error adding vote to poll",
@@ -1714,8 +1742,6 @@ const addVoteToPoll = async (req, res) => {
     });
   }
 };
-
-
 
 module.exports = {
   savePost,
