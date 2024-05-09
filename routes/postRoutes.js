@@ -84,13 +84,13 @@ router.get(
   postController.getAllPostComments
 );
 router.patch(
-  "markAsNSFW",
+  "/markAsNSFW",
   bodyParser.json(),
   authenticateToken,
   postController.markAsNSFW
 );
 router.patch(
-  "unmarkAsNSFW",
+  "/unmarkAsNSFW",
   bodyParser.json(),
   authenticateToken,
   postController.unmarkAsNSFW

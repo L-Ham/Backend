@@ -1023,14 +1023,17 @@ const markAsSpoiler = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (post.user.toString() !== userId) {
-      return res
-        .status(401)
-        .json({ message: "User not authorized to mark post as spoiler" });
-    }
+    
     if (post.subReddit) {
       const postSubreddit = await SubReddit.findById(post.subReddit);
       if (!postSubreddit.moderators.includes(userId)) {
+        return res
+          .status(401)
+          .json({ message: "User not authorized to mark post as spoiler" });
+      }
+    }
+    else{
+      if (post.user.toString() !== userId) {
         return res
           .status(401)
           .json({ message: "User not authorized to mark post as spoiler" });
@@ -1060,14 +1063,17 @@ const unmarkAsSpoiler = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (post.user.toString() !== userId) {
-      return res
-        .status(401)
-        .json({ message: "User not authorized to unmark post as spoiler" });
-    }
+    
     if (post.subReddit) {
       const postSubreddit = await SubReddit.findById(post.subReddit);
       if (!postSubreddit.moderators.includes(userId)) {
+        return res
+          .status(401)
+          .json({ message: "User not authorized to unmark post as spoiler" });
+      }
+    }
+    else{
+      if (post.user.toString() !== userId) {
         return res
           .status(401)
           .json({ message: "User not authorized to unmark post as spoiler" });
