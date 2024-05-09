@@ -648,6 +648,7 @@ const subredditCommentSearch = async (req, res, next) => {
           isFriend: isFriend,
           isMember: isMember,
           subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
+          subredditcurrentlyViewingNickname: subredditId ? subreddittemp.currentlyViewingNickname : null,
           commentText: comment.text,
           commentImage: comment.images,
           commentUpvotes: comment.upvotes,

@@ -1891,12 +1891,17 @@ const searchPosts = async (req, res) => {
 };
 
 const searchComments = async (req, res) => {
+  const userId = req.userId;
   const userName = req.query.username;
   const search = req.query.search;
   const relevance = req.query.relevance;
   const top = req.query.top;
   const newest = req.query.new;
   try {
+    let userme;
+    if (userId) {
+      userme = await User.findById(userId);
+    }
     const user = await User.findOne({ userName: userName });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -1935,6 +1940,8 @@ const searchComments = async (req, res) => {
       populatedComments.map(async (comment) => {
         const score = comment.upvotes - comment.downvotes;
         const subredditId = comment.postId.subReddit;
+        const isFriend = userme ? userme.following.includes(comment.userId) : false;
+        const isMember = userme ? userme.communities.includes(comment.postId.subReddit) : false;
         let subreddittemp;
         let subredditAvatarId;
         let subredditAvatar;
@@ -1964,7 +1971,10 @@ const searchComments = async (req, res) => {
           userId: comment.userId._id,
           userName: comment.userId.userName,
           userAbout: comment.userId.profileSettings.get("about") || null,
+          userNickName: comment.userId.profileSettings.get("displayName") || null,
           userAvatar: userAvatarId ? userAvatar.url : null,
+          userKarma: comment.userId.upvotedPosts.length - comment.userId.downvotedPosts.length,
+          userCreatedAt: comment.userId.createdAt,
           postCreatedAt: comment.postId.createdAt,
           postTitle: comment.postId.title,
           postText: comment.postId.text,
@@ -1972,17 +1982,22 @@ const searchComments = async (req, res) => {
           postDownvotes: comment.postId.downvotes,
           postCommentCount: comment.postId.comments.length,
           score: score,
+          subredditId: subredditId,
           subRedditName: subredditId ? subreddittemp.name : null,
           subRedditAvatar: subredditAvatarId ? subredditAvatar.url : null,
           subRedditBanner: subredditBanner ? subredditBanner.url : null,
           subRedditDescription: subredditId ? subreddittemp.description : null,
           subRedditMembers: subredditId ? subreddittemp.members.length : null,
+          isFriend: isFriend,
+          isMember: isMember,
           subRedditNickName: subredditId ? subreddittemp.membersNickname : null,
           subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
+          subredditcurrentlyViewingNickname: subredditId ? subreddittemp.currentlyViewingNickname : null,
           commentText: comment.text,
           commentImage: comment.images,
           commentUpvotes: comment.upvotes,
           commentDownvotes: comment.downvotes,
+          commentKarma: comment.upvotes - comment.downvotes,
           commentCreatedAt: comment.createdAt,
         };
       })
