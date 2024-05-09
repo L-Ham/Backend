@@ -440,11 +440,16 @@ const getReplies = async (req, res, next) => {
 };
 
 const commentSearch = async (req, res, next) => {
+  const userId = req.userId;
   const search = req.query.search;
   const relevance = req.query.relevance;
   const top = req.query.top;
   const newest = req.query.new;
   try {
+    let user;
+    if (userId) {
+      user = await User.findById(userId);
+    }
     let query = {};
     if (search) {
       query.text = { $regex: search, $options: "i" };
@@ -473,6 +478,8 @@ const commentSearch = async (req, res, next) => {
     const comments = await Promise.all(
       populatedComments.map(async (comment) => {
         const score = comment.upvotes - comment.downvotes;
+        const isFriend = user ? user.following.includes(comment.userId) : false;
+        const isMember = user ? user.communities.includes(comment.postId.subReddit) : false;
         const subredditId = comment.postId.subReddit;
         let subreddittemp;
         let subredditAvatarId;
@@ -503,25 +510,34 @@ const commentSearch = async (req, res, next) => {
           userId: comment.userId._id,
           userName: comment.userId.userName,
           userAbout: comment.userId.profileSettings.get("about") || null,
+          userNickName: comment.userId.profileSettings.get("displayName") || null,
           userAvatar: userAvatarId ? userAvatar.url : null,
+          userKarma: comment.userId.upvotedPosts.length - comment.userId.downvotedPosts.length,
+          userCreatedAt: comment.userId.createdAt,
           postCreatedAt: comment.postId.createdAt,
           postTitle: comment.postId.title,
           postText: comment.postId.text,
           postUpvotes: comment.postId.upvotes,
           postDownvotes: comment.postId.downvotes,
+          postKarma: comment.postId.upvotes - comment.postId.downvotes,
           postCommentCount: comment.postId.comments.length,
           score: score,
+          subRedditId: subredditId,
           subRedditName: subredditId ? subreddittemp.name : null,
           subRedditAvatar: subredditAvatarId ? subredditAvatar.url : null,
           subRedditBanner: subredditBanner ? subredditBanner.url : null,
           subRedditDescription: subredditId ? subreddittemp.description : null,
           subRedditMembers: subredditId ? subreddittemp.members.length : null,
+          isFriend: isFriend,
+          isMember: isMember,
           subRedditNickName: subredditId ? subreddittemp.membersNickname : null,
           subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
+          subredditcurrentlyViewingNickname: subredditId ? subreddittemp.currentlyViewingNickname : null,
           commentText: comment.text,
           commentImage: comment.images,
           commentUpvotes: comment.upvotes,
           commentDownvotes: comment.downvotes,
+          commentKarma: comment.upvotes - comment.downvotes,
           commentCreatedAt: comment.createdAt,
         };
       })
@@ -533,12 +549,17 @@ const commentSearch = async (req, res, next) => {
 };
 
 const subredditCommentSearch = async (req, res, next) => {
+  const userId = req.userId;
   const search = req.query.search;
   const relevance = req.query.relevance;
   const top = req.query.top;
   const newest = req.query.new;
   const subredditName = req.query.subredditName;
   try {
+    let user;
+    if (userId) {
+      user = await User.findById(userId);
+    }
     const subreddit = await SubReddit.findOne({ name: subredditName });
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
@@ -574,6 +595,8 @@ const subredditCommentSearch = async (req, res, next) => {
       populatedComments.map(async (comment) => {
         const score = comment.upvotes - comment.downvotes;
         const subredditId = comment.postId.subReddit;
+        const isFriend = user ? user.following.includes(comment.userId) : false;
+        const isMember = user ? user.communities.includes(comment.postId.subReddit) : false;
         let subreddittemp;
         let subredditAvatarId;
         let subredditAvatar;
@@ -603,25 +626,33 @@ const subredditCommentSearch = async (req, res, next) => {
           userId: comment.userId._id,
           userName: comment.userId.userName,
           userAbout: comment.userId.profileSettings.get("about") || null,
+          userNickName: comment.userId.profileSettings.get("displayName") || null,
           userAvatar: userAvatarId ? userAvatar.url : null,
+          userKarma: comment.userId.upvotedPosts.length - comment.userId.downvotedPosts.length,
+          userCreatedAt: comment.userId.createdAt,
           postCreatedAt: comment.postId.createdAt,
           postTitle: comment.postId.title,
           postText: comment.postId.text,
           postUpvotes: comment.postId.upvotes,
           postDownvotes: comment.postId.downvotes,
+          postKarma: comment.postId.upvotes - comment.postId.downvotes,
           postCommentCount: comment.postId.comments.length,
           score: score,
+          subRedditId: subredditId,
           subRedditName: subredditId ? subreddittemp.name : null,
           subRedditAvatar: subredditAvatarId ? subredditAvatar.url : null,
           subRedditBanner: subredditBanner ? subredditBanner.url : null,
           subRedditDescription: subredditId ? subreddittemp.description : null,
           subRedditMembers: subredditId ? subreddittemp.members.length : null,
           subRedditNickName: subredditId ? subreddittemp.membersNickname : null,
+          isFriend: isFriend,
+          isMember: isMember,
           subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
           commentText: comment.text,
           commentImage: comment.images,
           commentUpvotes: comment.upvotes,
           commentDownvotes: comment.downvotes,
+          commentKarma: comment.upvotes - comment.downvotes,
           commentCreatedAt: comment.createdAt,
         };
       })
