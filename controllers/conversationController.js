@@ -124,11 +124,20 @@ const markChatAsRead = async (req, res) => {
         message: "You are not a participant in this conversation",
       });
     }
-    conversation.messages.forEach(async (chatId) => {
+    for (const chatId of conversation.messages) {
       const chat = await Chat.findById(chatId);
-      chat.isRead = true;
-      await chat.save();
-    });
+      if (chat) {
+        if (chat.receiverId.includes(userId)) {
+          chat.isRead = true;
+          await chat.save();
+        }
+      }
+    }
+    // conversation.messages.forEach(async (chatId) => {
+    //   const chat = await Chat.findById(chatId);
+    //   chat.isRead = true;
+    //   await chat.save();
+    // });
     res.status(200).json({ message: "Chat Marked as Read" });
   } catch (error) {
     res
