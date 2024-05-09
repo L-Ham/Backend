@@ -335,6 +335,12 @@ router.patch(
   authenticateToken,
   subredditController.changeSubredditType
 );
+router.get(
+  "/type",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getSubredditType
+)
 router.patch(
   "/user/forcedApproved",
   bodyParser.json(),

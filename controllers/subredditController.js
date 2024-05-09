@@ -2376,6 +2376,24 @@ const changeSubredditType = async (req, res) => {
   }
 };
 
+const getSubredditType = async (req, res) => {
+  const subredditName = req.query.subredditName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    res.status(200).json({
+      message: "Retrieved subreddit type",
+      ageRestriction: subreddit.ageRestriction,
+      privacy: subreddit.privacy,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error getting subreddit type", error: error.message });
+  }
+};
 const forcedRemove = async (req, res) => {
   const userId = req.userId;
   const subredditName = req.body.subredditName;
@@ -2486,4 +2504,5 @@ module.exports = {
   forceApproveUser,
   forcedRemove,
   getFavouriteCommunities,
+  getSubredditType,
 };
