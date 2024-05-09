@@ -52,7 +52,6 @@ const sendNotification = async (
   }
   const fcmTokens = user.fcmTokens;
   console.log(fcmTokens);
-  // Remove the redundant declaration and assignment of 'notification' variable
   let notification = null;
   switch (type) {
     case "upvotedPost":
@@ -71,6 +70,8 @@ const sendNotification = async (
         receiverAvatar: userAvatar ? userAvatar.url : null,
         subredditName: subreddit ? subreddit.name : null,
         subredditAvatar: subredditAvatar ? subredditAvatar : null,
+        content: affectedPost.text ? affectedPost.text : null,
+        postId: post ? post._id : null,
         type: "upvotedPost",
         isRead: false,
       });
@@ -92,7 +93,9 @@ const sendNotification = async (
         receiverAvatar: userAvatar ? userAvatar.url : null,
         subredditName: subreddit ? subreddit.name : null,
         subredditAvatar: subredditAvatar ? subredditAvatar : null,
-        type: "upvotedPost",
+        content: affectedPost.text ? affectedPost.text : null,
+        postId: post ? post._id : null,
+        type: "downvotedPost",
         isRead: false,
       });
       await notification.save();
@@ -113,6 +116,8 @@ const sendNotification = async (
         receiverAvatar: userAvatar ? userAvatar.url : null,
         subredditName: subreddit ? subreddit.name : null,
         subredditAvatar: subredditAvatar ? subredditAvatar : null,
+        content: null,
+        postId: post ? post._id : null,
         type: "followed",
         isRead: false,
       });
@@ -135,6 +140,7 @@ const sendNotification = async (
         subredditName: subreddit ? subreddit.name : null,
         subredditAvatar: subredditAvatar ? subredditAvatar : null,
         content: postedComment.text ? postedComment.text : null,
+        postId: post ? post._id : null,
         type: "commentedPost",
         isRead: false,
       });
@@ -157,6 +163,7 @@ const sendNotification = async (
         subredditName: subreddit ? subreddit.name : null,
         subredditAvatar: subredditAvatar ? subredditAvatar : null,
         content: parentComment.text ? parentComment.text : null,
+        postId: post ? post._id : null,
         type: "commentReply",
         isRead: false,
       });
@@ -179,6 +186,7 @@ const sendNotification = async (
         subredditName: subreddit ? subreddit.name : null,
         subredditAvatar: subredditAvatar ? subredditAvatar : null,
         content: affectedPost.text ? affectedPost.text : null,
+        postId: post ? post._id : null,
         type: "postedInSubreddit",
         isRead: false,
       });
