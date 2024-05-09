@@ -1318,27 +1318,27 @@ const scheduledPost = async (req, res, next) => {
           user.posts.push(post);
           await user.save();
         }
-        // console.log(savedSubreddit);
-        // if (savedSubreddit) {
-        //   // const subReddit = await SubReddit.findById(savedSubreddit);
-        //   console.log("subReddit.moderators[0]");
-        //   // console.log(subReddit.moderators[0]);
-        //   // console.log(user._id);
-        //   if (user._id.toString() !== savedSubreddit.moderators[0].toString()) {
-        //     const receiver = await User.findById(savedSubreddit.moderators[0]);
-        //     // console.log(receiver.notificationSettings.get("modNotifications"));
-        //     if (receiver.notificationSettings.get("modNotifications")) {
-        //       await NotificationServices.sendNotification(
-        //         receiver.userName,
-        //         user.userName,
-        //         newPost._id,
-        //         null,
-        //         "postedInSubreddit"
-        //       );
-        //       console.log("Notification Sent");
-        //     }
-        //   }
-        // }
+        console.log(savedSubreddit);
+        if (savedSubreddit) {
+          // const subReddit = await SubReddit.findById(savedSubreddit);
+          console.log("subReddit.moderators[0]");
+          // console.log(subReddit.moderators[0]);
+          // console.log(user._id);
+          if (user._id.toString() !== savedSubreddit.moderators[0].toString()) {
+            const receiver = await User.findById(savedSubreddit.moderators[0]);
+            // console.log(receiver.notificationSettings.get("modNotifications"));
+            if (receiver.notificationSettings.get("modNotifications")) {
+              await NotificationServices.sendNotification(
+                receiver.userName,
+                user.userName,
+                post._id,
+                null,
+                "postedInSubreddit"
+              );
+              console.log("Notification Sent");
+            }
+          }
+        }
 
         // res
         //   .status(200)
