@@ -1743,9 +1743,9 @@ const searchPosts = async (req, res) => {
   const userId = req.userId;
   const userName = req.query.username;
   const search = req.query.search;
-  const relevance = req.query.relevance;
-  const top = req.query.top;
-  const newest = req.query.new;
+  const relevance = req.query.relevance === "true";
+  const top = req.query.top === "true";
+  const newest = req.query.new === "true";
   const mediaOnly = req.query.mediaOnly === "true";
   const isNSFW = req.query.isNSFW === "true";
   try {
@@ -1913,9 +1913,17 @@ const searchPosts = async (req, res) => {
         };
       })
     );
+    let sortedPosts = posts;
+    if (relevance === true) {
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+    } else if (newest === true) {
+      sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (top === true) {
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+    }
     res.status(200).json({
       message: "Posts retrieved successfully",
-      posts: posts,
+      posts: sortedPosts,
     });
   } catch (err) {
     res.status(500).json({
@@ -1929,9 +1937,9 @@ const searchComments = async (req, res) => {
   const userId = req.userId;
   const userName = req.query.username;
   const search = req.query.search;
-  const relevance = req.query.relevance;
-  const top = req.query.top;
-  const newest = req.query.new;
+  const relevance = req.query.relevance === "true";
+  const top = req.query.top === "true";
+  const newest = req.query.new === "true";
   try {
     let userme;
     if (userId) {
