@@ -174,6 +174,7 @@ router.get("/searchPosts", bodyParser.json(), postController.searchPosts);
 router.get(
   "/subreddit/searchPosts",
   bodyParser.json(),
+  authenticateToken,
   postController.subredditPostSearch
 );
 router.patch(
