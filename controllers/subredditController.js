@@ -1100,12 +1100,17 @@ const forceApproveUser = async (req, res, next) => {
     if (!subreddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(403).json({ message: "You are not a moderator" });
+    }
     const user = await User.findOne({ userName: userName });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    if (subreddit.members.includes(user._id)) {
+      return res.status(400).json({ message: "User already a member" });
+    }
+    
     subreddit.members.push(user._id);
     user.communities.push(subreddit._id);
     await subreddit.save();
