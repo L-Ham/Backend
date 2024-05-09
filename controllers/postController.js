@@ -1117,6 +1117,13 @@ const getPostById = async (req, res, next) => {
     if (post.subReddit) {
       subreddit = await SubReddit.findById(post.subReddit);
     }
+    let avatarImageSubReddit = null;
+        if (post.subReddit) {
+          const avatarImageId = subreddit.appearance.avatarImage;
+          avatarImageSubReddit = avatarImageId
+            ? await UserUploadModel.findById(avatarImageId.toString())
+            : null;
+        }
     const creator = await User.findById(post.user);
     const creatorAvatar = await UserUploadModel.findById(creator.avatarImage);
     const isUpvoted = !userId ? false : post.upvotedUsers.includes(user._id);
@@ -1131,6 +1138,7 @@ const getPostById = async (req, res, next) => {
         creatorName: creator.userName,
         creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
         subRedditName: subreddit ? subreddit.name : null,
+        subRedditAvatar: avatarImageSubReddit ? avatarImageSubReddit.url : null,
         isUpvoted: isUpvoted,
         isDownvoted: isDownvoted,
         isSaved: isSaved,
@@ -1481,44 +1489,48 @@ const searchPosts = async (req, res) => {
   const relevance = req.query.relevance;
   const top = req.query.top;
   const newest = req.query.new;
-  const mediaOnly = req.query.mediaOnly;
-  const isNSFW = req.query.isNSFW;
+  const mediaOnly = req.query.mediaOnly === 'true';
+  const isNSFW = req.query.isNSFW === 'true';
   try {
     let query = {};
-    if (search) {
-      if (mediaOnly && isNSFW) {
-        query = {
+    if (mediaOnly === true && isNSFW === true) {
+      query = {
           $or: [
             { title: { $regex: search, $options: "i" } },
             { text: { $regex: search, $options: "i" } },
           ],
-          images: { $exists: "true", $ne: [] },
-        };
-      } else if (mediaOnly && !isNSFW) {
-        query = {
+          images: { $exists: true, $ne: [] }
+        };     
+    }
+
+    if (mediaOnly === false && isNSFW === true) {
+      query = {
           $or: [
             { title: { $regex: search, $options: "i" } },
             { text: { $regex: search, $options: "i" } },
           ],
-          isNSFW: "false",
-          images: { $exists: "true", $ne: [] },
-        };
-      } else if (!mediaOnly && isNSFW) {
-        query = {
+        };     
+    }
+
+    if (mediaOnly === true && isNSFW === false) {
+      query = {
           $or: [
             { title: { $regex: search, $options: "i" } },
             { text: { $regex: search, $options: "i" } },
           ],
-        };
-      } else {
-        query = {
+          isNSFW: false,
+          images: { $exists: true, $ne: [] }
+        };     
+    }
+
+    if (mediaOnly === false && isNSFW === false) {
+      query = {
           $or: [
             { title: { $regex: search, $options: "i" } },
             { text: { $regex: search, $options: "i" } },
           ],
-          isNSFW: "false",
-        };
-      }
+          isNSFW: false
+        };     
     }
     let sort = {};
     if (relevance || top) {
@@ -1575,9 +1587,9 @@ const searchPosts = async (req, res) => {
           title: post.title,
           type: post.type,
           text: post.text,
-          image: post.images[0].url,
+          image: post.images && post.images.length > 0 ? post.images[0].url : null,
           video: post.videos.url || null,
-          URL: post.url,
+          URL: post.url || null,
           postCommentCount: post.comments.length,
           userName: post.user ? post.user.userName : null,
           userAbout: post.user.profileSettings.get("about") || null,
@@ -1618,53 +1630,59 @@ const subredditPostSearch = async (req, res) => {
   const relevance = req.query.relevance;
   const top = req.query.top;
   const newest = req.query.new;
-  const mediaOnly = req.query.mediaOnly;
-  const isNSFW = req.query.isNSFW;
+  const mediaOnly = req.query.mediaOnly === 'true';
+  const isNSFW = req.query.isNSFW === 'true';
   const subredditName = req.query.subredditName;
   try {
     const subReddit = await SubReddit.findOne({ name: subredditName });
     if (!subReddit) {
       return res.status(404).json({ message: "Subreddit not found" });
     }
-    let query = {
-      subReddit: subReddit._id,
-      $or: [
-        { title: { $regex: search, $options: "i" } },
-        { text: { $regex: search, $options: "i" } },
-      ],
-    };
-    console.log(query);
-    // console.log(`mediaOnly: ${mediaOnly}, isNSFW: ${isNSFW}`);
-    // if (mediaOnly && isNSFW) {
-    //   console.log("mediaOnly true isNSFW true");
-    //   query.images = { $exists: true, $ne: [] };
-    // } else if (mediaOnly && !isNSFW) {
-    //   console.log("mediaOnly true isNSFW false");
-    //   query.images = { $exists: true, $ne: [] };
-    //   query.isNSFW = false;
-    // } else if (!mediaOnly && isNSFW) {
-    //   console.log("mediaOnly false isNSFW true");
-    //   query.isNSFW = true;
-    // } else {
-    //   query.isNSFW = false;
-    // }
-    console.log(`mediaOnly before if: ${mediaOnly}`);
-    if (mediaOnly && isNSFW) {
-      console.log("mediaOnly true isNSFW true");
-      console.log(`mediaOnly in if: ${mediaOnly}`);
-      query.images = { $exists: true, $ne: [] };
-    } else if (mediaOnly && !isNSFW) {
-      console.log("mediaOnly true isNSFW false");
-      console.log(`mediaOnly in else if 1: ${mediaOnly}`);
-      query.images = { $exists: true, $ne: [] };
-      query.isNSFW = false;
-    } else if (!mediaOnly && isNSFW) {
-      console.log("mediaOnly false isNSFW true");
-      console.log(`mediaOnly in else if 2: ${mediaOnly}`);
-      query.isNSFW = true;
-    } else {
-      console.log(`mediaOnly in else: ${mediaOnly}`);
-      query.isNSFW = false;
+    const subredditPosts = await Post.find({ subReddit: subReddit._id });
+    const postIds = subredditPosts.map((post) => post._id);
+    let query = {};
+    if (mediaOnly === true && isNSFW === true) {
+      query = {
+          _id: { $in: postIds },
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { text: { $regex: search, $options: "i" } },
+          ],
+          images: { $exists: true, $ne: [] }
+        };     
+    }
+
+    if (mediaOnly === false && isNSFW === true) {
+      query = {
+          _id: { $in: postIds },
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { text: { $regex: search, $options: "i" } },
+          ],
+        };     
+    }
+
+    if (mediaOnly === true && isNSFW === false) {
+      query = {
+          _id: { $in: postIds },
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { text: { $regex: search, $options: "i" } },
+          ],
+          isNSFW: false,
+          images: { $exists: true, $ne: [] }
+        };     
+    }
+
+    if (mediaOnly === false && isNSFW === false) {
+      query = {
+          _id: { $in: postIds },
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { text: { $regex: search, $options: "i" } },
+          ],
+          isNSFW: false
+        };     
     }
     let sort = {};
     if (relevance || top) {
@@ -1673,25 +1691,24 @@ const subredditPostSearch = async (req, res) => {
     if (newest) {
       sort.createdAt = -1;
     }
-    const populatedPosts = await Post.find(query);
-    // .sort(sort)
-    // .populate({
-    //   path: "user",
-    //   model: "user",
-    //   populate: {
-    //     path: "avatarImage",
-    //     model: "userUploads",
-    //   },
-    // });
-    // .populate({
-    //   path: "images",
-    //   model: "userUploads",
-    // })
-    // .populate({
-    //   path: "videos",
-    //   model: "userUploads",
-    // });
-    console.log(populatedPosts);
+    const populatedPosts = await Post.find(query)
+      .sort(sort)
+      .populate({
+        path: "user",
+        model: "user",
+        populate: {
+          path: "avatarImage",
+          model: "userUploads",
+        },
+      })
+      .populate({
+        path: "images",
+        model: "userUploads",
+      })
+      .populate({
+        path: "videos",
+        model: "userUploads",
+      });
     const posts = await Promise.all(
       populatedPosts.map(async (post) => {
         const score = post.upvotes - post.downvotes;
@@ -1715,10 +1732,8 @@ const subredditPostSearch = async (req, res) => {
           title: post.title,
           type: post.type,
           text: post.text,
-          image:
-            post.images && post.images.length > 0 ? post.images[0].url : null,
-          video:
-            post.videos && post.videos.length > 0 ? post.videos[0].url : null,
+          image: post.images && post.images.length > 0 ? post.images[0].url : null,
+          video: post.videos && post.videos.length > 0 ? post.videos[0].url : null,
           URL: post.url,
           userName: post.user ? post.user.userName : null,
           userAvatarImage: avatarImage,
@@ -1747,6 +1762,7 @@ const subredditPostSearch = async (req, res) => {
     });
   }
 };
+
 const addVoteToPoll = async (req, res) => {
   const userId = req.userId;
   const postId = req.body.postId;
