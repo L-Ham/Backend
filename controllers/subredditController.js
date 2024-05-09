@@ -1375,7 +1375,10 @@ const getSubredditFeed = async (req, res) => {
     if (userId) {
       user = await User.findById(userId);
     }
-    const query = Post.find({ subReddit: subreddit._id });
+    const query = Post.find({ 
+      subReddit: subreddit._id,
+      _id: { $nin: subreddit.removedPosts }
+    });    
     const result = await PostServices.paginatePosts(
       query,
       page,
