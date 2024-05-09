@@ -336,7 +336,7 @@ router.patch(
   subredditController.changeSubredditType
 )
 router.patch(
-  "/forcedApproved",
+  "/user/forcedApproved",
   bodyParser.json(),
   authenticateToken,
   subredditController.forceApproveUser
