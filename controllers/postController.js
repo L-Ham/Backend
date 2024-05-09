@@ -489,6 +489,7 @@ const lockPost = async (req, res, next) => {
       }
     }
     if (post.subReddit !== null) {
+      console.log(subReddit.moderators.includes(userId));
       if (!subReddit.moderators.includes(userId)) {
         return res.status(400).json({
           message: "User not authorized to lock post in the subreddit",
@@ -1320,13 +1321,9 @@ const scheduledPost = async (req, res, next) => {
         }
         console.log(savedSubreddit);
         if (savedSubreddit) {
-          // const subReddit = await SubReddit.findById(savedSubreddit);
           console.log("subReddit.moderators[0]");
-          // console.log(subReddit.moderators[0]);
-          // console.log(user._id);
           if (user._id.toString() !== savedSubreddit.moderators[0].toString()) {
             const receiver = await User.findById(savedSubreddit.moderators[0]);
-            // console.log(receiver.notificationSettings.get("modNotifications"));
             if (receiver.notificationSettings.get("modNotifications")) {
               await NotificationServices.sendNotification(
                 receiver.userName,
@@ -1339,25 +1336,6 @@ const scheduledPost = async (req, res, next) => {
             }
           }
         }
-
-        // res
-        //   .status(200)
-        //   .json({ message: "Post created successfully & Notification Sent" });
-        // else {
-        //   res.status(200).json({
-        //     message: "Post created successfully & No Notification Required",
-        //   });
-        // }
-        // else {
-        //   res.status(200).json({
-        //     message: "Post created successfully & Notification Not Required",
-        //   });
-        // }
-        // else {
-        //   res.status(200).json({
-        //     message: "Post created successfully & No Notification Required",
-        //   });
-        // }
         console.log("Post created successfully at scheduled time.");
       } catch (error) {
         console.log("Error creating post:", error.message);
