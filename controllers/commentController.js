@@ -442,9 +442,9 @@ const getReplies = async (req, res, next) => {
 const commentSearch = async (req, res, next) => {
   const userId = req.userId;
   const search = req.query.search;
-  const relevance = req.query.relevance;
-  const top = req.query.top;
-  const newest = req.query.new;
+  const relevance = req.query.relevance === "true";
+  const top = req.query.top === "true";
+  const newest = req.query.new === "true";
   try {
     let user;
     if (userId) {
@@ -549,7 +549,15 @@ const commentSearch = async (req, res, next) => {
         };
       })
     );
-    res.status(200).json({ message: "Comments fetched", comments: comments });
+    let sortedComments = comments;
+    if (relevance === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+    } else if (newest === true) {
+      sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (top === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+    }
+    res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {
     res.status(500).json({ message: "Error fetching comments", error: err });
   }
@@ -558,9 +566,9 @@ const commentSearch = async (req, res, next) => {
 const subredditCommentSearch = async (req, res, next) => {
   const userId = req.userId;
   const search = req.query.search;
-  const relevance = req.query.relevance;
-  const top = req.query.top;
-  const newest = req.query.new;
+  const relevance = req.query.relevance === "true";
+  const top = req.query.top === "true";
+  const newest = req.query.new === "true";
   const subredditName = req.query.subredditName;
   try {
     let user;
@@ -672,7 +680,15 @@ const subredditCommentSearch = async (req, res, next) => {
         };
       })
     );
-    res.status(200).json({ message: "Comments fetched", comments: comments });
+    let sortedComments = comments;
+    if (relevance === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+    } else if (newest === true) {
+      sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (top === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+    }
+    res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {
     res.status(500).json({ message: "Error fetching comments", error: err });
   }

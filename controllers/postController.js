@@ -1547,9 +1547,9 @@ const deletePost = async (req, res) => {
 const searchPosts = async (req, res) => {
   const userId = req.userId;
   const search = req.query.search;
-  const relevance = req.query.relevance;
-  const top = req.query.top;
-  const newest = req.query.new;
+  const relevance = req.query.relevance === "true";
+  const top = req.query.top === "true";
+  const newest = req.query.new === "true";
   const mediaOnly = req.query.mediaOnly === "true";
   const isNSFW = req.query.isNSFW === "true";
   try {
@@ -1695,9 +1695,17 @@ const searchPosts = async (req, res) => {
         };
       })
     );
+    let sortedPosts = posts;
+    if (relevance === true) {
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+    } else if (newest === true) {
+      sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (top === true) {
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+    }
     res.status(200).json({
       message: "Posts retrieved successfully",
-      posts: posts,
+      posts: sortedPosts,
     });
   } catch (err) {
     res.status(500).json({
@@ -1710,9 +1718,9 @@ const searchPosts = async (req, res) => {
 const subredditPostSearch = async (req, res) => {
   const userId = req.userId;
   const search = req.query.search;
-  const relevance = req.query.relevance;
-  const top = req.query.top;
-  const newest = req.query.new;
+  const relevance = req.query.relevance === "true";
+  const top = req.query.top === "true";
+  const newest = req.query.new === "true";
   const mediaOnly = req.query.mediaOnly === "true";
   const isNSFW = req.query.isNSFW === "true";
   const subredditName = req.query.subredditName;
@@ -1796,83 +1804,91 @@ const subredditPostSearch = async (req, res) => {
         path: "videos",
         model: "userUploads",
       });
-      const posts = await Promise.all(
-        populatedPosts.map(async (post) => {
-          const score = post.upvotes - post.downvotes;
-          const isMember = user ? user.communities.includes(post.subReddit) : false;
-          const isFriend = user ? user.following.includes(post.userId) : false;
-          let avatarImage = null;
-          if (post.user && post.user.avatarImage) {
-            avatarImage = post.user.avatarImage.url;
-          }
-          let subReddit = null;
-          if (post.subReddit) {
-            subReddit = await SubReddit.findById(post.subReddit);
-          }
-          let avatarImageSubReddit = null;
-          if (subReddit) {
-            const avatarImageId = subReddit.appearance.avatarImage;
-            avatarImageSubReddit = avatarImageId
-              ? await UserUploadModel.findById(avatarImageId.toString())
-              : null;
-          }
-          let subredditBannerImage = null;
-          if (subReddit) {
-            const bannerImageId = subReddit.appearance.bannerImage;
-            subredditBannerImage = bannerImageId
-              ? await UserUploadModel.findById(bannerImageId.toString())
-              : null;
-          }
-          return {
-            postId: post._id,
-            title: post.title,
-            type: post.type,
-            text: post.text,
-            image:
-              post.images && post.images.length > 0 ? post.images[0].url : null,
-            video:
-              post.videos && post.videos.length > 0 ? post.videos[0].url : null,
-            URL: post.url,
-            postUpvotes: post.upvotes,
-            postDownvotes: post.downvotes,
-            postCommentCount: post.comments.length,
-            postKarma: post.upvotes - post.downvotes,
-            postCommentKarma: post.comments.length,
-            score: score,
-            isUpvoted: post.upvotes > 0,
-            isDownvoted: post.downvotes > 0,
-            isNSFW: post.isNSFW,
-            postCreatedAt: post.createdAt,
-            userId: post.user ? post.user._id : null,
-            userName: post.user ? post.user.userName : null,
-            userAbout: post.user.profileSettings.get("about") || null,
-            userNickName: post.user.profileSettings.get("displayName") || null,
-            userAvatarImage: avatarImage,
-            userBannerImage: post.user.profileSettings.get("bannerImage") || null,
-            userKarma: post.user.upvotedPosts.length - post.user.downvotedPosts.length,
-            userCreatedAt: post.user.createdAt,
-            subreddit: subReddit ? subReddit.name : null,
-            subRedditId: subReddit ? subReddit._id : null,
-            avatarImageSubReddit: avatarImageSubReddit
-              ? avatarImageSubReddit.url
-              : null,
-            subredditBannerImage: subredditBannerImage ? subredditBannerImage.url : null,
-            subRedditDescription: subReddit ? subReddit.description : null,
-            subRedditMembers: subReddit ? subReddit.members.length : null,
-            subRedditNickName: subReddit ? subReddit.membersNickname : null,
-            subRedditCreated: subReddit ? subReddit.createdAt : null,
-            subredditcurrentlyViewingNickname: subReddit
-              ? subReddit.currentlyViewingNickname
-              : null,
-            isFriend: isFriend,
-            isMember: isMember,
-          };
-        })
-      );
-      res.status(200).json({
-        message: "Posts retrieved successfully",
-        posts: posts,
-      });
+    const posts = await Promise.all(
+      populatedPosts.map(async (post) => {
+        const score = post.upvotes - post.downvotes;
+        const isMember = user ? user.communities.includes(post.subReddit) : false;
+        const isFriend = user ? user.following.includes(post.userId) : false;
+        let avatarImage = null;
+        if (post.user && post.user.avatarImage) {
+          avatarImage = post.user.avatarImage.url;
+        }
+        let subReddit = null;
+        if (post.subReddit) {
+          subReddit = await SubReddit.findById(post.subReddit);
+        }
+        let avatarImageSubReddit = null;
+        if (subReddit) {
+          const avatarImageId = subReddit.appearance.avatarImage;
+          avatarImageSubReddit = avatarImageId
+            ? await UserUploadModel.findById(avatarImageId.toString())
+            : null;
+        }
+        let subredditBannerImage = null;
+        if (subReddit) {
+          const bannerImageId = subReddit.appearance.bannerImage;
+          subredditBannerImage = bannerImageId
+            ? await UserUploadModel.findById(bannerImageId.toString())
+            : null;
+        }
+        return {
+          postId: post._id,
+          title: post.title,
+          type: post.type,
+          text: post.text,
+          image:
+            post.images && post.images.length > 0 ? post.images[0].url : null,
+          video:
+            post.videos && post.videos.length > 0 ? post.videos[0].url : null,
+          URL: post.url,
+          postUpvotes: post.upvotes,
+          postDownvotes: post.downvotes,
+          postCommentCount: post.comments.length,
+          postKarma: post.upvotes - post.downvotes,
+          postCommentKarma: post.comments.length,
+          score: score,
+          isUpvoted: post.upvotes > 0,
+          isDownvoted: post.downvotes > 0,
+          isNSFW: post.isNSFW,
+          postCreatedAt: post.createdAt,
+          userId: post.user ? post.user._id : null,
+          userName: post.user ? post.user.userName : null,
+          userAbout: post.user.profileSettings.get("about") || null,
+          userNickName: post.user.profileSettings.get("displayName") || null,
+          userAvatarImage: avatarImage,
+          userBannerImage: post.user.profileSettings.get("bannerImage") || null,
+          userKarma: post.user.upvotedPosts.length - post.user.downvotedPosts.length,
+          userCreatedAt: post.user.createdAt,
+          subreddit: subReddit ? subReddit.name : null,
+          subRedditId: subReddit ? subReddit._id : null,
+          avatarImageSubReddit: avatarImageSubReddit
+            ? avatarImageSubReddit.url
+            : null,
+          subredditBannerImage: subredditBannerImage ? subredditBannerImage.url : null,
+          subRedditDescription: subReddit ? subReddit.description : null,
+          subRedditMembers: subReddit ? subReddit.members.length : null,
+          subRedditNickName: subReddit ? subReddit.membersNickname : null,
+          subRedditCreated: subReddit ? subReddit.createdAt : null,
+          subredditcurrentlyViewingNickname: subReddit
+            ? subReddit.currentlyViewingNickname
+            : null,
+          isFriend: isFriend,
+          isMember: isMember,
+        };
+      })
+    );
+    let sortedPosts = posts;
+    if (relevance === true) {
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+    } else if (newest === true) {
+      sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (top === true) {
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+    }
+    res.status(200).json({
+      message: "Posts retrieved successfully",
+      posts: sortedPosts,
+    });
   } catch (err) {
     res.status(500).json({
       message: "Error searching posts",
