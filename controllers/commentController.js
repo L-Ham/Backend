@@ -556,7 +556,7 @@ const commentSearch = async (req, res, next) => {
     } else if (newest === true) {
       sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedComments = comments.sort((a, b) => (b.upvotes * b.downvotes) - (a.upvotes * a.downvotes));
     }
     res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {
@@ -687,7 +687,7 @@ const subredditCommentSearch = async (req, res, next) => {
     } else if (newest === true) {
       sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedComments = comments.sort((a, b) => (b.upvotes * b.downvotes) - (a.upvotes * a.downvotes));
     }
     res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {

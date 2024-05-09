@@ -1919,7 +1919,7 @@ const searchPosts = async (req, res) => {
     } else if (newest === true) {
       sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes + b.comments.length) - (a.upvotes - a.downvotes + a.comments.length));
     }
     res.status(200).json({
       message: "Posts retrieved successfully",
@@ -2066,7 +2066,7 @@ const searchComments = async (req, res) => {
     } else if (newest === true) {
       sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedComments = comments.sort((a, b) => (b.upvotes * b.downvotes) - (a.upvotes * a.downvotes));
     }
     res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {

@@ -1720,7 +1720,7 @@ const searchPosts = async (req, res) => {
     } else if (newest === true) {
       sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes + b.comments.length) - (a.upvotes - a.downvotes + a.comments.length));
     }
     res.status(200).json({
       message: "Posts retrieved successfully",
@@ -1902,7 +1902,7 @@ const subredditPostSearch = async (req, res) => {
     } else if (newest === true) {
       sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes + b.comments.length) - (a.upvotes - a.downvotes + a.comments.length));
     }
     res.status(200).json({
       message: "Posts retrieved successfully",
