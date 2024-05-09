@@ -1656,6 +1656,7 @@ const getUserInfo = async (req, res, next) => {
       avatar: avatarImage ? avatarImage.url : null,
       banner: bannerImage ? bannerImage.url : null,
       About: otherUser.profileSettings.get("about") || null,
+      socialLinks: otherUser.socialLinks,
     };
     res.status(200).json({ user: response });
   } catch (err) {
