@@ -278,4 +278,16 @@ router.get(
   authenticateToken,
   userController.getHistoryPosts
 );
+
+router.get(
+  "/searchPosts",
+  bodyParser.json(),
+  userController.searchPosts
+);
+
+router.get(
+  "/searchComments",
+  bodyParser.json(),
+  userController.searchComments
+);
 module.exports = router;

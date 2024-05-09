@@ -1070,6 +1070,13 @@ const getPostById = async (req, res, next) => {
     if (post.subReddit) {
       subreddit = await SubReddit.findById(post.subReddit);
     }
+    let avatarImageSubReddit = null;
+        if (post.subReddit) {
+          const avatarImageId = subreddit.appearance.avatarImage;
+          avatarImageSubReddit = avatarImageId
+            ? await UserUploadModel.findById(avatarImageId.toString())
+            : null;
+        }
     const creator = await User.findById(post.user);
     const creatorAvatar = await UserUploadModel.findById(creator.avatarImage);
     const isUpvoted = !userId ? false : post.upvotedUsers.includes(user._id);
@@ -1084,6 +1091,7 @@ const getPostById = async (req, res, next) => {
         creatorName: creator.userName,
         creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
         subRedditName: subreddit ? subreddit.name : null,
+        subRedditAvatar: avatarImageSubReddit ? avatarImageSubReddit.url : null,
         isUpvoted: isUpvoted,
         isDownvoted: isDownvoted,
         isSaved: isSaved,
@@ -1532,9 +1540,9 @@ const searchPosts = async (req, res) => {
           title: post.title,
           type: post.type,
           text: post.text,
-          image: post.images[0].url,
+          image: post.images && post.images.length > 0 ? post.images[0].url : null,
           video: post.videos.url || null,
-          URL: post.url,
+          URL: post.url || null,
           postCommentCount: post.comments.length,
           userName: post.user ? post.user.userName : null,
           userAbout: post.user.profileSettings.get("about") || null,
