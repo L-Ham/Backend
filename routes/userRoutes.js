@@ -288,6 +288,7 @@ router.get(
 router.get(
   "/searchComments",
   bodyParser.json(),
+  authenticateToken,
   userController.searchComments
 );
 
