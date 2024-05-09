@@ -109,10 +109,11 @@ const createComment = async (req, res, next) => {
       parentComment.replies.push(savedComment._id);
       await parentComment.save();
     }
-
-    post.comments.push(savedComment._id);
-    post.commentCount += 1;
-    await post.save();
+    if(!req.body.parentCommentId){
+      post.comments.push(savedComment._id);
+      post.commentCount += 1;
+      await post.save();
+    }
 
     user.comments.push(savedComment._id);
     await user.save();
