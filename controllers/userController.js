@@ -2060,7 +2060,15 @@ const searchComments = async (req, res) => {
         };
       })
     );
-    res.status(200).json({ message: "Comments fetched", comments: comments });
+    let sortedComments = comments;
+    if (relevance === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+    } else if (newest === true) {
+      sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (top === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+    }
+    res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {
     res.status(500).json({ message: "Error fetching comments", error: err });
   }
