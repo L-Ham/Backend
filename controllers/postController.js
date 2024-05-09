@@ -18,9 +18,13 @@ const createPost = async (req, res, next) => {
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-  if (subRedditId != "") {
+  if (subRedditId) {
     const subReddit = await SubReddit.findById(subRedditId);
-    if (subReddit.bannedUsers.map(user => user.userId.toString()).includes(userId)) {
+    if (
+      subReddit.bannedUsers
+        .map((user) => user.userId.toString())
+        .includes(userId)
+    ) {
       console.log("banned user");
       return res
         .status(403)
