@@ -2406,6 +2406,26 @@ const forcedRemove = async (req, res) => {
   }
 };
 
+const getFavouriteCommunities = async (req, res) => {
+  const userId = req.userId;
+  const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    const communities = await SubReddit.find({
+      _id: { $in: user.communities },
+      
+    });
+    const favCommunities = await SubReddit.find(user.favoriteCommunities.includes(community._id))
+    const avatarImages = await UserUploadModel.find({
+      _id: {
+        $in: communities.map((community) => community.appearance.avatarImage),
+      },
+    });
+    
+}
+
 
 module.exports = {
   createCommunity,

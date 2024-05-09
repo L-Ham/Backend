@@ -1605,7 +1605,6 @@ const getUserSelfInfo = async (req, res, next) => {
     const bannerImageId = user.bannerImage;
     const avatarImage = await UserUploadModel.findById(avatarImageId);
     const bannerImage = await UserUploadModel.findById(bannerImageId);
-    console.log(user.profileSettings.get("about"));
     const response = {
       userId: user._id,
       displayName: user.profileSettings.get("displayName") || null,
