@@ -1830,6 +1830,8 @@ const searchPosts = async (req, res) => {
     const posts = await Promise.all(
       populatedPosts.map(async (post) => {
         const score = post.upvotes - post.downvotes;
+        const isFriend = userme ? userme.following.includes(post.userId) : false;
+        const isMember = userme ? userme.communities.includes(post.subReddit) : false;
         let avatarImage = null;
         if (post.user && post.user.avatarImage) {
           avatarImage = post.user.avatarImage.url;
@@ -1865,12 +1867,25 @@ const searchPosts = async (req, res) => {
           image: post.images && post.images.length > 0 ? post.images[0].url : null,
           video: post.videos.url || null,
           URL: post.url,
+          postUpvotes: post.upvotes,
+          postDownvotes: post.downvotes,
           postCommentCount: post.comments.length,
+          postKarma: post.upvotes - post.downvotes,
+          postCommentKarma: post.comments.length,
+          score: score,
+          isUpvoted: post.upvotes > 0,
+          isDownvoted: post.downvotes > 0,
+          isNSFW: post.isNSFW,
+          postCreatedAt: post.createdAt,
+          userId: post.user ? post.user._id : null,
           userName: post.user ? post.user.userName : null,
           userAbout: post.user.profileSettings.get("about") || null,
+          userNickName: post.user.profileSettings.get("displayName") || null,
           userAvatarImage: avatarImage,
           userBannerImage: userBanner,
-          subreddit: subReddit ? subReddit.name : null,
+          userKarma: post.user.upvotedPosts.length - post.user.downvotedPosts.length,
+          userCreatedAt: post.user.createdAt,
+          subredditName: subReddit ? subReddit.name : null,
           subRedditId: subReddit ? subReddit._id : null,
           avatarImageSubReddit: avatarImageSubReddit
             ? avatarImageSubReddit.url
@@ -1880,12 +1895,10 @@ const searchPosts = async (req, res) => {
           subRedditMembers: subReddit ? subReddit.members.length : null,
           subRedditNickName: subReddit ? subReddit.membersNickname : null,
           subRedditCreated: subReddit ? subReddit.createdAt : null,
-          score: score,
-          isUpvoted: post.upvotes > 0,
-          isDownvoted: post.downvotes > 0,
-          commentCount: post.comments.length,
-          isNSFW: post.isNSFW,
-          createdAt: post.createdAt,
+          subredditcurrentlyViewingNickname: subReddit ? subReddit.currentlyViewingNickname : null,
+          isFriend: isFriend,
+          isMember: isMember,
+          
         };
       })
     );
