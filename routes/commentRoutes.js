@@ -71,6 +71,7 @@ router.get(
 router.get(
   "/subreddit/searchComment",
   bodyParser.json(),
+  authenticateToken,
   commentController.subredditCommentSearch
 );
 
