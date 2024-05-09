@@ -169,7 +169,12 @@ router.get(
   postController.getAllPosts
 );
 
-router.get("/searchPosts", bodyParser.json(), postController.searchPosts);
+router.get(
+  "/searchPosts",
+  bodyParser.json(), 
+  authenticateToken,
+  postController.searchPosts
+);
 
 router.get(
   "/subreddit/searchPosts",
