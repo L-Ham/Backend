@@ -1215,6 +1215,19 @@ const scheduledPost = async (req, res, next) => {
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
+  if (subRedditId) {
+    const subReddit = await SubReddit.findById(subRedditId);
+    if (
+      subReddit.bannedUsers
+        .map((user) => user.userId.toString())
+        .includes(userId)
+    ) {
+      console.log("banned user");
+      return res
+        .status(403)
+        .json({ message: "You are banned from this subreddit" });
+    }
+  }
   try {
     // Check if title is provided in the request body
     if (!req.body.title) {
