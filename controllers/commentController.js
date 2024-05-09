@@ -109,10 +109,11 @@ const createComment = async (req, res, next) => {
       parentComment.replies.push(savedComment._id);
       await parentComment.save();
     }
-
-    post.comments.push(savedComment._id);
-    post.commentCount += 1;
-    await post.save();
+    if(!req.body.parentCommentId){
+      post.comments.push(savedComment._id);
+      post.commentCount += 1;
+      await post.save();
+    }
 
     user.comments.push(savedComment._id);
     await user.save();
@@ -442,9 +443,9 @@ const getReplies = async (req, res, next) => {
 const commentSearch = async (req, res, next) => {
   const userId = req.userId;
   const search = req.query.search;
-  const relevance = req.query.relevance;
-  const top = req.query.top;
-  const newest = req.query.new;
+  const relevance = req.query.relevance === "true";
+  const top = req.query.top === "true";
+  const newest = req.query.new === "true";
   try {
     let user;
     if (userId) {
@@ -496,6 +497,12 @@ const commentSearch = async (req, res, next) => {
         if (userAvatarId) {
           userAvatar = await UserUploadModel.findById(userAvatarId);
         }
+        let userBannerId = comment.userId.bannerImage;
+        let userBanner;
+        if (userBannerId) {
+          userBanner = await UserUploadModel.findById(userBannerId);
+        }
+
         let subredditBanner = null;
         if (subredditId) {
           const bannerImageId = subreddittemp.appearance.bannerImage;
@@ -512,6 +519,7 @@ const commentSearch = async (req, res, next) => {
           userAbout: comment.userId.profileSettings.get("about") || null,
           userNickName: comment.userId.profileSettings.get("displayName") || null,
           userAvatar: userAvatarId ? userAvatar.url : null,
+          userBanner: userBannerId ? userBanner.url : null,
           userKarma: comment.userId.upvotedPosts.length - comment.userId.downvotedPosts.length,
           userCreatedAt: comment.userId.createdAt,
           postCreatedAt: comment.postId.createdAt,
@@ -542,7 +550,15 @@ const commentSearch = async (req, res, next) => {
         };
       })
     );
-    res.status(200).json({ message: "Comments fetched", comments: comments });
+    let sortedComments = comments;
+    if (relevance === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+    } else if (newest === true) {
+      sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (top === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes * b.downvotes) - (a.upvotes * a.downvotes));
+    }
+    res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {
     res.status(500).json({ message: "Error fetching comments", error: err });
   }
@@ -551,9 +567,9 @@ const commentSearch = async (req, res, next) => {
 const subredditCommentSearch = async (req, res, next) => {
   const userId = req.userId;
   const search = req.query.search;
-  const relevance = req.query.relevance;
-  const top = req.query.top;
-  const newest = req.query.new;
+  const relevance = req.query.relevance === "true";
+  const top = req.query.top === "true";
+  const newest = req.query.new === "true";
   const subredditName = req.query.subredditName;
   try {
     let user;
@@ -620,6 +636,12 @@ const subredditCommentSearch = async (req, res, next) => {
           userAvatar = await UserUploadModel.findById(userAvatarId);
         }
 
+        let userBannerId = comment.userId.bannerImage;
+        let userBanner;
+        if (userBannerId) {
+          userBanner = await UserUploadModel.findById(userBannerId);
+        }
+
         return {
           _id: comment._id,
           postId: comment.postId._id,
@@ -628,6 +650,7 @@ const subredditCommentSearch = async (req, res, next) => {
           userAbout: comment.userId.profileSettings.get("about") || null,
           userNickName: comment.userId.profileSettings.get("displayName") || null,
           userAvatar: userAvatarId ? userAvatar.url : null,
+          userBanner: userBannerId ? userBanner.url : null,
           userKarma: comment.userId.upvotedPosts.length - comment.userId.downvotedPosts.length,
           userCreatedAt: comment.userId.createdAt,
           postCreatedAt: comment.postId.createdAt,
@@ -648,6 +671,7 @@ const subredditCommentSearch = async (req, res, next) => {
           isFriend: isFriend,
           isMember: isMember,
           subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
+          subredditcurrentlyViewingNickname: subredditId ? subreddittemp.currentlyViewingNickname : null,
           commentText: comment.text,
           commentImage: comment.images,
           commentUpvotes: comment.upvotes,
@@ -657,7 +681,15 @@ const subredditCommentSearch = async (req, res, next) => {
         };
       })
     );
-    res.status(200).json({ message: "Comments fetched", comments: comments });
+    let sortedComments = comments;
+    if (relevance === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+    } else if (newest === true) {
+      sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (top === true) {
+      sortedComments = comments.sort((a, b) => (b.upvotes * b.downvotes) - (a.upvotes * a.downvotes));
+    }
+    res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {
     res.status(500).json({ message: "Error fetching comments", error: err });
   }

@@ -340,7 +340,7 @@ router.get(
   bodyParser.json(),
   authenticateToken,
   subredditController.getSubredditType
-)
+);
 router.patch(
   "/user/forcedApproved",
   bodyParser.json(),
@@ -359,5 +359,12 @@ router.get(
   bodyParser.json(),
   authenticateToken,
   subredditController.getFavouriteCommunities
+);
+
+router.patch(
+  "/mod/remove",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.removeModerator
 );
 module.exports = router;

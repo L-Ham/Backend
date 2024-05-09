@@ -986,7 +986,7 @@ const suggestSubreddit = async (req, res, next) => {
     if (subredditsNotJoined.length > 0) {
       const randomSubreddit =
         subredditsNotJoined[
-          Math.floor(Math.random() * subredditsNotJoined.length)
+        Math.floor(Math.random() * subredditsNotJoined.length)
         ];
       const avatarImage = await UserUploadModel.findById(
         randomSubreddit.appearance.avatarImage
@@ -1084,6 +1084,7 @@ const approveUser = async (req, res, next) => {
     subreddit.members.push(user._id);
     user.communities.push(subreddit._id);
     await subreddit.save();
+    await user.save();
     res.json({ message: "User approved successfully" });
   } catch (error) {
     res
@@ -1375,10 +1376,10 @@ const getSubredditFeed = async (req, res) => {
     if (userId) {
       user = await User.findById(userId);
     }
-    const query = Post.find({ 
+    const query = Post.find({
       subReddit: subreddit._id,
-      _id: { $nin: subreddit.removedPosts }
-    });    
+      _id: { $nin: subreddit.removedPosts },
+    });
     const result = await PostServices.paginatePosts(
       query,
       page,
@@ -1480,44 +1481,42 @@ const getReportedPosts = async (req, res) => {
         const isDownvoted = post.downvotedUsers.includes(user._id);
         let disapprovedByUserame, approvedByUserame;
         let disapprovedByAvatarImageUrl, approvedByAvatarImageUrl;
-        
-        if(post.disapprovedBy)
-      {
-          
-           const disapprovedBy = await User.findById(post.disapprovedBy);
-           disapprovedByUserame = disapprovedBy.userName;
 
-          
-        if(disapprovedBy.avatarImage!=null){
-          const disapprovedByAvatarImage = await UserUploadModel.findById(disapprovedBy.avatarImage);
-           disapprovedByAvatarImageUrl = disapprovedByAvatarImage.url;
-        }
-        else{
-           disapprovedByAvatarImageUrl = null;
-        }
-      }
-      else{
-         disapprovedByAvatarImageUrl = null;
-         disapprovedByUserame = null;
-      }
+        if (post.disapprovedBy) {
 
-      if(post.approvedBy!=null)
-      {
-        const approvedBy= await User.findById(post.approvedBy);
-         approvedByUserame = approvedBy.userName;
-         console.log(approvedByUserame, approvedBy.avatarImage)
-        if(approvedBy.avatarImage!=null){
-           const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
-           approvedByAvatarImageUrl = approvedByAvatarImage.url;
+          const disapprovedBy = await User.findById(post.disapprovedBy);
+          disapprovedByUserame = disapprovedBy.userName;
+
+
+          if (disapprovedBy.avatarImage != null) {
+            const disapprovedByAvatarImage = await UserUploadModel.findById(disapprovedBy.avatarImage);
+            disapprovedByAvatarImageUrl = disapprovedByAvatarImage.url;
+          }
+          else {
+            disapprovedByAvatarImageUrl = null;
+          }
         }
-        else{
-           approvedByAvatarImageUrl = null;
-        }	
-      }
-      else{
-         approvedByAvatarImageUrl = null;
-         approvedByUserame = null;
-      }
+        else {
+          disapprovedByAvatarImageUrl = null;
+          disapprovedByUserame = null;
+        }
+
+        if (post.approvedBy != null) {
+          const approvedBy = await User.findById(post.approvedBy);
+          approvedByUserame = approvedBy.userName;
+          console.log(approvedByUserame, approvedBy.avatarImage)
+          if (approvedBy.avatarImage != null) {
+            const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
+            approvedByAvatarImageUrl = approvedByAvatarImage.url;
+          }
+          else {
+            approvedByAvatarImageUrl = null;
+          }
+        }
+        else {
+          approvedByAvatarImageUrl = null;
+          approvedByUserame = null;
+        }
         let imageUrls, videoUrls;
         const isSaved = user.savedPosts.includes(post._id);
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
@@ -1528,7 +1527,7 @@ const getReportedPosts = async (req, res) => {
         if (post.type === "video") {
           videoUrls = await PostServices.getVideosUrls(post.videos);
         }
-        
+
         const postObj = {
           ...post._doc,
           subredditName: subreddit ? subreddit.name : null,
@@ -1540,7 +1539,7 @@ const getReportedPosts = async (req, res) => {
           isSaved,
           disapprovedByUserame,
           approvedByUserame,
-          disapprovedByAvatarImageUrl,	
+          disapprovedByAvatarImageUrl,
           approvedByAvatarImageUrl,
         };
         delete postObj.images;
@@ -1594,44 +1593,42 @@ const getEditedPosts = async (req, res) => {
         const isDownvoted = post.downvotedUsers.includes(user._id);
         let disapprovedByUserame, approvedByUserame;
         let disapprovedByAvatarImageUrl, approvedByAvatarImageUrl;
-        
-        if(post.disapprovedBy)
-      {
-          
-           const disapprovedBy = await User.findById(post.disapprovedBy);
-           disapprovedByUserame = disapprovedBy.userName;
 
-          
-        if(disapprovedBy.avatarImage!=null){
-          const disapprovedByAvatarImage = await UserUploadModel.findById(disapprovedBy.avatarImage);
-           disapprovedByAvatarImageUrl = disapprovedByAvatarImage.url;
-        }
-        else{
-           disapprovedByAvatarImageUrl = null;
-        }
-      }
-      else{
-         disapprovedByAvatarImageUrl = null;
-         disapprovedByUserame = null;
-      }
+        if (post.disapprovedBy) {
 
-      if(post.approvedBy!=null)
-      {
-        const approvedBy= await User.findById(post.approvedBy);
-         approvedByUserame = approvedBy.userName;
-         console.log(approvedByUserame, approvedBy.avatarImage)
-        if(approvedBy.avatarImage!=null){
-           const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
-           approvedByAvatarImageUrl = approvedByAvatarImage.url;
+          const disapprovedBy = await User.findById(post.disapprovedBy);
+          disapprovedByUserame = disapprovedBy.userName;
+
+
+          if (disapprovedBy.avatarImage != null) {
+            const disapprovedByAvatarImage = await UserUploadModel.findById(disapprovedBy.avatarImage);
+            disapprovedByAvatarImageUrl = disapprovedByAvatarImage.url;
+          }
+          else {
+            disapprovedByAvatarImageUrl = null;
+          }
         }
-        else{
-           approvedByAvatarImageUrl = null;
-        }	
-      }
-      else{
-         approvedByAvatarImageUrl = null;
-         approvedByUserame = null;
-      }
+        else {
+          disapprovedByAvatarImageUrl = null;
+          disapprovedByUserame = null;
+        }
+
+        if (post.approvedBy != null) {
+          const approvedBy = await User.findById(post.approvedBy);
+          approvedByUserame = approvedBy.userName;
+          console.log(approvedByUserame, approvedBy.avatarImage)
+          if (approvedBy.avatarImage != null) {
+            const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
+            approvedByAvatarImageUrl = approvedByAvatarImage.url;
+          }
+          else {
+            approvedByAvatarImageUrl = null;
+          }
+        }
+        else {
+          approvedByAvatarImageUrl = null;
+          approvedByUserame = null;
+        }
         let imageUrls, videoUrls;
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
         const spammedByUsernames = spammedBy.map((user) => user.userName);
@@ -1710,25 +1707,24 @@ const getUnmoderatedPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
-       
 
-      if(post.approvedBy!=null)
-      {
-        const approvedBy= await User.findById(post.approvedBy);
-         approvedByUserame = approvedBy.userName;
-         console.log(approvedByUserame, approvedBy.avatarImage)
-        if(approvedBy.avatarImage!=null){
-           const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
-           approvedByAvatarImageUrl = approvedByAvatarImage.url;
+
+        if (post.approvedBy != null) {
+          const approvedBy = await User.findById(post.approvedBy);
+          approvedByUserame = approvedBy.userName;
+          console.log(approvedByUserame, approvedBy.avatarImage)
+          if (approvedBy.avatarImage != null) {
+            const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
+            approvedByAvatarImageUrl = approvedByAvatarImage.url;
+          }
+          else {
+            approvedByAvatarImageUrl = null;
+          }
         }
-        else{
-           approvedByAvatarImageUrl = null;
-        }	
-      }
-      else{
-         approvedByAvatarImageUrl = null;
-         approvedByUserame = null;
-      }
+        else {
+          approvedByAvatarImageUrl = null;
+          approvedByUserame = null;
+        }
         let imageUrls, videoUrls;
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
         const spammedByUsernames = spammedBy.map((user) => user.userName);
@@ -1798,44 +1794,42 @@ const getRemovedPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         let disapprovedByUserame, approvedByUserame;
         let disapprovedByAvatarImageUrl, approvedByAvatarImageUrl;
-        
-        if(post.disapprovedBy)
-      {
-          
-           const disapprovedBy = await User.findById(post.disapprovedBy);
-           disapprovedByUserame = disapprovedBy.userName;
 
-          
-        if(disapprovedBy.avatarImage!=null){
-          const disapprovedByAvatarImage = await UserUploadModel.findById(disapprovedBy.avatarImage);
-           disapprovedByAvatarImageUrl = disapprovedByAvatarImage.url;
-        }
-        else{
-           disapprovedByAvatarImageUrl = null;
-        }
-      }
-      else{
-         disapprovedByAvatarImageUrl = null;
-         disapprovedByUserame = null;
-      }
+        if (post.disapprovedBy) {
 
-      if(post.approvedBy!=null)
-      {
-        const approvedBy= await User.findById(post.approvedBy);
-         approvedByUserame = approvedBy.userName;
-         console.log(approvedByUserame, approvedBy.avatarImage)
-        if(approvedBy.avatarImage!=null){
-           const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
-           approvedByAvatarImageUrl = approvedByAvatarImage.url;
+          const disapprovedBy = await User.findById(post.disapprovedBy);
+          disapprovedByUserame = disapprovedBy.userName;
+
+
+          if (disapprovedBy.avatarImage != null) {
+            const disapprovedByAvatarImage = await UserUploadModel.findById(disapprovedBy.avatarImage);
+            disapprovedByAvatarImageUrl = disapprovedByAvatarImage.url;
+          }
+          else {
+            disapprovedByAvatarImageUrl = null;
+          }
         }
-        else{
-           approvedByAvatarImageUrl = null;
-        }	
-      }
-      else{
-         approvedByAvatarImageUrl = null;
-         approvedByUserame = null;
-      }
+        else {
+          disapprovedByAvatarImageUrl = null;
+          disapprovedByUserame = null;
+        }
+
+        if (post.approvedBy != null) {
+          const approvedBy = await User.findById(post.approvedBy);
+          approvedByUserame = approvedBy.userName;
+          console.log(approvedByUserame, approvedBy.avatarImage)
+          if (approvedBy.avatarImage != null) {
+            const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
+            approvedByAvatarImageUrl = approvedByAvatarImage.url;
+          }
+          else {
+            approvedByAvatarImageUrl = null;
+          }
+        }
+        else {
+          approvedByAvatarImageUrl = null;
+          approvedByUserame = null;
+        }
 
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
@@ -2591,15 +2585,54 @@ const getFavouriteCommunities = async (req, res) => {
   const communities = await SubReddit.find({
     _id: { $in: user.favoriteCommunities },
   })
-    .populate("appearance.avatarImage")
-    .populate("appearance.bannerImage")
-    .select("-posts"); // Exclude posts
+
+    const communitiesWithAvatar = await Promise.all(
+      communities.map(async (community) => {
+        const userUpload = await UserUploadModel.findOne({
+          _id: community.appearance.avatarImage,
+        });
+        return {
+          name: community.name,
+          id: community._id,
+          avatar: userUpload ? userUpload.url : null,
+        };
+      })
+    );
+
 
   res
     .status(200)
-    .json({ message: "Favourite communities retrieved", communities });
+    .json({ message: "Favourite communities retrieved", communitiesWithAvatar });
 };
 
+const removeModerator = async (req, res) => {
+  const userId = req.userId;
+  const subredditName = req.body.subredditName;
+  const moderatorName = req.body.moderatorName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const moderator = await User.findOne({ userName: moderatorName });
+    if (!moderator) {
+      return res.status(404).json({ message: "Moderator not found" });
+    }
+    if (!subreddit.moderators.includes(moderator._id)) {
+      return res.status(400).json({ message: "User is not a moderator" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(400).json({ message: "You aren't a moderator" });
+    }
+    subreddit.moderators.pull(moderator._id);
+    await subreddit.save();
+    res.status(200).json({ message: "Moderator removed successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error removing moderator", error: error.message });
+  }
+};
 module.exports = {
   createCommunity,
   addRule,
@@ -2659,4 +2692,5 @@ module.exports = {
   forcedRemove,
   getFavouriteCommunities,
   getSubredditType,
+  removeModerator,
 };
