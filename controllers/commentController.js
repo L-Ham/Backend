@@ -496,6 +496,12 @@ const commentSearch = async (req, res, next) => {
         if (userAvatarId) {
           userAvatar = await UserUploadModel.findById(userAvatarId);
         }
+        let userBannerId = comment.userId.bannerImage;
+        let userBanner;
+        if (userBannerId) {
+          userBanner = await UserUploadModel.findById(userBannerId);
+        }
+
         let subredditBanner = null;
         if (subredditId) {
           const bannerImageId = subreddittemp.appearance.bannerImage;
@@ -512,6 +518,7 @@ const commentSearch = async (req, res, next) => {
           userAbout: comment.userId.profileSettings.get("about") || null,
           userNickName: comment.userId.profileSettings.get("displayName") || null,
           userAvatar: userAvatarId ? userAvatar.url : null,
+          userBanner: userBannerId ? userBanner.url : null,
           userKarma: comment.userId.upvotedPosts.length - comment.userId.downvotedPosts.length,
           userCreatedAt: comment.userId.createdAt,
           postCreatedAt: comment.postId.createdAt,
@@ -620,6 +627,12 @@ const subredditCommentSearch = async (req, res, next) => {
           userAvatar = await UserUploadModel.findById(userAvatarId);
         }
 
+        let userBannerId = comment.userId.bannerImage;
+        let userBanner;
+        if (userBannerId) {
+          userBanner = await UserUploadModel.findById(userBannerId);
+        }
+
         return {
           _id: comment._id,
           postId: comment.postId._id,
@@ -628,6 +641,7 @@ const subredditCommentSearch = async (req, res, next) => {
           userAbout: comment.userId.profileSettings.get("about") || null,
           userNickName: comment.userId.profileSettings.get("displayName") || null,
           userAvatar: userAvatarId ? userAvatar.url : null,
+          userBanner: userBannerId ? userBanner.url : null,
           userKarma: comment.userId.upvotedPosts.length - comment.userId.downvotedPosts.length,
           userCreatedAt: comment.userId.createdAt,
           postCreatedAt: comment.postId.createdAt,
@@ -648,6 +662,7 @@ const subredditCommentSearch = async (req, res, next) => {
           isFriend: isFriend,
           isMember: isMember,
           subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
+          subredditcurrentlyViewingNickname: subredditId ? subreddittemp.currentlyViewingNickname : null,
           commentText: comment.text,
           commentImage: comment.images,
           commentUpvotes: comment.upvotes,
