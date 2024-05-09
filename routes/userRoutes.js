@@ -282,12 +282,14 @@ router.get(
 router.get(
   "/searchPosts",
   bodyParser.json(),
+  authenticateToken,
   userController.searchPosts
 );
 
 router.get(
   "/searchComments",
   bodyParser.json(),
+  authenticateToken,
   userController.searchComments
 );
 

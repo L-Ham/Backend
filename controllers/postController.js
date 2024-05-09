@@ -18,6 +18,16 @@ const createPost = async (req, res, next) => {
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
+  if (subRedditId != "") {
+    const subReddit = await SubReddit.findById(subRedditId);
+    if (subReddit.bannedUsers.map(user => user.userId.toString()).includes(userId)) {
+      console.log("banned user");
+      return res
+        .status(403)
+        .json({ message: "You are banned from this subreddit" });
+    }
+  }
+
   try {
     // Check if title is provided in the request body
     if (!req.body.title) {
@@ -1500,11 +1510,6 @@ const deletePost = async (req, res) => {
       const subReddit = await SubReddit.findById(post.subReddit);
       if (!subReddit) {
         return res.status(404).json({ message: "SubReddit not found" });
-      }
-      if (!subReddit.moderators.includes(req.userId)) {
-        return res
-          .status(401)
-          .json({ message: "User not authorized to delete post" });
       }
       subReddit.posts.pull(postId);
       await subReddit.save();

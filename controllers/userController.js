@@ -1739,14 +1739,19 @@ const getHistoryPosts = async (req, res, next) => {
 };
 
 const searchPosts = async (req, res) => {
+  const userId = req.userId;
   const userName = req.query.username;
   const search = req.query.search;
   const relevance = req.query.relevance;
   const top = req.query.top;
   const newest = req.query.new;
-  const mediaOnly = req.query.mediaOnly === 'true';
-  const isNSFW = req.query.isNSFW === 'true';
+  const mediaOnly = req.query.mediaOnly === "true";
+  const isNSFW = req.query.isNSFW === "true";
   try {
+    let userme;
+    if (userId) {
+      userme = await User.findById(userId);
+    }
     const user = await User.findOne({ userName: userName });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -1761,7 +1766,7 @@ const searchPosts = async (req, res) => {
           { title: { $regex: search, $options: "i" } },
           { text: { $regex: search, $options: "i" } },
         ],
-        images: { $exists: true, $ne: [] }
+        images: { $exists: true, $ne: [] },
       };
     }
 
@@ -1783,7 +1788,7 @@ const searchPosts = async (req, res) => {
           { text: { $regex: search, $options: "i" } },
         ],
         isNSFW: false,
-        images: { $exists: true, $ne: [] }
+        images: { $exists: true, $ne: [] },
       };
     }
 
@@ -1794,7 +1799,7 @@ const searchPosts = async (req, res) => {
           { title: { $regex: search, $options: "i" } },
           { text: { $regex: search, $options: "i" } },
         ],
-        isNSFW: false
+        isNSFW: false,
       };
     }
     let sort = {};
@@ -1825,9 +1830,22 @@ const searchPosts = async (req, res) => {
     const posts = await Promise.all(
       populatedPosts.map(async (post) => {
         const score = post.upvotes - post.downvotes;
+        const isFriend = userme
+          ? userme.following.includes(post.userId)
+          : false;
+        const isMember = userme
+          ? userme.communities.includes(post.subReddit)
+          : false;
         let avatarImage = null;
         if (post.user && post.user.avatarImage) {
           avatarImage = post.user.avatarImage.url;
+        }
+        let userBanner = null;
+        console.log(post.user);
+        console.log(post.user.bannerImage);
+        if (post.user && post.user.bannerImage) {
+          userBanner = post.user.bannerImage.url;
+          console.log(userBanner);
         }
         let subReddit = null;
         if (post.subReddit) {
@@ -1847,19 +1865,36 @@ const searchPosts = async (req, res) => {
             ? await UserUploadModel.findById(bannerImageId.toString())
             : null;
         }
+
         return {
           postId: post._id,
           title: post.title,
           type: post.type,
           text: post.text,
-          image: post.images && post.images.length > 0 ? post.images[0].url : null,
+          image:
+            post.images && post.images.length > 0 ? post.images[0].url : null,
           video: post.videos.url || null,
           URL: post.url,
+          postUpvotes: post.upvotes,
+          postDownvotes: post.downvotes,
           postCommentCount: post.comments.length,
+          postKarma: post.upvotes - post.downvotes,
+          postCommentKarma: post.comments.length,
+          score: score,
+          isUpvoted: post.upvotes > 0,
+          isDownvoted: post.downvotes > 0,
+          isNSFW: post.isNSFW,
+          postCreatedAt: post.createdAt,
+          userId: post.user ? post.user._id : null,
           userName: post.user ? post.user.userName : null,
           userAbout: post.user.profileSettings.get("about") || null,
+          userNickName: post.user.profileSettings.get("displayName") || null,
           userAvatarImage: avatarImage,
-          subreddit: subReddit ? subReddit.name : null,
+          userBannerImage: userBanner,
+          userKarma:
+            post.user.upvotedPosts.length - post.user.downvotedPosts.length,
+          userCreatedAt: post.user.createdAt,
+          subredditName: subReddit ? subReddit.name : null,
           subRedditId: subReddit ? subReddit._id : null,
           avatarImageSubReddit: avatarImageSubReddit
             ? avatarImageSubReddit.url
@@ -1869,12 +1904,11 @@ const searchPosts = async (req, res) => {
           subRedditMembers: subReddit ? subReddit.members.length : null,
           subRedditNickName: subReddit ? subReddit.membersNickname : null,
           subRedditCreated: subReddit ? subReddit.createdAt : null,
-          score: score,
-          isUpvoted: post.upvotes > 0,
-          isDownvoted: post.downvotes > 0,
-          commentCount: post.comments.length,
-          isNSFW: post.isNSFW,
-          createdAt: post.createdAt,
+          subredditcurrentlyViewingNickname: subReddit
+            ? subReddit.currentlyViewingNickname
+            : null,
+          isFriend: isFriend,
+          isMember: isMember,
         };
       })
     );
@@ -1891,23 +1925,28 @@ const searchPosts = async (req, res) => {
 };
 
 const searchComments = async (req, res) => {
+  const userId = req.userId;
   const userName = req.query.username;
   const search = req.query.search;
   const relevance = req.query.relevance;
   const top = req.query.top;
   const newest = req.query.new;
   try {
+    let userme;
+    if (userId) {
+      userme = await User.findById(userId);
+    }
     const user = await User.findOne({ userName: userName });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const userComments = await Comment.find({userId:user._id});
+    const userComments = await Comment.find({ userId: user._id });
     const commentIds = userComments.map((comment) => comment._id);
     let query = {};
     if (search) {
       query = {
         _id: { $in: commentIds },
-        text: {$regex: search, $options: "i"} 
+        text: { $regex: search, $options: "i" },
       };
     }
     let sort = {};
@@ -1935,6 +1974,12 @@ const searchComments = async (req, res) => {
       populatedComments.map(async (comment) => {
         const score = comment.upvotes - comment.downvotes;
         const subredditId = comment.postId.subReddit;
+        const isFriend = userme
+          ? userme.following.includes(comment.userId)
+          : false;
+        const isMember = userme
+          ? userme.communities.includes(comment.postId.subReddit)
+          : false;
         let subreddittemp;
         let subredditAvatarId;
         let subredditAvatar;
@@ -1957,6 +2002,11 @@ const searchComments = async (req, res) => {
         if (userAvatarId) {
           userAvatar = await UserUploadModel.findById(userAvatarId);
         }
+        let userBannerId = comment.userId.bannerImage;
+        let userBanner;
+        if (userBannerId) {
+          userBanner = await UserUploadModel.findById(userBannerId);
+        }
 
         return {
           _id: comment._id,
@@ -1964,7 +2014,14 @@ const searchComments = async (req, res) => {
           userId: comment.userId._id,
           userName: comment.userId.userName,
           userAbout: comment.userId.profileSettings.get("about") || null,
+          userNickName:
+            comment.userId.profileSettings.get("displayName") || null,
           userAvatar: userAvatarId ? userAvatar.url : null,
+          userBanner: userBannerId ? userBanner.url : null,
+          userKarma:
+            comment.userId.upvotedPosts.length -
+            comment.userId.downvotedPosts.length,
+          userCreatedAt: comment.userId.createdAt,
           postCreatedAt: comment.postId.createdAt,
           postTitle: comment.postId.title,
           postText: comment.postId.text,
@@ -1972,17 +2029,24 @@ const searchComments = async (req, res) => {
           postDownvotes: comment.postId.downvotes,
           postCommentCount: comment.postId.comments.length,
           score: score,
+          subredditId: subredditId,
           subRedditName: subredditId ? subreddittemp.name : null,
           subRedditAvatar: subredditAvatarId ? subredditAvatar.url : null,
           subRedditBanner: subredditBanner ? subredditBanner.url : null,
           subRedditDescription: subredditId ? subreddittemp.description : null,
           subRedditMembers: subredditId ? subreddittemp.members.length : null,
+          isFriend: isFriend,
+          isMember: isMember,
           subRedditNickName: subredditId ? subreddittemp.membersNickname : null,
           subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
+          subredditcurrentlyViewingNickname: subredditId
+            ? subreddittemp.currentlyViewingNickname
+            : null,
           commentText: comment.text,
           commentImage: comment.images,
           commentUpvotes: comment.upvotes,
           commentDownvotes: comment.downvotes,
+          commentKarma: comment.upvotes - comment.downvotes,
           commentCreatedAt: comment.createdAt,
         };
       })
@@ -2017,8 +2081,7 @@ const getUserDetails = async (req, res) => {
       About: user.profileSettings.get("about") || null,
     };
     res.status(200).json({ user: response });
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({ message: "Error retrieving user" });
   }
 };
