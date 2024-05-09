@@ -1739,6 +1739,7 @@ const getHistoryPosts = async (req, res, next) => {
 };
 
 const searchPosts = async (req, res) => {
+  const userId = req.userId;
   const userName = req.query.username;
   const search = req.query.search;
   const relevance = req.query.relevance;
@@ -1747,6 +1748,10 @@ const searchPosts = async (req, res) => {
   const mediaOnly = req.query.mediaOnly === 'true';
   const isNSFW = req.query.isNSFW === 'true';
   try {
+    let userme;
+    if (userId) {
+      userme = await User.findById(userId);
+    }
     const user = await User.findOne({ userName: userName });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -1829,6 +1834,10 @@ const searchPosts = async (req, res) => {
         if (post.user && post.user.avatarImage) {
           avatarImage = post.user.avatarImage.url;
         }
+        let userBanner = null;
+        if (post.user && post.user.bannerImage) {
+          userBanner = post.user.bannerImage.url;
+        }
         let subReddit = null;
         if (post.subReddit) {
           subReddit = await SubReddit.findById(post.subReddit);
@@ -1847,6 +1856,7 @@ const searchPosts = async (req, res) => {
             ? await UserUploadModel.findById(bannerImageId.toString())
             : null;
         }
+        
         return {
           postId: post._id,
           title: post.title,
@@ -1859,6 +1869,7 @@ const searchPosts = async (req, res) => {
           userName: post.user ? post.user.userName : null,
           userAbout: post.user.profileSettings.get("about") || null,
           userAvatarImage: avatarImage,
+          userBannerImage: userBanner,
           subreddit: subReddit ? subReddit.name : null,
           subRedditId: subReddit ? subReddit._id : null,
           avatarImageSubReddit: avatarImageSubReddit
@@ -1964,6 +1975,11 @@ const searchComments = async (req, res) => {
         if (userAvatarId) {
           userAvatar = await UserUploadModel.findById(userAvatarId);
         }
+        let userBannerId = comment.userId.bannerImage;
+        let userBanner;
+        if (userBannerId) {
+          userBanner = await UserUploadModel.findById(userBannerId);
+        }
 
         return {
           _id: comment._id,
@@ -1973,6 +1989,7 @@ const searchComments = async (req, res) => {
           userAbout: comment.userId.profileSettings.get("about") || null,
           userNickName: comment.userId.profileSettings.get("displayName") || null,
           userAvatar: userAvatarId ? userAvatar.url : null,
+          userBanner: userBannerId ? userBanner.url : null,
           userKarma: comment.userId.upvotedPosts.length - comment.userId.downvotedPosts.length,
           userCreatedAt: comment.userId.createdAt,
           postCreatedAt: comment.postId.createdAt,
