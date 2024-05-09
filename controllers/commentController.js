@@ -109,10 +109,11 @@ const createComment = async (req, res, next) => {
       parentComment.replies.push(savedComment._id);
       await parentComment.save();
     }
-
-    post.comments.push(savedComment._id);
-    post.commentCount += 1;
-    await post.save();
+    if(!req.body.parentCommentId){
+      post.comments.push(savedComment._id);
+      post.commentCount += 1;
+      await post.save();
+    }
 
     user.comments.push(savedComment._id);
     await user.save();
@@ -555,7 +556,7 @@ const commentSearch = async (req, res, next) => {
     } else if (newest === true) {
       sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedComments = comments.sort((a, b) => (b.upvotes * b.downvotes) - (a.upvotes * a.downvotes));
     }
     res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {
@@ -686,7 +687,7 @@ const subredditCommentSearch = async (req, res, next) => {
     } else if (newest === true) {
       sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedComments = comments.sort((a, b) => (b.upvotes * b.downvotes) - (a.upvotes * a.downvotes));
     }
     res.status(200).json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {

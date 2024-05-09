@@ -2077,11 +2077,7 @@ const searchComments = async (req, res) => {
       sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
       sortedComments = comments.sort(
-        (a, b) =>
-          b.upvotes -
-          b.downvotes +
-          b.comments.length -
-          (a.upvotes - a.downvotes + a.comments.length)
+        (a, b) => b.upvotes * b.downvotes - a.upvotes * a.downvotes
       );
     }
     res

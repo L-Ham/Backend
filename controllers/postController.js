@@ -1023,14 +1023,17 @@ const markAsSpoiler = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (post.user.toString() !== userId) {
-      return res
-        .status(401)
-        .json({ message: "User not authorized to mark post as spoiler" });
-    }
+    
     if (post.subReddit) {
       const postSubreddit = await SubReddit.findById(post.subReddit);
       if (!postSubreddit.moderators.includes(userId)) {
+        return res
+          .status(401)
+          .json({ message: "User not authorized to mark post as spoiler" });
+      }
+    }
+    else{
+      if (post.user.toString() !== userId) {
         return res
           .status(401)
           .json({ message: "User not authorized to mark post as spoiler" });
@@ -1060,14 +1063,17 @@ const unmarkAsSpoiler = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (post.user.toString() !== userId) {
-      return res
-        .status(401)
-        .json({ message: "User not authorized to unmark post as spoiler" });
-    }
+    
     if (post.subReddit) {
       const postSubreddit = await SubReddit.findById(post.subReddit);
       if (!postSubreddit.moderators.includes(userId)) {
+        return res
+          .status(401)
+          .json({ message: "User not authorized to unmark post as spoiler" });
+      }
+    }
+    else{
+      if (post.user.toString() !== userId) {
         return res
           .status(401)
           .json({ message: "User not authorized to unmark post as spoiler" });
@@ -1208,6 +1214,19 @@ const scheduledPost = async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) {
     return res.status(404).json({ message: "User not found" });
+  }
+  if (subRedditId) {
+    const subReddit = await SubReddit.findById(subRedditId);
+    if (
+      subReddit.bannedUsers
+        .map((user) => user.userId.toString())
+        .includes(userId)
+    ) {
+      console.log("banned user");
+      return res
+        .status(403)
+        .json({ message: "You are banned from this subreddit" });
+    }
   }
   try {
     // Check if title is provided in the request body
@@ -1445,6 +1464,9 @@ const getAllPosts = async (req, res) => {
           creator.avatarImage
         );
         const subredditName = subreddit ? subreddit.name : null;
+        const subredditAvatar = subreddit && subreddit.appearance.avatarImage 
+        ? await UserUploadModel.findById(subreddit.appearance.avatarImage)
+        : null;
         const isUpvoted = !userId
           ? false
           : post.upvotedUsers.includes(user._id);
@@ -1464,6 +1486,7 @@ const getAllPosts = async (req, res) => {
           creatorUsername,
           creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
           subredditName,
+          subredditAvatar: subredditAvatar ? subredditAvatar.url : null,
           isUpvoted,
           isDownvoted,
           isSaved,
@@ -1701,7 +1724,7 @@ const searchPosts = async (req, res) => {
     } else if (newest === true) {
       sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes + b.comments.length) - (a.upvotes - a.downvotes + a.comments.length));
     }
     res.status(200).json({
       message: "Posts retrieved successfully",
@@ -1883,7 +1906,7 @@ const subredditPostSearch = async (req, res) => {
     } else if (newest === true) {
       sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes + b.comments.length) - (a.upvotes - a.downvotes + a.comments.length));
     }
     res.status(200).json({
       message: "Posts retrieved successfully",
