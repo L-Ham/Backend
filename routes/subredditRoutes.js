@@ -335,4 +335,10 @@ router.patch(
   authenticateToken,
   subredditController.changeSubredditType
 )
+router.patch(
+  "/forcedApproved",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.forceApproveUser
+)
 module.exports = router;

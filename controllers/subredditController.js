@@ -1091,6 +1091,34 @@ const approveUser = async (req, res, next) => {
       .json({ message: "Error approving user", error: error.message });
   }
 };
+const forceApproveUser = async (req, res, next) => {
+  const userId = req.userId;
+  const subredditName = req.body.subredditName;
+  const userName = req.body.userName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+
+    const user = await User.findOne({ userName: userName });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    subreddit.members.push(user._id);
+    user.communities.push(subreddit._id);
+    await subreddit.save();
+    await user.save();
+
+    res.json({ message: "User approved successfully" });
+
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error approving user", error: error.message });
+  }
+};
 
 const UnapproveUser = async (req, res, next) => {
   const userId = req.userId;
@@ -2396,4 +2424,5 @@ module.exports = {
   getScheduledPosts,
   getRemovedPosts,
   changeSubredditType,
+  forceApproveUser
 };
