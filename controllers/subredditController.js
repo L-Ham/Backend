@@ -986,7 +986,7 @@ const suggestSubreddit = async (req, res, next) => {
     if (subredditsNotJoined.length > 0) {
       const randomSubreddit =
         subredditsNotJoined[
-          Math.floor(Math.random() * subredditsNotJoined.length)
+        Math.floor(Math.random() * subredditsNotJoined.length)
         ];
       const avatarImage = await UserUploadModel.findById(
         randomSubreddit.appearance.avatarImage
@@ -2369,6 +2369,39 @@ const changeSubredditType = async (req, res) => {
   }
 };
 
+const forcedRemove = async (req, res) => {
+  const userId = req.userId;
+  const subredditName = req.body.subredditName;
+  const userName = req.body.userName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const moderator = await User.findById(userId);
+    if (!moderator) {
+      return res.status(404).json({ message: "User is not Allowed to Approve" });
+    }
+    const user = await User.findOne({ userName: userName });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    subreddit.members.pop(user._id);
+    user.communities.pop(subreddit._id);
+    await subreddit.save();
+    await user.save();
+
+    res.json({ message: "User removed successfully" });
+
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error removing user", error: error.message });
+  }
+};
+
+
 module.exports = {
   createCommunity,
   addRule,
@@ -2424,5 +2457,6 @@ module.exports = {
   getScheduledPosts,
   getRemovedPosts,
   changeSubredditType,
-  forceApproveUser
+  forceApproveUser,
+  forcedRemove
 };

@@ -341,4 +341,12 @@ router.patch(
   authenticateToken,
   subredditController.forceApproveUser
 )
+
+router.patch(
+  "/user/forcedRemove",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.forcedRemove
+)
+
 module.exports = router;
