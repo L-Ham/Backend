@@ -1511,11 +1511,6 @@ const deletePost = async (req, res) => {
       if (!subReddit) {
         return res.status(404).json({ message: "SubReddit not found" });
       }
-      if (!subReddit.moderators.includes(req.userId)) {
-        return res
-          .status(401)
-          .json({ message: "User not authorized to delete post" });
-      }
       subReddit.posts.pull(postId);
       await subReddit.save();
     } else {
