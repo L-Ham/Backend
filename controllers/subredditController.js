@@ -1084,6 +1084,7 @@ const approveUser = async (req, res, next) => {
     subreddit.members.push(user._id);
     user.communities.push(subreddit._id);
     await subreddit.save();
+    await user.save();
     res.json({ message: "User approved successfully" });
   } catch (error) {
     res
