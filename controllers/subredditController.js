@@ -1376,10 +1376,10 @@ const getSubredditFeed = async (req, res) => {
     if (userId) {
       user = await User.findById(userId);
     }
-    const query = Post.find({ 
+    const query = Post.find({
       subReddit: subreddit._id,
-      _id: { $nin: subreddit.removedPosts }
-    });    
+      _id: { $nin: subreddit.removedPosts },
+    });
     const result = await PostServices.paginatePosts(
       query,
       page,
@@ -2447,6 +2447,34 @@ const getFavouriteCommunities = async (req, res) => {
     .json({ message: "Favourite communities retrieved", communities });
 };
 
+const removeModerator = async (req, res) => {
+  const userId = req.userId;
+  const subredditName = req.body.subredditName;
+  const moderatorName = req.body.moderatorName;
+  try {
+    const subreddit = await SubReddit.findOne({ name: subredditName });
+    if (!subreddit) {
+      return res.status(404).json({ message: "Subreddit not found" });
+    }
+    const moderator = await User.findOne({ userName: moderatorName });
+    if (!moderator) {
+      return res.status(404).json({ message: "Moderator not found" });
+    }
+    if (!subreddit.moderators.includes(moderator._id)) {
+      return res.status(400).json({ message: "User is not a moderator" });
+    }
+    if (!subreddit.moderators.includes(userId)) {
+      return res.status(400).json({ message: "You aren't a moderator" });
+    }
+    subreddit.moderators.pull(moderator._id);
+    await subreddit.save();
+    res.status(200).json({ message: "Moderator removed successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error removing moderator", error: error.message });
+  }
+};
 module.exports = {
   createCommunity,
   addRule,
@@ -2506,4 +2534,5 @@ module.exports = {
   forcedRemove,
   getFavouriteCommunities,
   getSubredditType,
+  removeModerator,
 };
