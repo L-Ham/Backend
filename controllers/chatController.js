@@ -118,7 +118,8 @@ const sendMessage = async (req, res) => {
     } else if (conversation.type === "group") {
       for (let participant of conversation.participants) {
         if (participant == sender.userName) continue;
-        const participantSocketId = getReceiverSocketId(participant);
+        const participantUser = await User.findOne({ userName: participant });
+        const participantSocketId = getReceiverSocketId(participantUser._id);
         if (participantSocketId) {
           io.to(participantSocketId).emit("newMessage", newMessage);
         } else {

@@ -1605,7 +1605,6 @@ const getUserSelfInfo = async (req, res, next) => {
     const bannerImageId = user.bannerImage;
     const avatarImage = await UserUploadModel.findById(avatarImageId);
     const bannerImage = await UserUploadModel.findById(bannerImageId);
-    console.log(user.profileSettings.get("about"));
     const response = {
       userId: user._id,
       displayName: user.profileSettings.get("displayName") || null,
@@ -1738,6 +1737,261 @@ const getHistoryPosts = async (req, res, next) => {
   }
 };
 
+const searchPosts = async (req, res) => {
+  const userName = req.query.username;
+  const search = req.query.search;
+  const relevance = req.query.relevance;
+  const top = req.query.top;
+  const newest = req.query.new;
+  const mediaOnly = req.query.mediaOnly === 'true';
+  const isNSFW = req.query.isNSFW === 'true';
+  try {
+    const user = await User.findOne({ userName: userName });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const userPosts = await Post.find({ user: user._id });
+    const postIds = userPosts.map((post) => post._id);
+    let query = {};
+    if (mediaOnly === true && isNSFW === true) {
+      query = {
+        _id: { $in: postIds },
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { text: { $regex: search, $options: "i" } },
+        ],
+        images: { $exists: true, $ne: [] }
+      };
+    }
+
+    if (mediaOnly === false && isNSFW === true) {
+      query = {
+        _id: { $in: postIds },
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { text: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+
+    if (mediaOnly === true && isNSFW === false) {
+      query = {
+        _id: { $in: postIds },
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { text: { $regex: search, $options: "i" } },
+        ],
+        isNSFW: false,
+        images: { $exists: true, $ne: [] }
+      };
+    }
+
+    if (mediaOnly === false && isNSFW === false) {
+      query = {
+        _id: { $in: postIds },
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { text: { $regex: search, $options: "i" } },
+        ],
+        isNSFW: false
+      };
+    }
+    let sort = {};
+    if (relevance || top) {
+      sort.upvotes = -1;
+    }
+    if (newest) {
+      sort.createdAt = -1;
+    }
+    const populatedPosts = await Post.find(query)
+      .sort(sort)
+      .populate({
+        path: "user",
+        model: "user",
+        populate: {
+          path: "avatarImage",
+          model: "userUploads",
+        },
+      })
+      .populate({
+        path: "images",
+        model: "userUploads",
+      })
+      .populate({
+        path: "videos",
+        model: "userUploads",
+      });
+    const posts = await Promise.all(
+      populatedPosts.map(async (post) => {
+        const score = post.upvotes - post.downvotes;
+        let avatarImage = null;
+        if (post.user && post.user.avatarImage) {
+          avatarImage = post.user.avatarImage.url;
+        }
+        let subReddit = null;
+        if (post.subReddit) {
+          subReddit = await SubReddit.findById(post.subReddit);
+        }
+        let avatarImageSubReddit = null;
+        if (subReddit) {
+          const avatarImageId = subReddit.appearance.avatarImage;
+          avatarImageSubReddit = avatarImageId
+            ? await UserUploadModel.findById(avatarImageId.toString())
+            : null;
+        }
+        let subredditBanner = null;
+        if (subReddit) {
+          const bannerImageId = subReddit.appearance.bannerImage;
+          subredditBanner = bannerImageId
+            ? await UserUploadModel.findById(bannerImageId.toString())
+            : null;
+        }
+        return {
+          postId: post._id,
+          title: post.title,
+          type: post.type,
+          text: post.text,
+          image: post.images && post.images.length > 0 ? post.images[0].url : null,
+          video: post.videos.url || null,
+          URL: post.url,
+          postCommentCount: post.comments.length,
+          userName: post.user ? post.user.userName : null,
+          userAbout: post.user.profileSettings.get("about") || null,
+          userAvatarImage: avatarImage,
+          subreddit: subReddit ? subReddit.name : null,
+          subRedditId: subReddit ? subReddit._id : null,
+          avatarImageSubReddit: avatarImageSubReddit
+            ? avatarImageSubReddit.url
+            : null,
+          subredditBanner: subredditBanner ? subredditBanner.url : null,
+          subRedditDescription: subReddit ? subReddit.description : null,
+          subRedditMembers: subReddit ? subReddit.members.length : null,
+          subRedditNickName: subReddit ? subReddit.membersNickname : null,
+          subRedditCreated: subReddit ? subReddit.createdAt : null,
+          score: score,
+          isUpvoted: post.upvotes > 0,
+          isDownvoted: post.downvotes > 0,
+          commentCount: post.comments.length,
+          isNSFW: post.isNSFW,
+          createdAt: post.createdAt,
+        };
+      })
+    );
+    res.status(200).json({
+      message: "Posts retrieved successfully",
+      posts: posts,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error searching posts",
+      error: err.message,
+    });
+  }
+};
+
+const searchComments = async (req, res) => {
+  const userName = req.query.username;
+  const search = req.query.search;
+  const relevance = req.query.relevance;
+  const top = req.query.top;
+  const newest = req.query.new;
+  try {
+    const user = await User.findOne({ userName: userName });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const userComments = await Comment.find({userId:user._id});
+    const commentIds = userComments.map((comment) => comment._id);
+    let query = {};
+    if (search) {
+      query = {
+        _id: { $in: commentIds },
+        text: {$regex: search, $options: "i"} 
+      };
+    }
+    let sort = {};
+    if (relevance || top) {
+      sort.upvotes = -1;
+    }
+    if (newest) {
+      sort.createdAt = -1;
+    }
+    const populatedComments = await Comment.find(query)
+      .sort(sort)
+      .populate({
+        path: "userId",
+        model: "user",
+      })
+      .populate({
+        path: "images",
+        model: "userUploads",
+      })
+      .populate({
+        path: "postId",
+        model: "post",
+      });
+    const comments = await Promise.all(
+      populatedComments.map(async (comment) => {
+        const score = comment.upvotes - comment.downvotes;
+        const subredditId = comment.postId.subReddit;
+        let subreddittemp;
+        let subredditAvatarId;
+        let subredditAvatar;
+        if (subredditId) {
+          subreddittemp = await SubReddit.findById(subredditId);
+          subredditAvatarId = subreddittemp.appearance.avatarImage;
+          if (subredditAvatarId) {
+            subredditAvatar = await UserUploadModel.findById(subredditAvatarId);
+          }
+        }
+        let subredditBanner = null;
+        if (subredditId) {
+          const bannerImageId = subreddittemp.appearance.bannerImage;
+          subredditBanner = bannerImageId
+            ? await UserUploadModel.findById(bannerImageId.toString())
+            : null;
+        }
+        let userAvatarId = comment.userId.avatarImage;
+        let userAvatar;
+        if (userAvatarId) {
+          userAvatar = await UserUploadModel.findById(userAvatarId);
+        }
+
+        return {
+          _id: comment._id,
+          postId: comment.postId._id,
+          userId: comment.userId._id,
+          userName: comment.userId.userName,
+          userAbout: comment.userId.profileSettings.get("about") || null,
+          userAvatar: userAvatarId ? userAvatar.url : null,
+          postCreatedAt: comment.postId.createdAt,
+          postTitle: comment.postId.title,
+          postText: comment.postId.text,
+          postUpvotes: comment.postId.upvotes,
+          postDownvotes: comment.postId.downvotes,
+          postCommentCount: comment.postId.comments.length,
+          score: score,
+          subRedditName: subredditId ? subreddittemp.name : null,
+          subRedditAvatar: subredditAvatarId ? subredditAvatar.url : null,
+          subRedditBanner: subredditBanner ? subredditBanner.url : null,
+          subRedditDescription: subredditId ? subreddittemp.description : null,
+          subRedditMembers: subredditId ? subreddittemp.members.length : null,
+          subRedditNickName: subredditId ? subreddittemp.membersNickname : null,
+          subRedditCreatedAt: subredditId ? subreddittemp.createdAt : null,
+          commentText: comment.text,
+          commentImage: comment.images,
+          commentUpvotes: comment.upvotes,
+          commentDownvotes: comment.downvotes,
+          commentCreatedAt: comment.createdAt,
+        };
+      })
+    );
+    res.status(200).json({ message: "Comments fetched", comments: comments });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching comments", error: err });
+  }
+};
+
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -1786,4 +2040,6 @@ module.exports = {
   getCommunitiesInfo,
   getNotifications,
   getHistoryPosts,
+  searchPosts,
+  searchComments,
 };

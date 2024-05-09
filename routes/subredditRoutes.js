@@ -322,17 +322,36 @@ router.get(
   bodyParser.json(),
   authenticateToken,
   subredditController.getScheduledPosts
-)
+);
 router.get(
   "/removedPosts",
   bodyParser.json(),
   authenticateToken,
   subredditController.getRemovedPosts
-)
+);
 router.patch(
   "/type",
   bodyParser.json(),
   authenticateToken,
   subredditController.changeSubredditType
-)
+);
+router.patch(
+  "/user/forcedApproved",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.forceApproveUser
+);
+
+router.patch(
+  "/user/forcedRemove",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.forcedRemove
+);
+router.get(
+  "/user/favourite",
+  bodyParser.json(),
+  authenticateToken,
+  subredditController.getFavouriteCommunities
+);
 module.exports = router;
