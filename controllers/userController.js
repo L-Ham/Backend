@@ -1915,11 +1915,19 @@ const searchPosts = async (req, res) => {
     );
     let sortedPosts = posts;
     if (relevance === true) {
-      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+      sortedPosts = posts.sort(
+        (a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
+      );
     } else if (newest === true) {
       sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedPosts = posts.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedPosts = posts.sort(
+        (a, b) =>
+          b.upvotes -
+          b.downvotes +
+          b.comments.length -
+          (a.upvotes - a.downvotes + a.comments.length)
+      );
     }
     res.status(200).json({
       message: "Posts retrieved successfully",
@@ -2062,15 +2070,27 @@ const searchComments = async (req, res) => {
     );
     let sortedComments = comments;
     if (relevance === true) {
-      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
+      sortedComments = comments.sort(
+        (a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
+      );
     } else if (newest === true) {
       sortedComments = comments.sort((a, b) => b.createdAt - a.createdAt);
     } else if (top === true) {
-      sortedComments = comments.sort((a, b) => (b.upvotes - b.downvotes) + b.comments.length - ((a.upvotes - a.downvotes) + a.comments.length));
+      sortedComments = comments.sort(
+        (a, b) =>
+          b.upvotes -
+          b.downvotes +
+          b.comments.length -
+          (a.upvotes - a.downvotes + a.comments.length)
+      );
     }
-    res.status(200).json({ message: "Comments fetched", comments: sortedComments });
+    res
+      .status(200)
+      .json({ message: "Comments fetched", comments: sortedComments });
   } catch (err) {
-    res.status(500).json({ message: "Error fetching comments", error: err });
+    res
+      .status(500)
+      .json({ message: "Error fetching comments", error: err.message });
   }
 };
 
