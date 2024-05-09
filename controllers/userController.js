@@ -1186,6 +1186,7 @@ const getUserComments = async (req, res) => {
         }
         const commentObj = {
           commentId: comment._id,
+          content: comment.text,
           subredditName: subreddit ? subreddit.name : null,
           postTitle: post ? post.title : null,
           postId: comment.postId,
