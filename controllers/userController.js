@@ -1992,6 +1992,36 @@ const searchComments = async (req, res) => {
   }
 };
 
+const getUserDetails = async (req, res) => {
+  const username = req.query.username;
+  try {
+    const user = await User.findOne({ userName: username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const createdSeconds = Math.floor(user.createdAt.getTime() / 1000);
+    const avatarImageId = user.avatarImage;
+    const bannerImageId = user.bannerImage;
+    const avatarImage = await UserUploadModel.findById(avatarImageId);
+    const bannerImage = await UserUploadModel.findById(bannerImageId);
+    const response = {
+      userId: user._id,
+      displayName: user.profileSettings.get("displayName") || null,
+      username: user.userName,
+      commentKarma: user.upvotedComments.length - user.downvotedComments.length,
+      created: createdSeconds,
+      postKarma: user.upvotedPosts.length - user.downvotedPosts.length,
+      avatar: avatarImage ? avatarImage.url : null,
+      banner: bannerImage ? bannerImage.url : null,
+      About: user.profileSettings.get("about") || null,
+    };
+    res.status(200).json({ user: response });
+  }
+  catch (err) {
+    res.status(500).json({ message: "Error retrieving user" });
+  }
+};
+
 module.exports = {
   getAccountSettings,
   getNotificationSettings,
@@ -2042,4 +2072,5 @@ module.exports = {
   getHistoryPosts,
   searchPosts,
   searchComments,
+  getUserDetails,
 };

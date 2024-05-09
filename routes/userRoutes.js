@@ -290,4 +290,11 @@ router.get(
   bodyParser.json(),
   userController.searchComments
 );
+
+router.get(
+  "/details",
+  bodyParser.json(),
+  userController.getUserDetails
+);
+
 module.exports = router;
