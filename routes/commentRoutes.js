@@ -64,6 +64,7 @@ router.get(
 router.get(
   "/searchComments",
   bodyParser.json(),
+  authenticateToken,
   commentController.commentSearch
 );
 
