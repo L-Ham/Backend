@@ -1458,6 +1458,9 @@ const getAllPosts = async (req, res) => {
           creator.avatarImage
         );
         const subredditName = subreddit ? subreddit.name : null;
+        const subredditAvatar = subreddit && subreddit.appearance.avatarImage 
+        ? await UserUploadModel.findById(subreddit.appearance.avatarImage)
+        : null;
         const isUpvoted = !userId
           ? false
           : post.upvotedUsers.includes(user._id);
@@ -1477,6 +1480,7 @@ const getAllPosts = async (req, res) => {
           creatorUsername,
           creatorAvatar: creatorAvatar ? creatorAvatar.url : null,
           subredditName,
+          subredditAvatar: subredditAvatar ? subredditAvatar.url : null,
           isUpvoted,
           isDownvoted,
           isSaved,
