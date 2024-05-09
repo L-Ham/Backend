@@ -1479,6 +1479,46 @@ const getReportedPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
+        let disapprovedByUserame, approvedByUserame;
+        let disapprovedByAvatarImageUrl, approvedByAvatarImageUrl;
+        
+        if(post.disapprovedBy)
+      {
+          
+           const disapprovedBy = await User.findById(post.disapprovedBy);
+           disapprovedByUserame = disapprovedBy.userName;
+
+          
+        if(disapprovedBy.avatarImage!=null){
+          const disapprovedByAvatarImage = await UserUploadModel.findById(disapprovedBy.avatarImage);
+           disapprovedByAvatarImageUrl = disapprovedByAvatarImage.url;
+        }
+        else{
+           disapprovedByAvatarImageUrl = null;
+        }
+      }
+      else{
+         disapprovedByAvatarImageUrl = null;
+         disapprovedByUserame = null;
+      }
+
+      if(post.approvedBy!=null)
+      {
+        const approvedBy= await User.findById(post.approvedBy);
+         approvedByUserame = approvedBy.userName;
+         console.log(approvedByUserame, approvedBy.avatarImage)
+        if(approvedBy.avatarImage!=null){
+           const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
+           approvedByAvatarImageUrl = approvedByAvatarImage.url;
+        }
+        else{
+           approvedByAvatarImageUrl = null;
+        }	
+      }
+      else{
+         approvedByAvatarImageUrl = null;
+         approvedByUserame = null;
+      }
         let imageUrls, videoUrls;
         const isSaved = user.savedPosts.includes(post._id);
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
@@ -1489,6 +1529,7 @@ const getReportedPosts = async (req, res) => {
         if (post.type === "video") {
           videoUrls = await PostServices.getVideosUrls(post.videos);
         }
+        
         const postObj = {
           ...post._doc,
           subredditName: subreddit ? subreddit.name : null,
@@ -1498,6 +1539,10 @@ const getReportedPosts = async (req, res) => {
           videoUrls,
           spammedByUsernames,
           isSaved,
+          disapprovedByUserame,
+          approvedByUserame,
+          disapprovedByAvatarImageUrl,	
+          approvedByAvatarImageUrl,
         };
         delete postObj.images;
         delete postObj.videos;
@@ -1548,6 +1593,46 @@ const getEditedPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
+        let disapprovedByUserame, approvedByUserame;
+        let disapprovedByAvatarImageUrl, approvedByAvatarImageUrl;
+        
+        if(post.disapprovedBy)
+      {
+          
+           const disapprovedBy = await User.findById(post.disapprovedBy);
+           disapprovedByUserame = disapprovedBy.userName;
+
+          
+        if(disapprovedBy.avatarImage!=null){
+          const disapprovedByAvatarImage = await UserUploadModel.findById(disapprovedBy.avatarImage);
+           disapprovedByAvatarImageUrl = disapprovedByAvatarImage.url;
+        }
+        else{
+           disapprovedByAvatarImageUrl = null;
+        }
+      }
+      else{
+         disapprovedByAvatarImageUrl = null;
+         disapprovedByUserame = null;
+      }
+
+      if(post.approvedBy!=null)
+      {
+        const approvedBy= await User.findById(post.approvedBy);
+         approvedByUserame = approvedBy.userName;
+         console.log(approvedByUserame, approvedBy.avatarImage)
+        if(approvedBy.avatarImage!=null){
+           const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
+           approvedByAvatarImageUrl = approvedByAvatarImage.url;
+        }
+        else{
+           approvedByAvatarImageUrl = null;
+        }	
+      }
+      else{
+         approvedByAvatarImageUrl = null;
+         approvedByUserame = null;
+      }
         let imageUrls, videoUrls;
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
         const spammedByUsernames = spammedBy.map((user) => user.userName);
@@ -1568,6 +1653,10 @@ const getEditedPosts = async (req, res) => {
           videoUrls,
           spammedByUsernames,
           isSaved,
+          disapprovedByUserame,
+          approvedByUserame,
+          disapprovedByAvatarImageUrl,
+          approvedByAvatarImageUrl,
         };
         delete postObj.images;
         delete postObj.videos;
@@ -1622,6 +1711,25 @@ const getUnmoderatedPosts = async (req, res) => {
       result.slicedArray.map(async (post) => {
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
+       
+
+      if(post.approvedBy!=null)
+      {
+        const approvedBy= await User.findById(post.approvedBy);
+         approvedByUserame = approvedBy.userName;
+         console.log(approvedByUserame, approvedBy.avatarImage)
+        if(approvedBy.avatarImage!=null){
+           const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
+           approvedByAvatarImageUrl = approvedByAvatarImage.url;
+        }
+        else{
+           approvedByAvatarImageUrl = null;
+        }	
+      }
+      else{
+         approvedByAvatarImageUrl = null;
+         approvedByUserame = null;
+      }
         let imageUrls, videoUrls;
         const spammedBy = await User.find({ _id: { $in: post.spammedBy } });
         const spammedByUsernames = spammedBy.map((user) => user.userName);
@@ -1642,6 +1750,7 @@ const getUnmoderatedPosts = async (req, res) => {
           videoUrls,
           spammedByUsernames,
           isSaved,
+
         };
         delete postObj.images;
         delete postObj.videos;
@@ -1688,6 +1797,47 @@ const getRemovedPosts = async (req, res) => {
     }
     const postsWithVoteStatus = await Promise.all(
       result.slicedArray.map(async (post) => {
+        let disapprovedByUserame, approvedByUserame;
+        let disapprovedByAvatarImageUrl, approvedByAvatarImageUrl;
+        
+        if(post.disapprovedBy)
+      {
+          
+           const disapprovedBy = await User.findById(post.disapprovedBy);
+           disapprovedByUserame = disapprovedBy.userName;
+
+          
+        if(disapprovedBy.avatarImage!=null){
+          const disapprovedByAvatarImage = await UserUploadModel.findById(disapprovedBy.avatarImage);
+           disapprovedByAvatarImageUrl = disapprovedByAvatarImage.url;
+        }
+        else{
+           disapprovedByAvatarImageUrl = null;
+        }
+      }
+      else{
+         disapprovedByAvatarImageUrl = null;
+         disapprovedByUserame = null;
+      }
+
+      if(post.approvedBy!=null)
+      {
+        const approvedBy= await User.findById(post.approvedBy);
+         approvedByUserame = approvedBy.userName;
+         console.log(approvedByUserame, approvedBy.avatarImage)
+        if(approvedBy.avatarImage!=null){
+           const approvedByAvatarImage = await UserUploadModel.findById(approvedBy.avatarImage);
+           approvedByAvatarImageUrl = approvedByAvatarImage.url;
+        }
+        else{
+           approvedByAvatarImageUrl = null;
+        }	
+      }
+      else{
+         approvedByAvatarImageUrl = null;
+         approvedByUserame = null;
+      }
+
         const isUpvoted = post.upvotedUsers.includes(user._id);
         const isDownvoted = post.downvotedUsers.includes(user._id);
         let imageUrls, videoUrls;
@@ -1710,6 +1860,10 @@ const getRemovedPosts = async (req, res) => {
           videoUrls,
           spammedByUsernames,
           isSaved,
+          disapprovedByUserame,
+          approvedByUserame,
+          disapprovedByAvatarImageUrl,
+          approvedByAvatarImageUrl,
         };
         delete postObj.images;
         delete postObj.videos;
