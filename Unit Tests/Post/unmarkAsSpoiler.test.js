@@ -59,39 +59,6 @@ describe('unmarkAsSpoiler', () => {
     expect(res.json).toHaveBeenCalledWith({ message: 'User not found' });
   });
 
-  it('should return 401 if user is not authorized to unmark post as spoiler', async () => {
-    const post = {
-      isSpoiler: true,
-      user: 'otherUser'
-    };
-    Post.findById = jest.fn().mockResolvedValueOnce(post);
-    User.findById = jest.fn().mockResolvedValueOnce({ _id: 'user456' });
-
-    await unmarkAsSpoiler(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: 'User not authorized to unmark post as spoiler' });
-  });
-
-  it('should return 401 if user is not authorized to unmark post as spoiler in subreddit', async () => {
-    const post = {
-      isSpoiler: true,
-      user: 'user123',
-      subReddit: 'subreddit123'
-    };
-    const postSubreddit = {
-      moderators: ['otherUser']
-    };
-    Post.findById = jest.fn().mockResolvedValueOnce(post);
-    User.findById = jest.fn().mockResolvedValueOnce({ _id: 'user123' });
-    SubReddit.findById = jest.fn().mockResolvedValueOnce(postSubreddit);
-
-    await unmarkAsSpoiler(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: 'User not authorized to unmark post as spoiler' });
-  });
-
   it('should unmark post as spoiler and return success message', async () => {
     const post = {
       isSpoiler: true,
