@@ -986,7 +986,7 @@ const suggestSubreddit = async (req, res, next) => {
     if (subredditsNotJoined.length > 0) {
       const randomSubreddit =
         subredditsNotJoined[
-        Math.floor(Math.random() * subredditsNotJoined.length)
+          Math.floor(Math.random() * subredditsNotJoined.length)
         ];
       const avatarImage = await UserUploadModel.findById(
         randomSubreddit.appearance.avatarImage
@@ -1110,14 +1110,13 @@ const forceApproveUser = async (req, res, next) => {
     if (subreddit.members.includes(user._id)) {
       return res.status(400).json({ message: "User already a member" });
     }
-    
+
     subreddit.members.push(user._id);
     user.communities.push(subreddit._id);
     await subreddit.save();
     await user.save();
 
     res.json({ message: "User approved successfully" });
-
   } catch (error) {
     res
       .status(500)
@@ -2385,7 +2384,9 @@ const forcedRemove = async (req, res) => {
     }
     const moderator = await User.findById(userId);
     if (!moderator) {
-      return res.status(404).json({ message: "User is not Allowed to Approve" });
+      return res
+        .status(404)
+        .json({ message: "User is not Allowed to Approve" });
     }
     const user = await User.findOne({ userName: userName });
     if (!user) {
@@ -2398,7 +2399,6 @@ const forcedRemove = async (req, res) => {
     await user.save();
 
     res.json({ message: "User removed successfully" });
-
   } catch (error) {
     res
       .status(500)
@@ -2409,23 +2409,21 @@ const forcedRemove = async (req, res) => {
 const getFavouriteCommunities = async (req, res) => {
   const userId = req.userId;
   const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    
-    const communities = await SubReddit.find({
-      _id: { $in: user.communities },
-      
-    });
-    const favCommunities = await SubReddit.find(user.favoriteCommunities.includes(community._id))
-    const avatarImages = await UserUploadModel.find({
-      _id: {
-        $in: communities.map((community) => community.appearance.avatarImage),
-      },
-    });
-    
-}
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
+  const communities = await SubReddit.find({
+    _id: { $in: user.favoriteCommunities },
+  })
+    .populate("appearance.avatarImage")
+    .populate("appearance.bannerImage")
+    .select("-posts"); // Exclude posts
+
+  res
+    .status(200)
+    .json({ message: "Favourite communities retrieved", communities });
+};
 
 module.exports = {
   createCommunity,
@@ -2483,5 +2481,6 @@ module.exports = {
   getRemovedPosts,
   changeSubredditType,
   forceApproveUser,
-  forcedRemove
+  forcedRemove,
+  getFavouriteCommunities,
 };
