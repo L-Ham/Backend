@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.08% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>6/23</span>
+                <span class='fraction'>6/24</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.08% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/23</span>
+                <span class='fraction'>6/24</span>
             </div>
         
             
@@ -109,20 +109,17 @@
 <a name='L44'></a><a href='#L44'>44</a>
 <a name='L45'></a><a href='#L45'>45</a>
 <a name='L46'></a><a href='#L46'>46</a>
-<a name='L47'></a><a href='#L47'>47</a>
-<a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">49x</span>
-<span class="cline-any cline-yes">49x</span>
-<span class="cline-any cline-yes">49x</span>
-<span class="cline-any cline-yes">49x</span>
-<span class="cline-any cline-yes">49x</span>
+<a name='L47'></a><a href='#L47'>47</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -139,12 +136,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -153,9 +148,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">49x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -166,13 +162,12 @@ const cloudinary = require("../middleware/cloudinary");
 const { use } = require("moongose/routes");
 &nbsp;
 async function <span class="fstat-no" title="function not covered" >uploadMedia(</span>file) {
-  const b64 = <span class="cstat-no" title="statement not covered" >Buffer.from(file.buffer).toString('base64')</span>
-  const dataURI = <span class="cstat-no" title="statement not covered" >'data:' + file.mimetype + ';base64,' + b64</span>
-<span class="cstat-no" title="statement not covered" >  console.log("dataURI",dataURI)</span>
-  const {secure_url} = <span class="cstat-no" title="statement not covered" >await cloudinary.uploader.upload(</span>
-    dataURI,
-    {resource_type: "auto"}
-  );
+  const b64 = <span class="cstat-no" title="statement not covered" >Buffer.from(file.buffer).toString("base64");</span>
+  const dataURI = <span class="cstat-no" title="statement not covered" >"data:" + file.mimetype + ";base64," + b64;</span>
+<span class="cstat-no" title="statement not covered" >  console.log("dataURI", dataURI);</span>
+  const { secure_url } = <span class="cstat-no" title="statement not covered" >await cloudinary.uploader.upload(dataURI, {</span>
+    resource_type: "auto",
+  });
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const newUserUpload = <span class="cstat-no" title="statement not covered" >await UserUpload.create({</span>
       originalname: file.originalname,
@@ -187,25 +182,24 @@ async function <span class="fstat-no" title="function not covered" >uploadMedia(
   }
 }
 async function <span class="fstat-no" title="function not covered" >destroyMedia(</span>mediaId) {
- 
 <span class="cstat-no" title="statement not covered" >  try {</span>
-    const media = <span class="cstat-no" title="statement not covered" >await userUploads</span>
-      .findById(mediaId);
+    const media = <span class="cstat-no" title="statement not covered" >await UserUpload.findById(mediaId);</span>
+    const urls = <span class="cstat-no" title="statement not covered" >media.url.split("/");</span>
+   
+    let publicId = <span class="cstat-no" title="statement not covered" >urls[urls.length - 1];</span>
+<span class="cstat-no" title="statement not covered" >    publicId = publicId.substring(0, publicId.lastIndexOf("."));</span>
+<span class="cstat-no" title="statement not covered" >    await cloudinary.api.delete_resources([publicId]);</span>
+<span class="cstat-no" title="statement not covered" >    await UserUpload.findByIdAndDelete(mediaId);</span>
 &nbsp;
-    const urls=<span class="cstat-no" title="statement not covered" >media.url.split("/")</span>
-<span class="cstat-no" title="statement not covered" >    console.log("media",media)</span>
-<span class="cstat-no" title="statement not covered" >    await cloudinary.api.delete_resources(urls[urls.length-1]);</span>
-<span class="cstat-no" title="statement not covered" >    await media.remove();</span>
-<span class="cstat-no" title="statement not covered" >    console.log("Media deleted successfully");</span>
-  }
-  catch (error) {
+  } catch (error) {
 <span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: "Failed to delete media" });</span>
   }
+<span class="cstat-no" title="statement not covered" >  console.log("Media deleted successfully");</span>
 }
 &nbsp;
 module.exports = {
   uploadMedia,
-  destroyMedia
+  destroyMedia,
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -214,7 +208,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-04-16T21:42:44.382Z
+                at 2024-05-10T20:57:59.695Z
             </div>
         <script src="../prettify.js"></script>
         <script>
