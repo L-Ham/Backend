@@ -1,7 +1,6 @@
 const User = require("../../models/user");
 const userController = require("../../controllers/userController");
 
-// Mocking User.findOne function
 jest.mock("../../models/user", () => ({
   findOne: jest.fn(),
 }));
