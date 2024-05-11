@@ -5,7 +5,6 @@ User.findById = jest.fn();
 describe('getNotificationSettings', () => {
 
     
-    // Return a 404 status code if user ID is not found
     it('should return a 404 status code if user ID is not found', async () => {
       const req = { userId: 'invalidUserId' };
       const res = {
