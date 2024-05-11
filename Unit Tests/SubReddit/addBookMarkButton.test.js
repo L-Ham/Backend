@@ -121,9 +121,4 @@ describe('addBookmarkButton', () => {
     expect(res.json).toHaveBeenCalledWith({ message: "You are not a moderator of this subreddit" });
   });
 
-  
-
-  
-  
-  
 });
