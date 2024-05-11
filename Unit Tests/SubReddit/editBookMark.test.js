@@ -1,5 +1,5 @@
 const User = require("../../models/user");
-const SubReddit = require("../../models/subreddit");
+const SubReddit = require("../../models/subReddit");
 const subredditController = require("../../controllers/subredditController");
 
 jest.mock("../../models/user", () => ({
