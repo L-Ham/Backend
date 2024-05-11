@@ -1,7 +1,7 @@
 const Post = require("../../models/post");
 const postController = require("../../controllers/postController");
 
-jest.mock("../../models/Post", () => ({
+jest.mock("../../models/post", () => ({
   findById: jest.fn().mockImplementation((id) => {
     const post = {
       user: "user1",
@@ -103,5 +103,4 @@ describe("editPost", () => {
       message: "Text field is required for editing",
     });
   });
-
 });

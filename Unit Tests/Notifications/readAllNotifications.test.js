@@ -1,24 +1,26 @@
-const { readAllNotifications } = require('../../controllers/notificationController');
-const Notification = require('../../models/notification');
-const User = require('../../models/user');
+const {
+  readAllNotifications,
+} = require("../../controllers/notificationController");
+const Notification = require("../../models/notification");
+const User = require("../../models/user");
 
-jest.mock('../../models/Notification');
-jest.mock('../../models/User');
+jest.mock("../../models/notification");
+jest.mock("../../models/user");
 
-describe('readAllNotifications', () => {
+describe("readAllNotifications", () => {
   let req, res;
 
   beforeEach(() => {
     req = {
-      userId: 'userId'
+      userId: "userId",
     };
     res = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn(),
     };
   });
 
-  it('should return 404 if user is not found', async () => {
+  it("should return 404 if user is not found", async () => {
     User.findById.mockResolvedValue(null);
 
     await readAllNotifications(req, res);
@@ -27,27 +29,32 @@ describe('readAllNotifications', () => {
     expect(res.json).toHaveBeenCalledWith({ message: "User Not Found" });
   });
 
-  it('should mark all notifications as read and return 200', async () => {
+  it("should mark all notifications as read and return 200", async () => {
     User.findById.mockResolvedValue({});
     Notification.updateMany = jest.fn();
 
     await readAllNotifications(req, res);
 
     expect(Notification.updateMany).toHaveBeenCalledWith(
-      { receiverId: 'userId' },
+      { receiverId: "userId" },
       { isRead: true }
     );
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ message: "All Notifications Marked as Read Successfully" });
+    expect(res.json).toHaveBeenCalledWith({
+      message: "All Notifications Marked as Read Successfully",
+    });
   });
 
-  it('should return 500 if there is an error', async () => {
-    const errorMessage = 'Error';
+  it("should return 500 if there is an error", async () => {
+    const errorMessage = "Error";
     User.findById.mockRejectedValue(new Error(errorMessage));
 
     await readAllNotifications(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: "Error Marking All Notifications as Read", error: errorMessage });
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Error Marking All Notifications as Read",
+      error: errorMessage,
+    });
   });
 });

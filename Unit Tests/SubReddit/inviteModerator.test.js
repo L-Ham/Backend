@@ -7,21 +7,21 @@ jest.mock("../../models/user", () => ({
   findOne: jest.fn(),
 }));
 
-jest.mock("../../models/subreddit", () => ({
+jest.mock("../../models/subReddit", () => ({
   findOne: jest.fn(),
 }));
 
-describe('inviteModerator', () => {
+describe("inviteModerator", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should invite a moderator successfully', async () => {
-    const userId = 'user123';
-    const invitedModeratorUsername = 'moderator123';
-    const subredditName = 'subreddit123';
+  it("should invite a moderator successfully", async () => {
+    const userId = "user123";
+    const invitedModeratorUsername = "moderator123";
+    const subredditName = "subreddit123";
     const user = { _id: userId };
-    const invitedModerator = { _id: 'moderator123' };
+    const invitedModerator = { _id: "moderator123" };
     const subreddit = {
       name: subredditName,
       moderators: [],
@@ -42,15 +42,19 @@ describe('inviteModerator', () => {
 
     expect(User.findById).toHaveBeenCalledWith(userId);
     expect(SubReddit.findOne).toHaveBeenCalledWith({ name: subredditName });
-    expect(User.findOne).toHaveBeenCalledWith({ userName: invitedModeratorUsername });
+    expect(User.findOne).toHaveBeenCalledWith({
+      userName: invitedModeratorUsername,
+    });
     expect(subreddit.save).toHaveBeenCalled();
-    expect(res.json).toHaveBeenCalledWith({ message: "Moderator invited successfully" });
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Moderator invited successfully",
+    });
   });
 
-  it('should return 404 if user is not found', async () => {
-    const userId = 'user123';
-    const invitedModeratorUsername = 'moderator123';
-    const subredditName = 'subreddit123';
+  it("should return 404 if user is not found", async () => {
+    const userId = "user123";
+    const invitedModeratorUsername = "moderator123";
+    const subredditName = "subreddit123";
 
     User.findById.mockResolvedValueOnce(null);
 
@@ -67,10 +71,10 @@ describe('inviteModerator', () => {
     expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
   });
 
-  it('should return 404 if subreddit is not found', async () => {
-    const userId = 'user123';
-    const invitedModeratorUsername = 'moderator123';
-    const subredditName = 'subreddit123';
+  it("should return 404 if subreddit is not found", async () => {
+    const userId = "user123";
+    const invitedModeratorUsername = "moderator123";
+    const subredditName = "subreddit123";
     const user = { _id: userId };
 
     User.findById.mockResolvedValueOnce(user);
@@ -90,14 +94,16 @@ describe('inviteModerator', () => {
     expect(res.json).toHaveBeenCalledWith({ message: "Subreddit not found" });
   });
 
-
-  it('should return 400 if user is already a moderator', async () => {
-    const userId = 'user123';
-    const invitedModeratorUsername = 'moderator123';
-    const subredditName = 'subreddit123';
+  it("should return 400 if user is already a moderator", async () => {
+    const userId = "user123";
+    const invitedModeratorUsername = "moderator123";
+    const subredditName = "subreddit123";
     const user = { _id: userId };
-    const invitedModerator = { _id: 'moderator123' };
-    const subreddit = { name: subredditName, moderators: [invitedModerator._id] };
+    const invitedModerator = { _id: "moderator123" };
+    const subreddit = {
+      name: subredditName,
+      moderators: [invitedModerator._id],
+    };
 
     User.findById.mockResolvedValueOnce(user);
     SubReddit.findOne.mockResolvedValueOnce(subreddit);
@@ -113,8 +119,12 @@ describe('inviteModerator', () => {
 
     expect(User.findById).toHaveBeenCalledWith(userId);
     expect(SubReddit.findOne).toHaveBeenCalledWith({ name: subredditName });
-    expect(User.findOne).toHaveBeenCalledWith({ userName: invitedModeratorUsername });
+    expect(User.findOne).toHaveBeenCalledWith({
+      userName: invitedModeratorUsername,
+    });
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ message: "User is already a moderator" });
+    expect(res.json).toHaveBeenCalledWith({
+      message: "User is already a moderator",
+    });
   });
 });

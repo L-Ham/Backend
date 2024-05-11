@@ -6,7 +6,7 @@ jest.mock("../../models/user", () => ({
   findById: jest.fn(),
 }));
 
-jest.mock("../../models/subreddit", () => ({
+jest.mock("../../models/subReddit", () => ({
   findById: jest.fn(),
 }));
 

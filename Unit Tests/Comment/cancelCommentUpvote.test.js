@@ -2,7 +2,7 @@ const Comment = require("../../models/comment");
 const User = require("../../models/user");
 const commentController = require("../../controllers/commentController");
 
-jest.mock("../../models/Comment", () => ({
+jest.mock("../../models/comment", () => ({
   findById: jest.fn().mockImplementation((id) => {
     const comment = {
       upvotes: 1,
@@ -66,7 +66,6 @@ describe("cancelUpvote", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ message: "Comment not upvoted" });
   });
-
 
   it("should handle error", async () => {
     Comment.findById.mockRejectedValueOnce(new Error("Test error"));

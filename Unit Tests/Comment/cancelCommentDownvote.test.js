@@ -2,27 +2,25 @@ const Comment = require("../../models/comment");
 const User = require("../../models/user");
 const commentController = require("../../controllers/commentController");
 
-jest.mock('../../models/Comment', () => ({
-    findById: jest.fn().mockImplementation((id) => {
-      const comment = {
-        downvotes: 1,
-        downvotedUsers: ['user1'],
-        save: jest.fn().mockImplementation(function() {
-          this.downvotes -= 1;
-        }),
-        pull: function(userId) { 
-          const index = this.downvotedUsers.indexOf(userId);
-          if (index !== -1) {
-            this.downvotedUsers.splice(index, 1);
-          }
-        },
-      };
-      comment.pull = comment.pull.bind(comment);
-      return comment;
-    }),
-  }));
-  
-  
+jest.mock("../../models/comment", () => ({
+  findById: jest.fn().mockImplementation((id) => {
+    const comment = {
+      downvotes: 1,
+      downvotedUsers: ["user1"],
+      save: jest.fn().mockImplementation(function () {
+        this.downvotes -= 1;
+      }),
+      pull: function (userId) {
+        const index = this.downvotedUsers.indexOf(userId);
+        if (index !== -1) {
+          this.downvotedUsers.splice(index, 1);
+        }
+      },
+    };
+    comment.pull = comment.pull.bind(comment);
+    return comment;
+  }),
+}));
 
 jest.mock("../../models/User", () => ({
   findById: jest.fn().mockImplementation((id) => {
