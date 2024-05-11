@@ -20,7 +20,7 @@ jest.mock("../../models/comment", () => ({
   }),
 }));
 
-jest.mock("../../models/User", () => ({
+jest.mock("../../models/user", () => ({
   findById: jest.fn().mockImplementation((id) => {
     return {
       upvotedComments: ["comment1"],
