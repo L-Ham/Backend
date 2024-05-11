@@ -47,5 +47,13 @@
   "homepage": "https://github.com/L-Ham/Backend#readme",
   "devDependencies": {
     "jest": "^29.7.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "**/*.{js,jsx,ts,tsx}",
+      "!<rootDir>/node_modules/",
+      "!<rootDir>/services/",
+      "!<rootDir>/socket/"
+    ]
   }
 }
