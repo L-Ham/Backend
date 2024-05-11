@@ -67,44 +67,6 @@ describe("cancelUpvote", () => {
     expect(res.json).toHaveBeenCalledWith({ message: "Comment not upvoted" });
   });
 
-  // it("should cancel upvote successfully", async () => {
-  //   const comment = {
-  //     upvotes: 1,
-  //     upvotedUsers: ["user1"],
-  //     save: jest.fn(),
-  //     pull: function (userId) {
-  //       this.upvotedUsers = this.upvotedUsers.filter(function (u) {
-  //         return u !== userId;
-  //       });
-  //     },
-  //   };
-  //   const user = {
-  //     upvotedComments: ["comment1"],
-  //     save: jest.fn(),
-  //     pull: function (commentId) {
-  //       this.upvotedComments = this.upvotedComments.filter(function (c) {
-  //         return c !== commentId;
-  //       });
-  //     },
-  //   };
-  //   Comment.findById.mockResolvedValueOnce(comment);
-  //   User.findById.mockResolvedValueOnce(user);
-  //   const res = {
-  //     status: jest.fn().mockReturnThis(),
-  //     json: jest.fn(),
-  //   };
-  //   await commentController.cancelUpvote(
-  //     { userId: "user1", body: { commentId: "comment1" } },
-  //     res
-  //   );
-  //   expect(comment.upvotes).toBe(0);
-  //   expect(comment.upvotedUsers).toEqual([]);
-  //   expect(comment.save).toHaveBeenCalled();
-  //   expect(user.upvotedComments).toEqual([]);
-  //   expect(user.save).toHaveBeenCalled();
-  //   expect(res.status).toHaveBeenCalledWith(200);
-  //   expect(res.json).toHaveBeenCalledWith({ message: "Upvote cancelled" });
-  // });
 
   it("should handle error", async () => {
     Comment.findById.mockRejectedValueOnce(new Error("Test error"));
